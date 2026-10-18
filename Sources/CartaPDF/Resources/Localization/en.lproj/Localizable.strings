@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "Cancel PDF Structure Processing";
 "Annulla esportazione" = "Cancel Export";
 "Annulla modifica" = "Undo edit";
+"Annulla operazione" = "Undo";
 "Annulla {0}" = "Cancel {0}";
 "Anteprima" = "Preview";
 "Anteprima CSV modificabile della tabella" = "Editable CSV preview of the table";
@@ -337,8 +338,8 @@
 "Anteprima numerazione Bates" = "Bates Numbering Preview";
 "Anteprima nuovo nome" = "New name preview";
 "Anteprima parte {0}/{1}" = "Part Preview {0}/{1}";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "Preview ready: {0} PDFs. Source files were not modified.";
-"Anteprima pronta: {0} pagine." = "Preview ready: {0} pages.";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "Preview ready · PDF files: {0}. Source files were not modified.";
+"Anteprima pronta · Pagine: {0}." = "Preview ready · Pages: {0}.";
 "Anteprima visiva JPEG della prima pagina" = "JPEG Visual Preview of the First Page";
 "Anteprima visiva del ritaglio, pagina {0}" = "Visual Crop Preview, Page {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "Visual preview of the current page with the selected corrections";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "xpacket attribute {0} missing.";
 "Autore" = "Author";
 "Autore annotazioni" = "Annotation author";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Creates a real structure with one element per page, in document order. For graphics or scans, choose Figure and write a meaningful alternative. It does not automatically create a reading order between blocks or certify PDF/UA. Existing structures are preserved without being overwritten.";
 "Autore, tratto, memoria, recupero e scorciatoie." = "Author, stroke, memory, recovery and shortcuts.";
 "Autorizza e aggiorna sorgenti" = "Authorize and refresh sources";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "Allow capture in macOS settings; no continuous recording.";
@@ -738,6 +738,7 @@
 "Crea una copia raster ottimizzata" = "Create an Optimized Raster Copy";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Create a searchable copy of scans with Apple Vision.";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "Creates a CMS SHA-256 PDF signature with ByteRange and immediately checks integrity. Uses the local Keychain; the system may ask for access to the private key. No server, remote timestamp, or qualified signature. The embedded certificate is the signer's; no chains are retrieved online.";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Creates a real structure with one element per page, in document order. For graphics or scans, choose Figure and write a meaningful alternative. It does not automatically create a reading order between blocks or certify PDF/UA. Existing structures are preserved without being overwritten.";
 "Crea un’area cliccabile con un indirizzo web." = "Create a clickable area with a web address.";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "Create, select, edit, and position annotations with numeric fields and VoiceOver.";
 "Creati {0} PDF nella cartella scelta." = "Created {0} PDFs in the selected folder.";
@@ -994,7 +995,7 @@
 "Font CID non subset." = "CID font is not a subset.";
 "Font TrueType simbolico senza Encoding PDF." = "Symbolic TrueType font without PDF Encoding.";
 "Font Type1 non subset." = "Type1 font is not subsetted.";
-"Font pt" = "Font pt";
+"Font pt" = "Font size (pt)";
 "Font referenziato da Tf/ExtGState ma senza glifi mostrati: esenzione embedding Tr=3 non presunta." = "Font referenced by Tf/ExtGState with no glyphs shown: Tr=3 embedding exemption not presumed.";
 "Font {0}" = "Font {0}";
 "Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme." = "Fonts, templates, and Bates settings are remembered on this Mac. Changes can be undone together.";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "Each top-level bookmark with a valid destination starts a new part.";
 "Ogni specifica allegata è referenziata da un AF standard" = "Every attached file specification is referenced by a standard AF";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "Every used type reaches a standard type; semantic equivalence is not inferred from its name.";
-"Ogni {0} pagine" = "Every {0} pages";
 "Opacità" = "Opacity";
 "Opacità annotazioni PDF/A-1" = "PDF/A-1 Annotation Opacity";
 "Opacità della filigrana" = "Watermark opacity";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "Organized pages.pdf";
 "Pagine per ogni parte" = "Pages per part";
 "Pagine per parte" = "Pages per Part";
+"Pagine per parte: {0}" = "Pages per part: {0}";
 "Pagine presenti in più file: {0}" = "Pages present in multiple files: {0}";
 "Pagine sovrapposte ignorate: {0}" = "Overlapping pages ignored: {0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "Transparent pages: applicable output intent or Group/CS.";
 "Pagine {0} e {1} · {2}% simili" = "Pages {0} and {1} · {2}% similar";
 "Pagine. Trascina una miniatura per riordinare." = "Pages. Drag a thumbnail to reorder.";
+"Pagine: {0}" = "Pages: {0}";
 "Pagine: {0}, 1-3, {1}…" = "Pages: {0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "Paragraph, Full Page";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "Settings changed: generate a new preview before saving.";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "Resume";
 "Ripristina" = "Reset";
 "Ripristina (⇧⌘Z)" = "Redo (⇧⌘Z)";
+"Ripristina operazione" = "Redo";
 "Ripristino" = "Restore";
 "Riprova a 300 dpi con affidabilità bassa" = "Retry at 300 dpi When Confidence Is Low";
 "Risoluzione OCR" = "OCR Resolution";
@@ -2158,13 +2161,13 @@
 "Spessore del tratto" = "Stroke Width";
 "Sposta annotazione" = "Move annotation";
 "Sposta dopo il documento {0}, {1}" = "Move Document {0}, {1} Later";
-"Sposta dopo il passaggio {0}, {1}" = "Move after step {0}, {1}";
+"Sposta dopo il passaggio {0}, {1}" = "Move step {0}, {1} down";
 "Sposta dopo la pagina in posizione {0}" = "Move page at position {0} later";
 "Sposta pagina" = "Move Page";
-"Sposta pagina dopo" = "Move Page After";
+"Sposta pagina dopo" = "Move Page Later";
 "Sposta pagina prima" = "Move page earlier";
 "Sposta prima il documento {0}, {1}" = "Move Document {0}, {1} Earlier";
-"Sposta prima il passaggio {0}, {1}" = "Move before step {0}, {1}";
+"Sposta prima il passaggio {0}, {1}" = "Move step {0}, {1} up";
 "Sposta prima la pagina in posizione {0}" = "Move page at position {0} earlier";
 "Stampa…" = "Print…";
 "Stato" = "Status";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} objects checked. ";
 "{0} oggetti controllati: {1}" = "{0} objects checked: {1}";
 "{0} oggetti: " = "{0} objects: ";
-"{0} pagine" = "{0} pages";
 "{0} pagine PNG esportate in {1}." = "{0} PNG pages exported to {1}.";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} pages with different or missing text. Images and layout not analyzed.";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "{0} pages in final order. Drag thumbnails; duplicate, move or delete before opening the copy.";

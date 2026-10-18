@@ -21,7 +21,7 @@ struct PDFStructureWorkspaceView: View {
             HStack {
                 Label(state.sourceName, systemImage: "doc.richtext").font(.headline).accessibilityAddTraits(.isHeader)
                 Spacer()
-                Text(L10n.tr("\(state.pageCount) pagine")).foregroundStyle(.secondary)
+                Text(L10n.tr("Pagine: \(state.pageCount)")).foregroundStyle(.secondary)
             }
             Text(L10n.tr("Lavora su uno snapshot e salva copie separate. Le revisioni incrementali conservano i dati precedenti: la modifica del testo e la rimozione di allegati non sono strumenti di oscuramento."))
                 .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
@@ -62,16 +62,14 @@ private struct PDFStructurePanel: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 GroupBox(L10n.tr("Numerazione logica delle sezioni")) {
-                    HStack {
-                        Stepper(L10n.tr("Dalla pagina \(startPage)"), value: $startPage, in: 1...max(1, state.pageCount)).frame(width: 190).accessibilityLabel(L10n.tr("Pagina iniziale della sezione logica")).accessibilityValue(L10n.tr("\(startPage) di \(state.pageCount)"))
-                        Stepper(L10n.tr("Primo numero \(firstNumber)"), value: $firstNumber, in: 1...100_000).frame(width: 210).accessibilityLabel(L10n.tr("Primo numero logico della sezione")).accessibilityValue(L10n.tr("\(firstNumber)"))
-                        TextField(L10n.tr("Prefisso"), text: $prefix).frame(width: 110).accessibilityLabel(L10n.tr("Prefisso della numerazione logica"))
-                        Picker(L10n.tr("Stile"), selection: $style) { ForEach(PDFStructureDocument.PageLabelStyle.allCases) { Text($0.title).tag($0) } }.frame(width: 180)
-                        Spacer(minLength: 0)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 260), alignment: .leading)], alignment: .leading, spacing: 12) {
+                        Stepper(L10n.tr("Dalla pagina \(startPage)"), value: $startPage, in: 1...max(1, state.pageCount)).accessibilityLabel(L10n.tr("Pagina iniziale della sezione logica")).accessibilityValue(L10n.tr("\(startPage) di \(state.pageCount)"))
+                        Stepper(L10n.tr("Primo numero \(firstNumber)"), value: $firstNumber, in: 1...100_000).accessibilityLabel(L10n.tr("Primo numero logico della sezione")).accessibilityValue(L10n.tr("\(firstNumber)"))
+                        TextField(L10n.tr("Prefisso"), text: $prefix).accessibilityLabel(L10n.tr("Prefisso della numerazione logica"))
+                        Picker(L10n.tr("Stile"), selection: $style) { ForEach(PDFStructureDocument.PageLabelStyle.allCases) { Text($0.title).tag($0) } }
                     }.padding(8)
-                    HStack {
-                        Text(L10n.tr("Modifica PageLabels; non stampa numeri sulla pagina. Le altre sezioni vengono conservate.")).font(.caption).foregroundStyle(.secondary)
-                        Spacer()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(L10n.tr("Modifica PageLabels; non stampa numeri sulla pagina. Le altre sezioni vengono conservate.")).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                         Button(L10n.tr("Salva copia numerata")) { state.setLabels(startPage: startPage - 1, number: firstNumber, prefix: prefix, style: style) }.disabled(state.encrypted)
                     }.padding(8)
                 }
@@ -80,11 +78,10 @@ private struct PDFStructurePanel: View {
                         List(state.attachments, selection: $attachmentID) { file in
                             HStack { Image(systemName: "paperclip").accessibilityHidden(true); Text(file.name); Spacer(); Text(ByteCountFormatter.string(fromByteCount: Int64(file.size), countStyle: .file)).foregroundStyle(.secondary) }.tag(file.id).accessibilityElement(children: .combine)
                         }.frame(height: 125).accessibilityLabel(L10n.tr("Allegati incorporati, \(state.attachments.count) file"))
-                        HStack {
+                        StructureActionRow {
                             Button(L10n.tr("Aggiungi file…")) { state.chooseAttachments(portfolio: false) }.disabled(state.encrypted)
                             Button(L10n.tr("Estrai selezionato…")) { if let attachment { state.exportAttachment(attachment) } }.disabled(attachment == nil).accessibilityValue(attachment?.name ?? L10n.tr("Nessun allegato selezionato"))
                             Button(L10n.tr("Rimuovi nella copia…")) { if let attachment { state.deleteAttachment(attachment) } }.disabled(attachment == nil || state.encrypted).accessibilityValue(attachment?.name ?? L10n.tr("Nessun allegato selezionato")).accessibilityHint(L10n.tr("Rimuove il riferimento nella nuova copia; le revisioni precedenti conservano i dati."))
-                            Spacer()
                             Button(L10n.tr("Nuovo portfolio da file…")) { state.chooseAttachments(portfolio: true) }
                         }
                         Text(L10n.tr("Il portfolio contiene una pagina indice, una Collection e i file originali incorporati. La rimozione incrementale elimina il riferimento, ma conserva le vecchie revisioni: non è una cancellazione sicura."))
@@ -95,7 +92,7 @@ private struct PDFStructurePanel: View {
                     VStack(alignment: .leading, spacing: 10) {
                         List(state.images, selection: $imageID) { item in Text(item.description).tag(item.id) }.frame(height: 110).accessibilityLabel(L10n.tr("Immagini incorporate, \(state.images.count) oggetti"))
                         HStack {
-                            Button(L10n.tr("Estrai immagine…")) { if let image { state.exportImage(image) } }.disabled(image == nil).accessibilityValue(image?.description ?? L10n.tr("Nessuna immagine selezionata"))
+                            Button(L10n.tr("Estrai immagine…")) { if let image { state.exportImage(image) } }.fixedSize().disabled(image == nil).accessibilityValue(image?.description ?? L10n.tr("Nessuna immagine selezionata"))
                             Text(L10n.tr("JPEG/JPX: byte originali. Bitmap RGB/grigie compatibili: PNG lossless. Maschere e altri formati non vengono simulati."))
                                 .font(.caption).foregroundStyle(.secondary)
                         }
@@ -107,9 +104,9 @@ private struct PDFStructurePanel: View {
                         ForEach(state.layers) { layer in
                             HStack {
                                 Image(systemName: layer.visible ? "eye" : "eye.slash").accessibilityHidden(true)
-                                Text(layer.name).accessibilityLabel(L10n.tr("Livello \(layer.name)")).accessibilityValue(layer.visible ? L10n.tr("Visibile") : L10n.tr("Nascosto")); Spacer()
+                                Text(layer.name).fixedSize(horizontal: false, vertical: true).help(layer.name).accessibilityLabel(L10n.tr("Livello \(layer.name)")).accessibilityValue(layer.visible ? L10n.tr("Visibile") : L10n.tr("Nascosto")); Spacer()
                                 Button(layer.visible ? L10n.tr("Salva copia con livello nascosto") : L10n.tr("Salva copia con livello visibile")) { state.changeLayer(layer, visible: !layer.visible) }
-                                    .disabled(state.encrypted).accessibilityLabel(L10n.tr("Salva copia con livello \(layer.name) \(layer.visible ? L10n.tr("nascosto") : L10n.tr("visibile"))"))
+                                    .fixedSize().disabled(state.encrypted).accessibilityLabel(L10n.tr("Salva copia con livello \(layer.name) \(layer.visible ? L10n.tr("nascosto") : L10n.tr("visibile"))"))
                             }
                         }
                         Text(L10n.tr("Modifica lo stato ON/OFF della configurazione predefinita. Il contenuto nascosto resta nel PDF e può essere riattivato da un lettore compatibile."))
@@ -130,36 +127,38 @@ private struct PDFOriginalContentPanel: View {
     private var run: PDFOriginalTextRun? { state.runs.first { $0.id == runID } }
     private var image: PDFEmbeddedImage? { state.images.first { $0.id == imageID } }
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            GroupBox(L10n.tr("Modifica effettiva del testo nel content stream")) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(L10n.tr("Supporta stringhe Tj, ' e \" con font Type1 standard e codifica WinAnsi esplicita. Font incorporati/CID/subset, ToUnicode personalizzato, kerning TJ e immagini inline non vengono riscritti. Si modifica l’operando originale senza annotazioni; niente reflow. Gli stream condivisi vengono modificati in tutti i loro utilizzi."))
-                        .font(.caption).foregroundStyle(.secondary)
-                    if let limit = state.originalTextLimit { Text(limit).font(.caption).foregroundStyle(.orange) }
-                    List(state.runs, selection: $runID) { item in
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(L10n.tr("Pagina \(item.pageIndex + 1) · \(item.font)")).font(.caption).foregroundStyle(.secondary)
-                            Text(item.text).lineLimit(2)
-                        }.tag(item.id).accessibilityElement(children: .combine)
-                    }.frame(minHeight: 140).accessibilityLabel(L10n.tr("Stringhe di testo originale compatibili, \(state.runs.count) elementi"))
-                    if state.runs.isEmpty { Text(L10n.tr("Nessuna stringa originale compatibile trovata in questo PDF.")).foregroundStyle(.secondary) }
-                    HStack {
-                        TextField(L10n.tr("Testo sostitutivo"), text: $replacement).accessibilityLabel(L10n.tr("Testo sostitutivo della stringa originale selezionata")).accessibilityHint(L10n.tr("Modifica l’operando originale, senza reimpaginazione; gli utilizzi condivisi cambiano insieme."))
-                        Button(L10n.tr("Salva copia modificata")) { if let run { state.replaceText(run, text: replacement) } }.disabled(run == nil || state.encrypted).accessibilityHint(run == nil ? L10n.tr("Seleziona prima una stringa compatibile.") : L10n.tr("Salva una nuova copia con la stringa selezionata modificata."))
-                    }
-                }.padding(8)
-            }
-            GroupBox(L10n.tr("Sostituzione effettiva di un oggetto immagine")) {
-                VStack(alignment: .leading, spacing: 10) {
-                    List(state.images, selection: $imageID) { item in Text(item.description).tag(item.id) }.frame(height: 150).accessibilityLabel(L10n.tr("Immagini originali sostituibili, \(state.images.count) oggetti"))
-                    HStack {
-                        Button(L10n.tr("Scegli immagine sostitutiva…")) { if let image { state.chooseReplacementImage(image) } }.disabled(image == nil || state.encrypted).accessibilityValue(image?.description ?? L10n.tr("Nessuna immagine selezionata"))
-                        Text(L10n.tr("Sostituisce l’XObject in tutti i suoi utilizzi. Le posizioni sulla pagina restano uguali; la nuova immagine viene composta su bianco.")).font(.caption).foregroundStyle(.secondary)
-                    }
-                }.padding(8)
-            }
-            Spacer(minLength: 0)
-        }.padding(12).onChange(of: runID) { replacement = run?.text ?? "" }.accessibilityIdentifier("panel.structure.original")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                GroupBox(L10n.tr("Modifica effettiva del testo nel content stream")) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(L10n.tr("Supporta stringhe Tj, ' e \" con font Type1 standard e codifica WinAnsi esplicita. Font incorporati/CID/subset, ToUnicode personalizzato, kerning TJ e immagini inline non vengono riscritti. Si modifica l’operando originale senza annotazioni; niente reflow. Gli stream condivisi vengono modificati in tutti i loro utilizzi."))
+                            .font(.caption).foregroundStyle(.secondary)
+                        if let limit = state.originalTextLimit { Text(limit).font(.caption).foregroundStyle(.orange) }
+                        List(state.runs, selection: $runID) { item in
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(L10n.tr("Pagina \(item.pageIndex + 1) · \(item.font)")).font(.caption).foregroundStyle(.secondary)
+                                Text(item.text).lineLimit(2)
+                            }.tag(item.id).accessibilityElement(children: .combine)
+                        }.frame(height: 160).accessibilityLabel(L10n.tr("Stringhe di testo originale compatibili, \(state.runs.count) elementi"))
+                        if state.runs.isEmpty { Text(L10n.tr("Nessuna stringa originale compatibile trovata in questo PDF.")).foregroundStyle(.secondary) }
+                        HStack {
+                            TextField(L10n.tr("Testo sostitutivo"), text: $replacement).accessibilityLabel(L10n.tr("Testo sostitutivo della stringa originale selezionata")).accessibilityHint(L10n.tr("Modifica l’operando originale, senza reimpaginazione; gli utilizzi condivisi cambiano insieme."))
+                            Button(L10n.tr("Salva copia modificata")) { if let run { state.replaceText(run, text: replacement) } }.fixedSize().disabled(run == nil || state.encrypted).accessibilityHint(run == nil ? L10n.tr("Seleziona prima una stringa compatibile.") : L10n.tr("Salva una nuova copia con la stringa selezionata modificata."))
+                        }
+                    }.padding(8)
+                }
+                GroupBox(L10n.tr("Sostituzione effettiva di un oggetto immagine")) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        List(state.images, selection: $imageID) { item in Text(item.description).tag(item.id) }.frame(height: 150).accessibilityLabel(L10n.tr("Immagini originali sostituibili, \(state.images.count) oggetti"))
+                        HStack {
+                            Button(L10n.tr("Scegli immagine sostitutiva…")) { if let image { state.chooseReplacementImage(image) } }.fixedSize().disabled(image == nil || state.encrypted).accessibilityValue(image?.description ?? L10n.tr("Nessuna immagine selezionata"))
+                            Text(L10n.tr("Sostituisce l’XObject in tutti i suoi utilizzi. Le posizioni sulla pagina restano uguali; la nuova immagine viene composta su bianco.")).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }.padding(8)
+                }
+                Spacer(minLength: 0)
+            }.padding(12)
+        }.onChange(of: runID) { replacement = run?.text ?? "" }.accessibilityIdentifier("panel.structure.original")
     }
 }
 
@@ -206,7 +205,7 @@ private struct PDFPreflightPanel: View {
                     }
                     GroupBox(L10n.tr("Tag di accessibilità per pagina")) {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text(L10n.tr("Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle."))
+                            Text(L10n.tr("Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle."))
                                 .font(.caption).foregroundStyle(.secondary)
                             TextField(L10n.tr("Lingua BCP-47"), text: $language).accessibilityLabel(L10n.tr("Lingua del documento per i tag di accessibilità")).accessibilityHint(L10n.tr("Codice BCP 47, ad esempio it trattino IT."))
                             Picker(L10n.tr("Ruolo"), selection: $role) {
@@ -235,42 +234,57 @@ private struct PDFCertificatePanel: View {
     @State private var identityID = ""
     @State private var reason = ""
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox(L10n.tr("Firma con certificato e chiave privata locali")) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(L10n.tr("Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online."))
-                        .font(.caption).foregroundStyle(.secondary)
-                    HStack {
-                        Button(L10n.tr("Leggi identità dal Portachiavi"), action: state.loadIdentities)
-                        Picker(L10n.tr("Identità"), selection: $identityID) {
-                            Text(L10n.tr("Seleziona un certificato")).tag("")
-                            ForEach(state.identities) { identity in Text(identity.name + " · " + identity.id.prefix(10)).tag(identity.id) }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                GroupBox(L10n.tr("Firma con certificato e chiave privata locali")) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(L10n.tr("Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online."))
+                            .font(.caption).foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Button(L10n.tr("Leggi identità dal Portachiavi"), action: state.loadIdentities)
+                            Picker(L10n.tr("Identità"), selection: $identityID) {
+                                Text(L10n.tr("Seleziona un certificato")).tag("")
+                                ForEach(state.identities) { identity in Text(identity.name + " · " + identity.id.prefix(10)).tag(identity.id) }
+                            }
                         }
+                        TextField(L10n.tr("Motivo della firma"), text: $reason).accessibilityLabel(L10n.tr("Motivo della firma digitale della copia"))
+                        Button(L10n.tr("Firma e salva una copia…")) { state.sign(identityID: identityID, reason: reason) }.disabled(identityID.isEmpty || state.encrypted)
+                        if state.identities.isEmpty { Text(L10n.tr("Sono necessarie un’identità esistente e la relativa chiave privata. L’app non crea certificati o identità nel Portachiavi.")).font(.caption).foregroundStyle(.secondary) }
+                    }.padding(8)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(L10n.tr("Verifica offline delle firme")).font(.headline).accessibilityAddTraits(.isHeader)
+                    StructureActionRow {
+                        Button(L10n.tr("Verifica snapshot"), action: state.verifySignatures).disabled(state.encrypted)
+                        Button(L10n.tr("Scegli un PDF da verificare…"), action: state.chooseFileToVerify)
                     }
-                    TextField(L10n.tr("Motivo della firma"), text: $reason).accessibilityLabel(L10n.tr("Motivo della firma digitale della copia"))
-                    Button(L10n.tr("Firma e salva una copia…")) { state.sign(identityID: identityID, reason: reason) }.disabled(identityID.isEmpty || state.encrypted)
-                    if state.identities.isEmpty { Text(L10n.tr("Sono necessarie un’identità esistente e la relativa chiave privata. L’app non crea certificati o identità nel Portachiavi.")).font(.caption).foregroundStyle(.secondary) }
-                }.padding(8)
-            }
-            HStack {
-                Text(L10n.tr("Verifica offline delle firme")).font(.headline).accessibilityAddTraits(.isHeader)
-                Spacer()
-                Button(L10n.tr("Verifica snapshot"), action: state.verifySignatures).disabled(state.encrypted)
-                Button(L10n.tr("Scegli un PDF da verificare…"), action: state.chooseFileToVerify)
-            }
-            Text(L10n.tr("I file puliti vengono verificati sui byte originali su disco. Uno snapshot con modifiche può invalidare le firme precedenti. La verifica locale distingue integrità, fiducia del Portachiavi e modifiche successive; OCSP/CRL e validità qualificata non vengono attestate."))
-                .font(.caption).foregroundStyle(.secondary)
-            List(state.signatures) { signature in
-                VStack(alignment: .leading, spacing: 5) {
-                    Label(signature.signer, systemImage: signature.integrityValid ? "checkmark.seal" : "xmark.seal")
-                        .font(.headline).foregroundStyle(signature.integrityValid ? .green : .red)
-                        .accessibilityLabel(L10n.tr("Firmatario \(signature.signer)")).accessibilityValue(signature.integrityValid ? L10n.tr("Integrità della firma valida") : L10n.tr("Integrità della firma non valida"))
-                    Text(signature.detail).font(.caption)
-                    Text(L10n.tr("Revisione firmata: \(signature.signedRevisionBytes) byte · byte successivi non firmati: \(signature.bytesAfterSignature)"))
-                        .font(.caption).foregroundStyle(signature.bytesAfterSignature > 0 ? .orange : .secondary)
-                    if !signature.digest.isEmpty { Text(L10n.tr("SHA-256 dei byte firmati: ") + signature.digest).font(.system(size: 10, design: .monospaced)).textSelection(.enabled) }
-                }.padding(.vertical, 5).accessibilityElement(children: .contain)
-            }.accessibilityLabel(L10n.tr("Firme verificate, \(state.signatures.count) risultati"))
-        }.padding(12).accessibilityIdentifier("panel.structure.certificates")
+                }
+                Text(L10n.tr("I file puliti vengono verificati sui byte originali su disco. Uno snapshot con modifiche può invalidare le firme precedenti. La verifica locale distingue integrità, fiducia del Portachiavi e modifiche successive; OCSP/CRL e validità qualificata non vengono attestate."))
+                    .font(.caption).foregroundStyle(.secondary)
+                List(state.signatures) { signature in
+                    VStack(alignment: .leading, spacing: 5) {
+                        Label(signature.signer, systemImage: signature.integrityValid ? "checkmark.seal" : "xmark.seal")
+                            .font(.headline).foregroundStyle(signature.integrityValid ? .green : .red)
+                            .accessibilityLabel(L10n.tr("Firmatario \(signature.signer)")).accessibilityValue(signature.integrityValid ? L10n.tr("Integrità della firma valida") : L10n.tr("Integrità della firma non valida"))
+                        Text(signature.detail).font(.caption)
+                        Text(L10n.tr("Revisione firmata: \(signature.signedRevisionBytes) byte · byte successivi non firmati: \(signature.bytesAfterSignature)"))
+                            .font(.caption).foregroundStyle(signature.bytesAfterSignature > 0 ? .orange : .secondary)
+                        if !signature.digest.isEmpty { Text(L10n.tr("SHA-256 dei byte firmati: ") + signature.digest).font(.system(size: 10, design: .monospaced)).textSelection(.enabled) }
+                    }.padding(.vertical, 5).accessibilityElement(children: .contain)
+                }.frame(height: 220).accessibilityLabel(L10n.tr("Firme verificate, \(state.signatures.count) risultati"))
+            }.padding(12)
+        }.accessibilityIdentifier("panel.structure.certificates")
+    }
+}
+
+// Actions can occupy more lines instead of clipping translated button titles.
+private struct StructureActionRow<Content: View>: View {
+    private let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 8) { content }.fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) { content }
+        }
     }
 }

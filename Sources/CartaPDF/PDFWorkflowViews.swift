@@ -229,7 +229,7 @@ final class WorkflowController: ObservableObject {
                 controller.outputs = [WorkflowOutput(name: L10n.tr("Documenti uniti.pdf"), document: result)]
             }
             controller.selectOutput(0)
-            controller.message = L10n.tr("Anteprima pronta: \(controller.outputs.count) PDF. Le sorgenti non sono state modificate.")
+            controller.message = L10n.tr("Anteprima pronta · File PDF: \(controller.outputs.count). Le sorgenti non sono state modificate.")
         }
     }
 
@@ -348,7 +348,7 @@ final class WorkflowController: ObservableObject {
             case .contents: result = try WorkflowEngine.tableOfContents(source.document, title: controller.contentsTitle)
             }
             controller.outputs = [WorkflowOutput(name: L10n.tr("\((source.title as NSString).deletingPathExtension)-impaginato.pdf"), document: result)]
-            controller.selectOutput(0); controller.message = L10n.tr("Anteprima pronta: \(result.pageCount) pagine.")
+            controller.selectOutput(0); controller.message = L10n.tr("Anteprima pronta · Pagine: \(result.pageCount).")
         }
     }
 
@@ -497,7 +497,7 @@ private final class WorkflowWindows: NSObject, NSWindowDelegate {
         let controller = WorkflowController(model: model, kind: kind)
         let hosting = NSHostingController(rootView: WorkflowWorkspaceView(controller: controller).environment(\.locale, L10n.currentLocale))
         let window = PDFWorkspaceWindow(contentViewController: hosting)
-        window.setContentSize(CGSize(width: 1120, height: 780)); window.minSize = CGSize(width: 980, height: 640)
+        window.setContentSize(CGSize(width: 1120, height: 780)); window.contentMinSize = CGSize(width: 980, height: 640)
         window.title = L10n.tr("CartaPDF · \(L10n.string(kind.rawValue))"); window.isReleasedWhenClosed = false; window.delegate = self; window.center()
         let windowController = NSWindowController(window: window)
         windows.append(windowController); jobs[ObjectIdentifier(window)] = controller
@@ -565,7 +565,7 @@ struct WorkflowWorkspaceView: View {
 
     private var sourceQueue: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack { Text(L10n.tr("Documenti · \(controller.totalSelectedPages) pagine selezionate")).font(.headline).accessibilityAddTraits(.isHeader); Spacer(); Button(L10n.tr("Aggiungi PDF…"), action: controller.addFiles) }
+            HStack { Text(L10n.tr("Documenti · \(controller.totalSelectedPages) pagine selezionate")).font(.headline).fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader); Spacer(); Button(L10n.tr("Aggiungi PDF…"), action: controller.addFiles).fixedSize() }
             Text(L10n.tr("Trascina i documenti o usa i pulsanti Sposta prima/dopo per riordinarli. Puoi inserire intervalli e i comandi \("even"), \("odd") o \("last").")).font(.caption).foregroundStyle(.secondary)
             ForEach(controller.sources) { source in
                 let position = (controller.sources.firstIndex(where: { $0.id == source.id }) ?? 0) + 1
@@ -657,7 +657,7 @@ struct WorkflowWorkspaceView: View {
                     }
                     if !controller.splitOverlap.isEmpty { Text(L10n.tr("Pagine presenti in più file: \(controller.splitOverlap.map { String($0 + 1) }.joined(separator: ", "))")).font(.caption).foregroundStyle(.orange) }
                 }
-            case .everyN: Stepper(L10n.tr("Ogni \(controller.splitCount) pagine"), value: $controller.splitCount, in: 1...100_000).accessibilityLabel(L10n.tr("Pagine per ogni parte")).accessibilityValue(L10n.tr("\(controller.splitCount) pagine"))
+            case .everyN: Stepper(L10n.tr("Pagine per parte: \(controller.splitCount)"), value: $controller.splitCount, in: 1...100_000).accessibilityLabel(L10n.tr("Pagine per ogni parte")).accessibilityValue(L10n.tr("Pagine: \(controller.splitCount)"))
             case .text, .barcode:
                 TextField(controller.splitMode == .text ? L10n.tr("Testo separatore") : L10n.tr("Codice da cercare (vuoto = qualsiasi)"), text: $controller.marker).textFieldStyle(.roundedBorder).accessibilityLabel(controller.splitMode == .text ? L10n.tr("Testo che separa le parti") : L10n.tr("Codice a barre che separa le parti")).accessibilityHint(controller.splitMode == .text ? L10n.tr("Cerca nel testo selezionabile.") : L10n.tr("Lascia vuoto per usare qualsiasi codice riconosciuto."))
                 Toggle(L10n.tr("Escludi le pagine separatrici"), isOn: $controller.skipMarkers)
@@ -696,7 +696,7 @@ struct WorkflowWorkspaceView: View {
                     Stepper(L10n.tr("\(controller.rows) righe"), value: $controller.rows, in: 1...8).accessibilityLabel(L10n.tr("Righe di pagine per foglio")).accessibilityValue(L10n.tr("\(controller.rows) righe"))
                 }
                 HStack { Text(L10n.tr("Foglio pt")); TextField(L10n.tr("Larghezza"), value: $controller.sheetWidth, format: .number).accessibilityLabel(L10n.tr("Larghezza del foglio, in punti")); Text("×").accessibilityHidden(true); TextField(L10n.tr("Altezza"), value: $controller.sheetHeight, format: .number).accessibilityLabel(L10n.tr("Altezza del foglio, in punti")) }
-                HStack { Button(L10n.tr("A4 orizzontale")) { controller.sheetWidth = 841.89; controller.sheetHeight = 595.276 }; Button(L10n.tr("A4 verticale")) { controller.sheetWidth = 595.276; controller.sheetHeight = 841.89 } }
+                WorkflowActionRow { Button(L10n.tr("A4 orizzontale")) { controller.sheetWidth = 841.89; controller.sheetHeight = 595.276 }; Button(L10n.tr("A4 verticale")) { controller.sheetWidth = 595.276; controller.sheetHeight = 841.89 } }
                 HStack { Text(controller.layoutMode == .poster ? L10n.tr("Sovrapposizione pt") : L10n.tr("Spaziatura pt")); TextField("pt", value: $controller.gutter, format: .number).accessibilityLabel(controller.layoutMode == .poster ? L10n.tr("Sovrapposizione del poster, in punti") : L10n.tr("Spaziatura fra pagine, in punti")) }
                 if controller.layoutMode == .booklet { Text(L10n.tr("Aggiunge pagine vuote fino a un multiplo di quattro e dispone fronte e retro consecutivi. Stampa fronte/retro con ribaltamento sul lato corto; verifica con una prova.")).font(.caption).foregroundStyle(.secondary) }
             }
@@ -713,7 +713,7 @@ struct WorkflowWorkspaceView: View {
                 ForEach(Array(controller.pageOrder.enumerated()), id: \.element.id) { position, token in
                     VStack(spacing: 5) {
                         if let page = controller.firstSource?.document.page(at: token.index) { Image(nsImage: page.thumbnail(of: CGSize(width: 90, height: 120), for: .cropBox)).resizable().scaledToFit().frame(height: 105).accessibilityHidden(true) }
-                        Text(L10n.tr("\(position + 1) ← origine \(token.index + 1)")).font(.caption2)
+                        Text(L10n.tr("\(position + 1) ← origine \(token.index + 1)")).font(.caption2).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                         HStack(spacing: 9) {
                             Button { controller.movePageBy(token, offset: -1) } label: { Image(systemName: "arrow.left") }.disabled(position == 0).accessibilityLabel(L10n.tr("Sposta prima la pagina in posizione \(position + 1)"))
                             Button { controller.duplicatePage(token) } label: { Image(systemName: "plus.square.on.square") }.help(L10n.tr("Duplica in anteprima")).accessibilityLabel(L10n.tr("Duplica la pagina in posizione \(position + 1)"))
@@ -765,7 +765,10 @@ struct WorkflowWorkspaceView: View {
                 Text(controller.batesPreview).font(.system(.callout, design: .monospaced)).textSelection(.enabled).accessibilityLabel(L10n.tr("Anteprima numerazione Bates")).accessibilityValue(controller.batesPreview)
             } else { TextField(L10n.tr("Piè di pagina"), text: $controller.numbering.footer).textFieldStyle(.roundedBorder) }
             Text(L10n.tr("Variabili: {page}, {pages}, {name}, {date}, {bates}")).font(.caption).foregroundStyle(.secondary)
-            HStack { Text(L10n.tr("Font pt")); TextField("10", value: double($controller.numbering.fontSize), format: .number).accessibilityLabel(L10n.tr("Dimensione del carattere della numerazione, in punti")); Text(L10n.tr("Margine pt")); TextField("18", value: double($controller.numbering.margin), format: .number).accessibilityLabel(L10n.tr("Margine della numerazione, in punti")) }
+            VStack(alignment: .leading, spacing: 8) {
+                HStack { Text(L10n.tr("Font pt")).fixedSize(); TextField("10", value: double($controller.numbering.fontSize), format: .number).accessibilityLabel(L10n.tr("Dimensione del carattere della numerazione, in punti")) }
+                HStack { Text(L10n.tr("Margine pt")).fixedSize(); TextField("18", value: double($controller.numbering.margin), format: .number).accessibilityLabel(L10n.tr("Margine della numerazione, in punti")) }
+            }
             if controller.existingNumbers > 0 { Text(L10n.tr("Sono state riconosciute \(controller.existingNumbers) numerazioni: verifica eventuali sovrapposizioni.")).font(.caption).foregroundStyle(.orange); Toggle(L10n.tr("Sostituisci le numerazioni riconosciute"), isOn: $controller.replaceNumbers) }
             Button(L10n.tr("Controlla spazio e anteprima"), action: controller.buildNumberingPreview)
             Button(L10n.tr("Applica al documento"), action: controller.applyNumbering).buttonStyle(.borderedProminent).disabled(controller.selectionError != nil || !controller.model.canEditAnnotations)
@@ -857,7 +860,7 @@ struct WorkflowWorkspaceView: View {
             if !controller.outputs.isEmpty { Text(L10n.tr("\(controller.outputs.count) file previsti")).font(.headline) }
             ForEach(Array(controller.outputs.enumerated()), id: \.offset) { index, output in
                 Button { controller.selectOutput(index) } label: {
-                    HStack(alignment: .top) { Image(systemName: "doc.richtext"); VStack(alignment: .leading) { Text(controller.finalName(index)).lineLimit(2); Text(L10n.tr("\(output.document.pageCount) pagine")).font(.caption).foregroundStyle(.secondary) }; Spacer() }
+                    HStack(alignment: .top) { Image(systemName: "doc.richtext"); VStack(alignment: .leading) { Text(controller.finalName(index)).lineLimit(2); Text(L10n.tr("Pagine: \(output.document.pageCount)")).font(.caption).foregroundStyle(.secondary) }; Spacer() }
                 }.buttonStyle(.plain).padding(7).background(index == controller.selectedOutput ? Color.accentColor.opacity(0.12) : .clear, in: RoundedRectangle(cornerRadius: 6))
                     .accessibilityLabel(L10n.tr("Anteprima \(controller.finalName(index)), \(output.document.pageCount) pagine"))
                     .accessibilityAddTraits(index == controller.selectedOutput ? .isSelected : [])
@@ -872,14 +875,14 @@ struct WorkflowWorkspaceView: View {
                     ForEach(Array(controller.outputs.enumerated()), id: \.offset) { Text($0.element.name).tag($0.offset) }
                 }
             }
-            HStack { Button(L10n.tr("Cartella…"), action: controller.chooseDirectory).accessibilityLabel(L10n.tr("Scegli cartella delle copie")).accessibilityValue(controller.directory?.path ?? L10n.tr("Nessuna cartella selezionata")); Text(controller.directory?.lastPathComponent ?? L10n.tr("Scegli la destinazione")).font(.caption).lineLimit(1).accessibilityLabel(L10n.tr("Cartella di destinazione")).accessibilityValue(controller.directory?.path ?? L10n.tr("Non selezionata")); Spacer() }
+            HStack { Button(L10n.tr("Cartella…"), action: controller.chooseDirectory).accessibilityLabel(L10n.tr("Scegli cartella delle copie")).accessibilityValue(controller.directory?.path ?? L10n.tr("Nessuna cartella selezionata")); Text(controller.directory?.lastPathComponent ?? L10n.tr("Scegli la destinazione")).font(.caption).fixedSize(horizontal: false, vertical: true).accessibilityLabel(L10n.tr("Cartella di destinazione")).accessibilityValue(controller.directory?.path ?? L10n.tr("Non selezionata")); Spacer() }
             Picker(L10n.tr("File esistenti"), selection: $controller.conflictPolicy) { ForEach(WorkflowConflictPolicy.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
             if !controller.conflicts.isEmpty {
                 DisclosureGroup(L10n.tr("\(controller.conflicts.count) file esistenti in conflitto")) {
                     ForEach(Array(controller.conflicts.enumerated()), id: \.offset) { Text($0.element).font(.caption).foregroundStyle(.orange) }
                 }.font(.caption)
             }
-            HStack {
+            WorkflowActionRow {
                 Button(L10n.tr("Apri copia selezionata"), action: controller.openSelectedOutput)
                 Button(L10n.tr("Salva copie verificate"), action: controller.saveOutputs).buttonStyle(.borderedProminent)
                 if !controller.outputURLs.isEmpty { Button(L10n.tr("Mostra nel Finder"), action: controller.revealOutputs) }
@@ -888,6 +891,18 @@ struct WorkflowWorkspaceView: View {
     }
 
     private var copyNotice: some View { Text(L10n.tr("Le copie generate non ereditano password o firme digitali delle sorgenti. La struttura delle pagine copiate viene conservata; proteggi le copie se necessario.")).font(.caption).foregroundStyle(.secondary) }
+}
+
+// Buttons keep their full translated titles and stack when the pane is narrow.
+private struct WorkflowActionRow<Content: View>: View {
+    private let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 8) { content }.fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) { content }
+        }
+    }
 }
 
 @MainActor

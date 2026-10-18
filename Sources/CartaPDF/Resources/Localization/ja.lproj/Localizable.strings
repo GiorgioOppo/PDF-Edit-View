@@ -314,7 +314,7 @@
 "Annotazione selezionata. Trascina per spostare; ⌥ trascina per ridimensionare testo e forme." = "注釈を選択しました。ドラッグで移動し、⌥ を押しながらドラッグするとテキストや図形のサイズを変更できます。";
 "Annotazione {0} di {1}" = "注釈 {0}/{1}";
 "Annotazioni da tastiera" = "キーボードによる注釈";
-"Annotazioni da tastiera…" = "キーボードで注釈…";
+"Annotazioni da tastiera…" = "キーボードによる注釈…";
 "Annotazioni del documento. Usa i tasti freccia per selezionare." = "文書の注釈です。矢印キーで選択します。";
 "Annulla" = "キャンセル";
 "Annulla (⌘Z)" = "取り消す (⌘Z)";
@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "PDF 構造の処理をキャンセル";
 "Annulla esportazione" = "書き出しをキャンセル";
 "Annulla modifica" = "編集を取り消す";
+"Annulla operazione" = "取り消す";
 "Annulla {0}" = "{0} をキャンセル";
 "Anteprima" = "プレビュー";
 "Anteprima CSV modificabile della tabella" = "表の編集可能な CSV プレビュー";
@@ -337,8 +338,8 @@
 "Anteprima numerazione Bates" = "Bates 番号のプレビュー";
 "Anteprima nuovo nome" = "新しい名前のプレビュー";
 "Anteprima parte {0}/{1}" = "パート {0}/{1} のプレビュー";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "プレビューの準備ができました：PDF {0} 件。元のファイルは変更していません。";
-"Anteprima pronta: {0} pagine." = "プレビューの準備ができました：{0} ページ。";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "プレビューの準備ができました：PDF {0} 件。元のファイルは変更していません。";
+"Anteprima pronta · Pagine: {0}." = "プレビューの準備ができました：{0} ページ。";
 "Anteprima visiva JPEG della prima pagina" = "最初のページの JPEG プレビュー";
 "Anteprima visiva del ritaglio, pagina {0}" = "トリミングの視覚的プレビュー、ページ {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "選択した補正を適用した現在のページのプレビュー";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "xpacket 属性 {0} がありません。";
 "Autore" = "作成者";
 "Autore annotazioni" = "注釈の作成者";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "文書順にページごとに 1 つの要素を持つ実際の構造を作成します。図やスキャンには「図」を選び、意味のある代替テキストを入力してください。ブロック間の読み上げ順序を自動作成したり、PDF/UA を認証したりするものではありません。既存の構造は上書きせず保持します。";
 "Autore, tratto, memoria, recupero e scorciatoie." = "作成者、線、メモリ、復元、ショートカット。";
 "Autorizza e aggiorna sorgenti" = "ソースを許可して更新";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "macOS の設定でキャプチャを許可してください。継続的な録画は行いません。";
@@ -682,7 +682,7 @@
 "Contenuto originale" = "元の内容";
 "Controlla e correggi le celle prima di esportare." = "書き出す前にセルを確認し、修正してください。";
 "Controlla e modifica il CSV prima di esportarlo. Il rilevamento delle colonne è euristico." = "書き出す前に CSV を確認・編集してください。列の検出にはヒューリスティックを使用します。";
-"Controlla spazio e anteprima" = "容量とプレビューを確認";
+"Controlla spazio e anteprima" = "配置とプレビューを確認";
 "Controllati {0} oggetti e {1} stream, incluse revisioni xref ibride." = "ハイブリッド xref リビジョンを含む {0} 個のオブジェクトと {1} 個のストリームを確認しました。";
 "Controlli ICC annullati." = "ICC 検証をキャンセルしました。";
 "Controlli effettivi della struttura" = "実際の構造チェック";
@@ -738,6 +738,7 @@
 "Crea una copia raster ottimizzata" = "最適化したラスタコピーを作成";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Apple Vision で検索可能なスキャンのコピーを作成します。";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "ByteRange を持つ CMS SHA-256 PDF 署名を作成し、整合性を直ちに確認します。ローカルのキーチェーンを使用し、システムが秘密鍵へのアクセスを求める場合があります。サーバー、リモートタイムスタンプ、適格署名は使用しません。署名者の証明書を埋め込み、証明書チェーンはオンライン取得しません。";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "文書順にページごとに 1 つの要素を持つ実際の構造を作成します。図やスキャンには「図」を選び、意味のある代替テキストを入力してください。ブロック間の読み上げ順序を自動作成したり、PDF/UA を認証したりするものではありません。既存の構造は上書きせず保持します。";
 "Crea un’area cliccabile con un indirizzo web." = "Web アドレスを持つクリック可能な領域を作成します。";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "数値フィールドと VoiceOver で注釈を作成、選択、編集、配置します。";
 "Creati {0} PDF nella cartella scelta." = "選択したフォルダに {0} 個の PDF を作成しました。";
@@ -994,7 +995,7 @@
 "Font CID non subset." = "CID フォントがサブセットではありません。";
 "Font TrueType simbolico senza Encoding PDF." = "シンボル TrueType フォントに PDF Encoding がありません。";
 "Font Type1 non subset." = "Type1 フォントがサブセット化されていません。";
-"Font pt" = "フォント pt";
+"Font pt" = "文字サイズ（pt）";
 "Font referenziato da Tf/ExtGState ma senza glifi mostrati: esenzione embedding Tr=3 non presunta." = "Tf/ExtGState が参照するフォントに表示されたグリフがありません。Tr=3 の埋め込み免除を仮定しません。";
 "Font {0}" = "フォント {0}";
 "Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme." = "フォント、テンプレート、Bates 設定はこの Mac に記憶されます。変更はまとめて取り消せます。";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "有効な移動先を持つ各最上位ブックマークから新しいパートを開始します。";
 "Ogni specifica allegata è referenziata da un AF standard" = "添付された各ファイル仕様は標準の AF から参照されています";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "使用される各型は標準型に到達します。名前から意味の同等性は推測しません。";
-"Ogni {0} pagine" = "{0} ページごと";
 "Opacità" = "不透明度";
 "Opacità annotazioni PDF/A-1" = "PDF/A-1 注釈の不透明度";
 "Opacità della filigrana" = "透かしの不透明度";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "整理したページ.pdf";
 "Pagine per ogni parte" = "各パートのページ数";
 "Pagine per parte" = "パートごとのページ数";
+"Pagine per parte: {0}" = "{0} ページごと";
 "Pagine presenti in più file: {0}" = "複数ファイルに存在するページ：{0}";
 "Pagine sovrapposte ignorate: {0}" = "重複するページを無視しました：{0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "透明ページ：適用可能な出力インテントまたは Group/CS。";
 "Pagine {0} e {1} · {2}% simili" = "ページ {0} と {1} · 類似度 {2}%";
 "Pagine. Trascina una miniatura per riordinare." = "ページ。サムネイルをドラッグして並べ替えます。";
+"Pagine: {0}" = "{0} ページ";
 "Pagine: {0}, 1-3, {1}…" = "ページ：{0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "段落、ページ全体";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "設定が変更されました。保存前に新しいプレビューを生成してください。";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "再開";
 "Ripristina" = "リセット";
 "Ripristina (⇧⌘Z)" = "やり直す (⇧⌘Z)";
+"Ripristina operazione" = "やり直す";
 "Ripristino" = "復元";
 "Riprova a 300 dpi con affidabilità bassa" = "信頼度が低い場合は 300 dpi で再試行";
 "Risoluzione OCR" = "OCR 解像度";
@@ -2158,13 +2161,13 @@
 "Spessore del tratto" = "線の太さ";
 "Sposta annotazione" = "注釈を移動";
 "Sposta dopo il documento {0}, {1}" = "文書 {0}、{1} を後ろに移動";
-"Sposta dopo il passaggio {0}, {1}" = "ステップ {0}、{1} の後へ移動";
+"Sposta dopo il passaggio {0}, {1}" = "ステップ {0}、{1} を下へ移動";
 "Sposta dopo la pagina in posizione {0}" = "位置 {0} のページを後ろへ移動";
 "Sposta pagina" = "ページを移動";
 "Sposta pagina dopo" = "ページを後へ移動";
 "Sposta pagina prima" = "ページを前へ移動";
 "Sposta prima il documento {0}, {1}" = "文書 {0}、{1} を前に移動";
-"Sposta prima il passaggio {0}, {1}" = "ステップ {0}、{1} の前へ移動";
+"Sposta prima il passaggio {0}, {1}" = "ステップ {0}、{1} を上へ移動";
 "Sposta prima la pagina in posizione {0}" = "位置 {0} のページを前へ移動";
 "Stampa…" = "プリント…";
 "Stato" = "状態";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} 個のオブジェクトを確認しました。 ";
 "{0} oggetti controllati: {1}" = "{0} 個のオブジェクトを検証：{1}";
 "{0} oggetti: " = "{0} オブジェクト： ";
-"{0} pagine" = "{0} ページ";
 "{0} pagine PNG esportate in {1}." = "{0} ページの PNG を {1} に書き出しました。";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} ページに異なるテキストまたは欠落があります。画像とレイアウトは解析していません。";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "最終順序は {0} ページです。サムネールをドラッグし、コピーを開く前に複製、移動、削除してください。";

@@ -4,6 +4,8 @@ Entries describe implementations and available evidence. Passing a test does not
 
 ## Unreleased
 
+- Corrected Undo/Redo translations, tool terminology and Traditional Chinese interface vocabulary. Longer labels now wrap or use adaptive controls across the editor, forms, workflow, export, structure and PDF/A panels. OCR has a scrolling options form and a content minimum that preserves all five report columns.
+- Added a deterministic synthetic PDF generator and opt-in native interface snapshots for all eight language variants, with separate manifests for rendered components and interactive observations. See the [interface review workflow](docs/UI_LOCALIZATION_AUDIT.md).
 - Automatic interface localization for Italian, Spanish, English, German, French, Simplified/Traditional Chinese and Japanese, following ordered macOS preferences with English fallback. Localized menus, tools, messages, accessibility labels and native resources are bundled without translation downloads or language preference writes.
 - Added the `L10n` message/resource layer with numbered placeholders, English fallback and explicit boundaries between interface labels, stored identifiers and document content. Added read-only CLI language diagnostics.
 - Added a static CI checker for translation coverage, placeholders, formats and native tables, plus twenty packaged language-selection cases covering supported codes, regional variants, Chinese script precedence and fallback. New verification results remain separate from historical release evidence.

@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 APPLE_MODULES = {
     "AVFoundation", "AppIntents", "AppKit", "Combine", "Compression",
     "CoreGraphics", "CoreImage", "CoreText", "CryptoKit", "Darwin",
-    "Foundation", "ImageCaptureCore", "ImageIO", "PDFKit", "Quartz",
+    "Foundation", "ImageCaptureCore", "ImageIO", "PDFKit", "Quartz", "QuartzCore",
     "ScreenCaptureKit", "Security", "SwiftUI", "UniformTypeIdentifiers",
     "Vision", "WebKit", "XCTest", "CartaPDF", "PackageDescription",
 }

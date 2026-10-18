@@ -71,6 +71,7 @@ private struct PDFComparisonView: View {
             }.padding(16)
             HStack {
                 Text(L10n.tr("\(state.comparison.changedPages.count) pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate."))
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 if !state.comparison.changedPages.isEmpty {
                     Menu(L10n.tr("Pagine diverse")) {
@@ -78,11 +79,12 @@ private struct PDFComparisonView: View {
                             Button(L10n.tr("Pagina \(index + 1)")) { state.go(to: index) }
                         }
                     }
+                    .fixedSize()
                 }
             }.font(.callout).foregroundStyle(.secondary).padding(.horizontal, 16).padding(.bottom, 12)
             if state.comparison.pagesWithoutExtractableText > 0 {
                 Text(L10n.tr("\(state.comparison.pagesWithoutExtractableText) posizioni contengono pagine mancanti o senza testo estraibile. Esegui OCR sui PDF scansionati prima del confronto."))
-                    .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16).padding(.bottom, 12)
             }
             Divider()
@@ -96,7 +98,7 @@ private struct PDFComparisonView: View {
 
     private func column(document: PDFDocument, name: String) -> some View {
         VStack(spacing: 0) {
-            Text(name).font(.headline).lineLimit(1).padding(12)
+            Text(name).font(.headline).lineLimit(1).truncationMode(.middle).help(name).padding(12)
             Divider()
             if state.pageIndex < document.pageCount {
                 ComparisonPDFCanvas(document: document, name: name, state: state)

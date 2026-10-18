@@ -247,8 +247,8 @@ final class CartaAppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidat
         file.addItem(item(L10n.tr("Stampa…"), #selector(NSDocument.printDocument(_:)), "p"))
 
         let edit = submenu(L10n.tr("Modifica"))
-        edit.addItem(item(L10n.tr("Annulla"), Selector(("undo:")), "z"))
-        edit.addItem(item(L10n.tr("Ripristina"), Selector(("redo:")), "z", modifiers: [.command, .shift]))
+        edit.addItem(item(L10n.tr("Annulla operazione"), Selector(("undo:")), "z"))
+        edit.addItem(item(L10n.tr("Ripristina operazione"), Selector(("redo:")), "z", modifiers: [.command, .shift]))
         edit.addItem(.separator())
         edit.addItem(item(L10n.tr("Taglia"), #selector(NSText.cut(_:)), "x"))
         edit.addItem(item(L10n.tr("Copia"), #selector(NSText.copy(_:)), "c"))

@@ -62,3 +62,5 @@ python3 scripts/check-built-app.py dist/CartaPDF.app
 ```
 
 The static check verifies source-key coverage, equal key inventories, placeholders, formats, fragment whitespace and bundle declarations. Native tests check actual Foundation resource loading and safe interpolation. The assembled-app check verifies actual launch-language selection and packaged resources. Translation and layout review remain part of ordinary UI review; these checks do not claim a complete accessibility or linguistic audit.
+
+Follow the [interface review workflow](UI_LOCALIZATION_AUDIT.md) to prepare isolated language-specific app copies, render opt-in native component snapshots and record interactive CUA inspection. It distinguishes resource checks, rendered layout evidence and completed user interactions.

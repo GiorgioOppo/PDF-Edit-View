@@ -149,9 +149,15 @@ struct CartaPreferencesView: View {
             }
             .accessibilityLabel(L10n.tr("Spessore del tratto"))
             .accessibilityValue(L10n.tr("\(preferences.strokeWidth, specifier: "%.1f") punti"))
-            Toggle(L10n.tr("Regolarizza i tratti a mano libera"), isOn: $preferences.smoothInk)
-            Toggle(L10n.tr("Ricerca durante la digitazione"), isOn: $preferences.searchAsYouType)
-            Toggle(L10n.tr("Copie automatiche di recupero, senza sovrascrivere l’originale"), isOn: $preferences.recoveryEnabled)
+            Toggle(isOn: $preferences.smoothInk) {
+                Text(L10n.tr("Regolarizza i tratti a mano libera")).fixedSize(horizontal: false, vertical: true)
+            }
+            Toggle(isOn: $preferences.searchAsYouType) {
+                Text(L10n.tr("Ricerca durante la digitazione")).fixedSize(horizontal: false, vertical: true)
+            }
+            Toggle(isOn: $preferences.recoveryEnabled) {
+                Text(L10n.tr("Copie automatiche di recupero, senza sovrascrivere l’originale")).fixedSize(horizontal: false, vertical: true)
+            }
             Stepper(L10n.tr("Elaborazioni simultanee: \(preferences.concurrentJobs)"), value: $preferences.concurrentJobs, in: 1...4)
             Stepper(L10n.tr("Cache miniature: \(preferences.cacheMegabytes) MB"), value: $preferences.cacheMegabytes, in: 32...512, step: 32)
             Slider(value: $preferences.sidebarWidth, in: 180...340) { Text(L10n.tr("Larghezza barra laterale")) }
@@ -194,7 +200,7 @@ struct CartaPreferencesView: View {
             }
             if !shortcutMessage.isEmpty { CartaPanelAccessibilityStatus(message: shortcutMessage, label: L10n.tr("Assegnazione scorciatoia")).font(.caption) }
             Text(L10n.tr("I comandi standard di apertura, salvataggio, copia e chiusura restano riservati. La nuova assegnazione viene applicata al menu."))
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
         }.formStyle(.grouped).padding(16).frame(minWidth: 560, minHeight: 600)
             .accessibilityIdentifier("panel.preferences")
     }

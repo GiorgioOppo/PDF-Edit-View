@@ -24,7 +24,7 @@ struct CartaPanelAccessibilityStatus: View {
     var announce = true
     var announceOnAppear = false
     var body: some View {
-        Text(message).textSelection(.enabled).accessibilityLabel(label).accessibilityValue(message)
+        Text(message).fixedSize(horizontal: false, vertical: true).textSelection(.enabled).accessibilityLabel(label).accessibilityValue(message)
             .onChange(of: message) { _, value in announceValue(value) }
             .onAppear { if announceOnAppear { announceValue(message) } }
     }
@@ -39,10 +39,10 @@ struct CartaPanelAccessibilityStatus: View {
 final class ScanPanelWindow: NSWindowController, NSWindowDelegate {
     static var retained: [ScanPanelWindow] = []
     var onClose: (() -> Void)?
-    convenience init<V: View>(title: String, view: V, size: CGSize = CGSize(width: 1000, height: 760), onClose: (() -> Void)? = nil) {
+    convenience init<V: View>(title: String, view: V, size: CGSize = CGSize(width: 1000, height: 760), minimumSize: CGSize = CGSize(width: 760, height: 580), onClose: (() -> Void)? = nil) {
         let host = NSHostingController(rootView: view.environment(\.locale, L10n.currentLocale))
         let window = NSWindow(contentViewController: host)
-        window.title = title; window.setContentSize(size); window.minSize = CGSize(width: 760, height: 580)
+        window.title = title; window.setContentSize(size); window.contentMinSize = minimumSize
         window.styleMask = [.titled, .closable, .resizable, .miniaturizable]
         window.isReleasedWhenClosed = false; window.center()
         self.init(window: window); self.onClose = onClose; window.delegate = self
@@ -119,20 +119,20 @@ struct ScanWorkspaceView: View {
     var completion: (PDFDocument) -> Void
     var body: some View {
         HSplitView {
-            ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
                 Form {
                     Text(L10n.tr("Scansioni e OCR locale")).font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                    Toggle(L10n.tr("Riconosci il testo"), isOn: $controller.options.recognize)
-                    Toggle(L10n.tr("Correggi orientamento 0°/90°/180°/270°"), isOn: $controller.options.automaticOrientation).disabled(!controller.options.recognize)
-                    Toggle(L10n.tr("Raddrizza automaticamente le righe"), isOn: $controller.options.deskew)
-                    Toggle(L10n.tr("Pulisci rumore e aumenta contrasto"), isOn: $controller.options.cleanup)
-                    Toggle(L10n.tr("Riprova a 300 dpi con affidabilità bassa"), isOn: $controller.options.retryLowConfidence)
-                    Toggle(L10n.tr("Ordine di lettura per colonne"), isOn: $controller.options.columnOrder)
-                    HStack { Text(L10n.tr("Correzione manuale")); Slider(value: $controller.options.manualAngle, in: -12...12)
+                    Toggle(isOn: $controller.options.recognize) { Text(L10n.tr("Riconosci il testo")).fixedSize(horizontal: false, vertical: true) }
+                    Toggle(isOn: $controller.options.automaticOrientation) { Text(L10n.tr("Correggi orientamento 0°/90°/180°/270°")).fixedSize(horizontal: false, vertical: true) }.disabled(!controller.options.recognize)
+                    Toggle(isOn: $controller.options.deskew) { Text(L10n.tr("Raddrizza automaticamente le righe")).fixedSize(horizontal: false, vertical: true) }
+                    Toggle(isOn: $controller.options.cleanup) { Text(L10n.tr("Pulisci rumore e aumenta contrasto")).fixedSize(horizontal: false, vertical: true) }
+                    Toggle(isOn: $controller.options.retryLowConfidence) { Text(L10n.tr("Riprova a 300 dpi con affidabilità bassa")).fixedSize(horizontal: false, vertical: true) }
+                    Toggle(isOn: $controller.options.columnOrder) { Text(L10n.tr("Ordine di lettura per colonne")).fixedSize(horizontal: false, vertical: true) }
+                    VStack(alignment: .leading, spacing: 6) { Text(L10n.tr("Correzione manuale")).fixedSize(horizontal: false, vertical: true); HStack { Slider(value: $controller.options.manualAngle, in: -12...12)
                             .accessibilityLabel(L10n.tr("Correzione manuale dell’inclinazione"))
                             .accessibilityValue(L10n.tr("\(controller.options.manualAngle, specifier: "%.1f") gradi"))
                             .accessibilityHint(L10n.tr("Da meno 12 a più 12 gradi; usa i tasti freccia per regolare."))
-                        Text(L10n.tr("\(controller.options.manualAngle, specifier: "%.1f")°")).accessibilityHidden(true) }
+                        Text(L10n.tr("\(controller.options.manualAngle, specifier: "%.1f")°")).fixedSize().accessibilityHidden(true) } }
                     HStack { Text("DPI"); Slider(value: $controller.options.dpi, in: 100...300, step: 10)
                             .accessibilityLabel(L10n.tr("Risoluzione OCR"))
                             .accessibilityValue(L10n.tr("\(Int(controller.options.dpi)) punti per pollice"))
@@ -146,8 +146,8 @@ struct ScanWorkspaceView: View {
                         }
                     }
                     Text(L10n.tr("Le pagine con poco testo, ad esempio una sola intestazione, vengono comunque riconosciute. Le modifiche di orientamento e pulizia producono pagine raster. Il raddrizzamento mantiene le dimensioni della pagina e può tagliare i bordi. Con controllo automatico dell’orientamento l’OCR può richiedere quattro passaggi.")).font(.caption).foregroundStyle(.secondary)
-                }.padding(20).disabled(controller.busy)
-                HStack {
+                }.formStyle(.grouped).padding(20).disabled(controller.busy)
+                ScanActionRow {
                     Button(L10n.tr("Aggiorna anteprima")) { controller.updatePreview() }
                     Button(L10n.tr("Crea copia elaborata")) { controller.run(completion: completion) }.buttonStyle(.borderedProminent).disabled(controller.busy)
                     if controller.busy { Button(L10n.tr("Annulla")) { controller.cancel() }.keyboardShortcut(.cancelAction).accessibilityLabel(L10n.tr("Annulla elaborazione OCR")) }
@@ -158,14 +158,14 @@ struct ScanWorkspaceView: View {
                 ProgressView(value: controller.progress).accessibilityLabel(L10n.tr("Avanzamento elaborazione OCR")).accessibilityValue(L10n.tr("\(Int(controller.progress * 100)) percento"))
                 CartaPanelAccessibilityStatus(message: controller.message, label: L10n.tr("Stato OCR"), announce: !controller.busy).font(.callout)
                 Table(controller.reports) {
-                    TableColumn(L10n.tr("Pagina")) { Text(L10n.tr("\($0.page)")) }.width(55)
-                    TableColumn(L10n.tr("Esito")) { Text(L10n.string($0.state)) }
-                    TableColumn(L10n.tr("Affidabilità")) { Text(L10n.tr("\(Int($0.confidence * 100))%")) }.width(80)
-                    TableColumn(L10n.tr("Righe")) { Text(L10n.tr("\($0.lines)")) }.width(45)
-                    TableColumn(L10n.tr("Angolo")) { Text(L10n.tr("\($0.angle, specifier: "%.1f")°")) }.width(60)
+                    TableColumn(L10n.tr("Pagina")) { Text(L10n.tr("\($0.page)")) }.width(min: 70, ideal: 75)
+                    TableColumn(L10n.tr("Esito")) { Text(L10n.string($0.state)).help(L10n.string($0.state)) }.width(min: 150, ideal: 200)
+                    TableColumn(L10n.tr("Affidabilità")) { Text(L10n.tr("\(Int($0.confidence * 100))%")) }.width(min: 120, ideal: 130)
+                    TableColumn(L10n.tr("Righe")) { Text(L10n.tr("\($0.lines)")) }.width(min: 75, ideal: 80)
+                    TableColumn(L10n.tr("Angolo")) { Text(L10n.tr("\($0.angle, specifier: "%.1f")°")) }.width(min: 80, ideal: 85)
                 }.accessibilityLabel(L10n.tr("Rapporto OCR per pagina: esito, affidabilità, righe e angolo"))
-            }.padding(20)
-        }.onAppear { controller.updatePreview() }.accessibilityIdentifier("panel.scan.ocr")
+            }.padding(20).frame(minWidth: 690, idealWidth: 700)
+        }.frame(minWidth: 1080, minHeight: 620).onAppear { controller.updatePreview() }.accessibilityIdentifier("panel.scan.ocr")
     }
 }
 
@@ -367,7 +367,7 @@ struct ScanExportWorkspaceView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text(L10n.tr("Esportazione e creazione locale")).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                 Picker(L10n.tr("Formato"), selection: $controller.format) { ForEach(ScanExportController.Format.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
-                HStack { TextField(L10n.tr("Prefisso file"), text: $controller.prefix).accessibilityLabel(L10n.tr("Prefisso dei file esportati")); Stepper(L10n.tr("Cifre: \(controller.digits)"), value: $controller.digits, in: 1...8).accessibilityLabel(L10n.tr("Cifre della numerazione file")).accessibilityValue(L10n.tr("\(controller.digits) cifre")) }
+                HStack { TextField(L10n.tr("Prefisso file"), text: $controller.prefix).accessibilityLabel(L10n.tr("Prefisso dei file esportati")); Stepper(L10n.tr("Cifre: \(controller.digits)"), value: $controller.digits, in: 1...8).fixedSize().accessibilityLabel(L10n.tr("Cifre della numerazione file")).accessibilityValue(L10n.tr("\(controller.digits) cifre")) }
                 HStack { Slider(value: $controller.dpi, in: 72...300, step: 10).accessibilityLabel(L10n.tr("Risoluzione esportazione immagini")).accessibilityValue(L10n.tr("\(Int(controller.dpi)) punti per pollice")); Text(L10n.tr("\(Int(controller.dpi)) dpi")).accessibilityHidden(true); Picker(L10n.tr("Profilo"), selection: $controller.profile) { Text("sRGB").tag("sRGB"); Text("Display P3").tag("Display P3") }.frame(width: 200).accessibilityLabel(L10n.tr("Profilo colore esportazione")) }
                 if controller.format == .jpeg {
                     HStack { Slider(value: $controller.quality, in: 0.3...1).accessibilityLabel(L10n.tr("Qualità JPEG")).accessibilityValue(L10n.tr("\(Int(controller.quality * 100)) percento")); Text(L10n.tr("JPEG \(Int(controller.quality * 100))%")).accessibilityHidden(true); Button(L10n.tr("Anteprima JPEG")) { controller.jpegPreview() } }
@@ -389,7 +389,7 @@ struct ScanExportWorkspaceView: View {
                 }
                 CartaPanelAccessibilityStatus(message: controller.message, label: L10n.tr("Stato esportazione"), announce: !controller.busy)
                 Divider()
-                HStack {
+                ScanActionRow {
                     Text(L10n.tr("Immagini → PDF A4")).font(.headline).accessibilityAddTraits(.isHeader)
                     Slider(value: $controller.margin, in: 0...100, step: 1).frame(width: 180).accessibilityLabel(L10n.tr("Margine immagini nel PDF A4")).accessibilityValue(L10n.tr("\(Int(controller.margin)) punti"))
                     Text(L10n.tr("Margine \(Int(controller.margin)) pt")).accessibilityHidden(true)
@@ -401,7 +401,7 @@ struct ScanExportWorkspaceView: View {
                     }
                 }
                 Divider()
-                HStack {
+                ScanActionRow {
                     Text(L10n.tr("HTML locale → PDF")).font(.headline).accessibilityAddTraits(.isHeader)
                     Button(L10n.tr("Apri HTML")) { let panel = NSOpenPanel(); panel.allowedContentTypes = [.html]; if panel.runModal() == .OK, let url = panel.url { html.load(url) } }
                     Button(L10n.tr("Crea PDF A4")) { Task { do { generated(try await html.pdf(), "HTML.pdf") } catch { controller.message = error.localizedDescription } } }.disabled(!html.ready)
@@ -460,7 +460,7 @@ struct LibraryWorkspaceView: View {
                     if let selected = library.entries.first(where: { $0.id == selection }) {
                         Text(selected.path).font(.caption).textSelection(.enabled).accessibilityLabel(L10n.tr("Percorso documento selezionato")).accessibilityValue(selected.path)
                         TextField(L10n.tr("Etichette separate da virgole"), text: $tags).accessibilityLabel(L10n.tr("Etichette di \(selected.title)")).accessibilityHint(L10n.tr("Separa le etichette con virgole e premi Salva etichette.")); TextField(L10n.tr("Categoria"), text: $category).accessibilityLabel(L10n.tr("Categoria di \(selected.title)"))
-                        HStack {
+                        ScanActionRow {
                             Button(L10n.tr("Salva etichette")) { library.update(id: selected.id, tags: tags, category: category) }
                             Button(L10n.tr("Apri")) { NSDocumentController.shared.openDocument(withContentsOf: library.resolve(selected), display: true) { _, _, error in if let error { library.message = error.localizedDescription } } }
                             Button(L10n.tr("Rimuovi collegamento")) { library.remove(id: selected.id) }.accessibilityHint(L10n.tr("Rimuove dalla biblioteca e conserva il file PDF originale."))
@@ -593,7 +593,7 @@ struct ScanCSVFormView: View {
             TextEditor(text: $controller.csv).font(.system(.body, design: .monospaced)).disabled(controller.busy).accessibilityLabel(L10n.tr("Dati CSV per compilare i moduli")).accessibilityHint(L10n.tr("Prima riga: nomi esatti dei campi. Una riga per ogni copia. \(controller.message)"))
             Text(controller.preview).font(.caption).textSelection(.enabled).accessibilityLabel(L10n.tr("Anteprima compilazione CSV")).accessibilityValue(controller.preview)
             ProgressView(value: controller.progress).accessibilityLabel(L10n.tr("Avanzamento compilazione moduli CSV")).accessibilityValue(L10n.tr("\(Int(controller.progress * 100)) percento"))
-            HStack {
+            ScanActionRow {
                 Button(L10n.tr("Verifica e anteprima")) { controller.run(folder: nil) }.disabled(controller.busy)
                 Button(L10n.tr("Crea copie compilate")) {
                     let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.canCreateDirectories = true
@@ -738,7 +738,7 @@ extension PDFEditorModel {
     func showScanWorkspace() {
         do {
             let controller = ScanWorkspaceController(snapshot: try scanDetachedSnapshot(), prioritizedPage: currentPageIndex)
-            let panel = ScanPanelWindow(title: L10n.tr("Scansioni e OCR"), view: ScanWorkspaceView(controller: controller) { [weak self] pdf in self?.openGeneratedDocument(pdf, name: L10n.tr("Copia elaborata-OCR.pdf")) }, onClose: controller.cancel)
+            let panel = ScanPanelWindow(title: L10n.tr("Scansioni e OCR"), view: ScanWorkspaceView(controller: controller) { [weak self] pdf in self?.openGeneratedDocument(pdf, name: L10n.tr("Copia elaborata-OCR.pdf")) }, size: CGSize(width: 1120, height: 760), minimumSize: CGSize(width: 1080, height: 620), onClose: controller.cancel)
             panel.showWindow(nil)
         } catch { errorMessage = error.localizedDescription }
     }
@@ -774,5 +774,17 @@ extension PDFEditorModel {
     func showWatchFolderWorkspace() {
         let watcher = LibraryFolderWatcher()
         ScanPanelWindow(title: L10n.tr("Cartella monitorata"), view: LibraryWatchFolderView(watcher: watcher), onClose: watcher.stop).showWindow(nil)
+    }
+}
+
+// Prefer a row when it fits; otherwise retain the full titles on separate lines.
+private struct ScanActionRow<Content: View>: View {
+    private let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 8) { content }.fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) { content }
+        }
     }
 }

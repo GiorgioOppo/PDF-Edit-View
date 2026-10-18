@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "PDF-Strukturverarbeitung abbrechen";
 "Annulla esportazione" = "Export abbrechen";
 "Annulla modifica" = "Bearbeitung rückgängig machen";
+"Annulla operazione" = "Rückgängig";
 "Annulla {0}" = "{0} abbrechen";
 "Anteprima" = "Vorschau";
 "Anteprima CSV modificabile della tabella" = "Bearbeitbare CSV-Vorschau der Tabelle";
@@ -337,8 +338,8 @@
 "Anteprima numerazione Bates" = "Vorschau der Bates-Nummerierung";
 "Anteprima nuovo nome" = "Vorschau des neuen Namens";
 "Anteprima parte {0}/{1}" = "Vorschau von Teil {0}/{1}";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "Vorschau bereit: {0} PDFs. Die Quelldateien wurden nicht verändert.";
-"Anteprima pronta: {0} pagine." = "Vorschau bereit: {0} Seiten.";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "Vorschau bereit · PDF-Dateien: {0}. Die Quelldateien wurden nicht verändert.";
+"Anteprima pronta · Pagine: {0}." = "Vorschau bereit · Seiten: {0}.";
 "Anteprima visiva JPEG della prima pagina" = "Visuelle JPEG-Vorschau der ersten Seite";
 "Anteprima visiva del ritaglio, pagina {0}" = "Visuelle Zuschnittvorschau, Seite {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "Visuelle Vorschau der aktuellen Seite mit den ausgewählten Korrekturen";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "xpacket-Attribut {0} fehlt.";
 "Autore" = "Autor";
 "Autore annotazioni" = "Autor der Anmerkungen";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Erstellt eine echte Struktur mit einem Element pro Seite in Dokumentreihenfolge. Wähle für Grafiken oder Scans „Abbildung“ und gib eine aussagekräftige Alternative ein. Es wird weder automatisch eine Lesereihenfolge zwischen Blöcken erstellt noch PDF/UA zertifiziert. Vorhandene Strukturen werden ohne Überschreiben beibehalten.";
 "Autore, tratto, memoria, recupero e scorciatoie." = "Autor, Strich, Speicher, Wiederherstellung und Kurzbefehle.";
 "Autorizza e aggiorna sorgenti" = "Quellen autorisieren und aktualisieren";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "Erlaube die Aufnahme in den macOS-Einstellungen; keine kontinuierliche Aufzeichnung.";
@@ -682,7 +682,7 @@
 "Contenuto originale" = "Originalinhalt";
 "Controlla e correggi le celle prima di esportare." = "Zellen vor dem Export prüfen und korrigieren.";
 "Controlla e modifica il CSV prima di esportarlo. Il rilevamento delle colonne è euristico." = "CSV vor dem Export prüfen und bearbeiten. Spaltenerkennung erfolgt heuristisch.";
-"Controlla spazio e anteprima" = "Speicherplatz und Vorschau prüfen";
+"Controlla spazio e anteprima" = "Platzierung und Vorschau prüfen";
 "Controllati {0} oggetti e {1} stream, incluse revisioni xref ibride." = "{0} Objekte und {1} Streams einschließlich hybrider xref-Revisionen geprüft.";
 "Controlli ICC annullati." = "ICC-Prüfungen abgebrochen.";
 "Controlli effettivi della struttura" = "Tatsächliche Strukturprüfungen";
@@ -738,6 +738,7 @@
 "Crea una copia raster ottimizzata" = "Optimierte Rasterkopie erstellen";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Mit Apple Vision eine durchsuchbare Kopie der Scans erstellen.";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "Erstellt eine CMS-SHA-256-PDF-Signatur mit ByteRange und prüft sofort die Integrität. Verwendet den lokalen Schlüsselbund; das System kann Zugriff auf den privaten Schlüssel anfordern. Kein Server, entfernter Zeitstempel oder qualifizierte Signatur. Eingebettet wird das Zertifikat des Unterzeichners; Zertifikatsketten werden nicht online abgerufen.";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Erstellt eine echte Struktur mit einem Element pro Seite in Dokumentreihenfolge. Wähle für Grafiken oder Scans „Abbildung“ und gib eine aussagekräftige Alternative ein. Es wird weder automatisch eine Lesereihenfolge zwischen Blöcken erstellt noch PDF/UA zertifiziert. Vorhandene Strukturen werden ohne Überschreiben beibehalten.";
 "Crea un’area cliccabile con un indirizzo web." = "Einen anklickbaren Bereich mit Webadresse erstellen.";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "Anmerkungen mit Zahlenfeldern und VoiceOver erstellen, auswählen, bearbeiten und positionieren.";
 "Creati {0} PDF nella cartella scelta." = "{0} PDFs im ausgewählten Ordner erstellt.";
@@ -994,7 +995,7 @@
 "Font CID non subset." = "CID-Schrift ist keine Teilmenge.";
 "Font TrueType simbolico senza Encoding PDF." = "TrueType-Symbolschrift ohne PDF-Encoding.";
 "Font Type1 non subset." = "Type1-Schrift nicht als Untermenge eingebettet.";
-"Font pt" = "Schrift pt";
+"Font pt" = "Schriftgröße (pt)";
 "Font referenziato da Tf/ExtGState ma senza glifi mostrati: esenzione embedding Tr=3 non presunta." = "Von Tf/ExtGState referenzierte Schrift ohne angezeigte Glyphen: Tr=3-Einbettungsausnahme nicht vorausgesetzt.";
 "Font {0}" = "Schrift {0}";
 "Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme." = "Schriften, Vorlagen und Bates-Parameter werden auf diesem Mac gespeichert. Änderungen lassen sich gemeinsam rückgängig machen.";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "Jedes Hauptlesezeichen mit gültigem Ziel beginnt einen neuen Teil.";
 "Ogni specifica allegata è referenziata da un AF standard" = "Jede angehängte Dateispezifikation wird von einem standardmäßigen AF referenziert";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "Jeder verwendete Typ erreicht einen Standardtyp; semantische Gleichwertigkeit wird nicht aus dem Namen abgeleitet.";
-"Ogni {0} pagine" = "Alle {0} Seiten";
 "Opacità" = "Deckkraft";
 "Opacità annotazioni PDF/A-1" = "PDF/A-1-Anmerkungsdeckkraft";
 "Opacità della filigrana" = "Deckkraft des Wasserzeichens";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "Organisierte Seiten.pdf";
 "Pagine per ogni parte" = "Seiten pro Teil";
 "Pagine per parte" = "Seiten pro Teil";
+"Pagine per parte: {0}" = "Seiten pro Teil: {0}";
 "Pagine presenti in più file: {0}" = "Seiten in mehreren Dateien vorhanden: {0}";
 "Pagine sovrapposte ignorate: {0}" = "Überlappende Seiten ignoriert: {0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "Transparente Seiten: anwendbarer Output Intent oder Group/CS.";
 "Pagine {0} e {1} · {2}% simili" = "Seiten {0} und {1} · {2}% ähnlich";
 "Pagine. Trascina una miniatura per riordinare." = "Seiten. Miniatur zum Neuordnen ziehen.";
+"Pagine: {0}" = "Seiten: {0}";
 "Pagine: {0}, 1-3, {1}…" = "Seiten: {0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "Absatz, ganze Seite";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "Parameter geändert: vor dem Speichern neue Vorschau erzeugen.";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "Fortsetzen";
 "Ripristina" = "Zurücksetzen";
 "Ripristina (⇧⌘Z)" = "Wiederholen (⇧⌘Z)";
+"Ripristina operazione" = "Wiederholen";
 "Ripristino" = "Wiederherstellen";
 "Riprova a 300 dpi con affidabilità bassa" = "Bei geringer Zuverlässigkeit mit 300 dpi wiederholen";
 "Risoluzione OCR" = "OCR-Auflösung";
@@ -2128,7 +2131,7 @@
 "Sono state riconosciute {0} numerazioni: verifica eventuali sovrapposizioni." = "{0} Nummerierungen erkannt: Auf Überlappungen prüfen.";
 "Sostituire {0} file PNG?" = "{0} PNG-Dateien ersetzen?";
 "Sostituire {0} file?" = "{0} Dateien ersetzen?";
-"Sostituire {0} immagini esistenti?" = "{0} vorhandene Bilder ersetzen ?";
+"Sostituire {0} immagini esistenti?" = "{0} vorhandene Bilder ersetzen?";
 "Sostituisce l’XObject in tutti i suoi utilizzi. Le posizioni sulla pagina restano uguali; la nuova immagine viene composta su bianco." = "Ersetzt das XObject an allen Verwendungsstellen. Seitenpositionen bleiben gleich; das neue Bild wird auf Weiß zusammengesetzt.";
 "Sostituisce questo oggetto immagine in tutte le pagine che lo utilizzano. La trasparenza viene composta su bianco." = "Ersetzt dieses Bildobjekt auf allen Seiten, die es verwenden. Transparenz wird auf Weiß zusammengesetzt.";
 "Sostituisci" = "Ersetzen";
@@ -2158,13 +2161,13 @@
 "Spessore del tratto" = "Strichstärke";
 "Sposta annotazione" = "Anmerkung verschieben";
 "Sposta dopo il documento {0}, {1}" = "Dokument {0}, {1} nach hinten verschieben";
-"Sposta dopo il passaggio {0}, {1}" = "Nach Schritt {0}, {1} verschieben";
+"Sposta dopo il passaggio {0}, {1}" = "Schritt {0}, {1} nach unten verschieben";
 "Sposta dopo la pagina in posizione {0}" = "Seite an Position {0} nach hinten verschieben";
 "Sposta pagina" = "Seite verschieben";
-"Sposta pagina dopo" = "Seite verschieben nach";
+"Sposta pagina dopo" = "Seite nach hinten verschieben";
 "Sposta pagina prima" = "Seite nach vorne verschieben";
 "Sposta prima il documento {0}, {1}" = "Dokument {0}, {1} nach vorne verschieben";
-"Sposta prima il passaggio {0}, {1}" = "Vor Schritt {0}, {1} verschieben";
+"Sposta prima il passaggio {0}, {1}" = "Schritt {0}, {1} nach oben verschieben";
 "Sposta prima la pagina in posizione {0}" = "Seite an Position {0} nach vorne verschieben";
 "Stampa…" = "Drucken …";
 "Stato" = "Status";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} Objekte geprüft. ";
 "{0} oggetti controllati: {1}" = "{0} Objekte geprüft: {1}";
 "{0} oggetti: " = "{0} Objekte: ";
-"{0} pagine" = "{0} Seiten";
 "{0} pagine PNG esportate in {1}." = "{0} PNG-Seiten nach {1} exportiert.";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} Seiten mit unterschiedlichem oder fehlendem Text. Bilder und Layout nicht analysiert.";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "{0} Seiten in endgültiger Reihenfolge. Miniaturen ziehen; vor dem Öffnen der Kopie duplizieren, verschieben oder löschen.";

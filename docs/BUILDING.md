@@ -86,6 +86,8 @@ The packaged check reads the actual eight resource directories and all three tab
 
 See [localization maintenance](LOCALIZATION.md) for language resolution and translation changes. New passing results must be recorded after these checks actually run; the historical counts above are not updated by adding checks.
 
+For visual review, the [localization interface workflow](UI_LOCALIZATION_AUDIT.md) describes isolated app copies and the opt-in `CartaUISnapshotTests` driver. Native component rendering and interactive GUI review have separate scopes; normal catalogue and CLI checks do not establish either result.
+
 ## Development corpus
 
 The official corpus is acquired separately and is not included in the app. Preparation requires network access and is an optional development command:

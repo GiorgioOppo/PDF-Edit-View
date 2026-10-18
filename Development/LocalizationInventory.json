@@ -2444,14 +2444,14 @@
     },
     {
       "id": 339,
-      "key": "Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate.",
+      "key": "Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate.",
       "locations": [
         "Sources/CartaPDF/PDFWorkflowViews.swift:232"
       ]
     },
     {
       "id": 340,
-      "key": "Anteprima pronta: {0} pagine.",
+      "key": "Anteprima pronta · Pagine: {0}.",
       "locations": [
         "Sources/CartaPDF/PDFWorkflowViews.swift:351"
       ]
@@ -2863,7 +2863,7 @@
     },
     {
       "id": 398,
-      "key": "Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle.",
+      "key": "Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle.",
       "locations": [
         "Sources/CartaPDF/PDFStructureViews.swift:209"
       ]
@@ -11398,7 +11398,7 @@
     },
     {
       "id": 1600,
-      "key": "Ogni {0} pagine",
+      "key": "Pagine per parte: {0}",
       "locations": [
         "Sources/CartaPDF/PDFWorkflowViews.swift:660"
       ]
@@ -21210,7 +21210,7 @@
     },
     {
       "id": 2979,
-      "key": "{0} pagine",
+      "key": "Pagine: {0}",
       "locations": [
         "Sources/CartaPDF/PDFStructureViews.swift:24",
         "Sources/CartaPDF/PDFWorkflowViews.swift:660",
@@ -21652,6 +21652,20 @@
       "key": "{0} programmi istruzione, {1} byte analizzati. ",
       "locations": [
         "Sources/CartaPDF/PDFArchiveFontChecks.swift:100"
+      ]
+    },
+    {
+      "id": 3039,
+      "key": "Annulla operazione",
+      "locations": [
+        "Sources/CartaPDF/CartaPDFApp.swift:250"
+      ]
+    },
+    {
+      "id": 3040,
+      "key": "Ripristina operazione",
+      "locations": [
+        "Sources/CartaPDF/CartaPDFApp.swift:251"
       ]
     }
   ]

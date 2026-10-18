@@ -241,9 +241,10 @@ private struct CartaStampWorkspace: View {
                 .accessibilityLabel(L10n.tr("Larghezza timbro")).accessibilityValue(L10n.tr("\(Int(width)) punti"))
             List(store.items) { item in
                 HStack {
-                    Text(item.title).font(.headline)
+                    Text(item.title).font(.headline).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                     Button(L10n.tr("Inserisci nella pagina")) { model.insertStamp(item, width: width) }.disabled(!model.canEditAnnotations)
+                        .fixedSize()
                         .accessibilityLabel(L10n.tr("Inserisci timbro \(item.title) nella pagina \(model.currentPageIndex + 1)"))
                 }.padding(.vertical, 8)
             }

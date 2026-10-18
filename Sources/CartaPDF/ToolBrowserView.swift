@@ -31,7 +31,7 @@ struct ToolBrowserView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(L10n.tr("Tutti gli strumenti")).font(.title2.weight(.semibold))
                     Text(L10n.tr("Il tuo spazio di lavoro PDF, sul Mac.")).foregroundStyle(.secondary)
-                }
+                }.fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 TextField(L10n.tr("Trova uno strumento"), text: $query)
                     .textFieldStyle(.roundedBorder).frame(width: 230)
@@ -46,6 +46,7 @@ struct ToolBrowserView: View {
                     ForEach(ToolCategory.allCases) { item in
                         Button { category = item } label: {
                             Text(L10n.string(item.rawValue)).fontWeight(category == item ? .semibold : .regular)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .frame(maxWidth: .infinity, alignment: .leading).padding(10)
                                 .background(category == item ? Color.accentColor.opacity(0.12) : Color.clear, in: RoundedRectangle(cornerRadius: 6))
                                 .contentShape(Rectangle())
@@ -55,7 +56,7 @@ struct ToolBrowserView: View {
                     }
                     Spacer()
                     Label(L10n.tr("Elaborazione locale"), systemImage: "desktopcomputer")
-                        .font(.caption).foregroundStyle(.secondary).padding(8)
+                        .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true).padding(8)
                 }.padding(12).frame(width: 172)
                 Divider()
                 ScrollView {
@@ -75,7 +76,9 @@ struct ToolBrowserView: View {
                                         .background(color(for: tool.category).opacity(0.09), in: RoundedRectangle(cornerRadius: 8))
                                     VStack(alignment: .leading, spacing: 6) {
                                         Text(tool.title).font(.system(size: 13, weight: .semibold)).foregroundStyle(.primary)
-                                        Text(tool.detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(3)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                        Text(tool.detail).font(.system(size: 11)).foregroundStyle(.secondary)
+                                            .fixedSize(horizontal: false, vertical: true)
                                     }
                                     Spacer(minLength: 0)
                                 }

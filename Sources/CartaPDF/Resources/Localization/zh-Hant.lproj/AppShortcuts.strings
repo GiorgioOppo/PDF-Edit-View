@@ -1,2 +1,2 @@
-/* CartaPDF: bundled offline translations. Preserve placeholder tokens. */
-"Unisci documenti con ${applicationName}" = "使用 ${applicationName} 合併文檔";
+/* CartaPDF native App Shortcuts. */
+"Unisci documenti con ${applicationName}" = "使用 ${applicationName} 合併文件";

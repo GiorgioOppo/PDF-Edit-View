@@ -347,7 +347,7 @@ private struct CartaKeyboardEditingView: View {
                     Button(L10n.tr("Nuova annotazione"), action: controller.newAnnotation).keyboardShortcut("n", modifiers: [.command, .shift])
                     List(selection: $controller.selectedID) {
                         ForEach(model.keyboardAnnotationEntries) { entry in
-                            Text(entry.label).lineLimit(3).tag(entry.id)
+                            Text(entry.label).lineLimit(3).help(entry.label).tag(entry.id)
                                 .accessibilityLabel(model.keyboardCanEdit(entry) ? L10n.tr("\(entry.label), modificabile") : L10n.tr("\(entry.label), sola lettura"))
                         }
                     }
@@ -408,10 +408,19 @@ private struct CartaKeyboardEditingView: View {
 
     private func numericField(_ title: String, value: Binding<Double>) -> some View {
         GridRow {
-            Text(title)
+            Text(title).fixedSize(horizontal: false, vertical: true)
             TextField(L10n.tr("\(title) in punti"), value: value, format: .number.precision(.fractionLength(0...3)))
-                .labelsHidden().textFieldStyle(.roundedBorder)
+                .labelsHidden().textFieldStyle(.roundedBorder).frame(minWidth: 80)
                 .accessibilityLabel(L10n.tr("\(title), in punti PDF non ruotati"))
         }
     }
 }
+
+#if DEBUG
+@MainActor
+enum CartaKeyboardEditingAuditView {
+    static func make(model: PDFEditorModel) -> AnyView {
+        AnyView(CartaKeyboardEditingView(model: model))
+    }
+}
+#endif

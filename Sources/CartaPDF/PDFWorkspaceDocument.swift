@@ -63,7 +63,7 @@ final class PDFWorkspaceDocument: NSDocument {
         let hosting = NSHostingController(rootView: ContentView(model: model).environment(\.locale, L10n.currentLocale))
         let window = PDFWorkspaceWindow(contentViewController: hosting)
         window.setContentSize(NSSize(width: 1200, height: 820))
-        window.minSize = NSSize(width: 880, height: 650)
+        window.contentMinSize = NSSize(width: 880, height: 650)
         window.title = displayName
         window.titleVisibility = .visible
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]

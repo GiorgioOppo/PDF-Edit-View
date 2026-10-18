@@ -217,11 +217,24 @@ struct ContentView: View {
     }
 
     private var editingBar: some View {
+        ViewThatFits(in: .horizontal) {
+            editingBarContent(compact: false)
+            editingBarContent(compact: true)
+        }
+        .buttonStyle(.borderless)
+        .padding(.horizontal, 18).padding(.vertical, 8)
+        .background(Color(nsColor: .controlBackgroundColor).opacity(0.55))
+    }
+
+    private func editingBarContent(compact: Bool) -> some View {
         HStack(spacing: 12) {
             HStack(spacing: 2) {
                 ForEach([EditorTool.select, .note, .text, .draw, .erase]) { tool in
                     Button { model.activeTool = tool } label: {
-                        Label(tool.title, systemImage: tool.symbol)
+                        Group {
+                            if compact { Image(systemName: tool.symbol) }
+                            else { Label(tool.title, systemImage: tool.symbol).fixedSize() }
+                        }
                             .font(.system(size: 12, weight: model.activeTool == tool ? .semibold : .regular))
                             .padding(.horizontal, 9).padding(.vertical, 7)
                             .background(model.activeTool == tool ? accent.opacity(0.13) : .clear, in: RoundedRectangle(cornerRadius: 6))
@@ -231,15 +244,18 @@ struct ContentView: View {
                     .focusable()
                     .disabled(tool != .select && !model.canEditAnnotations)
                     .help(tool.hint)
+                    .accessibilityLabel(tool.title)
                     .accessibilityAddTraits(model.activeTool == tool ? .isSelected : [])
                     .accessibilityValue(model.activeTool == tool ? L10n.tr("Attivo") : "")
                 }
             }
             Divider().frame(height: 22)
             Button(action: model.highlightSelection) {
-                Label(L10n.tr("Evidenzia"), systemImage: "highlighter")
+                if compact { Image(systemName: "highlighter") }
+                else { Label(L10n.tr("Evidenzia"), systemImage: "highlighter").fixedSize() }
             }
             .disabled(!model.canEditAnnotations || (model.pdfView?.currentSelection?.string ?? "").isEmpty)
+            .accessibilityLabel(L10n.tr("Evidenzia"))
             .help(L10n.tr("Evidenzia il testo selezionato (⇧⌘H)"))
             if model.activeTool != .text { colorPalette }
             Spacer(minLength: 4)
@@ -256,12 +272,13 @@ struct ContentView: View {
                 Divider()
                 Button(L10n.tr("Elimina pagina"), role: .destructive, action: model.deleteCurrentPage)
                     .disabled(!model.canEditPages || model.pageCount <= 1)
-            } label: { Label(L10n.tr("Pagine"), systemImage: "doc.on.doc") }
+            } label: {
+                if compact { Image(systemName: "doc.on.doc") }
+                else { Label(L10n.tr("Pagine"), systemImage: "doc.on.doc") }
+            }
                 .menuStyle(.borderlessButton).fixedSize()
+                .accessibilityLabel(L10n.tr("Pagine"))
         }
-        .buttonStyle(.borderless)
-        .padding(.horizontal, 18).padding(.vertical, 8)
-        .background(Color(nsColor: .controlBackgroundColor).opacity(0.55))
     }
 
     private var colorPalette: some View {
@@ -305,7 +322,7 @@ struct ContentView: View {
                 get: { Color(nsColor: model.textColor) },
                 set: { model.textColor = NSColor($0).usingColorSpace(.deviceRGB) ?? .black }
             ), supportsOpacity: false)
-                .frame(width: 90)
+                .fixedSize()
             if model.selectedAnnotation?.type == "FreeText" {
                 Button(L10n.tr("Applica stile"), action: model.applySelectedTextStyle)
             }
@@ -319,11 +336,20 @@ struct ContentView: View {
 
     private var sidebar: some View {
         VStack(spacing: 0) {
-            Picker(L10n.tr("Barra laterale"), selection: $sidebarTab) {
-                ForEach(SidebarTab.allCases, id: \.self) { Text(L10n.string($0.rawValue)).tag($0) }
+            ViewThatFits(in: .horizontal) {
+                Picker(L10n.tr("Barra laterale"), selection: $sidebarTab) {
+                    ForEach(SidebarTab.allCases, id: \.self) { Text(L10n.string($0.rawValue)).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize(horizontal: true, vertical: false)
+                Picker(L10n.tr("Barra laterale"), selection: $sidebarTab) {
+                    ForEach(SidebarTab.allCases, id: \.self) { Text(L10n.string($0.rawValue)).tag($0) }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
             .accessibilityLabel(L10n.tr("Contenuto della barra laterale"))
             .padding(12)
             if sidebarTab == .pages {
@@ -424,13 +450,14 @@ struct ContentView: View {
     private var statusBar: some View {
         HStack(spacing: 12) {
             Image(systemName: model.activeTool.symbol).foregroundStyle(accent).accessibilityHidden(true)
-            Text(model.statusMessage ?? model.activeTool.hint).lineLimit(1)
+            Text(model.statusMessage ?? model.activeTool.hint)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer()
             if model.document.isEncrypted {
                 Image(systemName: "lock.open").help(L10n.tr("PDF cifrato sbloccato"))
                     .accessibilityLabel(L10n.tr("PDF cifrato, attualmente sbloccato"))
             }
-            Text(L10n.tr("Pagina \(model.currentPageIndex + 1) di \(model.pageCount)")).monospacedDigit()
+            Text(L10n.tr("Pagina \(model.currentPageIndex + 1) di \(model.pageCount)")).monospacedDigit().fixedSize()
         }
         .font(.system(size: 11)).foregroundStyle(.secondary)
         .padding(.horizontal, 18).padding(.vertical, 9)

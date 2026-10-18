@@ -24,7 +24,7 @@
 "+{0}" = "+{0}";
 ", valore {0}: " = ", valor {0}: ";
 "-" = "-";
-"-appiattito" = "-aplanado";
+"-appiattito" = "-acoplado";
 "-ottimizzato" = "-optimizado";
 "." = ".";
 ". Espressione XML storica conservata: {0}. La verifica sintattica nativa corregge l'insieme dei caratteri e i limiti; registrazione IANA e corrispondenza payload sono controlli separati." = ". Expresión XML histórica conservada: {0}. La validación sintáctica nativa corrige el conjunto de caracteres y los límites; el registro IANA y la correspondencia de la carga útil son comprobaciones independientes.";
@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "Cancelar procesamiento de la estructura PDF";
 "Annulla esportazione" = "Cancelar exportación";
 "Annulla modifica" = "Deshacer edición";
+"Annulla operazione" = "Deshacer";
 "Annulla {0}" = "Cancelar {0}";
 "Anteprima" = "Vista previa";
 "Anteprima CSV modificabile della tabella" = "Vista previa CSV editable de la tabla";
@@ -337,16 +338,16 @@
 "Anteprima numerazione Bates" = "Vista previa de numeración Bates";
 "Anteprima nuovo nome" = "Vista previa del nuevo nombre";
 "Anteprima parte {0}/{1}" = "Vista previa de la parte {0}/{1}";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "Vista previa lista: {0} PDF. Los archivos de origen no se han modificado.";
-"Anteprima pronta: {0} pagine." = "Vista previa lista: {0} páginas.";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "Vista previa lista · Archivos PDF: {0}. Los archivos de origen no se han modificado.";
+"Anteprima pronta · Pagine: {0}." = "Vista previa lista · Páginas: {0}.";
 "Anteprima visiva JPEG della prima pagina" = "Vista previa visual JPEG de la primera página";
 "Anteprima visiva del ritaglio, pagina {0}" = "Vista previa visual del recorte, página {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "Vista previa visual de la página actual con las correcciones seleccionadas";
 "Anteprima {0}, {1} pagine" = "Vista previa de {0}, {1} páginas";
 "App" = "App";
 "Appearance obbligatoria con eccezioni previste" = "Se requiere apariencia, con las excepciones previstas";
-"Appiattisci" = "Aplanar";
-"Appiattisci una copia del PDF" = "Aplanar una copia del PDF";
+"Appiattisci" = "Acoplar";
+"Appiattisci una copia del PDF" = "Acoplar una copia del PDF";
 "Appiattisci · copia" = "Acoplar · copia";
 "Applica" = "Aplicar";
 "Applica al documento" = "Aplicar al documento";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "Falta el atributo xpacket {0}.";
 "Autore" = "Autor";
 "Autore annotazioni" = "Autor de anotaciones";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Crea una estructura real con un elemento por página, en el orden del documento. Para gráficos o escaneos, elige Figura y escribe una alternativa significativa. No crea automáticamente un orden de lectura entre bloques ni certifica PDF/UA. Las estructuras existentes se conservan sin sobrescribirlas.";
 "Autore, tratto, memoria, recupero e scorciatoie." = "Autor, trazo, memoria, recuperación y atajos.";
 "Autorizza e aggiorna sorgenti" = "Autorizar y actualizar fuentes";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "Autoriza la captura en los ajustes de macOS; no hay grabación continua.";
@@ -738,6 +738,7 @@
 "Crea una copia raster ottimizzata" = "Crear una copia rasterizada optimizada";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Crea una copia de los escaneos con búsqueda usando Apple Vision.";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "Crea una firma PDF CMS SHA-256 con ByteRange y comprueba de inmediato la integridad. Usa el Llavero local; el sistema puede solicitar acceso a la clave privada. Sin servidor, sello de tiempo remoto ni firma cualificada. El certificado incrustado es el del firmante; no se recuperan cadenas en línea.";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Crea una estructura real con un elemento por página, en el orden del documento. Para gráficos o escaneos, elige Figura y escribe una alternativa significativa. No crea automáticamente un orden de lectura entre bloques ni certifica PDF/UA. Las estructuras existentes se conservan sin sobrescribirlas.";
 "Crea un’area cliccabile con un indirizzo web." = "Crea un área interactiva con una dirección web.";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "Crea, selecciona, edita y coloca anotaciones con campos numéricos y VoiceOver.";
 "Creati {0} PDF nella cartella scelta." = "Se han creado {0} PDF en la carpeta seleccionada.";
@@ -994,7 +995,7 @@
 "Font CID non subset." = "La fuente CID no es un subconjunto.";
 "Font TrueType simbolico senza Encoding PDF." = "Fuente TrueType simbólica sin Encoding PDF.";
 "Font Type1 non subset." = "Fuente Type1 sin subconjunto.";
-"Font pt" = "Fuente pt";
+"Font pt" = "Tamaño de letra (pt)";
 "Font referenziato da Tf/ExtGState ma senza glifi mostrati: esenzione embedding Tr=3 non presunta." = "Fuente referenciada por Tf/ExtGState sin glifos mostrados: no se presupone la exención de incrustación Tr=3.";
 "Font {0}" = "Fuente {0}";
 "Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme." = "Las fuentes, plantillas y parámetros Bates se guardan en este Mac. Los cambios se pueden deshacer juntos.";
@@ -1470,7 +1471,7 @@
 "N non intero con Domain contenente valori negativi." = "N no entero con valores negativos en Domain.";
 "N pagine per foglio" = "N páginas por hoja";
 "N-up" = "N-up";
-"N-up, libretto, poster, separazione scansioni e sovrapposizione generano PDF statici: il testo/vettori disegnabili restano, campi e annotazioni vengono appiattiti. Organizzazione e sostituzione conservano i campi delle pagine copiate." = "N-up, folleto, póster, separación de escaneos y superposición generan PDF estáticos: se conservan el texto y los vectores dibujables, y se aplanan los campos y las anotaciones. La organización y sustitución conservan los campos de las páginas copiadas.";
+"N-up, libretto, poster, separazione scansioni e sovrapposizione generano PDF statici: il testo/vettori disegnabili restano, campi e annotazioni vengono appiattiti. Organizzazione e sostituzione conservano i campi delle pagine copiate." = "N-up, folleto, póster, separación de escaneos y superposición generan PDF estáticos: se conservan el texto y los vectores dibujables, y se acoplan los campos y las anotaciones. La organización y sustitución conservan los campos de las páginas copiadas.";
 "NON valida" = "NO válida";
 "NULL con contenuto" = "NULL con contenido";
 "Namespaces contiene un valore non dizionario indiretto" = "Namespaces contiene un valor que no es un diccionario indirecto";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "Cada marcador principal con destino válido inicia una parte nueva.";
 "Ogni specifica allegata è referenziata da un AF standard" = "Cada especificación de archivo adjunto está referenciada por un AF estándar";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "Cada tipo utilizado llega a un tipo estándar; no se deduce equivalencia semántica del nombre.";
-"Ogni {0} pagine" = "Cada {0} páginas";
 "Opacità" = "Opacidad";
 "Opacità annotazioni PDF/A-1" = "Opacidad de anotaciones PDF/A-1";
 "Opacità della filigrana" = "Opacidad de la marca de agua";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "Páginas organizadas.pdf";
 "Pagine per ogni parte" = "Páginas por parte";
 "Pagine per parte" = "Páginas por parte";
+"Pagine per parte: {0}" = "Páginas por parte: {0}";
 "Pagine presenti in più file: {0}" = "Páginas presentes en varios archivos: {0}";
 "Pagine sovrapposte ignorate: {0}" = "Páginas solapadas ignoradas: {0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "Páginas transparentes: intención de salida aplicable o Group/CS.";
 "Pagine {0} e {1} · {2}% simili" = "Páginas {0} y {1} · {2}% similares";
 "Pagine. Trascina una miniatura per riordinare." = "Páginas. Arrastra una miniatura para reordenar.";
+"Pagine: {0}" = "Páginas: {0}";
 "Pagine: {0}, 1-3, {1}…" = "Páginas: {0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "Párrafo, página completa";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "Parámetros cambiados: genera una vista previa nueva antes de guardar.";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "Reanudar";
 "Ripristina" = "Restaurar";
 "Ripristina (⇧⌘Z)" = "Rehacer (⇧⌘Z)";
+"Ripristina operazione" = "Rehacer";
 "Ripristino" = "Restaurar";
 "Riprova a 300 dpi con affidabilità bassa" = "Reintentar a 300 dpi con confianza baja";
 "Risoluzione OCR" = "Resolución OCR";
@@ -2158,13 +2161,13 @@
 "Spessore del tratto" = "Grosor del trazo";
 "Sposta annotazione" = "Mover anotación";
 "Sposta dopo il documento {0}, {1}" = "Mover después el documento {0}, {1}";
-"Sposta dopo il passaggio {0}, {1}" = "Mover después del paso {0}, {1}";
+"Sposta dopo il passaggio {0}, {1}" = "Bajar el paso {0}, {1}";
 "Sposta dopo la pagina in posizione {0}" = "Mover después la página en la posición {0}";
 "Sposta pagina" = "Mover página";
-"Sposta pagina dopo" = "Mover página después de";
-"Sposta pagina prima" = "Mover página antes";
+"Sposta pagina dopo" = "Mover página hacia abajo";
+"Sposta pagina prima" = "Mover página hacia arriba";
 "Sposta prima il documento {0}, {1}" = "Mover antes el documento {0}, {1}";
-"Sposta prima il passaggio {0}, {1}" = "Mover antes del paso {0}, {1}";
+"Sposta prima il passaggio {0}, {1}" = "Subir el paso {0}, {1}";
 "Sposta prima la pagina in posizione {0}" = "Mover antes la página en la posición {0}";
 "Stampa…" = "Imprimir…";
 "Stato" = "Estado";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} objetos comprobados. ";
 "{0} oggetti controllati: {1}" = "{0} objetos comprobados: {1}";
 "{0} oggetti: " = "{0} objetos: ";
-"{0} pagine" = "{0} páginas";
 "{0} pagine PNG esportate in {1}." = "{0} páginas PNG exportadas a {1}.";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} páginas con texto diferente o ausente. Imágenes y maquetación no analizadas.";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "{0} páginas en el orden final. Arrastra las miniaturas; duplica, mueve o elimina antes de abrir la copia.";

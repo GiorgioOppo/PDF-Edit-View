@@ -202,10 +202,10 @@ struct PDFFormsView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(L10n.tr("Moduli PDF")).font(.title2.bold()).accessibilityAddTraits(.isHeader)
                     Text(L10n.tr("Testo, caselle di spunta ed elenchi. Ogni modifica supporta Annulla.")).foregroundStyle(.secondary)
-                }
+                }.fixedSize(horizontal: false, vertical: true)
                 Spacer()
-                Button(L10n.tr("Aggiungi campo")) { model.prepareForm() }.disabled(!model.canEditDocument)
-                Button(L10n.tr("Fine")) { dismiss() }.keyboardShortcut(.defaultAction)
+                Button(L10n.tr("Aggiungi campo")) { model.prepareForm() }.disabled(!model.canEditDocument).fixedSize()
+                Button(L10n.tr("Fine")) { dismiss() }.keyboardShortcut(.defaultAction).fixedSize()
             }.padding(22)
             Divider()
             TextField(L10n.tr("Cerca un campo per nome"), text: $query).textFieldStyle(.roundedBorder).padding(.horizontal, 22).padding(.top, 12)
@@ -239,7 +239,7 @@ struct PDFFormsView: View {
                 }
             }
         }
-        .frame(width: 700, height: 560).accessibilityIdentifier("panel.forms")
+        .frame(minWidth: 700, minHeight: 560).accessibilityIdentifier("panel.forms")
         .background { Button(L10n.tr("Cerca campo modulo")) { searchFocused = true }.keyboardShortcut("f", modifiers: .command).hidden() }
     }
 }
@@ -254,14 +254,18 @@ private struct PDFFormFieldRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(field.name).font(.headline).accessibilityAddTraits(.isHeader)
-                if isRequired { Text(L10n.tr("Obbligatorio")).font(.caption).foregroundStyle(.orange) }
-                Text(L10n.tr("Pagina \(field.pageIndex + 1) · \(field.kind.title)")).font(.caption).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(field.name).font(.headline).accessibilityAddTraits(.isHeader)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(L10n.tr("Pagina \(field.pageIndex + 1) · \(field.kind.title)")).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if isRequired { Text(L10n.tr("Obbligatorio")).font(.caption).foregroundStyle(.orange) }
+                }
                 Spacer()
                 Button(L10n.tr("Mostra")) {
                     model.goToPage(field.pageIndex)
                     model.selectAnnotation(field.annotation, on: model.document.page(at: field.pageIndex))
-                }.buttonStyle(.link).accessibilityLabel(L10n.tr("Mostra il campo \(field.name) a pagina \(field.pageIndex + 1)"))
+                }.buttonStyle(.link).fixedSize().accessibilityLabel(L10n.tr("Mostra il campo \(field.name) a pagina \(field.pageIndex + 1)"))
             }
             if !field.editable {
                 Text(field.annotation.isPasswordField ? L10n.tr("Campo password non modificabile da questo pannello.") : L10n.tr("\(field.value) · Sola lettura"))

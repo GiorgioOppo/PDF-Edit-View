@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "Annuler le traitement de la structure PDF";
 "Annulla esportazione" = "Annuler l’exportation";
 "Annulla modifica" = "Annuler la modification";
+"Annulla operazione" = "Annuler";
 "Annulla {0}" = "Annuler {0}";
 "Anteprima" = "Aperçu";
 "Anteprima CSV modificabile della tabella" = "Aperçu CSV modifiable du tableau";
@@ -337,8 +338,8 @@
 "Anteprima numerazione Bates" = "Aperçu de la numérotation Bates";
 "Anteprima nuovo nome" = "Aperçu du nouveau nom";
 "Anteprima parte {0}/{1}" = "Aperçu de la partie {0}/{1}";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "Aperçu prêt : {0} PDF. Les fichiers sources n’ont pas été modifiés.";
-"Anteprima pronta: {0} pagine." = "Aperçu prêt : {0} pages.";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "Aperçu prêt · Fichiers PDF : {0}. Les fichiers sources n’ont pas été modifiés.";
+"Anteprima pronta · Pagine: {0}." = "Aperçu prêt · Pages : {0}.";
 "Anteprima visiva JPEG della prima pagina" = "Aperçu visuel JPEG de la première page";
 "Anteprima visiva del ritaglio, pagina {0}" = "Aperçu visuel du recadrage, page {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "Aperçu visuel de la page actuelle avec les corrections sélectionnées";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "Attribut xpacket {0} absent.";
 "Autore" = "Auteur";
 "Autore annotazioni" = "Auteur des annotations";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Crée une structure réelle avec un élément par page, dans l’ordre du document. Pour les graphiques ou les numérisations, choisissez Figure et rédigez une alternative pertinente. Ne crée pas automatiquement d’ordre de lecture entre les blocs et ne certifie pas PDF/UA. Les structures existantes sont conservées sans être écrasées.";
 "Autore, tratto, memoria, recupero e scorciatoie." = "Auteur, trait, mémoire, récupération et raccourcis.";
 "Autorizza e aggiorna sorgenti" = "Autoriser et actualiser les sources";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "Autorisez la capture dans les réglages de macOS ; aucun enregistrement continu.";
@@ -738,13 +738,14 @@
 "Crea una copia raster ottimizzata" = "Créer une copie matricielle optimisée";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Créez une copie interrogeable des numérisations avec Apple Vision.";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "Crée une signature PDF CMS SHA-256 avec ByteRange et vérifie immédiatement l’intégrité. Utilise le trousseau local ; le système peut demander l’accès à la clé privée. Aucun serveur, horodatage distant ou signature qualifiée. Le certificat incorporé est celui du signataire ; aucune chaîne n’est récupérée en ligne.";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Crée une structure réelle avec un élément par page, dans l’ordre du document. Pour les graphiques ou les numérisations, choisissez Figure et rédigez une alternative pertinente. Ne crée pas automatiquement d’ordre de lecture entre les blocs et ne certifie pas PDF/UA. Les structures existantes sont conservées sans être écrasées.";
 "Crea un’area cliccabile con un indirizzo web." = "Crée une zone cliquable avec une adresse web.";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "Créez, sélectionnez, modifiez et placez des annotations avec des champs numériques et VoiceOver.";
 "Creati {0} PDF nella cartella scelta." = "{0} PDF créés dans le dossier choisi.";
 "Creato {0}" = "Créé le {0}";
 "Creazione PDF dalle immagini…" = "Création d’un PDF à partir d’images…";
 "Creazione copia raster…" = "Création de la copie matricielle…";
-"Creazione della copia oscurata…" = "Création de la copie expurgée…";
+"Creazione della copia oscurata…" = "Création de la copie caviardée…";
 "D" = "D";
 "DER SET OF non ordinato" = "DER SET OF non trié";
 "DER SET OF primitivo" = "DER SET OF primitif";
@@ -781,7 +782,7 @@
 "Descrizioni alternative delle pagine" = "Descriptions alternatives des pages";
 "DestOutputProfile non indiretto: identità dei profili non verificabile nel modello supportato." = "DestOutputProfile n’est pas indirect : l’identité des profils n’est pas vérifiable dans le modèle pris en charge.";
 "Destinazione del segnalibro" = "Destination du signet";
-"Destro" = "Droit";
+"Destro" = "Droite";
 "Dettagliata · 200 dpi · JPEG 85%" = "Détaillée · 200 dpi · JPEG 85%";
 "DeviceN troncato" = "DeviceN tronqué";
 "DeviceN/Subtype non valido" = "DeviceN/Subtype non valide";
@@ -994,7 +995,7 @@
 "Font CID non subset." = "La police CID n’est pas un sous-ensemble.";
 "Font TrueType simbolico senza Encoding PDF." = "Police TrueType symbolique sans Encoding PDF.";
 "Font Type1 non subset." = "Police Type1 sans sous-ensemble.";
-"Font pt" = "Police pt";
+"Font pt" = "Corps (pt)";
 "Font referenziato da Tf/ExtGState ma senza glifi mostrati: esenzione embedding Tr=3 non presunta." = "Police référencée par Tf/ExtGState sans glyphes affichés : exemption d’incorporation Tr=3 non présumée.";
 "Font {0}" = "Police {0}";
 "Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme." = "Polices, modèles et paramètres Bates sont mémorisés sur ce Mac. Les modifications peuvent être annulées ensemble.";
@@ -1140,7 +1141,7 @@
 "Il riquadro deve essere interamente nell’area visibile della pagina PDF non ruotata." = "Le cadre doit se trouver entièrement dans la zone visible de la page PDF non pivotée.";
 "Il ritaglio deve lasciare almeno 18 pt per lato." = "Le recadrage doit laisser au moins 18 pt par côté.";
 "Il ritaglio deve lasciare almeno 18 punti di larghezza e altezza." = "Le recadrage doit laisser au moins 18 points en largeur et en hauteur.";
-"Il ritaglio nasconde il contenuto esterno e non lo elimina. Per dati sensibili usa Oscuramento. Gli ultimi margini vengono ricordati localmente." = "Le recadrage masque le contenu extérieur sans le supprimer. Pour les données sensibles, utilisez Expurgation. Les dernières marges sont mémorisées localement.";
+"Il ritaglio nasconde il contenuto esterno e non lo elimina. Per dati sensibili usa Oscuramento. Gli ultimi margini vengono ricordati localmente." = "Le recadrage masque le contenu extérieur sans le supprimer. Pour les données sensibles, utilisez Caviardage. Les dernières marges sont mémorisées localement.";
 "Il secondo PDF deve fornire lo stesso numero di pagine selezionate." = "Le second PDF doit fournir le même nombre de pages sélectionnées.";
 "Il secondo PDF non consente l’estrazione del testo." = "Le second PDF n’autorise pas l’extraction du texte.";
 "Il segnalibro punta alla pagina corrente. Comando Invio conferma." = "Le signet pointe vers la page actuelle. Commande Retour confirme.";
@@ -1312,7 +1313,7 @@
 "Larghezza: {0} pt" = "Largeur : {0} pt";
 "Lascia vuoto per usare qualsiasi codice riconosciuto." = "Laissez vide pour utiliser tout code reconnu.";
 "LastChar per font non standard." = "LastChar pour les polices non standard.";
-"Lavora su uno snapshot e salva copie separate. Le revisioni incrementali conservano i dati precedenti: la modifica del testo e la rimozione di allegati non sono strumenti di oscuramento." = "Travaille sur un instantané et enregistre des copies distinctes. Les révisions incrémentales conservent les données antérieures : modifier le texte ou retirer des pièces jointes n’est pas un outil d’expurgation.";
+"Lavora su uno snapshot e salva copie separate. Le revisioni incrementali conservano i dati precedenti: la modifica del testo e la rimozione di allegati non sono strumenti di oscuramento." = "Travaille sur un instantané et enregistre des copies distinctes. Les révisions incrémentales conservent les données antérieures : modifier le texte ou retirer des pièces jointes n’est pas un outil d’caviardage.";
 "Le copie elaborate non modificano l’originale e non conservano firme o password." = "Les copies traitées ne modifient pas l’original et ne conservent ni signatures ni mots de passe.";
 "Le copie generate non ereditano password o firme digitali delle sorgenti. La struttura delle pagine copiate viene conservata; proteggi le copie se necessario." = "Les copies générées n’héritent pas des mots de passe ni des signatures numériques des sources. La structure des pages copiées est conservée ; protégez les copies si nécessaire.";
 "Le copie non possono sostituire i documenti sorgente." = "Les copies ne peuvent pas remplacer les documents sources.";
@@ -1360,7 +1361,7 @@
 "L’annotazione è protetta e non può essere eliminata." = "L’annotation est protégée et ne peut pas être supprimée.";
 "L’annotazione è protetta o non può essere eliminata con questo strumento." = "L’annotation est protégée ou ne peut pas être supprimée avec cet outil.";
 "L’annotazione è protetta, non supportata o non appartiene più a questo documento." = "L’annotation est protégée, non prise en charge ou n’appartient plus à ce document.";
-"L’area da oscurare non è valida o non interseca la pagina." = "La zone à expurger est invalide ou ne recoupe pas la page.";
+"L’area da oscurare non è valida o non interseca la pagina." = "La zone à caviarder est invalide ou ne recoupe pas la page.";
 "L’area della tabella non è valida." = "La zone du tableau est non valide.";
 "L’intervallo contiene pagine non valide." = "L’intervalle contient des pages non valides.";
 "L’intervallo supera le pagine del documento o è invertito." = "La plage dépasse les pages du document ou est inversée.";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "Chaque signet principal avec une destination valide commence une nouvelle partie.";
 "Ogni specifica allegata è referenziata da un AF standard" = "Chaque spécification de fichier joint est référencée par un AF standard";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "Chaque type utilisé atteint un type standard ; l’équivalence sémantique n’est pas déduite du nom.";
-"Ogni {0} pagine" = "Toutes les {0} pages";
 "Opacità" = "Opacité";
 "Opacità annotazioni PDF/A-1" = "Opacité des annotations PDF/A-1";
 "Opacità della filigrana" = "Opacité du filigrane";
@@ -1624,7 +1624,7 @@
 "Organizza pagine" = "Organiser les pages";
 "Originale conservato: {0}" = "Original conservé : {0}";
 "Oscura area" = "Caviarder une zone";
-"Oscura area · copia" = "Expurger la zone · copie";
+"Oscura area · copia" = "Caviarder la zone · copie";
 "Oscuramento annullato." = "Caviardage annulé.";
 "Ottimizza JPEG" = "Optimiser JPEG";
 "Output intent" = "Intention de sortie";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "Pages organisées.pdf";
 "Pagine per ogni parte" = "Pages par partie";
 "Pagine per parte" = "Pages par partie";
+"Pagine per parte: {0}" = "Pages par partie : {0}";
 "Pagine presenti in più file: {0}" = "Pages présentes dans plusieurs fichiers : {0}";
 "Pagine sovrapposte ignorate: {0}" = "Pages superposées ignorées : {0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "Pages transparentes : intention de sortie applicable ou Group/CS.";
 "Pagine {0} e {1} · {2}% simili" = "Pages {0} et {1} · {2}% similaires";
 "Pagine. Trascina una miniatura per riordinare." = "Pages. Faites glisser une vignette pour réordonner.";
+"Pagine: {0}" = "Pages : {0}";
 "Pagine: {0}, 1-3, {1}…" = "Pages : {0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "Paragraphe, page entière";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "Paramètres modifiés : générez un nouvel aperçu avant d’enregistrer.";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "Reprendre";
 "Ripristina" = "Réinitialiser";
 "Ripristina (⇧⌘Z)" = "Rétablir (⇧⌘Z)";
+"Ripristina operazione" = "Rétablir";
 "Ripristino" = "Restaurer";
 "Riprova a 300 dpi con affidabilità bassa" = "Réessayer à 300 dpi si la fiabilité est faible";
 "Risoluzione OCR" = "Résolution OCR";
@@ -2158,13 +2161,13 @@
 "Spessore del tratto" = "Épaisseur du trait";
 "Sposta annotazione" = "Déplacer l’annotation";
 "Sposta dopo il documento {0}, {1}" = "Déplacer le document {0}, {1} après";
-"Sposta dopo il passaggio {0}, {1}" = "Déplacer après l’étape {0}, {1}";
+"Sposta dopo il passaggio {0}, {1}" = "Descendre l’étape {0}, {1}";
 "Sposta dopo la pagina in posizione {0}" = "Déplacer plus loin la page à la position {0}";
 "Sposta pagina" = "Déplacer la page";
-"Sposta pagina dopo" = "Déplacer la page après";
+"Sposta pagina dopo" = "Déplacer la page plus loin";
 "Sposta pagina prima" = "Déplacer la page plus tôt";
 "Sposta prima il documento {0}, {1}" = "Déplacer le document {0}, {1} avant";
-"Sposta prima il passaggio {0}, {1}" = "Déplacer avant l’étape {0}, {1}";
+"Sposta prima il passaggio {0}, {1}" = "Monter l’étape {0}, {1}";
 "Sposta prima la pagina in posizione {0}" = "Déplacer plus tôt la page à la position {0}";
 "Stampa…" = "Imprimer…";
 "Stato" = "État";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} objets vérifiés. ";
 "{0} oggetti controllati: {1}" = "{0} objets vérifiés : {1}";
 "{0} oggetti: " = "{0} objets : ";
-"{0} pagine" = "{0} pages";
 "{0} pagine PNG esportate in {1}." = "{0} pages PNG exportées vers {1}.";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} pages avec du texte différent ou manquant. Images et mise en page non analysées.";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "{0} pages dans l’ordre final. Faites glisser les vignettes ; dupliquez, déplacez ou supprimez avant d’ouvrir la copie.";

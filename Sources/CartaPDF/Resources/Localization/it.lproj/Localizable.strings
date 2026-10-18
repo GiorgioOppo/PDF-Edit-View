@@ -324,6 +324,7 @@
 "Annulla elaborazione struttura PDF" = "Annulla elaborazione struttura PDF";
 "Annulla esportazione" = "Annulla esportazione";
 "Annulla modifica" = "Annulla modifica";
+"Annulla operazione" = "Annulla operazione";
 "Annulla {0}" = "Annulla {0}";
 "Anteprima" = "Anteprima";
 "Anteprima CSV modificabile della tabella" = "Anteprima CSV modificabile della tabella";
@@ -337,8 +338,8 @@
 "Anteprima numerazione Bates" = "Anteprima numerazione Bates";
 "Anteprima nuovo nome" = "Anteprima nuovo nome";
 "Anteprima parte {0}/{1}" = "Anteprima parte {0}/{1}";
-"Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate." = "Anteprima pronta: {0} PDF. Le sorgenti non sono state modificate.";
-"Anteprima pronta: {0} pagine." = "Anteprima pronta: {0} pagine.";
+"Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate." = "Anteprima pronta · File PDF: {0}. Le sorgenti non sono state modificate.";
+"Anteprima pronta · Pagine: {0}." = "Anteprima pronta · Pagine: {0}.";
 "Anteprima visiva JPEG della prima pagina" = "Anteprima visiva JPEG della prima pagina";
 "Anteprima visiva del ritaglio, pagina {0}" = "Anteprima visiva del ritaglio, pagina {0}";
 "Anteprima visiva della pagina corrente con le correzioni selezionate" = "Anteprima visiva della pagina corrente con le correzioni selezionate";
@@ -396,7 +397,6 @@
 "Attributo xpacket {0} assente." = "Attributo xpacket {0} assente.";
 "Autore" = "Autore";
 "Autore annotazioni" = "Autore annotazioni";
-"Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Autore una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle.";
 "Autore, tratto, memoria, recupero e scorciatoie." = "Autore, tratto, memoria, recupero e scorciatoie.";
 "Autorizza e aggiorna sorgenti" = "Autorizza e aggiorna sorgenti";
 "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua." = "Autorizza la cattura nelle impostazioni di macOS; nessuna registrazione continua.";
@@ -738,6 +738,7 @@
 "Crea una copia raster ottimizzata" = "Crea una copia raster ottimizzata";
 "Crea una copia ricercabile delle scansioni con Apple Vision." = "Crea una copia ricercabile delle scansioni con Apple Vision.";
 "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online." = "Crea una firma PDF CMS SHA-256 con ByteRange e controlla subito l’integrità. Usa il Portachiavi locale; il sistema può chiedere accesso alla chiave privata. Nessun server, timestamp remoto o firma qualificata. Il certificato incorporato è quello del firmatario; non vengono recuperate catene online.";
+"Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle." = "Crea una struttura reale con un elemento per pagina, nell’ordine del documento. Per grafici/scansioni scegli Figura e scrivi un’alternativa significativa. Non crea automaticamente un ordine di lettura tra i blocchi e non certifica PDF/UA. Le strutture già presenti vengono preservate, senza sovrascriverle.";
 "Crea un’area cliccabile con un indirizzo web." = "Crea un’area cliccabile con un indirizzo web.";
 "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver." = "Crea, seleziona, modifica e posiziona annotazioni con campi numerici e VoiceOver.";
 "Creati {0} PDF nella cartella scelta." = "Creati {0} PDF nella cartella scelta.";
@@ -1601,7 +1602,6 @@
 "Ogni segnalibro principale con destinazione valida inizia una nuova parte." = "Ogni segnalibro principale con destinazione valida inizia una nuova parte.";
 "Ogni specifica allegata è referenziata da un AF standard" = "Ogni specifica allegata è referenziata da un AF standard";
 "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome." = "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome.";
-"Ogni {0} pagine" = "Ogni {0} pagine";
 "Opacità" = "Opacità";
 "Opacità annotazioni PDF/A-1" = "Opacità annotazioni PDF/A-1";
 "Opacità della filigrana" = "Opacità della filigrana";
@@ -1711,11 +1711,13 @@
 "Pagine organizzate.pdf" = "Pagine organizzate.pdf";
 "Pagine per ogni parte" = "Pagine per ogni parte";
 "Pagine per parte" = "Pagine per parte";
+"Pagine per parte: {0}" = "Pagine per parte: {0}";
 "Pagine presenti in più file: {0}" = "Pagine presenti in più file: {0}";
 "Pagine sovrapposte ignorate: {0}" = "Pagine sovrapposte ignorate: {0}";
 "Pagine trasparenti: output intent applicabile oppure Group/CS." = "Pagine trasparenti: output intent applicabile oppure Group/CS.";
 "Pagine {0} e {1} · {2}% simili" = "Pagine {0} e {1} · {2}% simili";
 "Pagine. Trascina una miniatura per riordinare." = "Pagine. Trascina una miniatura per riordinare.";
+"Pagine: {0}" = "Pagine: {0}";
 "Pagine: {0}, 1-3, {1}…" = "Pagine: {0}, 1-3, {1}…";
 "Paragrafo, pagina intera" = "Paragrafo, pagina intera";
 "Parametri cambiati: genera una nuova anteprima prima di salvare." = "Parametri cambiati: genera una nuova anteprima prima di salvare.";
@@ -1961,6 +1963,7 @@
 "Riprendi" = "Riprendi";
 "Ripristina" = "Ripristina";
 "Ripristina (⇧⌘Z)" = "Ripristina (⇧⌘Z)";
+"Ripristina operazione" = "Ripristina operazione";
 "Ripristino" = "Ripristino";
 "Riprova a 300 dpi con affidabilità bassa" = "Riprova a 300 dpi con affidabilità bassa";
 "Risoluzione OCR" = "Risoluzione OCR";
@@ -2981,7 +2984,6 @@
 "{0} oggetti controllati. " = "{0} oggetti controllati. ";
 "{0} oggetti controllati: {1}" = "{0} oggetti controllati: {1}";
 "{0} oggetti: " = "{0} oggetti: ";
-"{0} pagine" = "{0} pagine";
 "{0} pagine PNG esportate in {1}." = "{0} pagine PNG esportate in {1}.";
 "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate." = "{0} pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate.";
 "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia." = "{0} pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia.";

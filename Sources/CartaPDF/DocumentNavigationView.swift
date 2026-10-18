@@ -42,6 +42,7 @@ struct DocumentNavigationView: View {
                                 } label: {
                                     Label(entry.outline.label ?? L10n.tr("Segnalibro"), systemImage: "bookmark")
                                         .font(.callout).lineLimit(2)
+                                        .help(entry.outline.label ?? L10n.tr("Segnalibro"))
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding(.vertical, 8).padding(.leading, CGFloat(min(entry.depth, 8)) * 12 + 10)
                                         .contentShape(Rectangle())
@@ -75,6 +76,7 @@ struct DocumentNavigationView: View {
                                             .font(.caption).foregroundStyle(.secondary)
                                         Text(entry.annotation.contents ?? "\(typeName(entry.annotation.type))")
                                             .font(.callout).lineLimit(4).foregroundStyle(.primary)
+                                            .help(entry.annotation.contents ?? typeName(entry.annotation.type))
                                     }.frame(maxWidth: .infinity, alignment: .leading).padding(10)
                                         .background(model.selectedAnnotation === entry.annotation ? Color.accentColor.opacity(0.18) : Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 7))
                                 }

@@ -130,6 +130,7 @@ struct CartaArchiveValidationView: View {
                 HStack {
                     Text(report.verdict.cartaLabel).font(.headline)
                     Text(L10n.tr("\(report.passedCount) verificate · \(report.failedCount) violazioni · \(report.unverifiedCount) non verificate"))
+                        .fixedSize(horizontal: false, vertical: true)
                 }.accessibilityElement(children: .combine)
                 Text(L10n.tr("SHA-256: \(report.sha256)")).font(.caption.monospaced()).textSelection(.enabled)
                     .accessibilityLabel(L10n.tr("Impronta SHA 256 del file analizzato")).accessibilityValue(report.sha256)
@@ -141,7 +142,8 @@ struct CartaArchiveValidationView: View {
                         Text(L10n.tr("Non verificate")).tag(PDFArchiveRuleStatus.notVerified.rawValue)
                         Text(L10n.tr("Verificate")).tag(PDFArchiveRuleStatus.passed.rawValue)
                         Text(L10n.tr("Non applicabili")).tag(PDFArchiveRuleStatus.notApplicable.rawValue)
-                    }.frame(maxWidth: 230)
+                    }.labelsHidden().accessibilityLabel(L10n.tr("Regole visualizzate"))
+                        .frame(minWidth: 200, idealWidth: 230, maxWidth: 260)
                 }
                 List(rules) { rule in
                     VStack(alignment: .leading, spacing: 5) {
@@ -149,11 +151,17 @@ struct CartaArchiveValidationView: View {
                         Text(rule.requirement).textSelection(.enabled)
                         Text(rule.detail).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)
                         if !rule.locations.isEmpty { Text(rule.locations.joined(separator: ", ")).font(.caption).textSelection(.enabled) }
-                    }.padding(.vertical, 6).accessibilityElement(children: .combine)
+                    }.fixedSize(horizontal: false, vertical: true).padding(.vertical, 6).accessibilityElement(children: .combine)
                 }.accessibilityLabel(L10n.tr("\(rules.count) regole del rapporto"))
                 if !report.diagnostics.isEmpty { Text(report.diagnostics.joined(separator: "\n")).font(.caption).textSelection(.enabled) }
                 DisclosureGroup(L10n.tr("Ambiti ancora da verificare (\(report.scopeGaps.count))")) {
-                    ForEach(report.scopeGaps, id: \.self) { Text($0).font(.caption).textSelection(.enabled) }
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(report.scopeGaps, id: \.self) {
+                                Text($0).font(.caption).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                            }
+                        }.frame(maxWidth: .infinity, alignment: .leading)
+                    }.frame(maxHeight: 180)
                 }
                 HStack {
                     Button(L10n.tr("Esporta JSON…")) { state.export(json: true) }
