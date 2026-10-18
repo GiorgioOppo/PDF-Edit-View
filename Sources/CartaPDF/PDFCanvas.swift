@@ -474,7 +474,7 @@ final class EditablePDFView: PDFView {
         let flags = (annotation.value(forAnnotationKey: .flags) as? NSNumber)?.intValue ?? 0
         let readOnlyOrLocked = flags & ((1 << 6) | (1 << 7)) != 0
         let ownLink = annotation.type == "Link"
-            && (annotation.value(forAnnotationKey: .name) as? String)?.hasPrefix("CartaPDF-Link-") == true
+            && CartaOwnedLink.identity(of: annotation) != nil
         return (supported.contains(annotation.type ?? "") || ownLink) && !readOnlyOrLocked
     }
 

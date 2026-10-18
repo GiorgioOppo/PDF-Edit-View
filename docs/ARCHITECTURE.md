@@ -22,6 +22,8 @@ I nomi abbreviati nella tabella corrispondono ai file sotto [Sources/CartaPDF](.
 
 `PDFWorkspaceDocument` collega NSDocument al modello dell'editor. Le modifiche reversibili registrano gruppi undo espliciti; il salvataggio serializza il documento supportato. Gli strumenti che cambiano la struttura o rasterizzano preparano una copia. `CartaFileIO` centralizza le scritture atomiche e alcuni controlli su destinazioni e spazio disponibile.
 
+I collegamenti creati dall'app ricevono un identificatore UUID nelle voci `/NM` e `/CartaPDFLinkID`. La seconda conserva l'identità anche su macOS 15, dove PDFKit omette `/NM` durante il salvataggio. Un marker privato malformato o incoerente impedisce la modifica; i collegamenti precedenti con il solo `/NM` restano riconosciuti. Questi marker evitano modifiche accidentali ai link importati: non sono una firma o una prova di autenticità. Il salvataggio resta affidato a PDFKit, anche per i documenti cifrati.
+
 Il lettore strutturale opera sui byte del PDF, separatamente dal rendering di PDFKit. Segue le revisioni xref modellate, risolve gli alias indiretti con limiti e distingue oggetti fisici da identità terminali. I filtri implementati sono codice Swift originale, con Compression Apple per le operazioni supportate. I casi non modellati restano espliciti.
 
 ## Percorso della validazione PDF/A

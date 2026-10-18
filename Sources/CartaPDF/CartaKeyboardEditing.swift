@@ -76,7 +76,7 @@ extension PDFEditorModel {
         guard flags & ((1 << 6) | (1 << 7)) == 0 else { return false }
         if content && flags & (1 << 9) != 0 { return false }
         if annotation.type == "Link" {
-            return (annotation.value(forAnnotationKey: .name) as? String)?.hasPrefix("CartaPDF-Link-") == true
+            return CartaOwnedLink.identity(of: annotation) != nil
         }
         return ["Text", "FreeText", "Ink", "Highlight", "Underline", "StrikeOut", "Square", "Circle", "Line", "Stamp"].contains(annotation.type ?? "")
     }

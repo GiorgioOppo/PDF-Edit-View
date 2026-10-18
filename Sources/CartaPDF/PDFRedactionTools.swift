@@ -9,13 +9,34 @@ struct PDFRedactionRegion {
 }
 
 enum CartaOwnedLink {
+    static let identityKey = PDFAnnotationKey(rawValue: "/CartaPDFLinkID")
+    private static let prefix = "CartaPDF-Link-"
+
     static func annotation(bounds: CGRect) -> PDFAnnotation {
-        // Give PDFKit the standard /NM text string at initialization. Some
-        // macOS releases retain a later setValue only in memory for links and
-        // omit it when serializing, making the saved link lose its ownership.
-        PDFAnnotation(bounds: bounds, forType: .link, withProperties: [
-            PDFAnnotationKey.name.rawValue: "CartaPDF-Link-" + UUID().uuidString
+        // PDFKit on macOS 15 omits a link's standard /NM when serializing,
+        // including values supplied during initialization. Keep the same
+        // identity in an application key that survives the native writer.
+        let identity = prefix + UUID().uuidString
+        return PDFAnnotation(bounds: bounds, forType: .link, withProperties: [
+            PDFAnnotationKey.name.rawValue: identity,
+            identityKey.rawValue: identity
         ])
+    }
+
+    static func identity(of annotation: PDFAnnotation) -> String? {
+        guard annotation.type == "Link" else { return nil }
+        let standard = annotation.value(forAnnotationKey: .name)
+        if let custom = annotation.value(forAnnotationKey: identityKey) {
+            guard let identity = custom as? String, identity.hasPrefix(prefix),
+                  UUID(uuidString: String(identity.dropFirst(prefix.count))) != nil else { return nil }
+            // Conflicting or malformed markers must not authorize editing.
+            if let standard, standard as? String != identity { return nil }
+            return identity
+        }
+        // Preserve support for links created by earlier CartaPDF versions,
+        // which recognized the prefix without imposing a UUID grammar.
+        guard let identity = standard as? String, identity.hasPrefix(prefix) else { return nil }
+        return identity
     }
 }
 
@@ -210,7 +231,7 @@ extension PDFEditorModel {
     func removeWebLink(_ annotation: PDFAnnotation, from page: PDFPage) {
         guard !isProcessing, canEditAnnotations, page.document === document,
               page.annotations.contains(where: { $0 === annotation }), annotation.type == "Link",
-              (annotation.value(forAnnotationKey: .name) as? String)?.hasPrefix("CartaPDF-Link-") == true else { return }
+              CartaOwnedLink.identity(of: annotation) != nil else { return }
         removeMarkup(annotation, on: page, actionName: "Elimina collegamento")
     }
 

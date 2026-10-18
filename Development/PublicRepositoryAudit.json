@@ -9,11 +9,11 @@
   "initial_source_commit": "578b5cc13d5f85b16fbe4c0781b4ce16db4cce79",
   "documentation_scope": "README, user/build/CLI/architecture/privacy/accessibility/PDF-A guides, changelog, contribution/security/support/code-of-conduct/data attribution, publication process, CI and issue/PR templates.",
   "local_native_tests": {
-    "tests": 515,
+    "tests": 517,
     "failures": 0,
-    "seconds": 22.576,
+    "seconds": 17.751,
     "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
-    "log_sha256": "25e59c1edec4d905ceda1eaaff050d74345190ed6dc889bda8c358931854f455",
+    "log_sha256": "3034a3f3ec09a95910b69cada65cc26e03b08fa83f5687657dec350c8bea2b88",
     "raw_log_not_tracked": true
   },
   "repository_checks": {
@@ -27,7 +27,8 @@
     "mirrors_identical": true,
     "personal_conversation_quotes_removed_before_first_commit": true,
     "author_identity": "GitHub noreply email, repository-local configuration",
-    "external_swift_packages": 0
+    "external_swift_packages": 0,
+    "git_history_scan_scope": "Initial source commit only; later preparation commits are scanned separately below. Internal Codex snapshot refs are never pushed."
   },
   "github_ci": {
     "runner": "macos-15 Apple Silicon",
@@ -87,9 +88,40 @@
   },
   "cross_macos_portability": {
     "resource_discovery": "Flat and Contents/Resources bundle layouts, XCTest sibling product directories; test runner supplies exact SwiftPM product bundle. Missing installations never call fatal Bundle.module or search cwd/app siblings.",
-    "link_ownership": "Standard /NM assigned when creating link annotations, including keyboard creation, with saved COS, reopen/remove/undo assertions.",
+    "link_ownership": "Dual /NM and /CartaPDFLinkID strings at creation; private marker survives macOS15 PDFKit dropping /NM, with legacy /NM fallback only when the private marker is absent. Saved COS, reopen, keyboard/remove/undo and encryption regressions.",
     "choice_fields": "Verify saved /V and /Opt using independent CoreGraphics reads; preserve exact export values, labels and immutable input, rather than OS-dependent PDFKit convenience getter.",
-    "regressions_added": 3,
+    "regressions_added": 5,
     "packaged_release_smoke": "scripts/check-built-app.py validates real packaged resource hashes and CLI output for all11profiles; synthetic document without XMP must be nonconforming, never certified."
+  },
+  "pdfkit_macos15_probe": {
+    "run": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39107956874",
+    "result": "success",
+    "os": "macOS15.7.9",
+    "pdfkit_bundle_version": "1332.5.3",
+    "synthetic_variants": 17,
+    "observation": "All tested public-API /NM assignments were omitted on serialization. /CartaPDFLinkID remains a COS string with identical value after reopening and a second save.",
+    "raw_log_sha256": "fd68a0da93f780d4193a3e5a324d66eb10ef82239f8f76f73963cf7be61be465",
+    "raw_log_not_tracked": true,
+    "user_documents_used": false,
+    "production_writer_changed": false
+  },
+  "previous_local_native_tests_before_dual_link_marker": {
+    "tests": 515,
+    "failures": 0,
+    "seconds": 22.576,
+    "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
+    "log_sha256": "25e59c1edec4d905ceda1eaaff050d74345190ed6dc889bda8c358931854f455",
+    "raw_log_not_tracked": true
+  },
+  "publication_history_scan_before_final_link_fix": {
+    "refs": [
+      "refs/heads/main",
+      "refs/remotes/origin/main"
+    ],
+    "tip": "0b54ee6729b739dd80f88883101bed93a782f2b3",
+    "reachable_commits": 5,
+    "unique_blobs": 402,
+    "credential_or_personal_host_path_findings": 0,
+    "scope": "Explicit publication branches; internal Codex snapshot refs excluded and never pushed. Selected credential signatures and host paths only, not a complete security audit."
   }
 }
