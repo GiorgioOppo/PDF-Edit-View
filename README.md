@@ -1,59 +1,20 @@
 # PDF-Edit&View — CartaPDF
 
-A free, offline PDF editor for macOS, written in Swift using Apple frameworks only. The app is called **CartaPDF**, version **3.6.0**. PDF/A validation is partial and never reports full conformance while coverage gaps remain.
+[![macOS checks](https://github.com/GiorgioOppo/PDF-Edit-View/actions/workflows/ci.yml/badge.svg)](https://github.com/GiorgioOppo/PDF-Edit-View/actions/workflows/ci.yml)
 
-Editor PDF per macOS scritto in Swift. Gratuito, con sorgenti sotto licenza MIT, completamente locale e basato soltanto su framework Apple. Nessuna dipendenza software di terze parti, account, abbonamento, server, telemetria o servizio AI. OCR, confronto, conversioni, firme e ricerche vengono eseguiti sul Mac. Un collegamento web in un PDF viene aperto solo su azione dell’utente.
+A free, offline PDF editor for macOS, written in Swift using Apple frameworks only. **CartaPDF 3.6.0** supports reading, annotations, page organization, merging, splitting, OCR, forms, conversion and local document workflows. It requires no application account, subscription, cloud service or telemetry.
 
-Il nome del repository è [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View); il nome dell’app e del bundle resta CartaPDF. Il progetto è indipendente e non è affiliato ad Adobe. Il progetto implementa strumenti ispirati alle attività di Acrobat Pro, con i limiti descritti sotto. Il catalogo delle 100 migliorie e 50 nuove funzioni è in `Development/FeatureRequirements.json`; [il rapporto di verifica](Development/FeatureVerification.json) distingue funzioni implementate, ambiti limitati e verifiche che richiedono hardware o intervento manuale.
+The repository is named **PDF-Edit-View**; the application and bundle are named **CartaPDF**. This is an independent project, unaffiliated with Adobe. Its tools address workflows familiar from Acrobat Pro, within the [documented limits](#scope-and-limitations). Original code is MIT-licensed; bundled reference data has [separate licenses](THIRD_PARTY_NOTICES.md).
 
-## Documentazione
+Project guides and GitHub support templates are in English. The application interface is currently primarily Italian, so the guides retain actual control names where needed. Historical machine-readable reports and fixtures may retain their original language.
 
-- [Indice delle guide](docs/README.md), [uso dell’app](docs/USAGE.md) e [CLI](docs/CLI.md).
-- [Compilazione e test](docs/BUILDING.md), [architettura](docs/ARCHITECTURE.md) e [contributi](CONTRIBUTING.md).
-- [Privacy e permessi](docs/PRIVACY.md), [accessibilità](docs/ACCESSIBILITY.md) e [sicurezza](SECURITY.md).
-- [Stato PDF/A](docs/PDFA.md), [changelog](CHANGELOG.md), [licenze dei dati](THIRD_PARTY_NOTICES.md) e [supporto](SUPPORT.md).
-- [Preparazione della pubblicazione](docs/PUBLIC_RELEASE.md) e [interpretazione delle evidenze](Development/README.md).
+**PDF/A validation is incomplete.** The native validator distinguishes all 11 profiles, including PDF/A-4, 4e and 4f, but does not report full conformance while coverage gaps remain. See [PDF/A status](docs/PDFA.md).
 
+## Getting started
 
-## Uso
+The application targets **macOS 14 or later**. Building requires full Xcode with a recent macOS SDK on a compatible host; see the [build requirements](docs/BUILDING.md). The verified CI environment is Apple Silicon, macOS 15 and Xcode 26.3.
 
-Apri **Strumenti** o premi **⇧⌘T** per cercare un’operazione. Gli strumenti avanzati hanno anteprime, parametri e messaggi sul proprio ambito. Le operazioni su struttura, scansioni, firme e conversioni salvano copie separate. Le normali annotazioni e modifiche alle pagine si salvano con **⌘S** e si annullano con **⌘Z**.
-
-| Area | Strumenti |
-| --- | --- |
-| Lettura e accesso | Finestre indipendenti, Finder, miniature trascinabili, ricerca durante la digitazione con estratti, viste singola/continua/affiancata, zoom ancorato al puntatore, stampa, stato di lettura persistente, scorciatoie configurabili, controlli con nomi, valori/unità, stati e annunci accessibili. |
-| Unione | Coda riordinabile, intervalli per file, anteprima ordine finale, statistiche, rilevamento duplicati e formati diversi, segnalibri rimappati, fronte/retro alternato, gruppi per nome. |
-| Divisione | Intervalli, ogni N pagine, segnalibri, testo separatore, QR/codici a barre tramite Vision, pagine bianche e dimensione massima effettiva; nomi, anteprima conflitti, progresso, annullamento e output nel Finder. |
-| Impaginazione | Organizer, duplicazione/spostamento, pagine affiancate da scansioni di libri, N pagine per foglio, libretti fronte/retro, poster, sovrapposizione PDF, ritaglio interattivo con unità e margini validati. |
-| Marcature | Evidenziazioni, note, testo aggiunto, disegno regolarizzato, forme, collegamenti, timbri riutilizzabili, filigrane configurabili, intestazioni/piè di pagina dinamici, numeri, Bates, sommario cliccabile. Selezione sincronizzata, spostamento, ridimensionamento, autore e spessore configurabili. Pannello da tastiera con coordinate, creazione/modifica/eliminazione e undo (⇧⌘K). |
-| Scansioni | Vision OCR con scelta lingue, orientamento, raddrizzamento, pulizia, retry, ordine multicolonna, priorità pagina visibile e rapporto per pagina. Acquisizione da scanner compatibili Image Capture e cattura schermo/finestre con ScreenCaptureKit. |
-| Conversioni | PDF da immagini con margini e da testo/RTF/DOCX; HTML locale statico in PDF; TXT, RTF, DOCX, EPUB testuale, PNG e TIFF multipagina; CSV da regioni tabellari con colonne manuali o rilevamento automatico. Anteprima JPEG, DPI, profili colore e confronto dimensioni. |
-| Moduli | Creazione e compilazione di testo, checkbox ed elenchi; ricerca campi, gruppi per pagina, obbligatorietà, limiti caratteri, valori condivisi e stato modifiche; una copia compilata per ogni riga CSV. |
-| Struttura originale | Numerazione logica delle sezioni, estrazione immagini incorporate, sostituzione XObject immagine, modifica di stringhe testuali supportate nei content stream, allegati, raccolte PDF e visibilità dei livelli OCG. |
-| Analisi | Confronto testuale e visivo, pagine visivamente duplicate, font incorporati, risoluzione immagini, box pagina, intenti ICC, metadati e struttura di accessibilità. |
-| Archiviazione e stampa | Conversione nativa CoreGraphics PDF/A con rilevamento del livello dichiarato; rapporto per 11 profili, clausole, verifiche incomplete e JSON/testo; preparazione di un intento di stampa con profilo ICC CMYK locale, tag e descrizioni a livello di pagina. |
-| Protezione e firme | Apertura protetta, mantenimento cifratura nel salvataggio ordinario, copie cifrate verificate, oscuramento in copia raster, firma CMS con certificato locale e verifica offline dell’integrità e della catena disponibile. |
-| Organizzazione locale | Biblioteca con categorie/tag, ricerca su più PDF, ridenominazione da contenuti, cartelle monitorate, procedure batch ordinate e preset JSON, cronologia delle ultime 20 versioni per documento e copie di recupero. |
-| Automazione | Intent nativo “Unisci PDF” per Comandi Rapidi, comando AppleScript `merge PDFs`, interfaccia a riga di comando per info/unione/estrazione/divisione/testo/OCR/appiattimento/compressione e rapporti PDF/A con codici di uscita distinti. |
-
-## Ambito e limiti
-
-- La modifica originale del testo supporta font standard Type1 WinAnsi e stringhe semplici Tj, senza reimpaginazione automatica. Font subset/CID, ToUnicode, operatori TJ complessi e contenuti non supportati sono rifiutati esplicitamente. Le modifiche strutturali non decifrano i PDF protetti. Le revisioni incrementali conservano i dati precedenti: modifica del testo e rimozione di allegati non equivalgono a oscuramento. Le immagini supportate sono XObject, con i filtri documentati dallo strumento; sostituire un oggetto condiviso interessa tutte le pagine che lo usano.
-- **PDF/A:** il validatore nativo distingue 1a/1b, 2a/2b/2u, 3a/3b/3u, 4/4e/4f e traccia le 1489 voci dei cataloghi ufficiali. Per ogni clausola riporta verificata, violata, non verificata o non applicabile, con impronta SHA-256 dei byte analizzati. **La validazione ISO 19005 completa resta da implementare**: Sono disponibili controlli nativi dei programmi font, glifi, metriche e mapping Unicode; metadati RDF/XMP ed extension schema; colori effettivamente dipinti, ICC e JPEG2000; annotazioni, moduli, OCG, firme e allegati ricorsivi. Restano incomplete alcune semantiche del modello ISO 32000, codec/font avanzati, struttura logica A, payload 3D e riconciliazione normativa integrale. Nessuna violazione dimostrata significa “indeterminato”, finché esistono lacune; questa versione non emette “conforme”. [Ambito verificato e lacune](Development/PDFA-ValidatorScope.md). CoreGraphics può dichiarare 2b anche quando l’API richiede 2u: il livello viene letto dai byte e non viene alzato artificialmente.
-- **PDF/X e accessibilità dei PDF:** l’intento ICC CMYK prepara la stampa. I tag sono a livello di pagina con lingua e descrizione; non certificano ISO 15930 o PDF/UA.
-- **Firme:** la firma con certificato locale produce CMS e ByteRange; la verifica usa i byte originali e non effettua richieste di rete. Può verificare integrità e fiducia disponibile localmente, ma non revoca aggiornata, timestamp TSA, validazione a lungo termine, PAdES completo o qualifica legale. Modificare un PDF già firmato può invalidare o superare la revisione firmata. La firma grafica rimane un’annotazione distinta.
-- DOCX/RTF/EPUB riguardano il testo: non ricostruiscono fedelmente impaginazione Office, formule, tabelle o immagini. Il riconoscimento automatico delle tabelle e delle colonne OCR è euristico e richiede controllo dei risultati. L’OCR può produrre errori.
-- Raddrizzamento, pulizia, oscuramento, appiattimento, JPEG e pagine riconosciute dall’OCR possono rasterizzare i contenuti e perdere interattività, password o firme nella copia. Le dimensioni JPEG possono aumentare. Il ritaglio modifica l’area visibile e non elimina i contenuti nascosti.
-- Le scritture e i worker di conversione sono annullabili e limitati; preparazione strutturale, preflight, firma e ridisegno CoreGraphics restano sul main actor. Documenti molto grandi possono bloccare temporaneamente quel pannello.
-- Moduli XFA, radio button, campi password e JavaScript/calcoli non sono supportati. I widget sul documento restano in sola lettura durante l’uso; il pannello Moduli ripristina i flag originali in salvataggio.
-- Lo scanner richiede un dispositivo e un driver compatibile con Image Capture. La cattura richiede il consenso di macOS alla registrazione schermo. La lettura ad alta voce usa le voci già presenti nel sistema. Queste integrazioni non installano driver o scaricano voci.
-- L’HTML è statico, senza JavaScript e con risorse remote bloccate. La biblioteca memorizza riferimenti ai file locali; spostarli esternamente richiede di aggiornarli. Le cartelle monitorate operano mentre l’app e il relativo pannello sono aperti.
-
-Novità della versione 3.6: schema degli spazi colore calibrati, Indexed, Separation e DeviceN; stream e Metadata con alias indiretti; elementi multiprocesso ICC; coordinate e agganci compositi TrueType; attributi standard Layout/List/Table/PrintField e proprietà utente. I controlli delle funzioni PDF 0/2/3/4 e i precedenti audit restano disponibili. I rapporti separano le 1489 voci dei cataloghi dai controlli aggiuntivi del modello PDF. Le lacune residue continuano a impedire attestazioni di conformità integrale.
-
-## Compilazione e verifica
-
-L’app richiede **macOS14+**. Per compilare e verificare i sorgenti serve Xcode completo con SDK recente su un sistema compatibile: vedi [requisiti di build](docs/BUILDING.md). Il build locale su Apple Silicon genera un bundle arm64 in `dist/`, escluso da Git. Il repository contiene i sorgenti; non viene pubblicato automaticamente un installer. Firma ad hoc locale, senza notarizzazione Developer ID.
+From a checkout of this repository:
 
 ```sh
 ./scripts/test.sh
@@ -61,17 +22,66 @@ L’app richiede **macOS14+**. Per compilare e verificare i sorgenti serve Xcode
 open dist/CartaPDF.app
 ```
 
-Gli script usano Xcode installato solo per il processo, senza cambiare `xcode-select`. Il test runner compila in una cartella temporanea. Il bundle include icona, dizionario AppleScript e metadati App Intents estratti con gli strumenti Apple.
+The build creates `dist/CartaPDF.app`, which is excluded from Git, and applies a local ad hoc signature. This source repository does not automatically publish an installer or a Developer ID-notarized binary. The scripts select Xcode for their own process without changing the global `xcode-select` setting.
 
-I test verificano dati riaperti, contenuti e pixel, non solo la presenza dei pulsanti: undo, form, cifratura, bookmark, flussi testo, immagini, allegati, CMS/alterazioni, OCR Vision, QR, impaginazione, CSV, EPUB/CRC, TIFF, HTML offline, procedure batch, cancellazione e file con mille pagine.
+Open **Strumenti** (Tools), or press **⇧⌘T**, to find an operation. Advanced tools provide previews, parameters and scope information. Structural changes, scanning, signing and conversion workflows save separate copies. Save ordinary annotations and page edits with **⌘S**; undo with **⌘Z**. See the [user guide](docs/USAGE.md).
 
-Evidenza della versione 3.6 del 18 ottobre 2026: **512 test superati, zero errori**; corpus indipendente documentato in Development/PDFA-CorpusEvidence.json. Il risultato della suite integrata e lo stato dei 150 requisiti sono registrati in `Development/FeatureVerification.json`. La validazione ISO PDF/A completa resta parziale. L’audit manuale completo VoiceOver non è completato; revisione statica e test nativi sono documentati separatamente. Scanner, cattura schermo e audio richiedono anche la verifica con dispositivi e autorizzazioni dell’utente.
+## Features
 
-La CI esegue controlli del repository, test nativi, compilazione Release, firma e CLI su macOS. Le prove con hardware e l’audit manuale completo VoiceOver restano separati. I log grezzi sono locali ed esclusi da Git.
+| Area | Tools |
+| --- | --- |
+| Reading and navigation | Independent windows, Finder integration, draggable thumbnails, live search with excerpts, single/continuous/facing views, pointer-anchored zoom, printing, persistent reading position and configurable shortcuts. Controls expose accessible names, values, units, states and announcements. |
+| Merging | Reorderable queue, per-file page ranges, final-order preview, statistics, duplicate and mixed-format detection, remapped bookmarks, alternating front/back pages and filename-based groups. |
+| Splitting | Split by ranges, every N pages, bookmarks, separator text, Vision QR/barcode detection, blank pages or actual maximum output size. Includes naming, conflict preview, progress, cancellation and Finder output. |
+| Page layout | Page organizer, duplication and movement, book-scan spread separation, N-up, duplex booklets, posters, PDF overlays and interactive cropping with validated units and margins. |
+| Annotations | Highlights, notes, added text, smoothed drawing, shapes, links, reusable stamps, configurable watermarks, dynamic headers/footers, page numbers, Bates numbering and a clickable table of contents. Synchronized selection, movement, resizing, author and stroke settings. Keyboard panel for coordinates, creation, editing, deletion and undo (**⇧⌘K**). |
+| Scanning and OCR | Apple Vision OCR with language selection, orientation, deskewing, cleanup, retries, multicolumn order, visible-page priority and per-page reports. Image Capture-compatible scanners and ScreenCaptureKit screen/window capture. |
+| Conversion | PDF from images with margins and from text/RTF/DOCX; local static HTML to PDF; TXT, RTF, DOCX, text-based EPUB, PNG and multipage TIFF export. CSV from table regions with manual or automatically detected columns. JPEG preview, DPI, color profiles and size comparisons. |
+| Forms | Create and fill text, checkbox and choice fields. Field search, page groups, required flags, character limits, shared values and change tracking. Generate a filled copy for each CSV row. |
+| Original PDF structure | Logical section numbering, embedded-image extraction, image XObject replacement, supported text-string edits in content streams, attachments, PDF collections and OCG layer visibility. |
+| Analysis | Textual and visual comparison, visually duplicate pages, embedded fonts, image resolution, page boxes, ICC output intents, metadata and accessibility structure. |
+| Archiving and print preparation | Native CoreGraphics PDF/A conversion with detection of the declared level; reports for 11 profiles with clauses, incomplete checks and JSON/text output. Print-intent preparation using a local CMYK ICC profile, plus page-level tags and descriptions. |
+| Protection and signatures | Password-protected opening, encryption retention during ordinary saves, verified encrypted copies, rasterized redaction copies, CMS signing with a local certificate and offline integrity/available-chain verification. |
+| Local organization | Library categories/tags, search across PDFs, content-based renaming, watched folders, ordered batch workflows and JSON presets. History of the latest 20 versions per document and recovery copies. |
+| Automation | Native **Unisci PDF** (Merge PDFs) App Intent for Shortcuts, the `merge PDFs` AppleScript command, and a CLI for information, merging, extraction, splitting, text, OCR, flattening, compression and PDF/A reports with distinct exit codes. |
 
-Le verifiche locali della preparazione del repository includono **517 test superati, zero errori**, con regressioni sui layout delle risorse e sulla persistenza dei link. Sono separate dalle prove storiche del bundle3.6: vedi [PublicRepositoryAudit](Development/PublicRepositoryAudit.json).
+The [requirements inventory](Development/FeatureRequirements.json) lists 100 improvements and 50 additional features. The [verification report](Development/FeatureVerification.json) distinguishes implemented functionality, limited scope and checks requiring hardware or manual work.
 
-Per verificare i contenuti del repository e rigenerare il rapporto dopo i test:
+## Documentation
+
+- [Guide index](docs/README.md), [using the app](docs/USAGE.md) and [command-line interface](docs/CLI.md).
+- [Building and testing](docs/BUILDING.md), [architecture](docs/ARCHITECTURE.md) and [contributing](CONTRIBUTING.md).
+- [Privacy and permissions](docs/PRIVACY.md), [accessibility](docs/ACCESSIBILITY.md) and [security](SECURITY.md).
+- [PDF/A status](docs/PDFA.md), [changelog](CHANGELOG.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
+- [Support](SUPPORT.md), [public-release preparation](docs/PUBLIC_RELEASE.md) and [interpreting development evidence](Development/README.md).
+
+## Scope and limitations
+
+- **Original text and images:** text editing supports standard Type1 WinAnsi fonts and simple `Tj` strings, without automatic reflow. Subset/CID fonts, ToUnicode, complex `TJ` operators and unsupported content are explicitly rejected. Structural editing does not decrypt protected PDFs. Incremental revisions preserve earlier data: text changes and attachment removal are not redaction. Image editing supports XObjects with the filters documented by the tool; replacing a shared object affects every page that uses it.
+- **PDF/A:** the validator distinguishes 1a/1b, 2a/2b/2u, 3a/3b/3u and 4/4e/4f, tracking 1,489 entries from the upstream reference catalogues. It reports passed, failed, not verified or not applicable checks, together with the SHA-256 of the analyzed bytes. Native checks cover supported font programs, glyphs, metrics and Unicode mappings; RDF/XMP metadata and extension schemas; painted colors, ICC and JPEG2000; annotations, forms, OCGs, signatures and recursive attachments. **Complete ISO 19005 validation remains unimplemented.** Gaps remain in ISO 32000 semantics, advanced codecs/fonts, meaningful level-A logical structure, 3D payloads and full normative reconciliation. If no violation is demonstrated but gaps remain, the result is `indeterminate`; this version never emits `conforming`. See [verified scope and remaining gaps](Development/PDFA-ValidatorScope.md). CoreGraphics may declare 2b even when the API requests 2u: the app reads the actual declaration and does not artificially raise it.
+- **PDF/X and PDF accessibility:** a CMYK ICC intent prepares a document for printing. Tags provide page-level language and descriptions; they do not certify ISO 15930 or PDF/UA conformance.
+- **Signatures:** local-certificate signing produces CMS and ByteRange data. Verification uses the original bytes without network requests. It can check integrity and locally available trust, but does not provide current revocation status, TSA timestamps, long-term validation, complete PAdES support or legal qualification. Editing a signed PDF may invalidate its signature or create a revision beyond the signed one. A drawn signature is a separate annotation.
+- **Text-based conversion:** DOCX/RTF/EPUB workflows do not faithfully reconstruct Office layout, formulas, tables or images. Automatic table and OCR-column detection is heuristic and needs review. OCR can produce errors.
+- **Rasterized copies:** deskewing, cleanup, redaction, flattening, JPEG conversion and OCR-recognized pages may rasterize content and lose interactivity, passwords or signatures in the copy. JPEG output can be larger. Cropping changes the visible area without removing hidden content.
+- **Large documents:** writes and conversion workers have limits and cancellation. Structural preparation, preflight, signing and CoreGraphics redraws still run on the main actor; large files may temporarily block the corresponding panel.
+- **Forms:** XFA, radio buttons, password fields and JavaScript/calculations are unsupported. Document widgets remain read-only during use; the Forms panel restores their original flags when saving.
+- **Devices and permissions:** scanning requires an Image Capture-compatible device and driver. Screen capture requires macOS screen-recording permission. Read-aloud uses voices already installed on the system. These integrations do not install drivers or download voices.
+- **HTML and local organization:** HTML is static, with JavaScript disabled and remote resources blocked. The library stores references to local files; moving them externally requires updating those references. Watched folders operate while the app and their panel are open.
+- **Accessibility verification:** a complete manual VoiceOver audit has not been completed. Static review and native tests are documented separately; scanner, capture and audio workflows also require real-device/permission checks.
+
+Version 3.6 adds checks for calibrated, Indexed, Separation and DeviceN color-space schemas; indirect aliases for streams and Metadata; ICC multiprocess elements; TrueType coordinates and composite attachments; standard Layout/List/Table/PrintField attributes and user properties. PDF function 0/2/3/4 checks and earlier audits remain available. Reports keep the 1,489 catalogue entries separate from additional PDF-model checks. Remaining gaps continue to block full conformance claims.
+
+## Verification
+
+Tests inspect reopened data, content and pixels, rather than only checking that controls exist. They cover undo, forms, encryption, bookmarks, text streams, images, attachments, CMS/tampering, Vision OCR, QR codes, page layout, CSV, EPUB/CRC, TIFF, offline HTML, batch workflows, cancellation and thousand-page documents.
+
+Historical version 3.6 evidence from October 18, 2026 records **512 tests passed, zero failures**. Independent corpus evidence is in [PDFA-CorpusEvidence](Development/PDFA-CorpusEvidence.json), and the integrated feature status is in [FeatureVerification](Development/FeatureVerification.json). These reports describe their original artifacts.
+
+Repository preparation added resource-layout and link-persistence regressions: **517 local tests passed, zero failures**. The [verified GitHub run](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39108436451) for commit `9538462` executed 517 tests with zero failures and one skip because the optional local corpus was absent. It also passed the Release build, signature/arm64 checks and packaged CLI smoke tests for all 11 profiles. See [PublicRepositoryAudit](Development/PublicRepositoryAudit.json) for separate local preparation evidence.
+
+The [CI workflow](.github/workflows/ci.yml) checks repository contents, script syntax, native tests, the Release build and packaged resources/CLI. Hardware checks and the complete manual VoiceOver audit remain separate. Raw logs stay local and are excluded from Git. A successful smoke test does not demonstrate complete ISO conformance.
+
+To check the repository and regenerate the feature report after a real test run:
 
 ```sh
 python3 scripts/check-repository.py
@@ -79,34 +89,42 @@ python3 scripts/check-repository.py
 python3 Development/verify-features.py
 ```
 
+## Command-line and automation examples
+
 ```sh
-# L’eseguibile all’interno del bundle funziona anche senza interfaccia.
+# The bundled executable also works without opening the interface.
 dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli merge Unione.pdf A.pdf B.pdf
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli extract A.pdf Estratto.pdf '1-3,5'
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4f Rapporto.json
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli merge Merged.pdf A.pdf B.pdf
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli extract A.pdf Extracted.pdf '1-3,5'
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4f Report.json
 ```
 
-`validate-pdfa` restituisce 0 per conforme, 2 per violazioni dimostrate, 3 per indeterminato e 1 per errori di uso/I/O. L’esito 0 è riservato alla futura copertura completa e non viene emesso da questa versione.
+`validate-pdfa` returns 0 for conforming, 2 for demonstrated violations, 3 for indeterminate and 1 for usage/I/O errors. Exit code 0 is reserved for future complete coverage and is never emitted by this version.
 
-La CLI rifiuta di sovrascrivere sorgenti e output esistenti salvo `--overwrite` per gli output. Le password si passano tramite `--password-file`, mai direttamente nella riga di comando. Nessuna chiave o password viene conservata nei preset o nella cronologia.
+The CLI refuses to overwrite inputs or existing outputs unless `--overwrite` is explicitly used for outputs. Supply passwords through `--password-file`, never directly on the command line. Keys and passwords are not stored in presets or history. Full syntax is in the [CLI guide](docs/CLI.md).
 
-Il dizionario AppleScript espone:
+The AppleScript dictionary exposes:
 
 ```applescript
 tell application id "it.cartapdf.editor"
-    merge PDFs files {"/percorso/A.pdf", "/percorso/B.pdf"} destination "/percorso/Unione.pdf"
+    merge PDFs files {"/path/A.pdf", "/path/B.pdf"} destination "/path/Merged.pdf"
 end tell
 ```
 
-Per Comandi Rapidi cerca l’azione **Unisci PDF** di CartaPDF dopo aver aperto l’app. La CLI e l’Intent sono verificati automaticamente; il dispatch dal programma Script Editor è da verificare manualmente.
+For Shortcuts, look for CartaPDF's **Unisci PDF** action after opening the app. The CLI and Intent have automated checks; dispatch from Script Editor still requires manual verification.
 
-## Sorgenti
+## Source layout and bundled data
 
-`PDFEditorModel`, `PDFWorkspaceDocument` e `PDFCanvas` gestiscono documento, undo e interazione. `PDFWorkflow*` contiene organizzazione e batch; `PDFScanExport*` e `PDFLocalLibrary` gestiscono scansioni, conversioni e biblioteca; `PDFStructure*` contiene lettura/scrittura strutturale e certificati; `CartaWorkspaceServices`, `CartaRenderingServices`, `CartaVisualTools`, `CartaFileIO` e `CartaAutomation` gestiscono preferenze, recupero, memoria, confronto, scritture e automazioni. Il catalogo è in `ToolBrowserView`.
+`PDFEditorModel`, `PDFWorkspaceDocument` and `PDFCanvas` manage document state, undo and interaction. `PDFWorkflow*` implements organization and batch workflows; `PDFScanExport*` and `PDFLocalLibrary` handle scanning, conversion and the library. `PDFStructure*` contains structural reading/writing and certificates. `CartaWorkspaceServices`, `CartaRenderingServices`, `CartaVisualTools`, `CartaFileIO` and `CartaAutomation` cover preferences, recovery, memory, comparison, writes and automation. `ToolBrowserView` contains the tool catalogue. See the [architecture guide](docs/ARCHITECTURE.md).
 
-I cataloghi XML PDF/A originali veraPDF sono dati sotto licenza **CC BY 4.0**; i dati Adobe CMap/AGL e PDF-to-Unicode sono sotto **BSD a 3 clausole**. Le licenze dei dati sono distinte dalla licenza MIT del codice. Il bundle e i sorgenti includono attribuzione, licenze e manifest con hash in `Resources/PDFAProfiles` e `Resources/PDFFontData`. Non includono il motore Java, toolkit Adobe o altri framework esterni. Il corpus ufficiale di sviluppo è acquisito separatamente e non è incluso nell’app.
+The original veraPDF XML catalogues are **CC BY 4.0** data. Adobe CMap/AGL and PDF-to-Unicode data use **3-clause BSD** licenses. Their licenses are separate from the code's MIT license. Both the app bundle and sources include attribution, licenses and hashed manifests under `Resources/PDFAProfiles` and `Resources/PDFFontData`. No Java validation engine, Adobe toolkit or external runtime framework is included. The external development corpus is acquired separately and is not bundled with the app.
 
-## Licenza
+## Support and contributions
 
-Codice originale sotto [MIT](LICENSE). I dati inclusi mantengono le licenze e attribuzioni descritte in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Le specifiche ISO e il corpus esterno non vengono redistribuiti.
+Read [SUPPORT.md](SUPPORT.md) for questions and bug reports, [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes, and [SECURITY.md](SECURITY.md) for vulnerability reporting. Use the English issue and pull-request templates. Prefer synthetic or redacted reproductions; never include private PDFs, passwords, keys or confidential raw logs.
+
+The repository is prepared for a future public source release. Visibility changes, branch protections and binary distribution are separate owner decisions described in [PUBLIC_RELEASE.md](docs/PUBLIC_RELEASE.md).
+
+## License
+
+Original code and project documentation are available under [MIT](LICENSE). Bundled data retains the licenses and attribution in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). ISO specifications and the external corpus are not redistributed.

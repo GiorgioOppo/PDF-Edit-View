@@ -1,55 +1,55 @@
-# Validazione PDF/A: leggere correttamente i risultati
+# PDF/A validation: interpreting results
 
-**CartaPDF 3.6.0 non è un validatore ISO PDF/A completo e non emette l'esito globale `conforming`.** Il rapporto distingue violazioni dimostrate, verifiche incomplete e condizioni verificate nel perimetro implementato.
+**CartaPDF 3.6.0 is not a complete ISO PDF/A validator and does not emit the overall `conforming` verdict.** Its report distinguishes demonstrated violations, incomplete checks, and conditions verified within the implemented scope.
 
-Il motore è scritto in Swift e usa soltanto framework Apple. I cataloghi originali veraPDF sono dati XML locali sotto CC BY 4.0; non viene incluso il motore Java veraPDF.
+The engine is written in Swift and uses only Apple frameworks. Original veraPDF catalogues are local XML data under CC BY 4.0; the veraPDF Java engine is not included.
 
-## Profili e cataloghi
+## Profiles and catalogues
 
-| Famiglia | Profili | Voci del catalogo per profilo |
+| Family | Profiles | Catalogue entries per profile |
 | --- | --- | --- |
 | PDF/A-1 | 1a, 1b | 135, 129 |
 | PDF/A-2 | 2a, 2b, 2u | 153, 144, 146 |
 | PDF/A-3 | 3a, 3b, 3u | 155, 146, 148 |
-| PDF/A-4 | 4, 4e, 4f | 111 ciascuno |
+| PDF/A-4 | 4, 4e, 4f | 111 each |
 
-Le **1489 voci** includono condizioni condivise tra profili; non sono 1489 implementazioni indipendenti. Il catalogo fissato al commit `b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc` è verificato tramite SHA-256. La completezza dell'inventario non prova la completezza delle semantiche ISO 32000 sottostanti.
+The **1489 entries** include conditions shared across profiles; they are not 1489 independent implementations. The catalogue pinned to commit `b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc` is verified with SHA-256. A complete inventory does not prove complete coverage of the underlying ISO 32000 semantics.
 
-## Esito del documento
+## Document verdict
 
-| Esito | Interpretazione |
+| Verdict | Interpretation |
 | --- | --- |
-| `nonconforming` | Almeno una violazione è dimostrata dai controlli implementati. |
-| `indeterminate` | Nessuna violazione dimostrata, ma rimangono obblighi, parsing, risorse o verifiche incompleti; anche cancellazione e budget possono impedire la conclusione. |
-| `conforming` | Riservato a una futura copertura integrale dimostrata; disabilitato nella versione corrente. |
+| `nonconforming` | At least one violation is demonstrated by the implemented checks. |
+| `indeterminate` | No demonstrated violation, but obligations, parsing, resources, or checks remain incomplete; cancellation and budgets may also prevent a conclusion. |
+| `conforming` | Reserved for future demonstrated complete coverage; disabled in the current version. |
 
-Il risultato `passed` di una condizione riguarda quella condizione, nel contesto descritto. `notApplicable` riguarda solo gli oggetti indicizzati esplicitamente dal controllo. `notVerified` e `scopeGaps` non possono essere interpretati come superati. Il rapporto conserva SHA-256 dei byte analizzati e controlli aggiuntivi del modello separati dalle voci del catalogo.
+A condition's `passed` result applies to that condition in its stated context. `notApplicable` applies only to objects explicitly indexed by the check. `notVerified` and `scopeGaps` cannot be interpreted as passing results. The report retains the SHA-256 hash of the analyzed bytes and additional model checks separate from catalogue entries.
 
-## Perimetro implementato
+## Implemented scope
 
-I controlli includono sintassi fisica e riferimenti supportati, font e mapping Unicode, RDF/XMP, ICC/spazi colore, funzioni PDF, grafica modellata, annotazioni, moduli, OCG, allegati e firme. La versione 3.6 aggiunge schema dei colori calibrati/Indexed/Separation/DeviceN, alias stream/Metadata, elementi multiprocesso ICC, coordinate e agganci TrueType e attributi strutturali standard.
+Checks include supported physical syntax and references, fonts and Unicode mapping, RDF/XMP, ICC/color spaces, PDF functions, modeled graphics, annotations, forms, OCGs, attachments, and signatures. Version 3.6 adds calibrated/Indexed/Separation/DeviceN color-space schemas, stream/Metadata aliases, ICC multiprocess elements, TrueType coordinates and point attachments, and standard structure attributes.
 
-Restano incomplete semantiche integrali ISO 32000/PDF 2.0, codec e payload avanzati, esecuzione font/hinting, colorimetria e funzioni sull'intero dominio, alcune forme XMP, significato della struttura logica, U3D/PRC/Engineering e riconciliazione normativa integrale. L'elenco tecnico autorevole è [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md), con le evidenze dei moduli collegate.
+Complete ISO 32000/PDF 2.0 semantics, advanced codecs and payloads, font execution/hinting, colorimetry and functions over their entire domains, some XMP forms, logical structure meaning, U3D/PRC/Engineering, and full normative reconciliation remain incomplete. The authoritative technical list is [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md), with linked module evidence.
 
-Il validatore legge una fotografia dei byte e non modifica il PDF. Sono applicati limiti espliciti, tra cui 512 MiB di input e 256 MiB per stream decodificato, oltre a conteggi e profondità delimitati. Il limite raggiunto produce incompletezza; non prova validità. Payload, programmi font e allegati non vengono eseguiti.
+The validator reads a byte snapshot without modifying the PDF. Explicit limits include 512 MiB of input and 256 MiB per decoded stream, with bounded counts and depths. Reaching a limit makes verification incomplete; it does not prove validity. Payloads, font programs, and attachments are not executed.
 
-## Generazione e identificazione
+## Generation and identification
 
-L'opzione Apple `kCGPDFContextCreatePDFA` richiede la generazione archivistica e non certifica l'output. Il livello dichiarato viene letto dai byte: nella fixture verificata, richiedere 2u ha prodotto un documento dichiarato 2b, correttamente distinto dal profilo richiesto. CartaPDF non alza artificialmente il livello XMP.
+Apple's `kCGPDFContextCreatePDFA` option requests archival generation and does not certify the output. The declared level is read from the bytes: in the verified fixture, requesting 2u produced a document declaring 2b, correctly distinguished from the requested profile. CartaPDF does not artificially raise the XMP level.
 
-Identificazione XMP, generazione e validazione sono tre fatti separati. Un documento che dichiara un profilo o viene visualizzato correttamente può comunque violarne i requisiti.
+XMP identification, generation, and validation are three separate facts. A document that declares a profile or renders correctly can still violate its requirements.
 
-## Evidenze della versione 3.6
+## Version 3.6 evidence
 
-- 512 test XCTest superati, zero errori, nell'esecuzione registrata.
-- Binario Release estratto dal pacchetto: 2164 PDF del corpus analizzati senza errori di esecuzione, con 1509 esiti `nonconforming` e 655 `indeterminate`.
-- Matrice CLI per tutti gli undici profili e fixture positive/negative dei nuovi controlli colore.
-- Risorse e firma ad hoc del bundle estratto verificate; input delle prove invariati.
+- 512 XCTest tests passed with zero failures in the recorded execution.
+- Release binary extracted from the package: 2164 corpus PDFs analyzed without execution errors, producing 1509 `nonconforming` and 655 `indeterminate` verdicts.
+- CLI matrix for all eleven profiles and positive and negative fixtures for the new color checks.
+- Extracted bundle resources and ad hoc signature verified; test inputs unchanged.
 
-Il corpus fissato contiene directory per nove profili, senza 3a e 3u. Questi ultimi sono esercitati dalla matrice nativa, senza attribuire loro una copertura indipendente del corpus. La relazione automatica tra nomi storici delle fixture e regole attuali è provvisoria: i risultati non sono una percentuale di accuratezza o una certificazione ISO.
+The pinned corpus contains directories for nine profiles, without 3a and 3u. The native matrix exercises those profiles without claiming independent corpus coverage for them. Automatic mapping between historical fixture names and current rules is provisional: the results are neither an accuracy percentage nor ISO certification.
 
-Fonti dei risultati: [FeatureVerification](../Development/FeatureVerification.json), [CorpusEvidence](../Development/PDFA-CorpusEvidence.json), [ReleaseVerification](../Development/ReleaseVerification.json) e [copertura](../Development/PDFA-ValidatorCoverage.json).
+Result sources: [FeatureVerification](../Development/FeatureVerification.json), [CorpusEvidence](../Development/PDFA-CorpusEvidence.json), [ReleaseVerification](../Development/ReleaseVerification.json), and [coverage](../Development/PDFA-ValidatorCoverage.json).
 
-## Contribuire al validatore
+## Contributing to the validator
 
-Una nuova condizione richiede una fonte primaria con edizione/clausola, un ambito semantico esplicito, fixture positive e negative e trattamento separato di casi ambigui, privati, cancellati o limitati. Una regressione va isolata nei byte o nel modello pertinente. Non rimuovere `scopeGaps` solo perché passano test o cataloghi: deve essere dimostrata la copertura dell'obbligo normativo corrispondente.
+A new condition requires a primary source with edition and clause, an explicit semantic scope, positive and negative fixtures, and separate handling of ambiguous, private, canceled, or limited cases. Isolate a regression in the relevant bytes or model. Do not remove `scopeGaps` merely because tests or catalogues pass: coverage of the corresponding normative obligation must be demonstrated.

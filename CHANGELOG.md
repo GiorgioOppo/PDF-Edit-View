@@ -1,47 +1,48 @@
 # Changelog
 
-Le voci descrivono implementazioni ed evidenze disponibili. Un test superato non attesta conformità normativa oltre al perimetro documentato. CartaPDF rimane gratuita, locale e basata soltanto su framework Apple.
+Entries describe implementations and available evidence. Passing a test does not attest normative conformity beyond the documented scope. CartaPDF remains free, local and based only on Apple frameworks.
 
-## Non rilasciato
+## Unreleased
 
-- Preparazione del repository GitHub privato per una futura pubblicazione dei sorgenti.
-- Guide d'uso, compilazione, CLI, architettura, privacy, PDF/A e accessibilità.
-- Policy per contributi, supporto, sicurezza, condotta e attribuzione dei dati.
-- Risorse SwiftPM trovate nei layout flat/Contents e accanto ai prodotti XCTest, con percorso di test esplicito e verifica CLI del bundle su undici profili.
-- Identità dei link salvata anche nella voce locale /CartaPDFLinkID per compensare la perdita di /NM in PDFKit su macOS 15; compatibilità con i link precedenti e protezione dei marker incoerenti. Prove su salvataggio, riapertura, rimozione, undo e cifratura.
-- Valori export dei moduli verificati nei byte PDF invece di getter variabili tra macOS.
-- CI Xcode26.3 con SDK che espone SecIdentityCreate; composizione delle fixture binarie con append lineari per evitare timeout del type checker.
-- Compatibilità del percorso firme: il percorso di errore della firma conserva il CFError nativo o restituisce separatamente un errore Security interno, senza conversioni forzate tra i due tipi.
-- Nessuna nuova versione dell'app o nuova certificazione implicita nelle modifiche di documentazione.
+- English README, documentation, contribution and support policies, and GitHub issue and pull request templates. Added a usage and documentation question form; the app interface remains Italian.
+- Prepared the private GitHub repository for future source publication.
+- Added guides for usage, building, the CLI, architecture, privacy, PDF/A and accessibility.
+- Added contribution, support, security, conduct and data attribution policies.
+- Discover SwiftPM resources in flat and Contents layouts and beside XCTest products, with an explicit test path and packaged CLI verification across eleven profiles.
+- Save link identity in the local `/CartaPDFLinkID` entry to handle PDFKit dropping `/NM` on macOS 15. Preserve compatibility with earlier links and protect against inconsistent markers. Tests cover saving, reopening, removal, undo and encryption.
+- Verify form export values in PDF bytes instead of convenience getters whose behavior varies across macOS versions.
+- Use Xcode 26.3 in CI with an SDK exposing `SecIdentityCreate`; construct binary fixtures with linear appends to avoid type-checker timeouts.
+- Improve signing error compatibility: preserve the native `CFError` or throw a separate internal Security error, without forced conversions between the types.
+- Documentation changes do not imply a new app release or certification.
 
 ## 3.6.0 — 2026-10-18
 
-- Schema degli spazi colore calibrati, Indexed, Separation e DeviceN, con confronti numerici esatti e limiti espliciti.
-- Risoluzione degli alias canonici per stream Contents, Metadata, decode e identità dei profili ICC.
-- Elementi multiprocesso ICC: canali, matrici, CLUT, curve e tipi supportati.
-- Coordinate e bounds TrueType, agganci point-to-point dei compositi e massimi aggregati maxp.
-- Attributi strutturali standard Layout/List/Table/PrintField e UserProperties, revisioni e precedenza.
-- 512 test nativi superati, zero errori; 2164 PDF del corpus eseguiti sul binario Release senza errori di esecuzione. I risultati globali restano 1509 nonconforming e 655 indeterminate.
-- Matrice CLI degli undici profili e fixture dei nuovi controlli colore. La validazione ISO PDF/A integrale resta incompleta e l'esito conforme è disabilitato.
+- Added schema checks for calibrated, Indexed, Separation and DeviceN color spaces, with exact numeric comparisons and explicit limits.
+- Resolve canonical aliases for Contents and Metadata streams, decoding and ICC profile identity.
+- Added ICC multi-process element checks for channels, matrices, CLUTs, curves and supported types.
+- Added TrueType coordinate and bounds checks, composite point-to-point attachment checks and aggregate `maxp` limits.
+- Added standard Layout/List/Table/PrintField and UserProperties structure attribute checks, revisions and precedence.
+- Passed 512 native tests with zero failures. Executed 2,164 corpus PDFs against the Release binary without execution errors. Overall results remain 1,509 `nonconforming` and 655 `indeterminate`.
+- Verified the CLI matrix for eleven profiles and fixtures for the new color checks. Complete ISO PDF/A validation remains unfinished, and a conforming result is disabled.
 
-Evidenze: [ambito](Development/PDFA-ValidatorScope.md), [release](Development/ReleaseVerification.json), [corpus](Development/PDFA-CorpusEvidence.json), [funzionalità](Development/FeatureVerification.json).
+Evidence: [scope](Development/PDFA-ValidatorScope.md), [release](Development/ReleaseVerification.json), [corpus](Development/PDFA-CorpusEvidence.json), [features](Development/FeatureVerification.json).
 
 ## 3.5.0 — 2026-10-18
 
-- Controlli nativi delle funzioni PDF 0/2/3/4 raggiunte tramite riferimenti semantici, con dimensionalità, Domain/Range e audit calculator nei percorsi deterministici.
-- Alias indiretti delimitati, identità terminali ed eredità delle voci pagina con null/indefiniti.
-- Modello meccanico della struttura logica, IDTree/ParentTree, MCID/OBJR, classi e namespace supportati.
-- Payload ICC pseq/ncl2/psid, cmap8 supplementare e audit Type2 delimitato.
-- 447 test nativi superati; 2164 PDF del corpus eseguiti senza errori di esecuzione. Nuovi risultati del modello riesaminati separatamente.
+- Added native checks for PDF functions 0/2/3/4 reached through semantic references, including dimensionality, Domain/Range and calculator audits in deterministic paths.
+- Added bounded indirect aliases, terminal identities and page entry inheritance with null or undefined values.
+- Added a mechanical model of logical structure, IDTree/ParentTree, MCID/OBJR, classes and supported namespaces.
+- Added ICC pseq/ncl2/psid payload checks, supplementary cmap8 checks and a bounded Type2 audit.
+- Passed 447 native tests and executed 2,164 corpus PDFs without execution errors. New model results were reviewed separately.
 
 ## 3.4.0 — 2026-10-18
 
-- Controlli ICC v2/v4 ulteriori e correzioni delle condizioni dipendenti dall'edizione.
-- Contesti xref storici e inventario ObjStm più rigorosi.
-- Inventario CFF CID/FD e cmap aggiuntive; URI XMP con risoluzione RFC3986 locale.
-- Framing U3D supportato senza attestare geometria o payload PRC.
-- 367 test nativi superati; 2164 PDF del corpus eseguiti senza errori di esecuzione.
+- Added further ICC v2/v4 checks and corrected edition-dependent conditions.
+- Made historical xref contexts and the ObjStm inventory stricter.
+- Added CFF CID/FD and additional cmap inventory checks, and local RFC 3986 resolution for XMP URIs.
+- Added supported U3D framing checks without attesting geometry or PRC payloads.
+- Passed 367 native tests and executed 2,164 corpus PDFs without execution errors.
 
-## Versioni precedenti
+## Earlier versions
 
-Gli strumenti di editing, organizzazione, OCR, conversione, moduli, firme e automazione sono inventariati nei [150 requisiti](Development/FeatureRequirements.json). I dettagli storici dei controlli del validatore e delle regressioni si trovano nelle evidenze di Development. Non viene ricostruita una cronologia di release precedente senza prove corrispondenti.
+Editing, organization, OCR, conversion, form, signing and automation tools are inventoried in the [150 requirements](Development/FeatureRequirements.json). Historical validator checks and regressions are detailed in the Development evidence. Earlier release history is not reconstructed without corresponding evidence.

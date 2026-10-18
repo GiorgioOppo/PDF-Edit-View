@@ -1,23 +1,23 @@
-# Sicurezza
+# Security
 
-CartaPDF è un progetto in sviluppo. Non è dichiarato un audit di sicurezza completo e non è promesso un servizio di risposta entro tempi prestabiliti. Le correzioni vengono valutate sulla versione corrente; non è definita una politica di backport per versioni precedenti.
+CartaPDF is under development. No complete security audit is claimed, and no response time is guaranteed. Fixes are evaluated against the current version; there is no defined backport policy for earlier versions.
 
-## Segnalare una vulnerabilità
+## Report a vulnerability
 
-Se nella scheda **Security** del repository è disponibile **Report a vulnerability**, usa quel canale privato di GitHub. La sua presenza dipende dall'abilitazione del private vulnerability reporting da parte del proprietario: questo documento non ne presume l'attivazione.
+If **Report a vulnerability** is available in the repository's **Security** tab, use that private GitHub channel. Its availability depends on the owner enabling private vulnerability reporting; this document does not assume it is enabled.
 
-Se il canale non è disponibile, non pubblicare exploit, credenziali o documenti riservati in un'issue. Puoi aprire un'issue neutra chiedendo di abilitare un canale privato, senza dettagli sensibili, e attendere un contatto concordato prima di trasmettere la prova. Non è indicato un indirizzo email non verificato.
+If that channel is unavailable, do not publish exploits, credentials or confidential documents in an issue. You may open a neutral issue asking for a private channel to be enabled, without sensitive details, and wait for an agreed contact method before sharing evidence. No unverified email address is listed.
 
-Una segnalazione utile contiene versione dell'app e di macOS, componente interessato, impatto osservato, sequenza minima di riproduzione e fixture sintetica. Condividi solo dati che puoi redistribuire e rimuovi password, chiavi private e informazioni personali. Mantieni i dettagli riservati finché non è concordata la divulgazione.
+A useful report includes the app and macOS versions, affected component, observed impact, minimal reproduction steps and a synthetic fixture. Share only data you may redistribute, and remove passwords, private keys and personal information. Keep details confidential until disclosure has been agreed.
 
-## Perimetro
+## Scope
 
-Sono rilevanti, tra gli altri, esposizione di dati, scritture inattese, perdita di cifratura non segnalata, gestione non sicura di file/PDF malformati, aggiramento dei limiti e interpretazioni pericolose di contenuti esterni. Una lacuna normativa documentata del validatore PDF/A è normalmente un problema di correttezza; può avere implicazioni di sicurezza se causa una falsa attestazione o un comportamento sfruttabile.
+Relevant issues include data exposure, unexpected writes, unreported loss of encryption, unsafe handling of malformed files or PDFs, bypassed limits and dangerous interpretation of external content. A documented gap in the PDF/A validator is normally a correctness issue; it may have security implications if it causes a false attestation or exploitable behavior.
 
-L'app elabora localmente, ma file locali e PDF non attendibili possono comunque attivare parser e framework nativi. I budget e la cancellazione riducono alcuni rischi e non equivalgono a una sandbox o a una prova formale di sicurezza.
+The app processes data locally, but local files and untrusted PDFs can still exercise native parsers and frameworks. Resource budgets and cancellation reduce some risks; they are not a sandbox or a formal proof of security.
 
-## Protezione dei dati
+## Protect your data
 
-Non inviare documenti riservati al repository. L'app può conservare indice testuale, versioni e recupero sul Mac; consulta [PRIVACY](docs/PRIVACY.md). La firma ad hoc delle build locali non certifica l'identità dell'editore. Non è attestata validazione legale delle firme, revoca aggiornata o conformità ISO integrale.
+Do not send confidential documents to the repository. The app may keep a text index, versions and recovery data on the Mac; see [PRIVACY](docs/PRIVACY.md). Ad hoc signing of local builds does not certify the publisher's identity. Legal signature validation, current revocation information and complete ISO conformity are not attested.
 
-Se una credenziale è stata inserita in Git o condivisa accidentalmente, revocala o ruotala tramite il servizio competente. Rimuovere il file dall'ultimo commit non elimina le copie nella storia o nei cloni.
+If a credential is accidentally committed to Git or shared, revoke or rotate it through the relevant service. Removing a file from the latest commit does not remove copies from history or clones.

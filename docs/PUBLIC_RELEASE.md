@@ -1,34 +1,34 @@
-# Preparazione alla pubblicazione pubblica
+# Preparing for public release
 
-Il repository [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) nasce privato. Questa documentazione prepara una futura apertura dei sorgenti; **non autorizza né esegue il cambio di visibilità e non pubblica automaticamente binari**. Il nome del progetto è PDF-Edit&View, con slug GitHub PDF-Edit-View, mentre l'app resta CartaPDF 3.6.0.
+The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository was created as private. This documentation prepares a future source release; **it neither authorizes nor changes visibility, and it does not automatically publish binaries**. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app remains CartaPDF 3.6.0.
 
-## Contenuti del repository
+## Repository contents
 
-Il repository sorgente deve comprendere codice, test, risorse e relative licenze, script, guide e prove tecniche selezionate. Cartelle di build, bundle, archivi di distribuzione, corpus acquisiti, documenti personali, password, chiavi private e credenziali devono restare fuori da Git. Verifica sia i file tracciati sia la storia dei commit prima di rendere il repository pubblico: aggiungere una regola a `.gitignore` non rimuove dati già registrati.
+The source repository should include code, tests, resources and their licenses, scripts, guides, and selected technical evidence. Build directories, bundles, distribution archives, acquired corpora, personal documents, passwords, private keys, and credentials must stay out of Git. Check both tracked files and commit history before making the repository public: adding a `.gitignore` rule does not remove previously committed data.
 
-I rapporti storici in Development descrivono la release indicata e possono contenere percorsi o nomi di fixture. Conserva la validità dell'evidenza, ma pubblica solo dati che puoi condividere. Non aggiornare un hash o un esito a mano per far apparire recente una verifica.
+Historical reports in Development describe the stated release and may contain paths or fixture names. Preserve the validity of the evidence, but publish only data you can share. Do not edit a hash or result by hand to make verification appear recent.
 
-## Prima di cambiare visibilità
+## Before changing visibility
 
-1. Riesamina diff e storia per credenziali, documenti personali, percorsi identificativi, contenuti riservati e materiale non redistribuibile.
-2. Verifica che licenze MIT, CC BY 4.0 e BSD siano presenti, con attribuzioni e manifest nelle due copie delle risorse.
-3. Controlla link relativi, istruzioni di build, versione, limiti PDF/A e stato dell'audit VoiceOver.
-4. Esegui i controlli di repository e la suite nativa appropriata; documenta separatamente l'ultima esecuzione reale e i limiti dell'ambiente.
-5. Verifica le impostazioni GitHub: branch predefinito, permessi collaboratori, Actions, protezioni disponibili, canali di segnalazione e private vulnerability reporting se desiderato e disponibile.
-6. Il proprietario decide esplicitamente il passaggio da privato a pubblico, dopo aver verificato i contenuti effettivamente inviati.
+1. Review the diff and history for credentials, personal documents, identifying paths, confidential content, and material that cannot be redistributed.
+2. Check that MIT, CC BY 4.0, and BSD licenses are present, with attributions and manifests in both resource copies.
+3. Check relative links, build instructions, version, PDF/A limitations, and VoiceOver audit status.
+4. Run repository checks and the appropriate native suite; document the latest actual execution and environment limits separately.
+5. Check GitHub settings: default branch, collaborator permissions, Actions, available protections, reporting channels, and private vulnerability reporting if desired and available.
+6. The owner explicitly decides to change visibility from private to public after checking the content actually pushed.
 
-Non è richiesta una pubblicazione App Store per distribuire i sorgenti MIT. Una distribuzione binaria verificata ha requisiti operativi diversi dalla sola apertura del codice.
+An App Store release is not required to distribute the MIT sources. Verified binary distribution has different operational requirements from opening the source code.
 
-## Prima di distribuire un binario
+## Before distributing a binary
 
-- Compila da un commit identificato e verifica l'app realmente estratta dall'archivio finale.
-- Registra versione, architettura, toolchain, SHA-256 e risultati delle prove pertinenti.
-- Controlla le risorse fuori dal workspace e la firma sul bundle estratto.
-- Se desideri una distribuzione firmata per il pubblico, prepara firma Developer ID e notarizzazione con un account e credenziali autorizzati; la firma ad hoc attuale non le sostituisce.
-- Allega licenze, istruzioni, limiti e changelog. Pubblica artefatti solo dopo averne verificato provenienza e contenuto.
+- Build from an identified commit and verify the app actually extracted from the final archive.
+- Record the version, architecture, toolchain, SHA-256 hashes, and relevant test results.
+- Check resources outside the workspace and the signature on the extracted bundle.
+- For signed public distribution, prepare Developer ID signing and notarization with an authorized account and credentials; the current ad hoc signature does not replace them.
+- Include licenses, instructions, limitations, and a changelog. Publish artifacts only after verifying their provenance and contents.
 
-Nessuna release deve chiamare CartaPDF “validatore ISO PDF/A completo”, “certificato PDF/UA”, “PAdES completo” o equivalente finché la relativa copertura non è dimostrata. Il corpus, i cataloghi e i test sono evidenze limitate al loro ambito.
+No release should describe CartaPDF as a “complete ISO PDF/A validator,” “PDF/UA certified,” “complete PAdES,” or equivalent until the corresponding coverage is demonstrated. The corpus, catalogues, and tests provide evidence within their stated scope.
 
-## Priorità tecniche aperte
+## Open technical priorities
 
-Le lacune concrete sono documentate in [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md) e [FeatureVerification](../Development/FeatureVerification.json). Tra le verifiche aperte figurano semantiche normative integrali, audit VoiceOver completo, scanner/cattura/audio reali e dispatch AppleScript. Non vengono assegnate date o promesse di completamento non verificate.
+Specific gaps are documented in [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md) and [FeatureVerification](../Development/FeatureVerification.json). Outstanding checks include complete normative semantics, a full VoiceOver audit, real scanner/capture/audio workflows, and AppleScript dispatch. No unverified completion dates or promises are assigned.

@@ -1,85 +1,84 @@
-# Compilazione e verifica
+# Building and verification
 
-## Requisiti
+## Requirements
 
-- **Esecuzione dell’app:** macOS14 o successivo.
-- **Compilazione e test:** una versione di macOS compatibile con Xcode. Per Xcode26.3 Apple indica Sequoia15.6–Tahoe26.x; consulta i [requisiti ufficiali](https://developer.apple.com/xcode/system-requirements) per la toolchain scelta.
-- Xcode completo con SDK macOS recente; la CI usa Xcode26.3. Il manifest Swift Package Manager usa il formato Swift tools5.9, che non indica la disponibilità di tutte le API nei vecchi SDK. Le fixture crittografiche usano SecIdentityCreate, esposto dagli SDK recenti, senza scrivere nel Portachiavi.
-- Strumenti Apple disponibili tramite `xcrun`.
-- Python 3 solo per gli script di sviluppo e i rapporti; non è una dipendenza dell'app.
+- **Running the app:** macOS 14 or later.
+- **Building and testing:** a macOS version supported by the selected Xcode release. Apple lists Sequoia 15.6–Tahoe 26.x for Xcode 26.3; consult the [official requirements](https://developer.apple.com/xcode/system-requirements) for your toolchain.
+- A full Xcode installation with a recent macOS SDK; CI uses Xcode 26.3. The Swift Package Manager manifest uses Swift tools 5.9 format, which does not imply that every API is available in older SDKs. Cryptographic fixtures use `SecIdentityCreate`, exposed by recent SDKs, without writing to Keychain.
+- Apple tools available through `xcrun`.
+- Python 3 for development scripts and reports only; it is not an app dependency.
 
-Il pacchetto non dichiara dipendenze Swift esterne. I framework runtime sono quelli Apple elencati nel [rapporto delle funzionalità](../Development/FeatureVerification.json). I cataloghi PDF/A e le tabelle font sono dati locali con licenze proprie.
+The package declares no external Swift dependencies. Its runtime frameworks are the Apple frameworks listed in the [feature report](../Development/FeatureVerification.json). PDF/A catalogues and font tables are local data with separate licenses.
 
-Le evidenze della versione 3.6.0 riguardano il bundle Apple Silicon. Una compilazione su altre architetture non equivale a una verifica di quella piattaforma. Non è documentato un bundle universale verificato.
+The evidence for version 3.6.0 covers the Apple Silicon bundle. Building for another architecture does not verify that platform. No verified universal bundle is documented.
 
-## Compilare
+## Build
 
-Dalla radice del repository:
+From the repository root:
 
 ```sh
 ./scripts/build-app.sh
 open dist/CartaPDF.app
 ```
 
-Lo script compila in Release, assembla l'app, genera l'icona, include dizionario AppleScript e metadati App Intents e applica una firma ad hoc locale. `--no-sign` omette la firma. La build ricrea `dist/CartaPDF.app`; conserva altrove eventuali copie che vuoi mantenere.
+The script builds in Release configuration, assembles the app, generates its icon, includes the AppleScript dictionary and App Intents metadata, and applies a local ad hoc signature. `--no-sign` skips signing. The build recreates `dist/CartaPDF.app`; keep any copies you want to preserve elsewhere.
 
-Se è selezionato solo Command Line Tools e Xcode si trova nella posizione standard, gli script scelgono Xcode per il singolo processo. Non modificano `xcode-select` globale. Per usare un'altra installazione:
+If only Command Line Tools is selected and Xcode is installed at the standard location, the scripts select Xcode for that process. They do not change the global `xcode-select` setting. To use another installation:
 
 ```sh
-DEVELOPER_DIR="/percorso/Xcode.app/Contents/Developer" ./scripts/build-app.sh
+DEVELOPER_DIR="/path/to/Xcode.app/Contents/Developer" ./scripts/build-app.sh
 ```
 
-La firma ad hoc non identifica un editore e non sostituisce firma Developer ID e notarizzazione. Questa procedura prepara una build locale, non pubblica automaticamente binari o release su GitHub.
+An ad hoc signature does not identify a publisher or replace Developer ID signing and notarization. This procedure prepares a local build; it does not automatically publish binaries or GitHub releases.
 
-## Test nativi
+## Native tests
 
 ```sh
 ./scripts/test.sh
 ./scripts/test.sh --filter PDFArchiveColorSpaceChecksTests
 ```
 
-Il runner usa `swift test` e una cartella temporanea separata dalla build Release. Espone al solo processo di test il percorso del bundle di risorse prodotto da SwiftPM, distinto dal checkout, per supportare layout flat e Contents/Resources e prodotti XCTest su versioni diverse. Non accetta le opzioni di selezione test di `xcodebuild`. I test esercitano PDFKit, Vision, WebKit e altre API native; un ambiente senza sessione grafica o con restrizioni del sistema può produrre risultati diversi. Distingui tali problemi dai difetti del codice e documenta ambiente e messaggio effettivo.
+The runner uses `swift test` and a temporary directory separate from the Release build. It exposes the resource bundle produced by SwiftPM to the test process only, independently of the checkout, to support flat and `Contents/Resources` layouts and XCTest products across OS versions. It does not accept `xcodebuild` test selection options. Tests exercise PDFKit, Vision, WebKit, and other native APIs; a system without a graphical session or with system restrictions may produce different results. Distinguish environment issues from code defects and record the actual environment and error message.
 
-Per conservare un nuovo risultato e rigenerare il rapporto funzionale:
+To save a new result and regenerate the feature report:
 
 ```sh
 ./scripts/test.sh > Development/TestResults.log 2>&1
 python3 Development/verify-features.py
 ```
 
-La versione 3.6.0 ha un'evidenza integrata di **512 test superati e zero errori**. Il conteggio descrive quella esecuzione: una modifica successiva richiede una nuova verifica appropriata.
+Version 3.6.0 has recorded evidence of **512 tests passing with zero failures**. This count describes that execution; subsequent changes require appropriate new verification.
 
-I log grezzi `*.log` sono esclusi da Git per evitare la pubblicazione involontaria di percorsi e diagnostica locale. I comandi sopra li rigenerano sul Mac; i rapporti JSON versionati conservano i risultati selezionati e la provenienza documentata.
+Raw `*.log` files are excluded from Git to avoid unintentionally publishing local paths and diagnostics. The commands above regenerate them on your Mac; versioned JSON reports retain selected results and their documented provenance.
 
-## Integrazione continua
+## Continuous integration
 
-Il workflow [macOS checks](../.github/workflows/ci.yml) usa il runner GitHub `macos-15` Apple Silicon e seleziona esplicitamente Xcode26.3. Esegue `python3 scripts/check-repository.py`, controlli di sintassi, la suite nativa, la build Release e una verifica di firma/architettura e della CLI realmente contenuta nel bundle su tutti gli undici profili. Lo smoke test usa un PDF sintetico senza XMP: richiede cataloghi completi ed esito non conforme, non una falsa conformità. L’azione checkout ufficiale è fissata a un commit SHA; i permessi sono di sola lettura e le credenziali non vengono persistite nel checkout. Dependabot propone aggiornamenti delle Actions.
+The [macOS checks](../.github/workflows/ci.yml) workflow uses GitHub's Apple Silicon `macos-15` runner and explicitly selects Xcode 26.3. It runs `python3 scripts/check-repository.py`, syntax checks, the native suite, a Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
 
-La CI non acquisisce il corpus, non attiva VoiceOver, non pubblica release e non modifica la visibilità del repository. Il risultato locale non sostituisce l’esito del workflow relativo al commit. Se l’immagine GitHub rimuove la toolchain scelta, aggiorna la selezione in una modifica verificata anziché cambiare SDK silenziosamente.
+CI does not acquire the corpus, enable VoiceOver, publish releases, or change repository visibility. A local result does not replace the workflow result for a particular commit. If the GitHub image removes the selected toolchain, update the selection in a verified change instead of silently changing SDKs.
 
+## Resources and manifests
 
-## Risorse e manifest
+The `Resources/PDFAProfiles` and `Resources/PDFFontData` directories are mirrored under `Sources/CartaPDF/Resources` for SwiftPM. The build script checks that they match. Update both copies together and preserve licenses, attributions, and manifests. Pinned catalogue hashes are also verified in Swift code: updating the manifest alone does not update the validator's integrity checks.
 
-Le directory `Resources/PDFAProfiles` e `Resources/PDFFontData` sono replicate sotto `Sources/CartaPDF/Resources` per SwiftPM. Lo script di build ne controlla l'identità. Aggiorna le due copie insieme e conserva licenze, attribuzioni e manifest. Gli hash dei cataloghi fissati sono verificati anche nel codice Swift: aggiornare solo il manifest non aggiorna il contratto del validatore.
+## Development corpus
 
-## Corpus di sviluppo
-
-Il corpus ufficiale viene acquisito separatamente e non è incluso nell'app. La preparazione richiede rete ed è un comando volontario di sviluppo:
+The official corpus is acquired separately and is not included in the app. Preparation requires network access and is an optional development command:
 
 ```sh
-python3 Development/prepare-corpus.py --output /percorso/corpus
+python3 Development/prepare-corpus.py --output /path/to/corpus
 python3 Development/validate-corpus.py \
-  --corpus /percorso/corpus \
+  --corpus /path/to/corpus \
   --executable dist/CartaPDF.app/Contents/MacOS/CartaPDF \
-  --report /percorso/rapporto.json
+  --report /path/to/report.json
 ```
 
-Gli script usano il validatore Swift di CartaPDF, senza incorporare il motore veraPDF. I numeri storici presenti nei nomi delle fixture non sono un oracolo normativo completo; la mappatura automatica nome/regola resta provvisoria. Il corpus fissato contiene casi per nove profili, senza directory 3a e 3u. Vedi [PDFA](PDFA.md).
+The scripts use CartaPDF's Swift validator without incorporating the veraPDF engine. Historical numbers in fixture names are not a complete normative oracle; automatic name-to-rule mapping remains provisional. The pinned corpus contains cases for nine profiles, without 3a or 3u directories. See [PDF/A validation](PDFA.md).
 
-## Evidenze di una release
+## Release evidence
 
-`Development/ReleaseVerification.json`, `PackagingVerification.json`, `BuildManifest.json` e i rapporti dei moduli registrano le prove della release indicata. Non modificarli a mano per dichiarare una nuova verifica. Dopo cambiamenti ai sorgenti o al pacchetto, rigenera solo le evidenze effettivamente rieseguite, conserva la provenienza dei risultati storici e verifica gli hash degli artefatti finali.
+`Development/ReleaseVerification.json`, `PackagingVerification.json`, `BuildManifest.json`, and module reports record evidence for the stated release. Do not edit them by hand to claim new verification. After source or package changes, regenerate only evidence for checks that were actually rerun, preserve the provenance of historical results, and verify final artifact hashes.
 
-Il manifest della release 3.6 fotografa la build verificata prima della preparazione pubblica del repository: include l'hash del README di quella build. Non attesta l'identità dell'intero albero Git dopo gli aggiornamenti della documentazione e non viene rietichettato come una nuova build.
+The version 3.6 release manifest records the verified build from before the repository was prepared for public release, including the README hash from that build. It does not attest to the identity of the entire Git tree after documentation updates and is not relabeled as a new build.
 
-Per una futura distribuzione pubblica segui [PUBLIC_RELEASE](PUBLIC_RELEASE.md). La preparazione del repository non cambia la versione dell'app né certifica i formati prodotti.
+For future public distribution, follow [public release preparation](PUBLIC_RELEASE.md). Preparing the repository does not change the app version or certify its output formats.
