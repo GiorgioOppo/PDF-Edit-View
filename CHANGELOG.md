@@ -7,6 +7,7 @@ Le voci descrivono implementazioni ed evidenze disponibili. Un test superato non
 - Preparazione del repository GitHub privato per una futura pubblicazione dei sorgenti.
 - Guide d'uso, compilazione, CLI, architettura, privacy, PDF/A e accessibilità.
 - Policy per contributi, supporto, sicurezza, condotta e attribuzione dei dati.
+- Compatibilità Xcode16.4: il percorso di errore della firma conserva il CFError nativo o restituisce separatamente un errore Security interno, senza conversioni forzate tra i due tipi.
 - Nessuna nuova versione dell'app o nuova certificazione implicita nelle modifiche di documentazione.
 
 ## 3.6.0 — 2026-10-18

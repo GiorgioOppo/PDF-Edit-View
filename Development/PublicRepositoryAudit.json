@@ -11,9 +11,9 @@
   "local_native_tests": {
     "tests": 512,
     "failures": 0,
-    "seconds": 17.997,
+    "seconds": 17.718,
     "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
-    "log_sha256": "235635a80a749d46f8f22d81d787f3d991133b6ae28c22ca6e19b22961878f34",
+    "log_sha256": "580fea86616d6be4ca676f623e523a55380dec4b2d01234b6e63f323a1a1be10",
     "raw_log_not_tracked": true
   },
   "repository_checks": {
@@ -41,5 +41,21 @@
   "remaining_release_steps": "Owner may explicitly change visibility later and configure protections/security reporting available for the account. Source publication does not publish/notarize a binary.",
   "complete_ISO_PDFA_validation_proven": false,
   "complete_manual_VoiceOver_audit_proven": false,
-  "security_audit_complete": false
+  "security_audit_complete": false,
+  "previous_local_native_tests": {
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.997,
+    "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
+    "log_sha256": "235635a80a749d46f8f22d81d787f3d991133b6ae28c22ca6e19b22961878f34",
+    "raw_log_not_tracked": true
+  },
+  "compiler_compatibility_change": {
+    "file": "Sources/CartaPDF/PDFStructureEngine.swift",
+    "reason": "Xcode16.4 rejects conversion of PDFStructureError into CFError in the signing failure path.",
+    "fix": "Throw the native CFError when provided; otherwise throw the separate PDFStructureError.security fallback.",
+    "source_sha256": "75cb605ac17ab5d7b93722d0156975ac534cb7668300587740cafacad25672cf",
+    "historical_release_manifests_unchanged": true,
+    "application_version_changed": false
+  }
 }

@@ -1192,7 +1192,8 @@ enum PDFLocalCertificateEngine {
         } else { throw PDFStructureError.unsupported("algoritmo della chiave privata") }
         var error: Unmanaged<CFError>?
         guard let signature = SecKeyCreateSignature(key, algorithm, content as CFData, &error) else {
-            throw error?.takeRetainedValue() ?? PDFStructureError.security(errSecInternalComponent) as CFError
+            if let underlying = error?.takeRetainedValue() { throw underlying }
+            throw PDFStructureError.security(errSecInternalComponent)
         }
         let sha256 = PDFDER.sequence(Data([6,9,96,134,72,1,101,3,4,2,1,5,0]))
         let issuerAndSerial = PDFDER.sequence(issuer + serial)
