@@ -13,8 +13,10 @@ args = parser.parse_args()
 app = args.app.resolve()
 resources = app / 'Contents/Resources'
 binary = app / 'Contents/MacOS/CartaPDF'
-subprocess.run(['codesign', '--verify', '--strict', str(app)], check=True, capture_output=True)
-subprocess.run(['lipo', '-verify_arch', 'arm64', str(binary)], check=True, capture_output=True)
+subprocess.run(['/usr/bin/codesign', '--verify', '--strict', str(app)], check=True)
+# Apple lipo requires input files before -verify_arch. Select the Xcode tool,
+# rather than a potentially different executable provided by the runner PATH.
+subprocess.run(['/usr/bin/xcrun', 'lipo', str(binary), '-verify_arch', 'arm64'], check=True)
 profiles = json.loads((resources / 'PDFAProfiles/MANIFEST.json').read_text())
 font = json.loads((resources / 'PDFFontData/MANIFEST.json').read_text())
 for root, entries in [(resources / 'PDFAProfiles', profiles['profiles']), (resources / 'PDFFontData', font['items'])]:
