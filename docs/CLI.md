@@ -10,6 +10,7 @@ dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help
 
 | Command after `--cli` | Result |
 | --- | --- |
+| `language` | JSON with selected/preferred languages, packaged catalogue counts and translated control labels; no preferences are changed. |
 | `info input.pdf` | JSON with page count, encryption, permissions, and extracted character count. |
 | `merge output.pdf input1.pdf input2.pdf ...` | Ordered merge of at least two documents. |
 | `extract input.pdf output.pdf '1-3,5'` | Copy of selected pages, numbered from 1. |
@@ -67,7 +68,7 @@ OCR, flattening, and compression can change selectable text, interactivity, encr
 
 ## Shortcuts and AppleScript
 
-After opening the app, search for **“Unisci PDF”** (Merge PDFs) in Shortcuts. The App Intent receives documents and returns a merged file, preserving the sources. The app's current interface and action labels are in Italian.
+After opening the app, search for **“Merge PDFs”** in Shortcuts. The App Intent receives documents and returns a merged file, preserving the sources. This is the English action title; search for its translated name when using another selected language. See [languages](LOCALIZATION.md).
 
 The AppleScript dictionary exposes:
 

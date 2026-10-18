@@ -120,7 +120,7 @@ final class PDFLocalLibraryTests: XCTestCase {
         let results = try FileManager.default.contentsOfDirectory(at: output, includingPropertiesForKeys: nil).filter { $0.pathExtension == "txt" }
         XCTAssertEqual(Set(results.map(\.lastPathComponent)), Set(["uno.txt", "due.txt"]), watcher.logs.joined(separator: "\n"))
         XCTAssertEqual(probe.startedCount, 3, "Una conversione annullata e due conversioni reali dopo il riavvio.")
-        XCTAssertEqual(watcher.logs.filter { $0.hasPrefix("Creato ") }.count, 2)
+        XCTAssertEqual(watcher.logs.filter { diagnosticHasPrefix($0, "Creato ") }.count, 2)
         XCTAssertFalse(watcher.logs.contains(where: { $0.contains("CancellationError") }))
         for file in results { XCTAssertTrue(try String(contentsOf: file).contains("Testo")) }
         XCTAssertTrue(watcher.active)
@@ -136,7 +136,7 @@ final class PDFLocalLibraryTests: XCTestCase {
         let watcher = LibraryFolderWatcher(); watcher.input = input; watcher.output = alias
         watcher.start(); defer { watcher.stop() }
         XCTAssertFalse(watcher.active)
-        XCTAssertTrue(watcher.logs.last?.contains("collegamento simbolico") == true)
+        XCTAssertTrue(watcher.logs.last.map { diagnosticContains($0, "collegamento simbolico") } == true)
     }
 
     @MainActor

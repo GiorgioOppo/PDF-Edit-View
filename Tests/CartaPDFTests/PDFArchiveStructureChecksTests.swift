@@ -349,7 +349,7 @@ final class PDFArchiveStructureChecksTests: XCTestCase {
             for mime in types {
                 let result = try evaluate(mimeFixture(mime), object: "EmbeddedFile", expression: "Subtype !=", profile: profile)
                 XCTAssertEqual(result.status, .passed, "\(profile.rawValue): \(mime)")
-                XCTAssertTrue(result.detail.contains("Espressione XML storica conservata:"))
+                XCTAssertTrue(diagnosticContains(result.detail, "Espressione XML storica conservata:"))
                 XCTAssertTrue(result.detail.contains("Subtype != null"))
             }
         }

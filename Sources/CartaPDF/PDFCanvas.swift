@@ -20,7 +20,7 @@ struct PDFCanvas: NSViewRepresentable {
         view.minScaleFactor = 0.1
         view.maxScaleFactor = 8
         view.acceptsDraggedFiles = false
-        view.setAccessibilityLabel("Documento PDF")
+        view.setAccessibilityLabel(L10n.tr("Documento PDF"))
         context.coordinator.observe(view)
         context.coordinator.update(view, model: model)
         return view
@@ -163,17 +163,17 @@ final class EditablePDFView: PDFView {
     override var acceptsFirstResponder: Bool { true }
 
     func configureAccessibleActions() {
-        setAccessibilityHelp("Documento PDF. Tab e Maiuscole Tab scorrono le annotazioni e poi escono dal documento. Comando Maiuscole K apre le annotazioni da tastiera.")
+        setAccessibilityHelp(L10n.tr("Documento PDF. Tab e Maiuscole Tab scorrono le annotazioni e poi escono dal documento. Comando Maiuscole K apre le annotazioni da tastiera."))
         setAccessibilityCustomActions([
-            NSAccessibilityCustomAction(name: "Annotazioni da tastiera", handler: { [weak self] in
+            NSAccessibilityCustomAction(name: L10n.tr("Annotazioni da tastiera"), handler: { [weak self] in
                 guard let model = self?.editorModel, !model.isProcessing else { return false }
                 model.showKeyboardEditingWorkspace(); return true
             }),
-            NSAccessibilityCustomAction(name: "Pagina successiva", handler: { [weak self] in
+            NSAccessibilityCustomAction(name: L10n.tr("Pagina successiva"), handler: { [weak self] in
                 guard let model = self?.editorModel, model.currentPageIndex + 1 < model.pageCount else { return false }
                 model.nextPage(); return true
             }),
-            NSAccessibilityCustomAction(name: "Pagina precedente", handler: { [weak self] in
+            NSAccessibilityCustomAction(name: L10n.tr("Pagina precedente"), handler: { [weak self] in
                 guard let model = self?.editorModel, model.currentPageIndex > 0 else { return false }
                 model.previousPage(); return true
             })
@@ -238,7 +238,7 @@ final class EditablePDFView: PDFView {
         window?.makeFirstResponder(self)
         guard let model = editorModel, !model.isProcessing else { return }
         guard activeTool == .redact ? model.canEditDocument : model.canEditAnnotations else {
-            editorModel?.errorMessage = "Il PDF non consente la modifica delle annotazioni."
+            editorModel?.errorMessage = L10n.tr("Il PDF non consente la modifica delle annotazioni.")
             return
         }
         guard let page = page(for: location, nearest: false) else { return }
@@ -247,11 +247,11 @@ final class EditablePDFView: PDFView {
         case .select:
             break
         case .note:
-            if let text = requestText(title: "Aggiungi una nota", initialValue: "") {
+            if let text = requestText(title: L10n.tr("Aggiungi una nota"), initialValue: "") {
                 model.addNote(text: text, at: pagePoint, on: page)
             }
         case .text:
-            if let text = requestText(title: "Aggiungi testo", initialValue: "", preview: { [weak self, weak page] text in
+            if let text = requestText(title: L10n.tr("Aggiungi testo"), initialValue: "", preview: { [weak self, weak page] text in
                 guard let self, let page else { return }
                 self.strokePreview.textPreview = text
                 self.strokePreview.textPreviewPoint = pagePoint
@@ -364,7 +364,7 @@ final class EditablePDFView: PDFView {
                 switch CartaAnnotationFocusRoute.tab(selected: selected, count: annotations.count, backwards: event.modifierFlags.contains(.shift)) {
                 case .select(let index):
                     model.selectAnnotation(annotations[index], on: page)
-                    CartaAccessibility.announce(annotations[index].contents ?? "Annotazione \(index + 1) di \(annotations.count)", in: window)
+                    CartaAccessibility.announce(annotations[index].contents ?? L10n.tr("Annotazione \(index + 1) di \(annotations.count)"), in: window)
                     return
                 case .leaveDocument:
                     model.selectAnnotation(nil, on: nil)
@@ -423,11 +423,11 @@ final class EditablePDFView: PDFView {
     override func menu(for event: NSEvent) -> NSMenu? {
         // Keep native annotation mutation actions out of the responder chain.
         let menu = NSMenu()
-        let copy = NSMenuItem(title: "Copia", action: #selector(copy(_:)), keyEquivalent: "")
+        let copy = NSMenuItem(title: L10n.tr("Copia"), action: #selector(copy(_:)), keyEquivalent: "")
         copy.target = self
         copy.isEnabled = document?.allowsCopying == true && currentSelection != nil
         menu.addItem(copy)
-        let selectAll = NSMenuItem(title: "Seleziona tutto", action: #selector(selectAll(_:)), keyEquivalent: "")
+        let selectAll = NSMenuItem(title: L10n.tr("Seleziona tutto"), action: #selector(selectAll(_:)), keyEquivalent: "")
         selectAll.target = self
         menu.addItem(selectAll)
         menu.autoenablesItems = false
@@ -481,15 +481,15 @@ final class EditablePDFView: PDFView {
     private func edit(_ annotation: PDFAnnotation, on page: PDFPage) {
         guard let model = editorModel, !model.isProcessing else { return }
         if model.canEditAnnotations, isRemovable(annotation) {
-            if let text = requestText(title: annotation.type == "Text" ? "Modifica nota" : "Modifica testo",
+            if let text = requestText(title: annotation.type == "Text" ? L10n.tr("Modifica nota") : L10n.tr("Modifica testo"),
                                       initialValue: annotation.contents ?? "") {
                 model.updateAnnotation(annotation, text: text, on: page)
             }
         } else {
             let alert = NSAlert()
-            alert.messageText = "Annotazione in sola lettura"
+            alert.messageText = L10n.tr("Annotazione in sola lettura")
             alert.informativeText = annotation.contents ?? ""
-            alert.addButton(withTitle: "Chiudi")
+            alert.addButton(withTitle: L10n.tr("Chiudi"))
             alert.runModal()
         }
     }
@@ -497,9 +497,9 @@ final class EditablePDFView: PDFView {
     private func requestText(title: String, initialValue: String, preview: ((String) -> Void)? = nil) -> String? {
         let alert = NSAlert()
         alert.messageText = title
-        alert.informativeText = "Scrivi il contenuto dell’annotazione."
-        alert.addButton(withTitle: "Conferma")
-        alert.addButton(withTitle: "Annulla")
+        alert.informativeText = L10n.tr("Scrivi il contenuto dell’annotazione.")
+        alert.addButton(withTitle: L10n.tr("Conferma"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         alert.buttons[0].keyEquivalent = "\r"
         alert.buttons[0].keyEquivalentModifierMask = [.command]
         alert.buttons[1].keyEquivalent = "\u{1B}"
@@ -514,7 +514,7 @@ final class EditablePDFView: PDFView {
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
         textView.textContainer?.widthTracksTextView = true
-        textView.setAccessibilityLabel("Contenuto dell’annotazione")
+        textView.setAccessibilityLabel(L10n.tr("Contenuto dell’annotazione"))
         scrollView.documentView = textView
         alert.accessoryView = scrollView
         alert.window.initialFirstResponder = textView
@@ -615,7 +615,7 @@ struct PDFThumbnailSidebar: NSViewRepresentable {
         view.backgroundColor = .windowBackgroundColor
         view.allowsDragging = false
         view.allowsMultipleSelection = false
-        view.setAccessibilityLabel("Miniature delle pagine")
+        view.setAccessibilityLabel(L10n.tr("Miniature delle pagine"))
         updateNSView(view, context: context)
         return view
     }

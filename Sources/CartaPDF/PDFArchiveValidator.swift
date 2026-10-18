@@ -38,13 +38,13 @@ enum PDFArchiveProfile: String, CaseIterable, Codable, Sendable, Identifiable {
 enum PDFArchiveVerdict: String, Codable, Sendable {
     case conforming, nonconforming, indeterminate
     var title: String {
-        switch self { case .conforming: return "Conforme"; case .nonconforming: return "Non conforme"; case .indeterminate: return "Indeterminato" }
+        switch self { case .conforming: return L10n.tr("Conforme"); case .nonconforming: return L10n.tr("Non conforme"); case .indeterminate: return L10n.tr("Indeterminato") }
     }
 }
 enum PDFArchiveRuleStatus: String, Codable, Sendable {
     case passed, failed, notVerified, notApplicable
     var title: String {
-        switch self { case .passed: return "Verificata"; case .failed: return "Violata"; case .notVerified: return "Non verificata"; case .notApplicable: return "Non applicabile" }
+        switch self { case .passed: return L10n.tr("Verificata"); case .failed: return L10n.tr("Violata"); case .notVerified: return L10n.tr("Non verificata"); case .notApplicable: return L10n.tr("Non applicabile") }
     }
 }
 struct PDFArchiveRuleResult: Identifiable, Codable, Sendable {
@@ -74,9 +74,9 @@ struct PDFArchiveValidationReport: Codable, Sendable {
     var notApplicableCount: Int { (rules + modelChecks).filter { $0.status == .notApplicable }.count }
     var textReport: String {
         var lines = ["\(profile.title): \(verdict.title)", "SHA-256: \(sha256)",
-                     "Regole: \(rules.count); verificate \(passedCount), violate \(failedCount), non verificate \(unverifiedCount), non applicabili \(notApplicableCount).",
-                     "Copertura ISO completa dimostrata: \(coverageComplete ? "sì" : "no")", "Catalogo veraPDF CC BY 4.0, commit \(catalogueCommit)."]
-        lines += diagnostics + scopeGaps.map { "Lacuna: " + $0 }
+                     L10n.tr("Regole: \(rules.count); verificate \(passedCount), violate \(failedCount), non verificate \(unverifiedCount), non applicabili \(notApplicableCount)."),
+                     L10n.tr("Copertura ISO completa dimostrata: \(coverageComplete ? L10n.tr("sì") : L10n.tr("no"))"), L10n.tr("Catalogo veraPDF CC BY 4.0, commit \(catalogueCommit).")]
+        lines += diagnostics + scopeGaps.map { L10n.tr("Lacuna: ") + $0 }
         for rule in modelChecks + rules {
             lines.append("[\(rule.status.rawValue)] \(rule.specification) §\(rule.clause), test \(rule.testNumber), \(rule.objectType)\n\(rule.requirement)\n\(rule.detail)\n\(rule.locations.joined(separator: "; "))")
         }
@@ -94,11 +94,11 @@ enum PDFArchiveValidator {
     /// These explicit residual obligations prevent a false positive even if all
     /// currently applicable catalogue predicates happen to pass.
     static let scopeGaps = [
-        "Semantiche integrali ISO 32000-1/2 e PDF 2.0, codec immagini e tutte le revisioni non verificati integralmente; filtri generali, sintassi e riferimenti null supportati non costituiscono un parser ISO completo.",
-        "Programmi font: esecuzione hinting/bytecode, PostScript dinamico, semantiche complete Type1/Type2 e Private, composizione FD FontMatrix, CFF2 e variazioni non verificati integralmente. Inventario CID FD/Subrs, cmap2/8/10/14 incluso Unicode supplementare cmap8, audit Type2 bounded, glifi e metriche supportati sono verificati separatamente.",
-        "Grafica: colorimetria e tutti i payload/funzioni ICC, payload JPEG2000/JBIG2/CCITT, alcuni rendering mode Type3, stato iniziale di pattern ereditati e confini inline con codec non supportati restano incompleti. Le funzioni PDF hanno controlli separati su parametri/campioni e sintassi/stack calculator; l’esecuzione calculator sull’intero dominio resta non dimostrata.",
-        "XMP: DTD complesse/esterne, rdf:datatype nelle edizioni precedenti, alcuni vocabolari/tipi opachi, URI relative senza base assoluta e date di granularità/fuso ambigui restano non verificati; xml:base è risolto localmente secondo RFC3986. Struttura significativa A, geometria e payload U3D/PRC e schemi DER CMS opachi/estensibili non completi; il framing U3D è verificato separatamente.",
-        "Copertura integrale del testo ISO 19005 e dei riferimenti normativi non dimostrata; crosswalk del corpus storico non interamente verificato. Nessuna attestazione di conformità ISO completa."
+        L10n.tr("Semantiche integrali ISO 32000-1/2 e PDF 2.0, codec immagini e tutte le revisioni non verificati integralmente; filtri generali, sintassi e riferimenti null supportati non costituiscono un parser ISO completo."),
+        L10n.tr("Programmi font: esecuzione hinting/bytecode, PostScript dinamico, semantiche complete Type1/Type2 e Private, composizione FD FontMatrix, CFF2 e variazioni non verificati integralmente. Inventario CID FD/Subrs, cmap2/8/10/14 incluso Unicode supplementare cmap8, audit Type2 bounded, glifi e metriche supportati sono verificati separatamente."),
+        L10n.tr("Grafica: colorimetria e tutti i payload/funzioni ICC, payload JPEG2000/JBIG2/CCITT, alcuni rendering mode Type3, stato iniziale di pattern ereditati e confini inline con codec non supportati restano incompleti. Le funzioni PDF hanno controlli separati su parametri/campioni e sintassi/stack calculator; l’esecuzione calculator sull’intero dominio resta non dimostrata."),
+        L10n.tr("XMP: DTD complesse/esterne, rdf:datatype nelle edizioni precedenti, alcuni vocabolari/tipi opachi, URI relative senza base assoluta e date di granularità/fuso ambigui restano non verificati; xml:base è risolto localmente secondo RFC3986. Struttura significativa A, geometria e payload U3D/PRC e schemi DER CMS opachi/estensibili non completi; il framing U3D è verificato separatamente."),
+        L10n.tr("Copertura integrale del testo ISO 19005 e dei riferimenti normativi non dimostrata; crosswalk del corpus storico non interamente verificato. Nessuna attestazione di conformità ISO completa.")
     ]
     /// Reads an unambiguous RDF/XMP declaration. It does not validate the PDF,
     /// upgrade the declared level or infer conformance from a generation option.
@@ -125,25 +125,25 @@ enum PDFArchiveValidator {
             let catalogue = try catalogue(profile: profile, directory: catalogueDirectory)
             let context: PDFArchiveRuleContext?
             do { context = try PDFArchiveRuleContext(data: data, profile: profile) }
-            catch { context = nil; diagnostics.append("Analisi oggetti non completa: " + error.localizedDescription) }
+            catch { context = nil; diagnostics.append(L10n.tr("Analisi oggetti non completa: ") + error.localizedDescription) }
             for rule in catalogue {
-                if Task.isCancelled { diagnostics.append("Validazione annullata; le regole residue non sono state verificate.") }
+                if Task.isCancelled { diagnostics.append(L10n.tr("Validazione annullata; le regole residue non sono state verificate.")) }
                 let evaluation: PDFArchiveRuleEvaluation
-                if Task.isCancelled { evaluation = .unknown("Operazione annullata.") }
+                if Task.isCancelled { evaluation = .unknown(L10n.tr("Operazione annullata.")) }
                 else if let context {
                     do { evaluation = try context.evaluate(rule) }
-                    catch { evaluation = .unknown("Controllo interrotto: " + error.localizedDescription) }
+                    catch { evaluation = .unknown(L10n.tr("Controllo interrotto: ") + error.localizedDescription) }
                 } else {
                     // Header/EOF can be checked even when encryption, unsupported
                     // filters or malformed object structures stop the PDF model.
-                    evaluation = PDFArchiveRuleContext.fileEvaluation(rule, data: data, profile: profile) ?? .unknown("Modello oggetti indisponibile: impossibile stabilire l’applicabilità.")
+                    evaluation = PDFArchiveRuleContext.fileEvaluation(rule, data: data, profile: profile) ?? .unknown(L10n.tr("Modello oggetti indisponibile: impossibile stabilire l’applicabilità."))
                 }
                 results.append(.init(id: rule.id, specification: rule.specification, clause: rule.clause,
                                      testNumber: rule.testNumber, objectType: rule.objectType, requirement: rule.requirement,
                                      status: evaluation.status, detail: evaluation.detail, locations: evaluation.locations))
             }
             if let context { diagnostics += context.diagnostics; modelChecks = context.modelChecks }
-        } catch { diagnostics.append("Catalogo ufficiale non disponibile o non integro: " + error.localizedDescription) }
+        } catch { diagnostics.append(L10n.tr("Catalogo ufficiale non disponibile o non integro: ") + error.localizedDescription) }
         let complete = results.count == profile.expectedRuleCount && !(results + modelChecks).contains { $0.status == .notVerified } && diagnostics.isEmpty && scopeGaps.isEmpty
         let verdict: PDFArchiveVerdict = (results + modelChecks).contains { $0.status == .failed } ? .nonconforming : (complete ? .conforming : .indeterminate)
         return .init(profile: profile, verdict: verdict, rules: results, modelChecks: modelChecks, diagnostics: Array(Set(diagnostics)).sorted(), sha256: hash,
@@ -151,20 +151,20 @@ enum PDFArchiveValidator {
     }
     static func catalogue(profile: PDFArchiveProfile, directory: URL? = nil) throws -> [PDFArchiveCatalogueRule] {
         let location = directory ?? resourceDirectory()
-        guard let location else { throw PDFStructureError.malformed("risorse PDF/A mancanti") }
+        guard let location else { throw PDFStructureError.malformed(L10n.tr("risorse PDF/A mancanti")) }
         let manifestData = try Data(contentsOf: location.appendingPathComponent("MANIFEST.json"))
         let manifest = try JSONDecoder().decode(Manifest.self, from: manifestData)
         guard manifest.upstream_commit == catalogueCommit, let entry = manifest.profiles.first(where: { $0.file == profile.fileName }), entry.rule_count == profile.expectedRuleCount else {
-            throw PDFStructureError.malformed("versione/inventario del catalogo PDF/A")
+            throw PDFStructureError.malformed(L10n.tr("versione/inventario del catalogo PDF/A"))
         }
         let xml = try Data(contentsOf: location.appendingPathComponent(profile.fileName))
         guard xml.count < 4 * 1024 * 1024, SHA256.hash(data: xml).map({ String(format: "%02x", $0) }).joined() == profile.expectedCatalogueSHA256, entry.sha256 == profile.expectedCatalogueSHA256 else {
-            throw PDFStructureError.malformed("hash del catalogo PDF/A")
+            throw PDFStructureError.malformed(L10n.tr("hash del catalogo PDF/A"))
         }
         let delegate = CatalogueParser(), parser = XMLParser(data: xml)
         parser.shouldProcessNamespaces = true; parser.shouldResolveExternalEntities = false; parser.delegate = delegate
         guard parser.parse(), delegate.rules.count == entry.rule_count,
-              Set(delegate.rules.map(\.id)).count == delegate.rules.count else { throw PDFStructureError.malformed("XML/inventario regole PDF/A") }
+              Set(delegate.rules.map(\.id)).count == delegate.rules.count else { throw PDFStructureError.malformed(L10n.tr("XML/inventario regole PDF/A")) }
         return delegate.rules
     }
     /// Unlike SwiftPM's generated Bundle.module accessor this lookup never

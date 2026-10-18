@@ -27,7 +27,7 @@ final class PDFWorkspaceDocument: NSDocument {
 
     override var fileURL: URL? {
         didSet {
-            let name = fileURL?.lastPathComponent ?? "Senza titolo.pdf"
+            let name = fileURL?.lastPathComponent ?? L10n.tr("Senza titolo.pdf")
             if Thread.isMainThread {
                 MainActor.assumeIsolated { updateFileIdentity(name: name) }
             } else {
@@ -48,9 +48,9 @@ final class PDFWorkspaceDocument: NSDocument {
     override func read(from data: Data, ofType typeName: String) throws {
         try Self.onMainThread {
             guard let pdf = PDFDocument(data: data) else { throw PDFWorkspaceError.invalidPDF }
-            try Self.unlockIfNeeded(pdf, name: fileURL?.lastPathComponent ?? "PDF protetto")
+            try Self.unlockIfNeeded(pdf, name: fileURL?.lastPathComponent ?? L10n.tr("PDF protetto"))
             guard pdf.pageCount > 0 else { throw PDFWorkspaceError.invalidPDF }
-            model.replaceDocument(pdf, fileName: fileURL?.lastPathComponent ?? "Senza titolo.pdf")
+            model.replaceDocument(pdf, fileName: fileURL?.lastPathComponent ?? L10n.tr("Senza titolo.pdf"))
         }
     }
 
@@ -60,7 +60,7 @@ final class PDFWorkspaceDocument: NSDocument {
 
     override func makeWindowControllers() {
         model.restoreReadingState()
-        let hosting = NSHostingController(rootView: ContentView(model: model))
+        let hosting = NSHostingController(rootView: ContentView(model: model).environment(\.locale, L10n.currentLocale))
         let window = PDFWorkspaceWindow(contentViewController: hosting)
         window.setContentSize(NSSize(width: 1200, height: 820))
         window.minSize = NSSize(width: 880, height: 650)
@@ -92,7 +92,7 @@ final class PDFWorkspaceDocument: NSDocument {
             do {
                 _ = try CartaSnapshotStore.shared.write(data: self.model.serializedData(), name: self.model.fileName,
                                                        source: self.fileURL, kind: "Recovery", id: self.recoveryID)
-            } catch { self.model.statusMessage = "Recupero automatico non riuscito: \(error.localizedDescription)" }
+            } catch { self.model.statusMessage = L10n.tr("Recupero automatico non riuscito: \(error.localizedDescription)") }
         }
         recoveryWork = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2, execute: work)
@@ -140,15 +140,15 @@ final class PDFWorkspaceDocument: NSDocument {
         var failed = false
         while pdf.isLocked {
             let alert = NSAlert()
-            alert.messageText = "Password del PDF"
+            alert.messageText = L10n.tr("Password del PDF")
             alert.informativeText = failed
-                ? "La password non è corretta. Riprova per aprire “\(name)”."
-                : "Inserisci la password per aprire “\(name)”."
+                ? L10n.tr("La password non è corretta. Riprova per aprire “\(name)”.")
+                : L10n.tr("Inserisci la password per aprire “\(name)”.")
             alert.alertStyle = .informational
-            alert.addButton(withTitle: "Apri")
-            alert.addButton(withTitle: "Annulla")
+            alert.addButton(withTitle: L10n.tr("Apri"))
+            alert.addButton(withTitle: L10n.tr("Annulla"))
             let field = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
-            field.placeholderString = "Password"
+            field.placeholderString = L10n.tr("Password")
             alert.accessoryView = field
             alert.window.initialFirstResponder = field
             guard alert.runModal() == .alertFirstButtonReturn else {

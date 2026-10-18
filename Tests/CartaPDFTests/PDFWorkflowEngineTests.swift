@@ -221,7 +221,7 @@ final class PDFWorkflowEngineTests: XCTestCase {
         let oldBounds = model.currentPage?.bounds(for: .cropBox)
         model.rotateCurrentPage()
         controller.applyCrop()
-        XCTAssertTrue(controller.error?.contains("cambiato") ?? false)
+        XCTAssertTrue(controller.error.map { diagnosticContains($0, "cambiato") } ?? false)
         XCTAssertEqual(model.currentPage?.bounds(for: .cropBox), oldBounds)
     }
 

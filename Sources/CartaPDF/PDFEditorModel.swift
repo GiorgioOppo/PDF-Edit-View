@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 final class PDFEditorModel: NSObject, ObservableObject {
     let localHistoryID = UUID().uuidString
     @Published var document: PDFDocument
-    @Published var fileName = "Senza titolo.pdf"
+    @Published var fileName = L10n.tr("Senza titolo.pdf")
     @Published var currentPageIndex = 0
     @Published var selectedThumbnailIndex: Int? = 0
     @Published var searchQuery = ""
@@ -91,7 +91,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         selectedAnnotationPage = nil
         errorMessage = nil
         statusMessage = newDocument.allowsCommenting && newDocument.allowsDocumentAssembly
-            ? nil : "Questo PDF limita alcune operazioni di modifica."
+            ? nil : L10n.tr("Questo PDF limita alcune operazioni di modifica.")
         editingUndoManager.removeAllActions()
         disableNativeFormEditing()
         if let pdfView {
@@ -176,7 +176,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
             return
         }
         isSearching = true
-        statusMessage = "Ricerca in corso…"
+        statusMessage = L10n.tr("Ricerca in corso…")
         let generation = searchGeneration
         let center = NotificationCenter.default
         searchObservers.append(center.addObserver(forName: .PDFDocumentDidFindMatch, object: document, queue: .main) { [weak self] notification in
@@ -193,7 +193,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
                 guard let self, self.searchGeneration == generation else { return }
                 self.flushSearchBuffer()
                 self.isSearching = false
-                self.statusMessage = self.searchResults.isEmpty ? "Nessun risultato." : "\(self.searchResults.count) risultati trovati."
+                self.statusMessage = self.searchResults.isEmpty ? L10n.tr("Nessun risultato.") : L10n.tr("\(self.searchResults.count) risultati trovati.")
             }
         })
         document.beginFindString(query, withOptions: .caseInsensitive)
@@ -267,8 +267,8 @@ final class PDFEditorModel: NSObject, ObservableObject {
 
     func highlightSelection() {
         guard requireAnnotationPermission(), let selection = pdfView?.currentSelection,
-              !(selection.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            if canEditAnnotations { statusMessage = "Seleziona prima il testo da evidenziare." }
+              !(selection.string ?? L10n.tr("")).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            if canEditAnnotations { statusMessage = L10n.tr("Seleziona prima il testo da evidenziare.") }
             return
         }
         var annotations: [(PDFPage, PDFAnnotation)] = []
@@ -284,7 +284,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
             }
         }
         guard !annotations.isEmpty else { return }
-        addAnnotations(annotations, actionName: "Evidenzia testo")
+        addAnnotations(annotations, actionName: L10n.tr("Evidenzia testo"))
         pdfView?.clearSelection()
     }
 
@@ -307,7 +307,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         border.lineWidth = 0
         annotation.border = border
         stamp(annotation)
-        addAnnotations([(page, annotation)], actionName: "Aggiungi testo")
+        addAnnotations([(page, annotation)], actionName: L10n.tr("Aggiungi testo"))
         warnIfTextOverflows(annotation)
     }
 
@@ -318,7 +318,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         annotation.color = annotationColor
         annotation.iconType = .note
         stamp(annotation)
-        addAnnotations([(page, annotation)], actionName: "Aggiungi nota")
+        addAnnotations([(page, annotation)], actionName: L10n.tr("Aggiungi nota"))
     }
 
     func addInkAnnotation(points: [CGPoint], on page: PDFPage) {
@@ -347,7 +347,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         border.lineWidth = CartaPreferences.shared.strokeWidth
         annotation.border = border
         stamp(annotation)
-        addAnnotations([(page, annotation)], actionName: "Disegna")
+        addAnnotations([(page, annotation)], actionName: L10n.tr("Disegna"))
     }
 
     func updateAnnotation(_ annotation: PDFAnnotation, text: String, on page: PDFPage) {
@@ -357,7 +357,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
               let text = nonempty(text), annotation.contents != text else { return }
         let flags = (annotation.value(forAnnotationKey: .flags) as? NSNumber)?.intValue ?? 0
         guard flags & ((1 << 6) | (1 << 7) | (1 << 9)) == 0 else {
-            errorMessage = "L’annotazione non consente modifiche al contenuto."
+            errorMessage = L10n.tr("L’annotazione non consente modifiche al contenuto.")
             return
         }
         var bounds = annotation.bounds
@@ -376,7 +376,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         let previous = annotation.contents
         let previousBounds = annotation.bounds
         let previousDate = annotation.modificationDate
-        performChange(named: "Modifica annotazione", relayout: false, mutation: {
+        performChange(named: L10n.tr("Modifica annotazione"), relayout: false, mutation: {
             annotation.contents = text
             annotation.bounds = bounds
             annotation.modificationDate = modificationDate
@@ -392,10 +392,10 @@ final class PDFEditorModel: NSObject, ObservableObject {
               annotation.type != "Widget", annotation.type != "Link" else { return }
         let flags = (annotation.value(forAnnotationKey: .flags) as? NSNumber)?.intValue ?? 0
         guard flags & ((1 << 6) | (1 << 7)) == 0 else {
-            errorMessage = "L’annotazione è protetta e non può essere eliminata."
+            errorMessage = L10n.tr("L’annotazione è protetta e non può essere eliminata.")
             return
         }
-        removeAnnotations([(page, annotation)], actionName: "Elimina annotazione")
+        removeAnnotations([(page, annotation)], actionName: L10n.tr("Elimina annotazione"))
     }
 
     private func addAnnotations(_ annotations: [(PDFPage, PDFAnnotation)], actionName: String) {
@@ -417,7 +417,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
 
     private func setRotation(of page: PDFPage, to rotation: Int) {
         let previous = page.rotation
-        performChange(named: "Ruota pagina", mutation: {
+        performChange(named: L10n.tr("Ruota pagina"), mutation: {
             page.rotation = rotation
         }, inverse: { model in model.setRotation(of: page, to: previous) })
     }
@@ -425,11 +425,11 @@ final class PDFEditorModel: NSObject, ObservableObject {
     func deleteCurrentPage() {
         guard requirePagePermission() else { return }
         guard pageCount > 1 else {
-            statusMessage = "Il documento deve contenere almeno una pagina."
+            statusMessage = L10n.tr("Il documento deve contenere almeno una pagina.")
             return
         }
         guard let page = currentPage else { return }
-        removePages([(currentPageIndex, page)], actionName: "Elimina pagina")
+        removePages([(currentPageIndex, page)], actionName: L10n.tr("Elimina pagina"))
     }
 
     func insertPDF() {
@@ -438,8 +438,8 @@ final class PDFEditorModel: NSObject, ObservableObject {
         panel.allowedContentTypes = [.pdf]
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
-        panel.prompt = "Inserisci"
-        panel.message = "Le pagine verranno inserite dopo quella corrente."
+        panel.prompt = L10n.tr("Inserisci")
+        panel.message = L10n.tr("Le pagine verranno inserite dopo quella corrente.")
         guard panel.runModal() == .OK else { return }
         do {
             var pages: [PDFPage] = []
@@ -474,7 +474,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
     private func insertCopiedPages(_ pages: [PDFPage], after index: Int) {
         guard !pages.isEmpty else { return }
         let start = min(max(index + 1, 0), pageCount)
-        insertPages(pages.enumerated().map { (start + $0.offset, $0.element) }, actionName: "Inserisci pagine")
+        insertPages(pages.enumerated().map { (start + $0.offset, $0.element) }, actionName: L10n.tr("Inserisci pagine"))
         goToPage(start)
     }
 
@@ -622,7 +622,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
 
     private func requireAnnotationPermission() -> Bool {
         guard canEditAnnotations else {
-            errorMessage = "Questo PDF non consente la modifica delle annotazioni."
+            errorMessage = L10n.tr("Questo PDF non consente la modifica delle annotazioni.")
             return false
         }
         return true
@@ -630,7 +630,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
 
     private func requirePagePermission() -> Bool {
         guard canEditPages else {
-            errorMessage = "Questo PDF non consente di inserire, eliminare o ruotare pagine."
+            errorMessage = L10n.tr("Questo PDF non consente di inserire, eliminare o ruotare pagine.")
             return false
         }
         return true
@@ -661,7 +661,7 @@ final class PDFEditorModel: NSObject, ObservableObject {
         var bounds = CGRect(x: 0, y: 0, width: 595.276, height: 841.89)
         guard let consumer = CGDataConsumer(data: data as CFMutableData),
               let context = CGContext(consumer: consumer, mediaBox: &bounds, nil) else {
-            preconditionFailure("Impossibile creare il contesto PDF.")
+            preconditionFailure(L10n.tr("Impossibile creare il contesto PDF."))
         }
         context.beginPDFPage(nil)
         context.setFillColor(CGColor(gray: 1, alpha: 1))
@@ -669,9 +669,9 @@ final class PDFEditorModel: NSObject, ObservableObject {
         context.endPDFPage()
         context.closePDF()
         guard let document = PDFDocument(data: data as Data) else {
-            preconditionFailure("Impossibile creare il documento PDF iniziale.")
+            preconditionFailure(L10n.tr("Impossibile creare il documento PDF iniziale."))
         }
-        document.documentAttributes = [PDFDocumentAttribute.creatorAttribute: "CartaPDF", PDFDocumentAttribute.titleAttribute: "Senza titolo"]
+        document.documentAttributes = [PDFDocumentAttribute.creatorAttribute: "CartaPDF", PDFDocumentAttribute.titleAttribute: L10n.tr("Senza titolo")]
         return document
     }
 }
@@ -681,12 +681,12 @@ enum PDFWorkspaceError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidPDF: return "Il file non è un PDF valido o non contiene pagine leggibili."
-        case .lockedPDF: return "Il documento PDF è protetto da password."
-        case .cannotSave: return "Non è stato possibile generare il PDF da salvare."
-        case .editingNotAllowed: return "Il PDF non consente questa modifica."
-        case .copyingNotAllowed: return "Il PDF da inserire non consente di copiarne le pagine."
-        case .printingNotAllowed: return "Il PDF non consente la stampa."
+        case .invalidPDF: return L10n.tr("Il file non è un PDF valido o non contiene pagine leggibili.")
+        case .lockedPDF: return L10n.tr("Il documento PDF è protetto da password.")
+        case .cannotSave: return L10n.tr("Non è stato possibile generare il PDF da salvare.")
+        case .editingNotAllowed: return L10n.tr("Il PDF non consente questa modifica.")
+        case .copyingNotAllowed: return L10n.tr("Il PDF da inserire non consente di copiarne le pagine.")
+        case .printingNotAllowed: return L10n.tr("Il PDF non consente la stampa.")
         }
     }
 }

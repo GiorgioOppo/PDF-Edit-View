@@ -49,16 +49,16 @@ final class PDFArchiveObjectChecks {
     func evaluate(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation? {
         guard Self.families.contains(rule.objectType) else { return nil }
         if rule.objectType == "CosXRef" { return try xref(rule) }
-        if reader.encrypted { return .unknown("Oggetti cifrati: il modello contestuale non è stato analizzato.") }
+        if reader.encrypted { return .unknown(L10n.tr("Oggetti cifrati: il modello contestuale non è stato analizzato.")) }
         try ensureScanned()
         switch rule.objectType {
         case "CosBM":
             let allowed = quoted(rule.expression)
             return try names(blendModes, allowed: allowed, family: "CosBM",
-                             detail: "BM negli ExtGState e nelle annotazioni, inclusi tutti gli elementi degli array.")
+                             detail: L10n.tr("BM negli ExtGState e nelle annotazioni, inclusi tutti gli elementi degli array."))
         case "CosRenderingIntent":
             return try names(renderingIntents, allowed: quoted(rule.expression), family: "CosRenderingIntent",
-                             detail: "Rendering intent negli operatori ri, ExtGState/RI e Image/Intent.")
+                             detail: L10n.tr("Rendering intent negli operatori ri, ExtGState/RI e Image/Intent."))
         case "CosUnicodeName":
             var failed: [String] = []
             for item in unicodeNames {
@@ -67,7 +67,7 @@ final class PDFArchiveObjectChecks {
                       String(data: bytes, encoding: .utf8) != nil else { failed.append(item.location); continue }
             }
             return result(failed, count: unicodeNames.count, family: rule.objectType,
-                          detail: "UTF-8 dei nomi font, coloranti e tipi strutturali dopo espansione #xx; nessun requisito NFC aggiunto.")
+                          detail: L10n.tr("UTF-8 dei nomi font, coloranti e tipi strutturali dopo espansione #xx; nessun requisito NFC aggiunto."))
         case "CosIIFilter":
             let allowed = quoted(rule.expression)
             var failed: [String] = []
@@ -77,7 +77,7 @@ final class PDFArchiveObjectChecks {
                 if !valid { failed.append(item.location + ": " + name) }
             }
             return result(failed, count: inlineFilters.count, family: rule.objectType,
-                          detail: "Filtri dichiarati nelle vere immagini inline, anche array e abbreviazioni.")
+                          detail: L10n.tr("Filtri dichiarati nelle vere immagini inline, anche array e abbreviazioni."))
         case "PDHalftone": return try halftone(rule)
         case "PDOutputIntent": return try outputIntent(rule)
         case "OutputIntents": return try outputArrays(rule)
@@ -95,11 +95,11 @@ final class PDFArchiveObjectChecks {
         var rows = colorModels.modelChecks
         guard profile.part == 4, typeFiveCount > 0 else { return rows }
         let evaluation = result(typeFiveIssues, count: 1, family: "PDHalftone",
-                                detail: "Type5: Default obbligatorio; componenti e Default non possono essere Type5. Fonte: ISO32000-2:2020 §10.6.5.6 Table132, errata approvati12/310/311.")
+                                detail: L10n.tr("Type5: Default obbligatorio; componenti e Default non possono essere Type5. Fonte: ISO32000-2:2020 §10.6.5.6 Table132, errata approvati12/310/311."))
         rows.append(.init(id: "CartaPDF:ISO32000:halftone-type5-components",
                       specification: "ISO 32000-2:2020", clause: "10.6.5.6, Table132",
                       testNumber: "native-type5-components", objectType: "HalftoneModel",
-                      requirement: "Un retino Type5 richiede Default e non può contenere componenti o Default di Type5.",
+                      requirement: L10n.tr("Un retino Type5 richiede Default e non può contenere componenti o Default di Type5."),
                       status: evaluation.status, detail: evaluation.detail, locations: evaluation.locations))
         return rows
     }
@@ -108,7 +108,7 @@ final class PDFArchiveObjectChecks {
         if scanned == nil { scanned = Result { try scan() } }
         do { try scanned!.get() }
         catch is CancellationError { throw CancellationError() }
-        catch { gap(Self.families.subtracting(["CosXRef"]), "Visita interrotta: " + error.localizedDescription) }
+        catch { gap(Self.families.subtracting(["CosXRef"]), L10n.tr("Visita interrotta: ") + error.localizedDescription) }
     }
     private func resolved(_ original: PDFSyntaxValue?) throws -> PDFSyntaxValue? {
         let value = try reader.resolve(original)
@@ -116,12 +116,12 @@ final class PDFArchiveObjectChecks {
     }
     private func dictionary(_ value: PDFSyntaxValue?) throws -> [String: PDFSyntaxValue] {
         guard let value = try resolved(value) else { return [:] }
-        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed("dizionario atteso nel modello PDF") }
+        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed(L10n.tr("dizionario atteso nel modello PDF")) }
         return dictionary
     }
     private func array(_ value: PDFSyntaxValue?) throws -> [PDFSyntaxValue] {
         guard let value = try resolved(value) else { return [] }
-        guard let array = value.array else { throw PDFStructureError.malformed("array atteso nel modello PDF") }
+        guard let array = value.array else { throw PDFStructureError.malformed(L10n.tr("array atteso nel modello PDF")) }
         return array
     }
     private func step(_ depth: Int) throws {
@@ -138,8 +138,8 @@ final class PDFArchiveObjectChecks {
     }
     private func result(_ failures: [String], count: Int, family: String, detail: String) -> PDFArchiveRuleEvaluation {
         if !failures.isEmpty { return .check(false, detail, locations: Array(failures.prefix(64))) }
-        if let unresolved = gaps[family], !unresolved.isEmpty { return .unknown(detail + " Contesti irrisolti: " + unresolved.sorted().prefix(8).joined(separator: "; ")) }
-        return count == 0 ? .absent(detail + " Nessun valore applicabile.") : .check(true, detail)
+        if let unresolved = gaps[family], !unresolved.isEmpty { return .unknown(detail + L10n.tr(" Contesti irrisolti: ") + unresolved.sorted().prefix(8).joined(separator: "; ")) }
+        return count == 0 ? .absent(detail + L10n.tr(" Nessun valore applicabile.")) : .check(true, detail)
     }
     private func names(_ values: [Value], allowed: Set<String>, family: String, detail: String) throws -> PDFArchiveRuleEvaluation {
         var failures: [String] = []
@@ -276,7 +276,7 @@ final class PDFArchiveObjectChecks {
             try self.resources(d["Resources"], location + "/Resources", depth: depth + 1)
             for (glyph, value) in try dictionary(d["CharProcs"]) {
                 if let id = value.reference { try contentStream(id, resources: own, location: location + "/CharProcs/" + glyph) }
-                else { gap(inventoryContentFamilies, location + "/CharProcs/" + glyph + ": stream indiretto assente") }
+                else { gap(inventoryContentFamilies, location + "/CharProcs/" + glyph + L10n.tr(": stream indiretto assente")) }
             }
         }
     }
@@ -311,7 +311,7 @@ final class PDFArchiveObjectChecks {
     private func contentStream(_ id: PDFObjectID, resources: [String: PDFSyntaxValue], location: String) throws {
         let context = id.syntax + ":" + SHA256.hash(data: PDFSyntaxValue.dictionary(resources).encoded).map { String(format: "%02x", $0) }.joined()
         guard seenContent.insert(context).inserted else { return }
-        guard let terminal = try reader.resolvedObjectID(.reference(id)), try reader.object(terminal).stream != nil else { throw PDFStructureError.malformed("contenuto non è uno stream") }
+        guard let terminal = try reader.resolvedObjectID(.reference(id)), try reader.object(terminal).stream != nil else { throw PDFStructureError.malformed(L10n.tr("contenuto non è uno stream")) }
         try content(reader.decodedStream(id), resources: resources, location: location)
     }
     private func annotation(_ value: PDFSyntaxValue, resources: [String: PDFSyntaxValue], location: String, depth: Int) throws {
@@ -325,7 +325,7 @@ final class PDFArchiveObjectChecks {
             } else {
                 for (state, value) in try dictionary(value) {
                     if let id = value.reference { try form(id, resources: resources, location: location + "/AP/" + name + "/" + state, depth: depth + 1) }
-                    else { gap(inventoryContentFamilies, location + "/AP/" + name + ": appearance non referenziabile") }
+                    else { gap(inventoryContentFamilies, location + "/AP/" + name + L10n.tr(": appearance non referenziabile")) }
                 }
             }
         }
@@ -344,17 +344,17 @@ final class PDFArchiveObjectChecks {
         try step(depth); guard let actual = try resolved(value) else { return }
         if let name = actual.name {
             if ["DeviceGray", "DeviceRGB", "DeviceCMYK", "G", "RGB", "CMYK", "Pattern"].contains(name) { return }
-            guard !active.contains(name) else { throw PDFStructureError.unsupported("alias colore circolare") }
-            guard let target = try dictionary(resources["ColorSpace"])[name] else { throw PDFStructureError.unsupported("spazio colore nominato non risolto: " + name) }
+            guard !active.contains(name) else { throw PDFStructureError.unsupported(L10n.tr("alias colore circolare")) }
+            guard let target = try dictionary(resources["ColorSpace"])[name] else { throw PDFStructureError.unsupported(L10n.tr("spazio colore nominato non risolto: ") + name) }
             try colorSpace(target, resources: resources, location: location, active: active.union([name]), depth: depth + 1,inline:inline); return
         }
-        guard let values = actual.array, let kind = try resolved(values.first)?.name else { throw PDFStructureError.malformed("spazio colore") }
+        guard let values = actual.array, let kind = try resolved(values.first)?.name else { throw PDFStructureError.malformed(L10n.tr("spazio colore")) }
         if kind == "Separation" {
-            guard values.count >= 4 else { throw PDFStructureError.malformed("Separation troncata") }
+            guard values.count >= 4 else { throw PDFStructureError.malformed(L10n.tr("Separation troncata")) }
             try add(values[1], to: &unicodeNames, location: location + "/SeparationName")
             try colorSpace(values[2], resources: resources, location: location + "/Alternate", active: active, depth: depth + 1,inline:inline)
         } else if kind == "DeviceN" {
-            guard values.count >= 4 else { throw PDFStructureError.malformed("DeviceN troncato") }
+            guard values.count >= 4 else { throw PDFStructureError.malformed(L10n.tr("DeviceN troncato")) }
             for (i, value) in try array(values[1]).enumerated() { try add(value, to: &unicodeNames, location: location + "/Names[\(i)]") }
             try colorSpace(values[2], resources: resources, location: location + "/Alternate", active: active, depth: depth + 1,inline:inline)
             if values.count > 4 {
@@ -368,11 +368,11 @@ final class PDFArchiveObjectChecks {
         } else if ["Indexed", "I", "Pattern"].contains(kind), values.count > 1 {
             try colorSpace(values[1], resources: resources, location: location + "/Base", active: active, depth: depth + 1,inline:inline)
         } else if kind == "ICCBased" {
-            guard values.count > 1 else { throw PDFStructureError.malformed("ICCBased privo di profilo") }
+            guard values.count > 1 else { throw PDFStructureError.malformed(L10n.tr("ICCBased privo di profilo")) }
             try colorSpace(dictionary(values[1])["Alternate"], resources: resources,
                            location: location + "/ICCBased/Alternate", active: active, depth: depth + 1,inline:inline)
         } else if !["CalGray", "CalRGB", "Lab"].contains(kind) {
-            throw PDFStructureError.unsupported("famiglia colore non riconosciuta: " + kind)
+            throw PDFStructureError.unsupported(L10n.tr("famiglia colore non riconosciuta: ") + kind)
         }
     }
     private func structureTree(_ value: PDFSyntaxValue, location: String, depth: Int, root: Bool = false) throws {
@@ -421,7 +421,7 @@ final class PDFArchiveObjectChecks {
                     try add(image.dictionary["Filter"], to: &inlineFilters, location: location + "/BI@\(offset)/Filter", flatten: true)
                     if profile.part == 4 { try add(image.dictionary["Intent"], to: &renderingIntents, location: location + "/BI@\(offset)/Intent") }
                     try colorSpace(image.dictionary["ColorSpace"], resources: resources, location: location + "/BI@\(offset)/ColorSpace", active: [], depth: 0,inline:true)
-                    guard image.lengthReliable else { gap(inventoryContentFamilies, location + "/BI@\(offset): confine binario non dimostrato"); return }
+                    guard image.lengthReliable else { gap(inventoryContentFamilies, location + L10n.tr("/BI@\(offset): confine binario non dimostrato")); return }
                 }
                 operands.removeAll(keepingCapacity: true)
             } else { operands.append(value); guard operands.count < 100_000 else { throw PDFStructureError.limit } }
@@ -465,7 +465,7 @@ final class PDFArchiveObjectChecks {
     }
     private func usedResource(_ category: String, name: String?, resources: [String: PDFSyntaxValue]) throws -> PDFSyntaxValue {
         guard let name, let value = try dictionary(resources[category])[name] else {
-            throw PDFStructureError.unsupported("risorsa nominalmente referenziata non risolta: " + category + "/" + (name ?? "?"))
+            throw PDFStructureError.unsupported(L10n.tr("risorsa nominalmente referenziata non risolta: ") + category + "/" + (name ?? "?"))
         }
         return value
     }
@@ -493,14 +493,14 @@ final class PDFArchiveObjectChecks {
                     if let id = try reader.resolvedObjectID(value), try reader.object(id).stream != nil { try usedStream(id, resources: resources, location: at, depth: depth + 1, active: active) }
                 }
             case "Tf":
-                guard operands.count >= 2 else { throw PDFStructureError.unsupported("Tf privo di nome font") }
+                guard operands.count >= 2 else { throw PDFStructureError.unsupported(L10n.tr("Tf privo di nome font")) }
                 try usedFont(usedResource("Font", name: operands[operands.count - 2].name, resources: resources), resources: resources, location: at, depth: depth + 1, active: active)
             case "BI":
                 let image = try PDFArchiveInlineImage.read(from: &lexer)
                 try add(image.dictionary["Intent"], to: &renderingIntents, location: at + "/Intent")
-                guard image.lengthReliable else { gap(Self.appearanceFamilies, at + ": usi successivi al confine binario non dimostrato"); return }
+                guard image.lengthReliable else { gap(Self.appearanceFamilies, at + L10n.tr(": usi successivi al confine binario non dimostrato")); return }
             default:
-                if !Self.usageOperators.contains(operation) { gap(Self.appearanceFamilies, at + ": operatore non risolto per l’applicabilità delle risorse") }
+                if !Self.usageOperators.contains(operation) { gap(Self.appearanceFamilies, at + L10n.tr(": operatore non risolto per l’applicabilità delle risorse")) }
             }
             operands.removeAll(keepingCapacity: true)
         }
@@ -520,7 +520,7 @@ final class PDFArchiveObjectChecks {
         if subtype == "Form", let id = value.reference { try usedStream(id, resources: resources, location: location, depth: depth + 1, active: active) }
         else if subtype == "Image" {
             let key = "Image:" + (value.reference?.syntax ?? location)
-            guard !active.contains(key) else { throw PDFStructureError.unsupported("immagini/maschere circolari") }
+            guard !active.contains(key) else { throw PDFStructureError.unsupported(L10n.tr("immagini/maschere circolari")) }
             try add(d["Intent"], to: &renderingIntents, location: location + "/Intent")
             for name in ["SMask", "Mask"] {
                 if let image = d[name], try resolved(image)?.dictionary != nil { try usedXObject(image, resources: resources, location: location + "/" + name, depth: depth + 1, active: active.union([key])) }
@@ -528,15 +528,15 @@ final class PDFArchiveObjectChecks {
             for (index, alternate) in try array(d["Alternates"]).enumerated() {
                 if let image = try dictionary(alternate)["Image"] { try usedXObject(image, resources: resources, location: location + "/Alternates[\(index)]", depth: depth + 1, active: active.union([key])) }
             }
-        } else { gap(Self.appearanceFamilies, location + ": XObject referenziato di tipo non risolto") }
+        } else { gap(Self.appearanceFamilies, location + L10n.tr(": XObject referenziato di tipo non risolto")) }
     }
     private func usedStream(_ id: PDFObjectID, resources: [String: PDFSyntaxValue], location: String, depth: Int, active: Set<String>) throws {
         try step(depth)
         let object = try reader.object(id), d = try dictionary(.reference(id))
-        guard object.stream != nil else { throw PDFStructureError.unsupported("stream referenziato non disponibile") }
+        guard object.stream != nil else { throw PDFStructureError.unsupported(L10n.tr("stream referenziato non disponibile")) }
         let own = d["Resources"] == nil ? resources : try dictionary(d["Resources"])
         let key = id.syntax + ":" + SHA256.hash(data: PDFSyntaxValue.dictionary(own).encoded).map { String(format: "%02x", $0) }.joined()
-        guard !active.contains(key) else { throw PDFStructureError.unsupported("contenuti referenziati circolari") }
+        guard !active.contains(key) else { throw PDFStructureError.unsupported(L10n.tr("contenuti referenziati circolari")) }
         guard seenUsedStreams.insert(key).inserted else { return }
         try usedContent(reader.decodedStream(id), resources: own, location: location, depth: depth + 1, active: active.union([key]))
     }
@@ -547,7 +547,7 @@ final class PDFArchiveObjectChecks {
         let key = (value.reference?.syntax ?? location) + ":" + SHA256.hash(data: PDFSyntaxValue.dictionary(own).encoded).map { String(format: "%02x", $0) }.joined()
         guard seenUsedFonts.insert(key).inserted else { return }
         for (glyph, value) in try dictionary(d["CharProcs"]) {
-            guard let id = value.reference else { throw PDFStructureError.unsupported("CharProc del font referenziato non è uno stream") }
+            guard let id = value.reference else { throw PDFStructureError.unsupported(L10n.tr("CharProc del font referenziato non è uno stream")) }
             try usedStream(id, resources: own, location: location + "/CharProcs/" + glyph, depth: depth + 1, active: active)
         }
     }
@@ -560,7 +560,7 @@ final class PDFArchiveObjectChecks {
             if let id = try reader.resolvedObjectID(value), try reader.object(id).stream != nil { try usedStream(id, resources: resources, location: location + "/AP/" + name, depth: depth + 1, active: []) }
             else {
                 for (state, value) in try dictionary(value) {
-                    guard let id = value.reference else { throw PDFStructureError.unsupported("appearance non referenziabile") }
+                    guard let id = value.reference else { throw PDFStructureError.unsupported(L10n.tr("appearance non referenziabile")) }
                     try usedStream(id, resources: resources, location: location + "/AP/" + name + "/" + state, depth: depth + 1, active: [])
                 }
             }
@@ -571,15 +571,15 @@ final class PDFArchiveObjectChecks {
     private func collectHalftone(_ value: PDFSyntaxValue, colorant: String?, location: String, active: Set<PDFObjectID>, depth: Int) throws {
         try step(depth); guard let actual = try resolved(value) else { return }
         if actual.name == "Default" { return }
-        guard let d = actual.dictionary else { gap(["PDHalftone"], location + ": retino non risolto come dizionario"); return }
-        if let id = value.reference, active.contains(id) { throw PDFStructureError.unsupported("retino circolare") }
+        guard let d = actual.dictionary else { gap(["PDHalftone"], location + L10n.tr(": retino non risolto come dizionario")); return }
+        if let id = value.reference, active.contains(id) { throw PDFStructureError.unsupported(L10n.tr("retino circolare")) }
         halftones.append(.init(dictionary: d, colorant: colorant, location: location))
         guard try resolved(d["HalftoneType"])?.int == 5 else { return }
         typeFiveCount += 1
         let nested = value.reference.map { active.union([$0]) } ?? active
         if try resolved(d["Default"]) == nil { typeFiveIssues.append(location + ": Default assente") }
         for (name, child) in d where !["Type", "HalftoneType", "HalftoneName", "TransferFunction"].contains(name) {
-            guard let childDictionary = try resolved(child)?.dictionary else { gap(["PDHalftone"], location + "/" + name + ": componente non è un retino"); continue }
+            guard let childDictionary = try resolved(child)?.dictionary else { gap(["PDHalftone"], location + "/" + name + L10n.tr(": componente non è un retino")); continue }
             if try resolved(childDictionary["HalftoneType"])?.int == 5 { typeFiveIssues.append(location + "/" + name + ": componente Type5 vietato") }
             try collectHalftone(child, colorant: name, location: location + "/" + name, active: nested, depth: depth + 1)
         }
@@ -596,13 +596,13 @@ final class PDFArchiveObjectChecks {
                 let present = try resolved(d["TransferFunction"]) != nil
                 if item.colorant == "Default" { continue }
                 let primary = item.colorant == nil || ["Cyan", "Magenta", "Yellow", "Black"].contains(item.colorant!)
-                if present == primary { failures.append(item.location + ": TransferFunction non ammesso/richiesto per " + (item.colorant ?? "retino globale")) }
-            } else { return .unknown("Predicato retino non implementato.") }
+                if present == primary { failures.append(item.location + L10n.tr(": TransferFunction non ammesso/richiesto per ") + (item.colorant ?? L10n.tr("retino globale"))) }
+            } else { return .unknown(L10n.tr("Predicato retino non implementato.")) }
         }
-        return result(failures, count: halftones.count, family: "PDHalftone", detail: "Retini HT e componenti Type5 con colorante e contesto effettivi: " + rule.expression)
+        return result(failures, count: halftones.count, family: "PDHalftone", detail: L10n.tr("Retini HT e componenti Type5 con colorante e contesto effettivi: ") + rule.expression)
     }
     private func outputIntent(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
-        guard rule.expression.contains("containsDestOutputProfileRef") else { return .unknown("Predicato OutputIntent non implementato.") }
+        guard rule.expression.contains("containsDestOutputProfileRef") else { return .unknown(L10n.tr("Predicato OutputIntent non implementato.")) }
         var failures: [String] = [], count = 0
         for group in outputs {
             for item in group.values {
@@ -611,7 +611,7 @@ final class PDFArchiveObjectChecks {
                 if try resolved(d["DestOutputProfileRef"]) != nil { failures.append(item.location) }
             }
         }
-        return result(failures, count: count, family: "PDOutputIntent", detail: "OutputIntent standard del catalogo e, per PDF/A-4, delle pagine.")
+        return result(failures, count: count, family: "PDOutputIntent", detail: L10n.tr("OutputIntent standard del catalogo e, per PDF/A-4, delle pagine."))
     }
     private func outputArrays(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         var failures: [String] = []
@@ -619,7 +619,7 @@ final class PDFArchiveObjectChecks {
             if rule.expression == "numberOfPDFAOutputIntents <= 1" {
                 var count = 0
                 for item in group.values { if try resolved(dictionary(item.value)["S"])?.name == "GTS_PDFA1" { count += 1 } }
-                if count > 1 { failures.append(group.location + ": \(count) intent PDF/A") }
+                if count > 1 { failures.append(group.location + L10n.tr(": \(count) intent PDF/A")) }
             } else if rule.expression == "sameOutputProfileIndirect == true" {
                 // ISO19005-1 §6.2.2 / -2,-3,-4 §6.2.3: this conditional
                 // identity/ICC requirement applies only to arrays with more
@@ -630,19 +630,19 @@ final class PDFArchiveObjectChecks {
                 for item in group.values {
                     let d = try dictionary(item.value)
                     guard try resolved(d["DestOutputProfile"]) != nil else { continue }
-                    guard let id = d["DestOutputProfile"]?.reference, try reader.object(id).stream != nil else { failures.append(item.location + ": profilo non è stream indiretto"); continue }
+                    guard let id = d["DestOutputProfile"]?.reference, try reader.object(id).stream != nil else { failures.append(item.location + L10n.tr(": profilo non è stream indiretto")); continue }
                     ids.insert(id)
                     do {
                         let icc = try PDFArchiveICCProfile(data: reader.decodedStream(id))
                         if !icc.structuralIssues.isEmpty { failures.append(item.location + ": " + icc.structuralIssues.joined(separator: ", ")) }
                     } catch is CancellationError { throw CancellationError() }
-                    catch PDFStructureError.malformed(let detail) { failures.append(item.location + ": struttura ICC non valida: " + detail) }
-                    catch { gap(["OutputIntents"],item.location + ": ICC non verificato: " + error.localizedDescription) }
+                    catch PDFStructureError.malformed(let detail) { failures.append(item.location + L10n.tr(": struttura ICC non valida: ") + detail) }
+                    catch { gap(["OutputIntents"],item.location + L10n.tr(": ICC non verificato: ") + error.localizedDescription) }
                 }
-                if ids.count > 1 { failures.append(group.location + ": profili indiretti differenti") }
-            } else { return .unknown("Predicato array OutputIntents non implementato.") }
+                if ids.count > 1 { failures.append(group.location + L10n.tr(": profili indiretti differenti")) }
+            } else { return .unknown(L10n.tr("Predicato array OutputIntents non implementato.")) }
         }
-        return result(failures, count: outputs.count, family: "OutputIntents", detail: "Ogni array OutputIntents valutato separatamente; identità indiretta e struttura ICC, conformità ICC completa separata.")
+        return result(failures, count: outputs.count, family: "OutputIntents", detail: L10n.tr("Ogni array OutputIntents valutato separatamente; identità indiretta e struttura ICC, conformità ICC completa separata."))
     }
     private func xref(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         let bytes = reader.sourceBytes
@@ -657,8 +657,8 @@ final class PDFArchiveObjectChecks {
                 if position < bytes.count, bytes[position] == 13 {
                     position += 1; if position < bytes.count, bytes[position] == 10 { position += 1 }
                 } else if position < bytes.count, bytes[position] == 10 { position += 1 }
-                else { failures.append("xref byte \(revision.offset): EOL non immediato"); continue }
-                if position >= bytes.count || !(48...57).contains(bytes[position]) { failures.append("xref byte \(revision.offset): separazione diversa da un solo EOL") }
+                else { failures.append(L10n.tr("xref byte \(revision.offset): EOL non immediato")); continue }
+                if position >= bytes.count || !(48...57).contains(bytes[position]) { failures.append(L10n.tr("xref byte \(revision.offset): separazione diversa da un solo EOL")) }
             } else if rule.expression == "subsectionHeaderSpaceSeparated == true" {
                 var sections = 0
                 while true {
@@ -666,13 +666,13 @@ final class PDFArchiveObjectChecks {
                     let first = try lexer.word()
                     if first == "trailer" { break }
                     let endFirst = lexer.offset, second = try lexer.word(), startSecond = lexer.offset - second.utf8.count
-                    guard Int(first) != nil, let entries = Int(second), entries >= 0, entries < 1_000_000 else { throw PDFStructureError.malformed("header sottosezione xref") }
-                    if Array(bytes[endFirst..<startSecond]) != [32] { failures.append("sottosezione xref byte \(endFirst): separatore diverso da SPACE singolo") }
+                    guard Int(first) != nil, let entries = Int(second), entries >= 0, entries < 1_000_000 else { throw PDFStructureError.malformed(L10n.tr("header sottosezione xref")) }
+                    if Array(bytes[endFirst..<startSecond]) != [32] { failures.append(L10n.tr("sottosezione xref byte \(endFirst): separatore diverso da SPACE singolo")) }
                     for _ in 0..<entries { _ = try lexer.word(); _ = try lexer.word(); _ = try lexer.word() }
                 }
-            } else { return .unknown("Predicato CosXRef non implementato.") }
+            } else { return .unknown(L10n.tr("Predicato CosXRef non implementato.")) }
         }
-        return count == 0 ? .absent("Nessuna tabella xref classica nelle revisioni fisiche.") :
-            .check(failures.isEmpty, "\(count) tabelle xref classiche, incluse revisioni precedenti/ibride.", locations: Array(failures.prefix(64)))
+        return count == 0 ? .absent(L10n.tr("Nessuna tabella xref classica nelle revisioni fisiche.")) :
+            .check(failures.isEmpty, L10n.tr("\(count) tabelle xref classiche, incluse revisioni precedenti/ibride."), locations: Array(failures.prefix(64)))
     }
 }

@@ -49,7 +49,7 @@ extension PDFEditorModel {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.plainText, .rtf, UTType(filenameExtension: "docx")!]
         panel.canChooseDirectories = false
-        panel.message = "Il testo verrà impaginato in un nuovo PDF A4. Immagini, tabelle e layout di Word non vengono riprodotti."
+        panel.message = L10n.tr("Il testo verrà impaginato in un nuovo PDF A4. Immagini, tabelle e layout di Word non vengono riprodotti.")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             let source = try Data(contentsOf: url)
@@ -75,10 +75,10 @@ extension PDFEditorModel {
             let panel = NSSavePanel()
             panel.allowedContentTypes = [UTType(filenameExtension: "docx")!]
             panel.nameFieldStringValue = (fileName as NSString).deletingPathExtension + ".docx"
-            panel.message = "Esporta il testo in Word. Colonne, tabelle, immagini e impaginazione non vengono conservate."
+            panel.message = L10n.tr("Esporta il testo in Word. Colonne, tabelle, immagini e impaginazione non vengono conservate.")
             guard panel.runModal() == .OK, let url = panel.url else { return }
             try data.write(to: url, options: .atomic)
-            statusMessage = "Testo esportato in Word."
+            statusMessage = L10n.tr("Testo esportato in Word.")
         } catch { errorMessage = error.localizedDescription }
     }
 }
@@ -87,9 +87,9 @@ enum PDFTextError: LocalizedError {
     case emptyText, cannotConvert, invalidEncoding
     var errorDescription: String? {
         switch self {
-        case .emptyText: return "Il documento non contiene testo esportabile. Esegui prima OCR se è una scansione."
-        case .cannotConvert: return "Non è stato possibile convertire il testo in PDF."
-        case .invalidEncoding: return "Il file di testo deve essere codificato in UTF-8 o UTF-16."
+        case .emptyText: return L10n.tr("Il documento non contiene testo esportabile. Esegui prima OCR se è una scansione.")
+        case .cannotConvert: return L10n.tr("Non è stato possibile convertire il testo in PDF.")
+        case .invalidEncoding: return L10n.tr("Il file di testo deve essere codificato in UTF-8 o UTF-16.")
         }
     }
 }

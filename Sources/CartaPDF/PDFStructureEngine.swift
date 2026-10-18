@@ -8,14 +8,19 @@ import Security
 // Native, bounded PDF syntax reader and incremental writer. Existing revisions
 // remain byte-for-byte intact; this is deliberately NOT a redaction engine.
 enum PDFStructureError: LocalizedError {
+    // This payload is also a parser classification key. Keep it independent
+    // of translated diagnostics so language cannot change validation behavior.
+    static let cmapCodeOutsideCodespace = "codice fuori codespace CMap"
     case unsupported(String), malformed(String), encrypted, limit, security(OSStatus)
     var errorDescription: String? {
         switch self {
-        case .unsupported(let value): return "Operazione non supportata per questo PDF: \(value)."
-        case .malformed(let value): return "Struttura PDF non valida: \(value)."
-        case .encrypted: return "Le modifiche strutturali non sono disponibili sui PDF cifrati: non viene generata una copia priva di protezione."
-        case .limit: return "Il PDF supera i limiti di sicurezza del lettore strutturale."
-        case .security(let status): return "Security: \((SecCopyErrorMessageString(status, nil) as String?) ?? String(status))."
+        case .unsupported(let value): return L10n.tr("Operazione non supportata per questo PDF: \(value).")
+        case .malformed(let value):
+            let detail = value == Self.cmapCodeOutsideCodespace ? L10n.string(value) : value
+            return L10n.tr("Struttura PDF non valida: \(detail).")
+        case .encrypted: return L10n.tr("Le modifiche strutturali non sono disponibili sui PDF cifrati: non viene generata una copia priva di protezione.")
+        case .limit: return L10n.tr("Il PDF supera i limiti di sicurezza del lettore strutturale.")
+        case .security(let status): return L10n.tr("Security: \((SecCopyErrorMessageString(status, nil) as String?) ?? String(status)).")
         }
     }
 }
@@ -123,12 +128,12 @@ struct PDFSyntaxLexer {
     mutating func word() throws -> String {
         skip(); let start = offset
         while offset < bytes.count && !Self.delimiter(bytes[offset]) { offset += 1 }
-        guard offset > start else { throw PDFStructureError.malformed("token a \(offset)") }
+        guard offset > start else { throw PDFStructureError.malformed(L10n.tr("token a \(offset)")) }
         return String(decoding: bytes[start..<offset], as: UTF8.self)
     }
     mutating func value(depth: Int = 0) throws -> PDFSyntaxValue {
         guard depth < 100 else { throw PDFStructureError.limit }
-        skip(); guard offset < bytes.count else { throw PDFStructureError.malformed("fine prematura") }
+        skip(); guard offset < bytes.count else { throw PDFStructureError.malformed(L10n.tr("fine prematura")) }
         let current = bytes[offset]
         if current == 47 {
             offset += 1; var result: [UInt8] = []
@@ -137,7 +142,7 @@ struct PDFSyntaxLexer {
                    let byte = UInt8(String(decoding: bytes[(offset + 1)...(offset + 2)], as: UTF8.self), radix: 16) {
                     result.append(byte); offset += 3
                 } else {
-                    if strict && bytes[offset] == 35 { throw PDFStructureError.malformed("escape esadecimale nel nome") }
+                    if strict && bytes[offset] == 35 { throw PDFStructureError.malformed(L10n.tr("escape esadecimale nel nome")) }
                     result.append(bytes[offset]); offset += 1
                 }
             }
@@ -164,20 +169,20 @@ struct PDFSyntaxLexer {
                 else if byte == 13 { result.append(10); if offset < bytes.count && bytes[offset] == 10 { offset += 1 } }
                 else { result.append(byte) }
             }
-            guard nesting == 0 else { throw PDFStructureError.malformed("stringa non chiusa") }
+            guard nesting == 0 else { throw PDFStructureError.malformed(L10n.tr("stringa non chiusa")) }
             return .bytes(result)
         }
         if current == 60 {
             if offset + 1 < bytes.count && bytes[offset + 1] == 60 {
                 offset += 2; var result: [String: PDFSyntaxValue] = [:]; var ranges: [String: Range<Int>] = [:]
                 while true {
-                    skip(); guard offset + 1 < bytes.count else { throw PDFStructureError.malformed("dizionario non chiuso") }
+                    skip(); guard offset + 1 < bytes.count else { throw PDFStructureError.malformed(L10n.tr("dizionario non chiuso")) }
                     if bytes[offset] == 62 && bytes[offset + 1] == 62 { offset += 2; break }
-                    guard case .name(let name) = try value(depth: depth + 1) else { throw PDFStructureError.malformed("chiave del dizionario") }
+                    guard case .name(let name) = try value(depth: depth + 1) else { throw PDFStructureError.malformed(L10n.tr("chiave del dizionario")) }
                     skip(); let start = offset
                     if result[name] != nil {
                         if collectLexicalFacts { duplicateKeys.append(name) }
-                        if strict { throw PDFStructureError.malformed("chiave duplicata: " + name) }
+                        if strict { throw PDFStructureError.malformed(L10n.tr("chiave duplicata: ") + name) }
                     }
                     result[name] = try value(depth: depth + 1); ranges[name] = start..<offset
                     guard result.count < 100_000 else { throw PDFStructureError.limit }
@@ -190,14 +195,14 @@ struct PDFSyntaxLexer {
             while offset < bytes.count && bytes[offset] != 62 {
                 if !Self.space(bytes[offset]) { hex.append(bytes[offset]) }; offset += 1
             }
-            guard offset < bytes.count else { throw PDFStructureError.malformed("stringa esadecimale") }
+            guard offset < bytes.count else { throw PDFStructureError.malformed(L10n.tr("stringa esadecimale")) }
             if collectLexicalFacts {
                 hexLexemes.append((hexStart,hex.count,hex.allSatisfy { (48...57).contains($0) || (65...70).contains($0) || (97...102).contains($0) }))
             }
             offset += 1; if hex.count % 2 != 0 { hex.append(48) }
             var result = Data()
             for index in stride(from: 0, to: hex.count, by: 2) {
-                guard let byte = UInt8(String(decoding: hex[index..<(index + 2)], as: UTF8.self), radix: 16) else { throw PDFStructureError.malformed("cifra esadecimale") }
+                guard let byte = UInt8(String(decoding: hex[index..<(index + 2)], as: UTF8.self), radix: 16) else { throw PDFStructureError.malformed(L10n.tr("cifra esadecimale")) }
                 result.append(byte)
             }
             return .bytes(result)
@@ -205,7 +210,7 @@ struct PDFSyntaxLexer {
         if current == 91 {
             offset += 1; var result: [PDFSyntaxValue] = []
             while true {
-                skip(); guard offset < bytes.count else { throw PDFStructureError.malformed("array non chiuso") }
+                skip(); guard offset < bytes.count else { throw PDFStructureError.malformed(L10n.tr("array non chiuso")) }
                 if bytes[offset] == 93 { offset += 1; return .array(result) }
                 result.append(try value(depth: depth + 1)); guard result.count < 1_000_000 else { throw PDFStructureError.limit }
             }
@@ -215,13 +220,13 @@ struct PDFSyntaxLexer {
         let numeric = Self.numberToken(token)
         if numeric || Double(token) != nil {
             if strict && !numeric {
-                throw PDFStructureError.malformed("numero PDF non valido: " + token)
+                throw PDFStructureError.malformed(L10n.tr("numero PDF non valido: ") + token)
             }
             let end = offset
             if let first = Int(token), first >= 0 {
                 if let second = try? word(), let generation = Int(second), generation >= 0,
                    (try? word()) == "R" {
-                    if strict && allowContentOperators { throw PDFStructureError.malformed("riferimento indiretto nel content stream") }
+                    if strict && allowContentOperators { throw PDFStructureError.malformed(L10n.tr("riferimento indiretto nel content stream")) }
                     return .reference(PDFObjectID(number: first, generation: generation))
                 }
                 offset = end
@@ -229,9 +234,9 @@ struct PDFSyntaxLexer {
             return .number(token)
         }
         if strict, let first = token.utf8.first, (48...57).contains(first) || [43,45,46].contains(first) {
-            throw PDFStructureError.malformed("token numerico PDF non valido: " + token)
+            throw PDFStructureError.malformed(L10n.tr("token numerico PDF non valido: ") + token)
         }
-        if strict && !(allowContentOperators && depth == 0) { throw PDFStructureError.malformed("parola chiave fuori da uno stream: " + token) }
+        if strict && !(allowContentOperators && depth == 0) { throw PDFStructureError.malformed(L10n.tr("parola chiave fuori da uno stream: ") + token) }
         return .keyword(token)
     }
 }
@@ -257,7 +262,7 @@ struct PDFEmbeddedImage: Identifiable {
     let bits: Int
     let filters: [String]
     let colorSpace: String
-    var description: String { "Oggetto \(id.number) · \(width) × \(height) px · \(bits) bit · \(filters.isEmpty ? "non compresso" : filters.joined(separator: ", "))" }
+    var description: String { L10n.tr("Oggetto \(id.number) · \(width) × \(height) px · \(bits) bit · \(filters.isEmpty ? L10n.tr("non compresso") : filters.joined(separator: ", "))") }
 }
 struct PDFEmbeddedFile: Identifiable {
     let id: PDFObjectID
@@ -301,15 +306,15 @@ final class PDFStructureDocument {
     private var nextNumber = 1
     private var reading = Set<PDFObjectID>()
     var encrypted: Bool { trailer["Encrypt"] != nil }
-    var rootID: PDFObjectID { get throws { guard trailer["Root"]?.reference != nil,let id = try resolvedObjectID(trailer["Root"]) else { throw PDFStructureError.malformed("catalogo mancante") }; return id } }
+    var rootID: PDFObjectID { get throws { guard trailer["Root"]?.reference != nil,let id = try resolvedObjectID(trailer["Root"]) else { throw PDFStructureError.malformed(L10n.tr("catalogo mancante")) }; return id } }
 
     init(data: Data) throws {
         guard data.count <= 512 * 1024 * 1024 else { throw PDFStructureError.limit }
         guard data.starts(with: Data("%PDF-".utf8)) else { throw PDFStructureError.malformed("intestazione") }
         source = data; sourceBytes = Array(data)
-        guard let marker = data.range(of: Data("startxref".utf8), options: .backwards) else { throw PDFStructureError.malformed("startxref mancante") }
+        guard let marker = data.range(of: Data("startxref".utf8), options: .backwards) else { throw PDFStructureError.malformed(L10n.tr("startxref mancante")) }
         var lexer = PDFSyntaxLexer(bytes: sourceBytes, offset: marker.upperBound)
-        guard let offset = Int(try lexer.word()), offset >= 0, offset < data.count else { throw PDFStructureError.malformed("offset xref") }
+        guard let offset = Int(try lexer.word()), offset >= 0, offset < data.count else { throw PDFStructureError.malformed(L10n.tr("offset xref")) }
         lastXref = offset
         try readXref(at: offset, visited: [])
         nextNumber = max((entries.keys.max() ?? 0) + 1, trailer["Size"]?.int ?? 1)
@@ -331,12 +336,12 @@ final class PDFStructureDocument {
     /// changes shadow older entries; later updates cannot supply an old Length.
     func revisionReader(at offset:Int) throws -> PDFStructureDocument {
         if offset == lastXref { return self }
-        guard let index = revisions.firstIndex(where:{ $0.offset == offset }) else { throw PDFStructureError.malformed("revisione xref non indicizzata") }
+        guard let index = revisions.firstIndex(where:{ $0.offset == offset }) else { throw PDFStructureError.malformed(L10n.tr("revisione xref non indicizzata")) }
         return try PDFStructureDocument(source:source,bytes:sourceBytes,revisions:Array(revisions[index...]),at:offset)
     }
 
     private func readXref(at offset: Int, visited: Set<Int>) throws {
-        guard !visited.contains(offset), visited.count < 1000, offset >= 0, offset < source.count else { throw PDFStructureError.malformed("catena xref") }
+        guard !visited.contains(offset), visited.count < 1000, offset >= 0, offset < source.count else { throw PDFStructureError.malformed(L10n.tr("catena xref")) }
         var visited = visited; visited.insert(offset)
         var lexer = PDFSyntaxLexer(bytes: sourceBytes, offset: offset)
         let token = try lexer.word()
@@ -349,7 +354,7 @@ final class PDFStructureDocument {
                 guard let start = Int(first), let count = Int(try lexer.word()), start >= 0, start < 1_000_000,
                       count >= 0, count < 1_000_000 - start else { throw PDFStructureError.limit }
                 for number in start..<(start + count) {
-                    guard let position = Int(try lexer.word()), let generation = Int(try lexer.word()) else { throw PDFStructureError.malformed("riga xref") }
+                    guard let position = Int(try lexer.word()), let generation = Int(try lexer.word()) else { throw PDFStructureError.malformed(L10n.tr("riga xref")) }
                     let state = try lexer.word()
                     local[number] = state == "n" ? .direct(position, generation) : .free
                 }
@@ -357,7 +362,7 @@ final class PDFStructureDocument {
             guard let value = try lexer.value().dictionary else { throw PDFStructureError.malformed("trailer") }
             dictionary = value
             if let hybrid = value["XRefStm"]?.int {
-                guard hybrid >= 0, hybrid < source.count, hybrid != offset else { throw PDFStructureError.malformed("offset xref ibrida") }
+                guard hybrid >= 0, hybrid < source.count, hybrid != offset else { throw PDFStructureError.malformed(L10n.tr("offset xref ibrida")) }
                 let supplement = try readXrefStream(at: hybrid)
                 local.merge(supplement.entries) { _, streamEntry in streamEntry }
                 revisions.append((hybrid,supplement.dictionary,supplement.entries))
@@ -377,13 +382,13 @@ final class PDFStructureDocument {
         let object = try readDirectObject(at: offset)
         guard let value = object.value.dictionary, value["Type"]?.name == "XRef", let stream = object.stream,
               let widths = value["W"]?.array?.compactMap(\.int), widths.count == 3,
-              widths.allSatisfy({ $0 >= 0 && $0 <= 8 }), widths.reduce(0, +) > 0 else { throw PDFStructureError.malformed("stream xref") }
+              widths.allSatisfy({ $0 >= 0 && $0 <= 8 }), widths.reduce(0, +) > 0 else { throw PDFStructureError.malformed(L10n.tr("stream xref")) }
         let data = try Self.decode(stream, dictionary: value)
         let index = value["Index"]?.array?.compactMap(\.int) ?? [0, value["Size"]?.int ?? 0]
-        guard index.count % 2 == 0 else { throw PDFStructureError.malformed("indice xref") }
+        guard index.count % 2 == 0 else { throw PDFStructureError.malformed(L10n.tr("indice xref")) }
         let bytes = Array(data); var cursor = 0
         func field(_ count: Int) throws -> Int {
-            guard cursor + count <= bytes.count else { throw PDFStructureError.malformed("stream xref troncato") }
+            guard cursor + count <= bytes.count else { throw PDFStructureError.malformed(L10n.tr("stream xref troncato")) }
             var result = 0
             for _ in 0..<count { guard result <= Int.max >> 8 else { throw PDFStructureError.limit }; result = (result << 8) | Int(bytes[cursor]); cursor += 1 }
             return result
@@ -401,7 +406,7 @@ final class PDFStructureDocument {
     }
 
     private func readDirectObject(at offset: Int) throws -> PDFIndirectObject {
-        guard offset >= 0, offset < sourceBytes.count else { throw PDFStructureError.malformed("offset oggetto fuori dal file") }
+        guard offset >= 0, offset < sourceBytes.count else { throw PDFStructureError.malformed(L10n.tr("offset oggetto fuori dal file")) }
         var lexer = PDFSyntaxLexer(bytes: sourceBytes, offset: offset)
         guard let number = Int(try lexer.word()), let generation = Int(try lexer.word()),
               number >= 0, number < 1_000_000, (0..<65536).contains(generation),
@@ -414,42 +419,42 @@ final class PDFStructureDocument {
             var length = value.dictionary?["Length"]?.int
             if length == nil { length = try resolve(value.dictionary?["Length"])?.int }
             guard let length, length >= 0, length <= 256 * 1024 * 1024,
-                  lexer.offset <= source.count - length else { throw PDFStructureError.malformed("lunghezza stream") }
+                  lexer.offset <= source.count - length else { throw PDFStructureError.malformed(L10n.tr("lunghezza stream")) }
             stream = Data(sourceBytes[lexer.offset..<(lexer.offset + length)])
             lexer.offset += length
-            guard (try? lexer.word()) == "endstream" else { throw PDFStructureError.malformed("fine stream") }
+            guard (try? lexer.word()) == "endstream" else { throw PDFStructureError.malformed(L10n.tr("fine stream")) }
         }
         return PDFIndirectObject(id: PDFObjectID(number: number, generation: generation), value: value, stream: stream, memberRanges: memberRanges)
     }
 
     func object(_ id: PDFObjectID) throws -> PDFIndirectObject {
         if let value = updates[id] ?? cache[id] { return value }
-        guard !reading.contains(id) else { throw PDFStructureError.malformed("riferimento circolare") }
+        guard !reading.contains(id) else { throw PDFStructureError.malformed(L10n.tr("riferimento circolare")) }
         reading.insert(id); defer { reading.remove(id) }
         guard let entry = entries[id.number] else { throw PDFStructureError.malformed("oggetto \(id.syntax) mancante") }
         let result: PDFIndirectObject
         switch entry {
         case .free: throw PDFStructureError.malformed("oggetto libero")
         case .direct(let offset, let generation):
-            guard generation == id.generation else { throw PDFStructureError.malformed("generazione oggetto") }
+            guard generation == id.generation else { throw PDFStructureError.malformed(L10n.tr("generazione oggetto")) }
             result = try readDirectObject(at: offset)
-            guard result.id == id else { throw PDFStructureError.malformed("identità oggetto") }
+            guard result.id == id else { throw PDFStructureError.malformed(L10n.tr("identità oggetto")) }
         case .compressed(let container, let index):
-            guard id.generation == 0 else { throw PDFStructureError.malformed("generazione stream oggetto") }
+            guard id.generation == 0 else { throw PDFStructureError.malformed(L10n.tr("generazione stream oggetto")) }
             let owner = try object(PDFObjectID(number: container, generation: 0))
             guard let dictionary = owner.value.dictionary,try resolve(dictionary["Type"])?.name == "ObjStm",let stream = owner.stream,
                   let count = try resolve(dictionary["N"])?.int,let first = try resolve(dictionary["First"])?.int,
-                  count >= 0,first >= 0,index >= 0,index < count else { throw PDFStructureError.malformed("stream di oggetti") }
+                  count >= 0,first >= 0,index >= 0,index < count else { throw PDFStructureError.malformed(L10n.tr("stream di oggetti")) }
             guard count < 100_000 else { throw PDFStructureError.limit }
             let data = try Self.decode(stream, dictionary: streamDecodingDictionary(dictionary))
             var header = PDFSyntaxLexer(data)
             var positions: [(Int, Int)] = []
             for _ in 0..<count {
-                guard let number = Int(try header.word()), let offset = Int(try header.word()) else { throw PDFStructureError.malformed("indice oggetti compressi") }
+                guard let number = Int(try header.word()), let offset = Int(try header.word()) else { throw PDFStructureError.malformed(L10n.tr("indice oggetti compressi")) }
                 positions.append((number, offset))
             }
             guard positions[index].0 == id.number, first >= 0, positions[index].1 >= 0,
-                  positions[index].1 < data.count, first < data.count - positions[index].1 else { throw PDFStructureError.malformed("posizione oggetto compresso") }
+                  positions[index].1 < data.count, first < data.count - positions[index].1 else { throw PDFStructureError.malformed(L10n.tr("posizione oggetto compresso")) }
             var lexer = PDFSyntaxLexer(data, offset: first + positions[index].1)
             result = PDFIndirectObject(id: id, value: try lexer.value(), stream: nil)
         }
@@ -466,7 +471,7 @@ final class PDFStructureDocument {
         var visited = Set<PDFObjectID>(),terminal:PDFObjectID?
         while let id = value.reference {
             try Task.checkCancellation()
-            guard visited.insert(id).inserted else { throw PDFStructureError.unsupported("catena di alias indiretti circolare") }
+            guard visited.insert(id).inserted else { throw PDFStructureError.unsupported(L10n.tr("catena di alias indiretti circolare")) }
             guard visited.count <= 1000 else { throw PDFStructureError.limit }
             // §7.3.10: undefined indirect objects have null semantics. A broken
             // body at an existing xref entry still raises its parsing error.
@@ -485,7 +490,7 @@ final class PDFStructureDocument {
     func requireWritable() throws {
         guard !encrypted else { throw PDFStructureError.encrypted }
         let root = try dictionary(.reference(rootID))
-        if root["Perms"] != nil { throw PDFStructureError.unsupported("documento certificato: permessi DocMDP") }
+        if root["Perms"] != nil { throw PDFStructureError.unsupported(L10n.tr("documento certificato: permessi DocMDP")) }
     }
     @discardableResult func add(_ value: PDFSyntaxValue, stream: Data? = nil) -> PDFObjectID {
         let id = PDFObjectID(number: nextNumber, generation: 0); nextNumber += 1
@@ -520,7 +525,7 @@ final class PDFStructureDocument {
             for key in ["Info", "ID"] { xref[key] = trailer[key] }
             result += PDFIndirectObject(id: xrefID, value: .dictionary(xref), stream: rows).encoded
             result += Data("startxref\n\(xrefOffset)\n%%EOF\n".utf8)
-            guard let provider = CGDataProvider(data: result as CFData), CGPDFDocument(provider) != nil else { throw PDFStructureError.malformed("risultato incrementale xref-stream") }
+            guard let provider = CGDataProvider(data: result as CFData), CGPDFDocument(provider) != nil else { throw PDFStructureError.malformed(L10n.tr("risultato incrementale xref-stream")) }
             return result
         }
         for id in positions.keys.sorted() {
@@ -532,7 +537,7 @@ final class PDFStructureDocument {
         for key in ["Info", "ID"] { newTrailer[key] = trailer[key] }
         result += Data("trailer\n".utf8) + PDFSyntaxValue.dictionary(newTrailer).encoded
         result += Data("\nstartxref\n\(xrefOffset)\n%%EOF\n".utf8)
-        guard CGPDFDocument(CGDataProvider(data: result as CFData)!) != nil else { throw PDFStructureError.malformed("risultato incrementale") }
+        guard CGPDFDocument(CGDataProvider(data: result as CFData)!) != nil else { throw PDFStructureError.malformed(L10n.tr("risultato incrementale")) }
         return result
     }
     func allObjectIDs() -> [PDFObjectID] {
@@ -544,12 +549,12 @@ final class PDFStructureDocument {
     }
     func pageIDs() throws -> [PDFObjectID] {
         let root = try object(rootID).value.dictionary ?? [:]
-        guard let pages = root["Pages"]?.reference else { throw PDFStructureError.malformed("albero pagine") }
+        guard let pages = root["Pages"]?.reference else { throw PDFStructureError.malformed(L10n.tr("albero pagine")) }
         var result: [PDFObjectID] = [], visited = Set<PDFObjectID>()
         func walk(_ id: PDFObjectID, depth: Int) throws {
             guard depth < 100,visited.count < 100_000 else { throw PDFStructureError.limit }
             guard let canonical = try resolvedObjectID(.reference(id)) else { throw PDFStructureError.malformed("pagina indiretta nulla") }
-            guard visited.insert(canonical).inserted else { throw PDFStructureError.malformed("albero pagine circolare/condiviso") }
+            guard visited.insert(canonical).inserted else { throw PDFStructureError.malformed(L10n.tr("albero pagine circolare/condiviso")) }
             let d = try dictionary(.reference(canonical))
             if try resolve(d["Type"])?.name == "Page" { result.append(canonical) }
             else { for child in try resolve(d["Kids"])?.array ?? [] { if let id = child.reference { try walk(id, depth: depth + 1) } } }
@@ -561,7 +566,7 @@ final class PDFStructureDocument {
         while let id = next {
             guard visited.count < 1000 else { throw PDFStructureError.limit }
             guard let canonical = try resolvedObjectID(.reference(id)) else { return nil }
-            guard visited.insert(canonical).inserted else { throw PDFStructureError.malformed("parent circolare") }
+            guard visited.insert(canonical).inserted else { throw PDFStructureError.malformed(L10n.tr("parent circolare")) }
             let d = try dictionary(.reference(canonical))
             if let raw = d[key],let value = try resolve(raw) {
                 // A null dictionary entry is omission (§7.3.9), including
@@ -582,23 +587,23 @@ final class PDFStructureDocument {
         case nil,.null?: names = []
         case .name(let name)?: names = [name]
         case .array(let array)?:
-            guard array.allSatisfy({ $0.name != nil }) else { throw PDFStructureError.malformed("elenco Filter") }
+            guard array.allSatisfy({ $0.name != nil }) else { throw PDFStructureError.malformed(L10n.tr("elenco Filter")) }
             names = array.compactMap(\.name)
-        case .reference?: throw PDFStructureError.unsupported("Filter indiretto non risolto")
-        default: throw PDFStructureError.malformed("tipo Filter")
+        case .reference?: throw PDFStructureError.unsupported(L10n.tr("Filter indiretto non risolto"))
+        default: throw PDFStructureError.malformed(L10n.tr("tipo Filter"))
         }
         guard names.count <= 100 else { throw PDFStructureError.limit }
         let parameters:[PDFSyntaxValue]
         switch dictionary["DecodeParms"] {
         case nil,.null?: parameters = Array(repeating:.null,count:names.count)
         case .dictionary(let value)?:
-            guard names.count == 1 else { throw PDFStructureError.malformed("DecodeParms non corrisponde a Filter") }
+            guard names.count == 1 else { throw PDFStructureError.malformed(L10n.tr("DecodeParms non corrisponde a Filter")) }
             parameters = [.dictionary(value)]
         case .array(let values)?:
-            guard values.count == names.count,values.allSatisfy({ if case .null = $0 { return true };return $0.dictionary != nil }) else { throw PDFStructureError.malformed("elenco DecodeParms") }
+            guard values.count == names.count,values.allSatisfy({ if case .null = $0 { return true };return $0.dictionary != nil }) else { throw PDFStructureError.malformed(L10n.tr("elenco DecodeParms")) }
             parameters = values
-        case .reference?: throw PDFStructureError.unsupported("DecodeParms indiretto non risolto")
-        default: throw PDFStructureError.malformed("tipo DecodeParms")
+        case .reference?: throw PDFStructureError.unsupported(L10n.tr("DecodeParms indiretto non risolto"))
+        default: throw PDFStructureError.malformed(L10n.tr("tipo DecodeParms"))
         }
         var result = data
         for (index,name) in names.enumerated() {
@@ -614,7 +619,7 @@ final class PDFStructureDocument {
         func expand(_ value:PDFSyntaxValue,active:Set<PDFObjectID>,depth:Int) throws -> PDFSyntaxValue {
             guard depth < 60 else { throw PDFStructureError.limit }
             if let id = value.reference {
-                guard !active.contains(id) else { throw PDFStructureError.malformed("parametri filtro circolari") }
+                guard !active.contains(id) else { throw PDFStructureError.malformed(L10n.tr("parametri filtro circolari")) }
                 return try expand(resolve(value) ?? .null,active:active.union([id]),depth:depth+1)
             }
             if let array = value.array { return .array(try array.map { try expand($0,active:active,depth:depth+1) }) }
@@ -633,20 +638,20 @@ extension PDFStructureDocument {
         case decimal = "D", romanLower = "r", romanUpper = "R", alphabeticLower = "a", alphabeticUpper = "A", prefixOnly = ""
         var id: String { rawValue }
         var title: String {
-            switch self { case .decimal: return "1, 2, 3"; case .romanLower: return "i, ii, iii"; case .romanUpper: return "I, II, III"
-            case .alphabeticLower: return "a, b, c"; case .alphabeticUpper: return "A, B, C"; case .prefixOnly: return "Solo prefisso" }
+            switch self { case .decimal: return "1, 2, 3"; case .romanLower: return L10n.tr("i, ii, iii"); case .romanUpper: return L10n.tr("I, II, III")
+            case .alphabeticLower: return "a, b, c"; case .alphabeticUpper: return "A, B, C"; case .prefixOnly: return L10n.tr("Solo prefisso") }
         }
     }
     func setPageLabels(startPage: Int, firstNumber: Int, prefix: String, style: PageLabelStyle) throws -> Data {
         try requireWritable(); let count = try pageIDs().count
-        guard (0..<count).contains(startPage), firstNumber >= 1 else { throw PDFStructureError.malformed("intervallo numerazione logica") }
+        guard (0..<count).contains(startPage), firstNumber >= 1 else { throw PDFStructureError.malformed(L10n.tr("intervallo numerazione logica")) }
         let id = try rootID; var root = try dictionary(.reference(id))
         var pairs: [Int: PDFSyntaxValue] = [:]
         func collect(_ value: PDFSyntaxValue?, visited: inout Set<PDFObjectID>) throws {
-            if let reference = value?.reference { guard visited.insert(reference).inserted else { throw PDFStructureError.malformed("PageLabels circolare") } }
+            if let reference = value?.reference { guard visited.insert(reference).inserted else { throw PDFStructureError.malformed(L10n.tr("PageLabels circolare")) } }
             let node = try dictionary(value)
             let nums = try resolve(node["Nums"])?.array ?? []
-            guard nums.count % 2 == 0 else { throw PDFStructureError.malformed("PageLabels Nums") }
+            guard nums.count % 2 == 0 else { throw PDFStructureError.malformed(L10n.tr("PageLabels Nums")) }
             for index in stride(from: 0, to: nums.count, by: 2) { if let number = nums[index].int { pairs[number] = nums[index + 1] } }
             for kid in try resolve(node["Kids"])?.array ?? [] { try collect(kid, visited: &visited) }
         }
@@ -681,7 +686,7 @@ extension PDFStructureDocument {
         }
         guard image.bits == 8, ["DeviceRGB", "DeviceGray"].contains(image.colorSpace),
               dictionary["SMask"] == nil, dictionary["Mask"] == nil, dictionary["Decode"] == nil else {
-            throw PDFStructureError.unsupported("estrazione lossless solo JPEG/JPX o bitmap RGB/grigie a 8 bit senza maschere")
+            throw PDFStructureError.unsupported(L10n.tr("estrazione lossless solo JPEG/JPX o bitmap RGB/grigie a 8 bit senza maschere"))
         }
         let pixels = try Self.decode(stream, dictionary: dictionary), components = image.colorSpace == "DeviceRGB" ? 3 : 1
         guard image.width > 0, image.height > 0, image.width <= 50_000, image.height <= 50_000,
@@ -692,14 +697,14 @@ extension PDFStructureDocument {
                                     bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue), provider: provider, decode: nil,
                                     shouldInterpolate: false, intent: .defaultIntent),
               let encoded = NSBitmapImageRep(cgImage: cgImage).representation(using: .png, properties: [:]) else {
-            throw PDFStructureError.malformed("dimensioni bitmap")
+            throw PDFStructureError.malformed(L10n.tr("dimensioni bitmap"))
         }
         return (encoded, "png")
     }
     func replaceImage(_ id: PDFObjectID, with image: CGImage) throws -> Data {
         try requireWritable(); let object = try object(id)
         guard var dictionary = object.value.dictionary, dictionary["Subtype"]?.name == "Image",
-              image.width > 0, image.height > 0, image.width * image.height <= 40_000_000 else { throw PDFStructureError.malformed("immagine da sostituire") }
+              image.width > 0, image.height > 0, image.width * image.height <= 40_000_000 else { throw PDFStructureError.malformed(L10n.tr("immagine da sostituire")) }
         guard let context = CGContext(data: nil, width: image.width, height: image.height, bitsPerComponent: 8,
                                       bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(),
                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue), let memory = context.data else { throw PDFStructureError.limit }
@@ -714,9 +719,9 @@ extension PDFStructureDocument {
     }
 
     private func nameTree(_ value: PDFSyntaxValue?, visited: inout Set<PDFObjectID>) throws -> [(String, PDFSyntaxValue)] {
-        if let id = value?.reference { guard visited.insert(id).inserted else { throw PDFStructureError.malformed("name tree circolare") } }
+        if let id = value?.reference { guard visited.insert(id).inserted else { throw PDFStructureError.malformed(L10n.tr("name tree circolare")) } }
         let dictionary = try dictionary(value), names = try resolve(dictionary["Names"])?.array ?? []
-        guard names.count % 2 == 0 else { throw PDFStructureError.malformed("name tree") }
+        guard names.count % 2 == 0 else { throw PDFStructureError.malformed(L10n.tr("name tree")) }
         var result: [(String, PDFSyntaxValue)] = []
         for index in stride(from: 0, to: names.count, by: 2) { if let name = names[index].text { result.append((name, names[index + 1])) } }
         for child in try resolve(dictionary["Kids"])?.array ?? [] { result += try nameTree(child, visited: &visited) }
@@ -727,7 +732,7 @@ extension PDFStructureDocument {
         let root = try dictionary(.reference(rootID)), names = try dictionary(root["Names"])
         var visited = Set<PDFObjectID>()
         return try nameTree(names["EmbeddedFiles"], visited: &visited).compactMap { fallback, value in
-            guard let id = value.reference else { throw PDFStructureError.unsupported("Filespec diretto") }
+            guard let id = value.reference else { throw PDFStructureError.unsupported(L10n.tr("Filespec diretto")) }
             let file = try dictionary(value), ef = try dictionary(file["EF"])
             guard let streamID = (ef["UF"] ?? ef["F"])?.reference else { return nil }
             let stream = try object(streamID)
@@ -747,7 +752,7 @@ extension PDFStructureDocument {
         var existing = Set(pairs.map(\.0))
         for file in files {
             guard !file.name.isEmpty, file.data.count <= 256 * 1024 * 1024 else { throw PDFStructureError.limit }
-            guard existing.insert(file.name).inserted else { throw PDFStructureError.unsupported("un allegato si chiama già “\(file.name)”") }
+            guard existing.insert(file.name).inserted else { throw PDFStructureError.unsupported(L10n.tr("un allegato si chiama già “\(file.name)”")) }
             let stream = add(.dictionary(["Type": .name("EmbeddedFile"), "Params": .dictionary(["Size": .number(String(file.data.count))])]), stream: file.data)
             let spec = add(.dictionary(["Type": .name("Filespec"), "F": .string(file.name), "UF": .string(file.name),
                                         "EF": .dictionary(["F": .reference(stream), "UF": .reference(stream)]),
@@ -801,18 +806,18 @@ extension PDFStructureDocument {
         guard let contents = try resolve(dictionary["Contents"]) else { return [] }
         if case .null = contents { return [] }
         if let id = try resolvedObjectID(dictionary["Contents"]), try object(id).stream != nil { return [id] }
-        guard let values = contents.array else { throw PDFStructureError.malformed("Contents non è uno stream o un array di stream") }
+        guard let values = contents.array else { throw PDFStructureError.malformed(L10n.tr("Contents non è uno stream o un array di stream")) }
         guard values.count <= 100_000 else { throw PDFStructureError.limit }
         return try values.map { value in
             try Task.checkCancellation()
             guard let id = try resolvedObjectID(value), try object(id).stream != nil else {
-                throw PDFStructureError.malformed("elemento Contents non è uno stream indiretto")
+                throw PDFStructureError.malformed(L10n.tr("elemento Contents non è uno stream indiretto"))
             };return id
         }
     }
     func decodedStream(_ id: PDFObjectID) throws -> Data {
         guard !encrypted else { throw PDFStructureError.encrypted }
-        guard let terminal = try resolvedObjectID(.reference(id)) else { throw PDFStructureError.malformed("stream indiretto assente") }
+        guard let terminal = try resolvedObjectID(.reference(id)) else { throw PDFStructureError.malformed(L10n.tr("stream indiretto assente")) }
         if let cached = decodedCache[terminal] { return cached }
         let object = try object(terminal); guard let stream = object.stream, let dictionary = object.value.dictionary else { throw PDFStructureError.malformed("stream") }
         let decoded = try Self.decode(stream, dictionary: streamDecodingDictionary(dictionary))
@@ -840,7 +845,7 @@ extension PDFStructureDocument {
                     lexer.skip(); if lexer.offset >= lexer.bytes.count { break }
                     let start = lexer.offset, value = try lexer.value(), range = start..<lexer.offset
                     if case .keyword(let keyword) = value {
-                        if keyword == "BI" { throw PDFStructureError.unsupported("immagini inline nel content stream") }
+                        if keyword == "BI" { throw PDFStructureError.unsupported(L10n.tr("immagini inline nel content stream")) }
                         if keyword == "Tf", operands.count >= 2 { activeFont = operands[operands.count - 2].0.name }
                         if ["Tj", "'", "\""].contains(keyword), let last = operands.last,
                            let font = activeFont.flatMap({ supported[$0] }), let bytes = last.0.data,
@@ -860,10 +865,10 @@ extension PDFStructureDocument {
         try requireWritable()
         guard try originalTextRuns().contains(where: { $0.id == run.id && $0.bytes == run.bytes }),
               let replacement = text.data(using: .windowsCP1252, allowLossyConversion: false),
-              replacement.allSatisfy({ $0 >= 32 && $0 != 127 }) else { throw PDFStructureError.unsupported("testo o font non rappresentabile in WinAnsi") }
+              replacement.allSatisfy({ $0 >= 32 && $0 != 127 }) else { throw PDFStructureError.unsupported(L10n.tr("testo o font non rappresentabile in WinAnsi")) }
         let object = try object(run.streamID); var dictionary = object.value.dictionary ?? [:]
         var stream = try decodedStream(run.streamID)
-        guard run.range.upperBound <= stream.count else { throw PDFStructureError.malformed("testo modificato") }
+        guard run.range.upperBound <= stream.count else { throw PDFStructureError.malformed(L10n.tr("testo modificato")) }
         stream.replaceSubrange(run.range, with: PDFSyntaxValue.bytes(replacement).encoded)
         dictionary.removeValue(forKey: "Filter"); dictionary.removeValue(forKey: "DecodeParms")
         replace(run.streamID, dictionary: dictionary, stream: stream); return try writeIncremental()
@@ -875,13 +880,13 @@ extension PDFStructureDocument {
     }
     func tagPages(language: String, tags: [PageTag]) throws -> Data {
         try requireWritable(); let pages = try pageIDs(); let catalogID = try rootID; var root = try dictionary(.reference(catalogID))
-        guard root["StructTreeRoot"] == nil else { throw PDFStructureError.unsupported("esiste già una struttura di accessibilità; non viene sovrascritta") }
-        guard tags.count == pages.count, !language.isEmpty else { throw PDFStructureError.malformed("descrizioni accessibili") }
+        guard root["StructTreeRoot"] == nil else { throw PDFStructureError.unsupported(L10n.tr("esiste già una struttura di accessibilità; non viene sovrascritta")) }
+        guard tags.count == pages.count, !language.isEmpty else { throw PDFStructureError.malformed(L10n.tr("descrizioni accessibili")) }
         let treeID = add(.dictionary([:]))
         var elements: [PDFSyntaxValue] = [], parentEntries: [PDFSyntaxValue] = []
         for (index, pageID) in pages.enumerated() {
             let tag = tags[index]
-            guard ["Figure", "P", "H1", "H2"].contains(tag.role), !tag.description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw PDFStructureError.malformed("ruolo o descrizione pagina \(index + 1)") }
+            guard ["Figure", "P", "H1", "H2"].contains(tag.role), !tag.description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw PDFStructureError.malformed(L10n.tr("ruolo o descrizione pagina \(index + 1)")) }
             let element = add(.dictionary(["Type": .name("StructElem"), "S": .name(tag.role), "P": .reference(treeID), "Pg": .reference(pageID),
                                            "K": .number("0"), "Alt": .string(tag.description), "Lang": .string(language)]))
             elements.append(.reference(element)); parentEntries += [.number(String(index)), .array([.reference(element)])]
@@ -903,9 +908,9 @@ extension PDFStructureDocument {
     func preflight() throws -> [PDFPreflightItem] {
         var result: [PDFPreflightItem] = []
         let pages = try pageIDs()
-        result.append(.init(severity: "info", title: "Documento", detail: "\(pages.count) pagine; \(source.count) byte; \(allObjectIDs().count) oggetti attivi nella xref."))
+        result.append(.init(severity: "info", title: L10n.tr("Documento"), detail: L10n.tr("\(pages.count) pagine; \(source.count) byte; \(allObjectIDs().count) oggetti attivi nella xref.")))
         if encrypted {
-            result.append(.init(severity: "avviso", title: "PDF cifrato", detail: "I contenuti non vengono decifrati da questo lettore. Analisi di font, immagini e conformità non eseguibile."))
+            result.append(.init(severity: "avviso", title: L10n.tr("PDF cifrato"), detail: L10n.tr("I contenuti non vengono decifrati da questo lettore. Analisi di font, immagini e conformità non eseguibile.")))
             return result
         }
         var fontIDs = Set<PDFObjectID>()
@@ -913,42 +918,42 @@ extension PDFStructureDocument {
             let media = try inherited("MediaBox", pageID: id)?.array?.compactMap(\.real) ?? []
             let crop = try inherited("CropBox", pageID: id)?.array?.compactMap(\.real) ?? media
             if media.count != 4 || crop.count != 4 || media[2] <= media[0] || media[3] <= media[1] || crop[2] <= crop[0] || crop[3] <= crop[1] {
-                result.append(.init(severity: "errore", title: "Pagina \(index + 1)", detail: "MediaBox/CropBox assente o dimensioni non valide."))
+                result.append(.init(severity: "errore", title: L10n.tr("Pagina \(index + 1)"), detail: L10n.tr("MediaBox/CropBox assente o dimensioni non valide.")))
             } else {
-                result.append(.init(severity: "info", title: "Pagina \(index + 1)", detail: String(format: "MediaBox %.2f × %.2f pt; CropBox %.2f × %.2f pt.", media[2] - media[0], media[3] - media[1], crop[2] - crop[0], crop[3] - crop[1])))
+                result.append(.init(severity: "info", title: L10n.tr("Pagina \(index + 1)"), detail: String(format: L10n.string("MediaBox %.2f × %.2f pt; CropBox %.2f × %.2f pt."), media[2] - media[0], media[3] - media[1], crop[2] - crop[0], crop[3] - crop[1])))
             }
             let resources = try dictionary(inherited("Resources", pageID: id)), fonts = try dictionary(resources["Font"])
             for (_, fontValue) in fonts {
                 if let fontID = fontValue.reference, !fontIDs.insert(fontID).inserted { continue }
-                let font = try dictionary(fontValue), subtype = font["Subtype"]?.name ?? "?", base = font["BaseFont"]?.name ?? "senza nome"
+                let font = try dictionary(fontValue), subtype = font["Subtype"]?.name ?? "?", base = font["BaseFont"]?.name ?? L10n.tr("senza nome")
                 var descriptor = try dictionary(font["FontDescriptor"])
                 if subtype == "Type0", let descendant = try resolve(font["DescendantFonts"])?.array?.first { descriptor = try dictionary(dictionary(descendant)["FontDescriptor"]) }
                 let embedded = subtype == "Type3" || ["FontFile", "FontFile2", "FontFile3"].contains { descriptor[$0] != nil }
-                result.append(.init(severity: embedded ? "info" : "avviso", title: "Font \(base)", detail: "\(subtype); \(embedded ? "programma del font incorporato" : "programma del font non incorporato"). Controllo riferimenti del dizionario, non licenza o qualità dei glifi."))
+                result.append(.init(severity: embedded ? "info" : "avviso", title: L10n.tr("Font \(base)"), detail: L10n.tr("\(subtype); \(embedded ? L10n.tr("programma del font incorporato") : L10n.tr("programma del font non incorporato")). Controllo riferimenti del dizionario, non licenza o qualità dei glifi.")))
             }
             do {
                 for placement in try imagePlacements(on: id) {
-                    result.append(.init(severity: placement.dpi < 150 ? "avviso" : "info", title: "Immagine \(placement.id.number), pagina \(index + 1)", detail: String(format: "Risoluzione minima nella matrice di posizionamento: %.1f dpi.", placement.dpi)))
+                    result.append(.init(severity: placement.dpi < 150 ? "avviso" : "info", title: L10n.tr("Immagine \(placement.id.number), pagina \(index + 1)"), detail: String(format: L10n.string("Risoluzione minima nella matrice di posizionamento: %.1f dpi."), placement.dpi)))
                 }
             } catch {
-                result.append(.init(severity: "avviso", title: "Analisi immagini pagina \(index + 1) incompleta", detail: error.localizedDescription))
+                result.append(.init(severity: "avviso", title: L10n.tr("Analisi immagini pagina \(index + 1) incompleta"), detail: error.localizedDescription))
             }
         }
         let root = try dictionary(.reference(rootID))
         let intents = try resolve(root["OutputIntents"])?.array ?? []
         for intent in intents {
             let item = try dictionary(intent)
-            result.append(.init(severity: item["DestOutputProfile"] != nil ? "info" : "avviso", title: "Output intent \(item["S"]?.name ?? "?")", detail: "Profilo ICC \(item["DestOutputProfile"] != nil ? "referenziato" : "assente"); \(item["OutputConditionIdentifier"]?.text ?? "condizione non specificata")."))
+            result.append(.init(severity: item["DestOutputProfile"] != nil ? "info" : "avviso", title: L10n.tr("Output intent \(item["S"]?.name ?? "?")"), detail: L10n.tr("Profilo ICC \(item["DestOutputProfile"] != nil ? "referenziato" : "assente"); \(item["OutputConditionIdentifier"]?.text ?? L10n.tr("condizione non specificata")).")))
         }
-        if intents.isEmpty { result.append(.init(severity: "avviso", title: "Output intent", detail: "Nessun intento di output ICC dichiarato.")) }
+        if intents.isEmpty { result.append(.init(severity: "avviso", title: L10n.tr("Output intent"), detail: L10n.tr("Nessun intento di output ICC dichiarato."))) }
         if root["StructTreeRoot"] == nil {
-            result.append(.init(severity: "avviso", title: "Accessibilità", detail: "StructTreeRoot assente. Non è un documento PDF con struttura logica dichiarata."))
+            result.append(.init(severity: "avviso", title: L10n.tr("Accessibilità"), detail: L10n.tr("StructTreeRoot assente. Non è un documento PDF con struttura logica dichiarata.")))
         } else {
-            result.append(.init(severity: "info", title: "Accessibilità", detail: "StructTreeRoot presente; lingua \(root["Lang"]?.text ?? "non dichiarata"). La presenza dei tag non certifica PDF/UA o la correttezza dell’ordine di lettura."))
+            result.append(.init(severity: "info", title: L10n.tr("Accessibilità"), detail: L10n.tr("StructTreeRoot presente; lingua \(root["Lang"]?.text ?? L10n.tr("non dichiarata")). La presenza dei tag non certifica PDF/UA o la correttezza dell’ordine di lettura.")))
         }
         let names = try dictionary(root["Names"])
         if names["JavaScript"] != nil || root["OpenAction"] != nil || root["AA"] != nil {
-            result.append(.init(severity: "avviso", title: "Azioni documento", detail: "Il catalogo contiene azioni o script. Questo controllo non esegue codice e non è una bonifica completa."))
+            result.append(.init(severity: "avviso", title: L10n.tr("Azioni documento"), detail: L10n.tr("Il catalogo contiene azioni o script. Questo controllo non esegue codice e non è una bonifica completa.")))
         }
         result += try archivalChecks()
         return result
@@ -965,9 +970,9 @@ extension PDFStructureDocument {
                     let value = try lexer.value()
                     guard case .keyword(let operation) = value else { operands.append(value); continue }
                     switch operation {
-                    case "BI": throw PDFStructureError.unsupported("immagini inline")
+                    case "BI": throw PDFStructureError.unsupported(L10n.tr("immagini inline"))
                     case "q": stack.append(current)
-                    case "Q": guard let restored = stack.popLast() else { throw PDFStructureError.malformed("stack grafico") }; current = restored
+                    case "Q": guard let restored = stack.popLast() else { throw PDFStructureError.malformed(L10n.tr("stack grafico")) }; current = restored
                     case "cm":
                         let values = operands.suffix(6).compactMap(\.real)
                         if values.count == 6 { current = CGAffineTransform(a: values[0], b: values[1], c: values[2], d: values[3], tx: values[4], ty: values[5]).concatenating(current) }
@@ -979,9 +984,9 @@ extension PDFStructureDocument {
                                 let pointsX = hypot(current.a, current.b), pointsY = hypot(current.c, current.d)
                                 if pointsX > 0, pointsY > 0 { output.append((id, min(width * 72 / pointsX, height * 72 / pointsY))) }
                             } else if dictionary["Subtype"]?.name == "Form" {
-                                guard !visited.contains(id), visited.count < 100 else { throw PDFStructureError.malformed("XObject Form circolare") }
+                                guard !visited.contains(id), visited.count < 100 else { throw PDFStructureError.malformed(L10n.tr("XObject Form circolare")) }
                                 let numbers = try resolve(dictionary["Matrix"])?.array?.compactMap(\.real) ?? [1, 0, 0, 1, 0, 0]
-                                guard numbers.count == 6 else { throw PDFStructureError.malformed("matrice Form") }
+                                guard numbers.count == 6 else { throw PDFStructureError.malformed(L10n.tr("matrice Form")) }
                                 let formMatrix = CGAffineTransform(a: numbers[0], b: numbers[1], c: numbers[2], d: numbers[3], tx: numbers[4], ty: numbers[5])
                                 let nested = dictionary["Resources"] == nil ? resources : try self.dictionary(dictionary["Resources"])
                                 try scan([id], resources: nested, matrix: formMatrix.concatenating(current), visited: visited.union([id]))
@@ -1003,10 +1008,10 @@ extension PDFStructureDocument {
         if let metadata = root["Metadata"]?.reference {
             let xmp = String(data: try decodedStream(metadata), encoding: .utf8) ?? ""
             if xmp.contains("pdfaid:") || xmp.contains("http://www.aiim.org/pdfa/ns/id/") {
-                result.append(.init(severity: "info", title: "Dichiarazione PDF/A in XMP", detail: "Identificatore PDF/A presente nei metadati. Questo non dimostra che tutti gli oggetti rispettino ISO 19005."))
+                result.append(.init(severity: "info", title: L10n.tr("Dichiarazione PDF/A in XMP"), detail: L10n.tr("Identificatore PDF/A presente nei metadati. Questo non dimostra che tutti gli oggetti rispettino ISO 19005.")))
             }
         }
-        result.append(.init(severity: "avviso", title: "Limite della validazione", detail: "Controlli strutturali locali su cifratura, font, pagine, immagini, tag, metadati e intenti ICC. Non è un validatore completo ISO PDF/A, PDF/X o PDF/UA; non viene emesso un certificato di conformità."))
+        result.append(.init(severity: "avviso", title: L10n.tr("Limite della validazione"), detail: L10n.tr("Controlli strutturali locali su cifratura, font, pagine, immagini, tag, metadati e intenti ICC. Non è un validatore completo ISO PDF/A, PDF/X o PDF/UA; non viene emesso un certificato di conformità.")))
         return result
     }
 }
@@ -1021,15 +1026,15 @@ enum PDFNativeProfileConverter {
         if let outputProfile {
             options[kCGPDFContextOutputIntent as String] = [
                 kCGPDFXOutputIntentSubtype as String: "GTS_PDFX", kCGPDFXOutputConditionIdentifier as String: condition,
-                kCGPDFXInfo as String: "Preparazione ICC locale; conformità PDF/X non certificata",
+                kCGPDFXInfo as String: L10n.tr("Preparazione ICC locale; conformità PDF/X non certificata"),
                 kCGPDFXDestinationOutputProfile as String: outputProfile
             ]
         }
-        guard let context = CGContext(consumer: consumer, mediaBox: nil, options as CFDictionary) else { throw PDFStructureError.malformed("creazione contesto PDF") }
+        guard let context = CGContext(consumer: consumer, mediaBox: nil, options as CFDictionary) else { throw PDFStructureError.malformed(L10n.tr("creazione contesto PDF")) }
         for index in 0..<source.pageCount {
             guard let page = source.page(at: index) else { throw PDFStructureError.malformed("pagina") }
             let crop = page.bounds(for: .cropBox), transform = page.transform(for: .cropBox), display = crop.applying(transform)
-            guard display.width > 0, display.height > 0 else { throw PDFStructureError.malformed("dimensioni pagina") }
+            guard display.width > 0, display.height > 0 else { throw PDFStructureError.malformed(L10n.tr("dimensioni pagina")) }
             var box = CGRect(origin: .zero, size: display.size)
             context.beginPDFPage([kCGPDFContextMediaBox as String: NSData(bytes: &box, length: MemoryLayout<CGRect>.size)] as CFDictionary)
             context.saveGState(); context.translateBy(x: -display.minX, y: -display.minY)
@@ -1037,7 +1042,7 @@ enum PDFNativeProfileConverter {
             context.restoreGState(); context.endPDFPage()
         }
         context.closePDF(); let data = output as Data
-        guard PDFDocument(data: data)?.pageCount == source.pageCount else { throw PDFStructureError.malformed("conversione PDF") }
+        guard PDFDocument(data: data)?.pageCount == source.pageCount else { throw PDFStructureError.malformed(L10n.tr("conversione PDF")) }
         return data
     }
     static func portfolioIndex(files: [(name: String, data: Data)]) throws -> Data {
@@ -1089,7 +1094,7 @@ enum PDFLocalCertificateEngine {
         return identities.compactMap { identity in
             var certificate: SecCertificate?; guard SecIdentityCopyCertificate(identity, &certificate) == errSecSuccess, let certificate else { return nil }
             let bytes = SecCertificateCopyData(certificate) as Data
-            let name = SecCertificateCopySubjectSummary(certificate) as String? ?? "Certificato senza nome"
+            let name = SecCertificateCopySubjectSummary(certificate) as String? ?? L10n.tr("Certificato senza nome")
             return PDFLocalIdentity(id: SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined(), name: name, identity: identity)
         }
     }
@@ -1119,7 +1124,7 @@ enum PDFLocalCertificateEngine {
         var result = try document.writeIncremental()
         let contentsMarker = PDFSyntaxValue.bytes(Data(repeating: 0, count: placeholderSize)).encoded
         guard let contents = result.range(of: contentsMarker, options: .backwards),
-              let range = result.range(of: byteRange.encoded, options: .backwards) else { throw PDFStructureError.malformed("segnaposto firma") }
+              let range = result.range(of: byteRange.encoded, options: .backwards) else { throw PDFStructureError.malformed(L10n.tr("segnaposto firma")) }
         let values = [0, contents.lowerBound, contents.upperBound, result.count - contents.upperBound]
         let actualRange = PDFSyntaxValue.array(values.map { .number(String(format: "%020lld", Int64($0))) }).encoded
         guard actualRange.count == range.count else { throw PDFStructureError.limit }
@@ -1132,13 +1137,13 @@ enum PDFLocalCertificateEngine {
         let verified = try verify(result)
         guard verified.contains(where: { $0.id == sig && $0.integrityValid && $0.bytesAfterSignature == 0 }) else {
             let details = verified.map { "oggetto \($0.id.number): \($0.detail)" }.joined(separator: "; ")
-            throw PDFStructureError.malformed("verifica immediata della firma non riuscita. " + (details.isEmpty ? "Nessuna firma rilevata." : details))
+            throw PDFStructureError.malformed(L10n.tr("verifica immediata della firma non riuscita. ") + (details.isEmpty ? L10n.tr("Nessuna firma rilevata.") : details))
         }
         return result
     }
 
     static func detachedCMS(_ content: Data, identity: SecIdentity) throws -> Data {
-        guard !content.isEmpty else { throw PDFStructureError.malformed("contenuto CMS vuoto") }
+        guard !content.isEmpty else { throw PDFStructureError.malformed(L10n.tr("contenuto CMS vuoto")) }
         var key: SecKey?; try check(SecIdentityCopyPrivateKey(identity, &key))
         guard let key else { throw PDFStructureError.security(errSecParam) }
         let attributes = SecKeyCopyAttributes(key) as? [String: Any] ?? [:]
@@ -1174,10 +1179,10 @@ enum PDFLocalCertificateEngine {
         guard let certificate, let key else { throw PDFStructureError.security(errSecParam) }
         let certificateDER = SecCertificateCopyData(certificate) as Data
         let certificateParts = try PDFDER.children(certificateDER)
-        guard let tbs = certificateParts.first else { throw PDFStructureError.malformed("certificato ASN.1") }
+        guard let tbs = certificateParts.first else { throw PDFStructureError.malformed(L10n.tr("certificato ASN.1")) }
         var parts = try PDFDER.children(tbs)
         if parts.first?.first == 0xA0 { parts.removeFirst() }
-        guard parts.count >= 3 else { throw PDFStructureError.malformed("issuer/serial certificato") }
+        guard parts.count >= 3 else { throw PDFStructureError.malformed(L10n.tr("issuer/serial certificato")) }
         let serial = parts[0], issuer = parts[2]
         let attributes = SecKeyCopyAttributes(key) as? [String: Any] ?? [:]
         let type = attributes[kSecAttrKeyType as String] as? String
@@ -1189,7 +1194,7 @@ enum PDFLocalCertificateEngine {
         } else if type == kSecAttrKeyTypeECSECPrimeRandom as String {
             algorithm = .ecdsaSignatureMessageX962SHA256
             signatureAlgorithm = PDFDER.sequence(Data([6,8,42,134,72,206,61,4,3,2]))
-        } else { throw PDFStructureError.unsupported("algoritmo della chiave privata") }
+        } else { throw PDFStructureError.unsupported(L10n.tr("algoritmo della chiave privata")) }
         var error: Unmanaged<CFError>?
         guard let signature = SecKeyCreateSignature(key, algorithm, content as CFData, &error) else {
             if let underlying = error?.takeRetainedValue() { throw underlying }
@@ -1215,7 +1220,7 @@ enum PDFLocalCertificateEngine {
             let subFilter = dictionary["SubFilter"]?.name ?? ""
             guard ["adbe.pkcs7.detached", "ETSI.CAdES.detached"].contains(subFilter) else {
                 result.append(.init(id: id, signer: dictionary["Name"]?.text ?? "?", integrityValid: false, locallyTrusted: false,
-                    signedRevisionBytes: 0, bytesAfterSignature: data.count, digest: "", detail: "SubFilter \(subFilter) non verificabile da questo motore.")); continue
+                    signedRevisionBytes: 0, bytesAfterSignature: data.count, digest: "", detail: L10n.tr("SubFilter \(subFilter) non verificabile da questo motore."))); continue
             }
             let ranges = dictionary["ByteRange"]?.array?.compactMap(\.int) ?? []
             guard ranges.count == 4, ranges[0] == 0, ranges[1] > 0, ranges[2] > ranges[1], ranges[3] >= 0,
@@ -1223,7 +1228,7 @@ enum PDFLocalCertificateEngine {
                   let contentsRange = object.memberRanges["Contents"], contentsRange.lowerBound == ranges[1], contentsRange.upperBound == ranges[2],
                   data[ranges[1]] == 60, data[ranges[2] - 1] == 62 else {
                 result.append(.init(id: id, signer: dictionary["Name"]?.text ?? "?", integrityValid: false, locallyTrusted: false,
-                    signedRevisionBytes: 0, bytesAfterSignature: data.count, digest: "", detail: "ByteRange non canonico o area esclusa diversa dal solo Contents.")); continue
+                    signedRevisionBytes: 0, bytesAfterSignature: data.count, digest: "", detail: L10n.tr("ByteRange non canonico o area esclusa diversa dal solo Contents."))); continue
             }
             let signed = data.subdata(in: 0..<ranges[1]) + data.subdata(in: ranges[2]..<(ranges[2] + ranges[3]))
             let digest = SHA256.hash(data: signed).map { String(format: "%02x", $0) }.joined()
@@ -1233,7 +1238,7 @@ enum PDFLocalCertificateEngine {
                 try cms.withUnsafeBytes { try check(CMSDecoderUpdateMessage(decoder, $0.baseAddress!, $0.count)) }
                 try check(CMSDecoderFinalizeMessage(decoder)); try check(CMSDecoderSetDetachedContent(decoder, signed as CFData))
                 var count = 0; try check(CMSDecoderGetNumSigners(decoder, &count))
-                guard count > 0 else { throw PDFStructureError.malformed("CMS privo di firmatari") }
+                guard count > 0 else { throw PDFStructureError.malformed(L10n.tr("CMS privo di firmatari")) }
                 for signerIndex in 0..<count {
                     var status = CMSSignerStatus.unsigned; var trust: SecTrust?; var trustStatus: OSStatus = 0
                     let policy = SecPolicyCreateBasicX509()
@@ -1248,7 +1253,7 @@ enum PDFLocalCertificateEngine {
                     let integrity = status == .valid
                     result.append(.init(id: id, signer: signer, integrityValid: integrity, locallyTrusted: trusted,
                         signedRevisionBytes: ranges[2] + ranges[3], bytesAfterSignature: data.count - ranges[2] - ranges[3], digest: digest,
-                        detail: "Integrità CMS \(integrity ? "verificata" : "NON valida") (stato decoder \(status.rawValue)); catena/date \(trusted ? "accettate dal Portachiavi locale" : "non convalidate localmente"). Rete disabilitata: nessuna verifica aggiornata di revoca OCSP/CRL, timestamp qualificato o conformità PAdES."))
+                        detail: L10n.tr("Integrità CMS \(integrity ? L10n.tr("verificata") : L10n.tr("NON valida")) (stato decoder \(status.rawValue)); catena/date \(trusted ? L10n.tr("accettate dal Portachiavi locale") : L10n.tr("non convalidate localmente")). Rete disabilitata: nessuna verifica aggiornata di revoca OCSP/CRL, timestamp qualificato o conformità PAdES.")))
                 }
             } catch {
                 result.append(.init(id: id, signer: dictionary["Name"]?.text ?? "?", integrityValid: false, locallyTrusted: false,
@@ -1259,16 +1264,16 @@ enum PDFLocalCertificateEngine {
     }
 
     static func derEnvelope(_ data: Data) throws -> Data {
-        let bytes = Array(data); guard bytes.count >= 2, bytes[0] == 48 else { throw PDFStructureError.malformed("CMS ASN.1") }
+        let bytes = Array(data); guard bytes.count >= 2, bytes[0] == 48 else { throw PDFStructureError.malformed(L10n.tr("CMS ASN.1")) }
         let initial = Int(bytes[1]); var length = 0, start = 2
         if initial < 128 { length = initial }
         else {
             let count = initial & 127
-            guard count > 0, count <= 4, bytes.count >= 2 + count else { throw PDFStructureError.unsupported("CMS BER a lunghezza indefinita") }
+            guard count > 0, count <= 4, bytes.count >= 2 + count else { throw PDFStructureError.unsupported(L10n.tr("CMS BER a lunghezza indefinita")) }
             start += count
             for byte in bytes[2..<start] { length = length * 256 + Int(byte) }
         }
-        guard length <= bytes.count - start else { throw PDFStructureError.malformed("CMS troncato") }
+        guard length <= bytes.count - start else { throw PDFStructureError.malformed(L10n.tr("CMS troncato")) }
         return Data(bytes.prefix(start + length))
     }
     private static func check(_ status: OSStatus) throws { guard status == errSecSuccess else { throw PDFStructureError.security(status) } }
@@ -1289,18 +1294,18 @@ private enum PDFDER {
     static func children(_ data: Data) throws -> [Data] {
         let bytes = Array(data)
         func node(_ start: Int) throws -> (Range<Int>, Range<Int>) {
-            guard start >= 0, start + 2 <= bytes.count else { throw PDFStructureError.malformed("ASN.1 troncato") }
+            guard start >= 0, start + 2 <= bytes.count else { throw PDFStructureError.malformed(L10n.tr("ASN.1 troncato")) }
             let first = Int(bytes[start + 1]); var cursor = start + 2, length = first
             if first >= 128 {
-                let count = first & 127; guard count > 0, count <= 4, cursor + count <= bytes.count else { throw PDFStructureError.unsupported("ASN.1 BER") }
+                let count = first & 127; guard count > 0, count <= 4, cursor + count <= bytes.count else { throw PDFStructureError.unsupported(L10n.tr("ASN.1 BER")) }
                 length = 0; for byte in bytes[cursor..<(cursor + count)] { length = length * 256 + Int(byte) }; cursor += count
             }
-            guard length <= bytes.count - cursor else { throw PDFStructureError.malformed("lunghezza ASN.1") }
+            guard length <= bytes.count - cursor else { throw PDFStructureError.malformed(L10n.tr("lunghezza ASN.1")) }
             return (start..<(cursor + length), cursor..<(cursor + length))
         }
         let (_, content) = try node(0); var cursor = content.lowerBound, result: [Data] = []
         while cursor < content.upperBound {
-            let (total, _) = try node(cursor); guard total.upperBound <= content.upperBound else { throw PDFStructureError.malformed("figlio ASN.1") }
+            let (total, _) = try node(cursor); guard total.upperBound <= content.upperBound else { throw PDFStructureError.malformed(L10n.tr("figlio ASN.1")) }
             result.append(Data(bytes[total])); cursor = total.upperBound
         }
         return result

@@ -97,10 +97,10 @@ final class CartaVisualState: ObservableObject {
                 try Task.checkCancellation()
                 guard operationID == id else { return }
                 image = NSImage(cgImage: result.image, size: .zero)
-                message = String(format: "Pixel diversi: %.2f%%. Rosso = differenza oltre soglia; la resa può variare tra font e antialias.", result.changedFraction * 100)
+                message = L10n.tr("Pixel diversi: \(result.changedFraction * 100, specifier: "%.2f")%. Rosso = differenza oltre soglia; la resa può variare tra font e antialias.")
             } catch {
                 guard operationID == id else { return }
-                message = error is CancellationError ? "Confronto annullato." : "Pagina mancante o non confrontabile: \(error.localizedDescription)"; image = nil
+                message = error is CancellationError ? L10n.tr("Confronto annullato.") : L10n.tr("Pagina mancante o non confrontabile: \(error.localizedDescription)"); image = nil
             }
             guard operationID == id else { return }
             busy = false
@@ -121,10 +121,10 @@ final class CartaVisualState: ObservableObject {
                 try Task.checkCancellation()
                 guard operationID == id else { return }
                 pairs = result
-                message = "\(pairs.count) coppie candidate. Verifica visivamente prima di eliminare pagine."
+                message = L10n.tr("\(pairs.count) coppie candidate. Verifica visivamente prima di eliminare pagine.")
             } catch {
                 guard operationID == id else { return }
-                message = error is CancellationError ? "Ricerca annullata." : error.localizedDescription
+                message = error is CancellationError ? L10n.tr("Ricerca annullata.") : error.localizedDescription
             }
             guard operationID == id else { return }
             busy = false
@@ -140,31 +140,31 @@ private struct CartaVisualWorkspace: View {
     let duplicates: Bool
     var body: some View {
         VStack(spacing: 15) {
-            Text(duplicates ? "Pagine duplicate visive" : "Confronto visivo").font(.title2.bold())
-            if state.busy { HStack { ProgressView(); Button("Annulla") { state.task?.cancel() } } }
+            Text(duplicates ? L10n.tr("Pagine duplicate visive") : L10n.tr("Confronto visivo")).font(.title2.bold())
+            if state.busy { HStack { ProgressView(); Button(L10n.tr("Annulla")) { state.task?.cancel() } } }
             if duplicates {
                 List(Array(state.pairs.enumerated()), id: \.offset) { _, pair in
                     HStack {
-                        Text("Pagine \(pair.0 + 1) e \(pair.1 + 1) · \(Int(pair.2 * 100))% simili")
+                        Text(L10n.tr("Pagine \(pair.0 + 1) e \(pair.1 + 1) · \(Int(pair.2 * 100))% simili"))
                         Spacer()
-                        Button("Mostra prima") { model.goToPage(pair.0) }.accessibilityLabel("Mostra pagina \(pair.0 + 1), prima della coppia")
-                        Button("Mostra seconda") { model.goToPage(pair.1) }.accessibilityLabel("Mostra pagina \(pair.1 + 1), seconda della coppia")
+                        Button(L10n.tr("Mostra prima")) { model.goToPage(pair.0) }.accessibilityLabel(L10n.tr("Mostra pagina \(pair.0 + 1), prima della coppia"))
+                        Button(L10n.tr("Mostra seconda")) { model.goToPage(pair.1) }.accessibilityLabel(L10n.tr("Mostra pagina \(pair.1 + 1), seconda della coppia"))
                     }
                 }
-                if model.contentRevision != revision { Text("Il documento è cambiato: riapri lo strumento per aggiornare i risultati.").foregroundStyle(.orange) }
+                if model.contentRevision != revision { Text(L10n.tr("Il documento è cambiato: riapri lo strumento per aggiornare i risultati.")).foregroundStyle(.orange) }
             } else {
                 HStack {
-                    Stepper("Pagina \(state.page + 1)", value: $state.page, in: 0...max(0, state.pageCount - 1))
-                    Stepper("Soglia \(state.threshold)", value: $state.threshold, in: 1...100)
-                    Button("Confronta", action: state.compare)
+                    Stepper(L10n.tr("Pagina \(state.page + 1)"), value: $state.page, in: 0...max(0, state.pageCount - 1))
+                    Stepper(L10n.tr("Soglia \(state.threshold)"), value: $state.threshold, in: 1...100)
+                    Button(L10n.tr("Confronta"), action: state.compare)
                 }
                 if let image = state.image {
                     Image(nsImage: image).resizable().scaledToFit().frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .accessibilityLabel("Confronto visivo della pagina \(state.page + 1)")
-                        .accessibilityHint("Le differenze grafiche sono visuali. Il riepilogo indica la percentuale di pixel diversi; usa Confronta documenti per le differenze testuali.")
+                        .accessibilityLabel(L10n.tr("Confronto visivo della pagina \(state.page + 1)"))
+                        .accessibilityHint(L10n.tr("Le differenze grafiche sono visuali. Il riepilogo indica la percentuale di pixel diversi; usa Confronta documenti per le differenze testuali."))
                 }
             }
-            CartaPanelAccessibilityStatus(message: state.message, label: duplicates ? "Ricerca duplicati" : "Confronto visivo").font(.callout).foregroundStyle(.secondary)
+            CartaPanelAccessibilityStatus(message: state.message, label: duplicates ? L10n.tr("Ricerca duplicati") : L10n.tr("Confronto visivo")).font(.callout).foregroundStyle(.secondary)
         }.padding(24).frame(minWidth: 760, minHeight: 650)
             .onAppear { if duplicates { state.duplicates() } else { state.compare() } }
             .onDisappear { state.task?.cancel() }
@@ -187,7 +187,7 @@ final class CartaStampStore: ObservableObject {
     init(directory: URL? = nil) {
         self.directory = directory ?? CartaSnapshotStore.shared.baseURL.appendingPathComponent("Stamps")
         if let data = try? Data(contentsOf: self.directory.appendingPathComponent("index.json")), let list = try? JSONDecoder().decode([CartaStamp].self, from: data) { items = list }
-        else { items = ["APPROVATO", "RISERVATO", "BOZZA"].map { CartaStamp(id: UUID(), title: $0, text: $0) } }
+        else { items = [L10n.tr("APPROVATO"), L10n.tr("RISERVATO"), L10n.tr("BOZZA")].map { CartaStamp(id: UUID(), title: $0, text: $0) } }
     }
     func addText(_ text: String) throws {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -228,26 +228,26 @@ private struct CartaStampWorkspace: View {
     @State private var message = ""
     var body: some View {
         VStack(spacing: 16) {
-            Text("Timbri riutilizzabili").font(.title2.bold())
+            Text(L10n.tr("Timbri riutilizzabili")).font(.title2.bold())
             HStack {
-                TextField("Nuovo timbro testuale", text: $newText)
-                Button("Aggiungi") { do { try store.addText(newText); newText = "" } catch { message = error.localizedDescription } }
-                Button("Importa immagine…") {
+                TextField(L10n.tr("Nuovo timbro testuale"), text: $newText)
+                Button(L10n.tr("Aggiungi")) { do { try store.addText(newText); newText = "" } catch { message = error.localizedDescription } }
+                Button(L10n.tr("Importa immagine…")) {
                     let panel = NSOpenPanel(); panel.allowedContentTypes = [.image]
                     if panel.runModal() == .OK, let url = panel.url { do { try store.addImage(url) } catch { message = error.localizedDescription } }
                 }
             }
-            Slider(value: $width, in: 60...360) { Text("Larghezza: \(Int(width)) pt") }
-                .accessibilityLabel("Larghezza timbro").accessibilityValue("\(Int(width)) punti")
+            Slider(value: $width, in: 60...360) { Text(L10n.tr("Larghezza: \(Int(width)) pt")) }
+                .accessibilityLabel(L10n.tr("Larghezza timbro")).accessibilityValue(L10n.tr("\(Int(width)) punti"))
             List(store.items) { item in
                 HStack {
                     Text(item.title).font(.headline)
                     Spacer()
-                    Button("Inserisci nella pagina") { model.insertStamp(item, width: width) }.disabled(!model.canEditAnnotations)
-                        .accessibilityLabel("Inserisci timbro \(item.title) nella pagina \(model.currentPageIndex + 1)")
+                    Button(L10n.tr("Inserisci nella pagina")) { model.insertStamp(item, width: width) }.disabled(!model.canEditAnnotations)
+                        .accessibilityLabel(L10n.tr("Inserisci timbro \(item.title) nella pagina \(model.currentPageIndex + 1)"))
                 }.padding(.vertical, 8)
             }
-            CartaPanelAccessibilityStatus(message: message.isEmpty ? "Il timbro viene inserito al centro. Usa Annotazioni da tastiera per posizionarlo con campi numerici." : message, label: "Timbri").foregroundStyle(.secondary)
+            CartaPanelAccessibilityStatus(message: message.isEmpty ? L10n.tr("Il timbro viene inserito al centro. Usa Annotazioni da tastiera per posizionarlo con campi numerici.") : message, label: L10n.tr("Timbri")).foregroundStyle(.secondary)
         }.padding(24).frame(minWidth: 700, minHeight: 500)
             .accessibilityIdentifier("panel.stamps")
     }
@@ -260,7 +260,7 @@ extension PDFEditorModel {
             guard canPrint else { throw PDFWorkspaceError.printingNotAllowed }
             let snapshot = try unprotectedWorkingSnapshot()
             let state = CartaVisualState(left: snapshot)
-            CartaPanelController.present(CartaVisualWorkspace(state: state, model: self, revision: contentRevision, duplicates: true), title: "Pagine duplicate")
+            CartaPanelController.present(CartaVisualWorkspace(state: state, model: self, revision: contentRevision, duplicates: true), title: L10n.tr("Pagine duplicate"))
         } catch { errorMessage = error.localizedDescription }
     }
     func showVisualComparisonWorkspace() {
@@ -273,10 +273,10 @@ extension PDFEditorModel {
             guard other.allowsCopying, other.allowsPrinting else { throw PDFWorkspaceError.copyingNotAllowed }
             let wrapper = PDFEditorModel(); wrapper.replaceDocument(other, fileName: url.lastPathComponent)
             let state = CartaVisualState(left: try unprotectedWorkingSnapshot(), right: try wrapper.unprotectedWorkingSnapshot())
-            CartaPanelController.present(CartaVisualWorkspace(state: state, model: self, revision: contentRevision, duplicates: false), title: "Confronto visivo")
+            CartaPanelController.present(CartaVisualWorkspace(state: state, model: self, revision: contentRevision, duplicates: false), title: L10n.tr("Confronto visivo"))
         } catch { errorMessage = error.localizedDescription }
     }
-    func showStampWorkspace() { CartaPanelController.present(CartaStampWorkspace(model: self), title: "Timbri") }
+    func showStampWorkspace() { CartaPanelController.present(CartaStampWorkspace(model: self), title: L10n.tr("Timbri")) }
     func insertStamp(_ stamp: CartaStamp, width: Double) {
         guard canEditAnnotations, let page = currentPage else { return }
         let crop = page.bounds(for: .cropBox)
@@ -287,7 +287,7 @@ extension PDFEditorModel {
                 let height = min(width * CGFloat(image.height) / CGFloat(image.width), crop.height / 2)
                 let annotation = CartaImageStampAnnotation(bounds: CGRect(x: crop.midX - width / 2, y: crop.midY - height / 2, width: width, height: height), image: image)
                 annotation.contents = stamp.title
-                addBatchAnnotations([(page, annotation)], actionName: "Inserisci timbro")
+                addBatchAnnotations([(page, annotation)], actionName: L10n.tr("Inserisci timbro"))
             } catch { errorMessage = error.localizedDescription }
         } else {
             let bounds = CGRect(x: crop.midX - width / 2, y: crop.midY - 25, width: width, height: 50)
@@ -296,7 +296,7 @@ extension PDFEditorModel {
             annotation.font = .boldSystemFont(ofSize: min(24, width / max(4, CGFloat(stamp.text.count)) * 1.5))
             annotation.fontColor = .systemRed; annotation.color = .white; annotation.alignment = .center
             let border = PDFBorder(); border.lineWidth = 2; annotation.border = border
-            addBatchAnnotations([(page, annotation)], actionName: "Inserisci timbro")
+            addBatchAnnotations([(page, annotation)], actionName: L10n.tr("Inserisci timbro"))
         }
     }
 }

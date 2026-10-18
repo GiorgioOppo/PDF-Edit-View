@@ -12,6 +12,12 @@ Signature verification does not contact online revocation or timestamp services.
 
 Development scripts for acquiring the corpus require network access only when explicitly run. GitHub and repository collaboration tools are services separate from the app.
 
+## Language preferences
+
+At launch, CartaPDF reads the ordered macOS system or per-app language preferences to select an included translation, with English fallback when no language matches. It does not write `AppleLanguages`, change the system language, or send the preference list to a service. All eight language resource variants are bundled; translations require no network access or download. Selecting an interface language does not translate document contents or change OCR recognition languages.
+
+The read-only `--cli language` diagnostic prints selected, preferred, and supported language codes, resource counts, and sample interface labels to the caller. Automated packaged checks supply `-AppleLanguages` only for each child process; they do not persist a language preference. Like other CLI output, this diagnostic is not uploaded automatically. See [language selection](LOCALIZATION.md).
+
 ## Data stored locally
 
 | Data | Location or mechanism | Contents |

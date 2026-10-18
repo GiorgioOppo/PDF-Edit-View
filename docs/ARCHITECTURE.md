@@ -13,10 +13,21 @@ CartaPDF is a Swift Package Manager executable with an XCTest target. Its interf
 | Capture and export | `PDFScanExport*`, `PDFConversionTools` | Vision OCR, Image Capture, ScreenCaptureKit, static WebKit content, and conversions. |
 | PDF structure | `PDFStructureEngine`, `PDFStructureTools`, `PDFStructureViews`, `PDFStreamFilters` | COS/xref reader, streams, supported structural changes, and signatures. |
 | Local services | `CartaWorkspaceServices`, `CartaFileIO`, `CartaRenderingServices`, `PDFLocalLibrary` | Preferences, versions, recovery, writes, caches, and local index. |
+| Localization | `CartaLocalization`, `Resources/Localization/*.lproj` | Ordered macOS language selection, bundled translations, English fallback, and safe message interpolation. |
 | Automation | `CartaAutomation` | CLI, App Intent, and AppleScript command. |
 | Validation | `PDFArchiveValidator*`, `PDFArchive*Checks`, `ICCModel` | PDF/A reports, model checks, and explicit coverage gaps. |
 
 The abbreviated names in the table refer to files under [Sources/CartaPDF](../Sources/CartaPDF/).
+
+## Localization and message boundaries
+
+`L10n` resolves the app language at launch from `Locale.preferredLanguages`, including macOS per-app preferences. It scans the ordered list for Italian, Spanish, English, German, French, Chinese, or Japanese, skips unsupported entries, and uses English when no entry matches. Chinese has Simplified and Traditional resource variants: an explicit script takes precedence over the region. The selected locale is supplied to SwiftUI roots and formatting; the app does not write language preferences.
+
+`L10n.tr` receives a `CartaLocalizedMessage` whose literal text forms a translation key. Swift interpolation records values separately as numbered `{0}`, `{1}`, and subsequent placeholders. A single substitution pass allows translated argument order while preventing user text containing braces or percent signs from becoming formatting instructions. `L10n.string` is reserved for explicit internal display keys such as enum titles. Document contents, filenames supplied by users, PDF/COS keys, stored identifiers, and parser commands are not translated as keys.
+
+The eight local resource directories provide `Localizable.strings`, `AppShortcuts.strings`, and `InfoPlist.strings`. Runtime lookup supports main app resources and SwiftPM's flat or `Contents/Resources` bundle layouts; XCTest may use its product resource bundle. Missing localized entries fall back to the English table. No translation service or download is involved. App Intent metadata keeps native compile-time localized resources rather than runtime strings.
+
+The [static checker](../scripts/check-localization.py) checks explicit source coverage, matching catalogues, placeholder and format integrity, and native metadata. The [packaged checker](../scripts/check-built-app.py) independently reads the assembled app and launches twenty process-local preference scenarios, comparing selected languages and labels with those resources. These checks verify resource and selection behavior; they do not replace layout review or a complete VoiceOver audit. See [localization maintenance](LOCALIZATION.md).
 
 ## Documents and writes
 

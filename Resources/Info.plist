@@ -3,7 +3,18 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleDevelopmentRegion</key>
-    <string>it</string>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>it</string>
+        <string>es</string>
+        <string>de</string>
+        <string>fr</string>
+        <string>zh-Hans</string>
+        <string>zh-Hant</string>
+        <string>ja</string>
+    </array>
     <key>CFBundleDisplayName</key>
     <string>CartaPDF</string>
     <key>CFBundleExecutable</key>
@@ -38,7 +49,7 @@
     <array>
         <dict>
             <key>CFBundleTypeName</key>
-            <string>Documento PDF</string>
+            <string>PDF Document</string>
             <key>CFBundleTypeRole</key>
             <string>Editor</string>
             <key>LSHandlerRank</key>

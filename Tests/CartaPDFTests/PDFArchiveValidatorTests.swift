@@ -152,7 +152,7 @@ final class PDFArchiveValidatorTests: XCTestCase {
         XCTAssertEqual(restored.sha256, report.sha256); XCTAssertEqual(restored.rules.count, report.rules.count)
         let missing = PDFArchiveValidator.validate(data: data, profile: .pdfa2u, catalogueDirectory: URL(fileURLWithPath: "/private/tmp/no-such-profile-" + UUID().uuidString))
         XCTAssertEqual(missing.verdict, .indeterminate); XCTAssertTrue(missing.rules.isEmpty)
-        XCTAssertTrue(missing.diagnostics.contains { $0.contains("Catalogo") })
+        XCTAssertTrue(missing.diagnostics.contains { diagnosticContains($0, "Catalogo") })
     }
     func testMalformedPdfNeverBecomesConformingAndStillReportsAllCatalogueRules() throws {
         let report = PDFArchiveValidator.validate(data: Data("%PDF-1.7\n%notbinary\ninvalid".utf8), profile: .pdfa2u)
@@ -171,7 +171,7 @@ final class PDFArchiveValidatorTests: XCTestCase {
         try JSONSerialization.data(withJSONObject: manifest).write(to: directory.appendingPathComponent("MANIFEST.json"))
         let report = PDFArchiveValidator.validate(data: fixture(version:"1.7",part:2,conformance:"U"), profile:.pdfa2u, catalogueDirectory:directory)
         XCTAssertEqual(report.verdict,.indeterminate); XCTAssertTrue(report.rules.isEmpty)
-        XCTAssertTrue(report.diagnostics.contains { $0.contains("hash") })
+        XCTAssertTrue(report.diagnostics.contains { diagnosticContains($0, "hash") })
         XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:[directory.appendingPathComponent("missing-installation")]))
     }
     func testDeclaredProfileUsesUnambiguousActualRDFAndDoesNotValidateOrUpgrade() throws {

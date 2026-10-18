@@ -4,7 +4,10 @@ Entries describe implementations and available evidence. Passing a test does not
 
 ## Unreleased
 
-- English README, documentation, contribution and support policies, and GitHub issue and pull request templates. Added a usage and documentation question form; the app interface remains Italian.
+- Automatic interface localization for Italian, Spanish, English, German, French, Simplified/Traditional Chinese and Japanese, following ordered macOS preferences with English fallback. Localized menus, tools, messages, accessibility labels and native resources are bundled without translation downloads or language preference writes.
+- Added the `L10n` message/resource layer with numbered placeholders, English fallback and explicit boundaries between interface labels, stored identifiers and document content. Added read-only CLI language diagnostics.
+- Added a static CI checker for translation coverage, placeholders, formats and native tables, plus twenty packaged language-selection cases covering supported codes, regional variants, Chinese script precedence and fallback. New verification results remain separate from historical release evidence.
+- English README, documentation, contribution and support policies, and GitHub issue and pull request templates. Added a usage and documentation question form.
 - Prepared the private GitHub repository for future source publication.
 - Added guides for usage, building, the CLI, architecture, privacy, PDF/A and accessibility.
 - Added contribution, support, security, conduct and data attribution policies.

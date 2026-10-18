@@ -1,6 +1,6 @@
 # Support
 
-Start with the [README](README.md), [user guide](docs/USAGE.md), [build instructions](docs/BUILDING.md) and [CLI reference](docs/CLI.md). The project does not promise commercial support or response times. Documentation and GitHub forms are in English; the app's current interface is Italian.
+Start with the [README](README.md), [user guide](docs/USAGE.md), [build instructions](docs/BUILDING.md) and [CLI reference](docs/CLI.md). The project does not promise commercial support or response times. Documentation and GitHub forms are in English. The app automatically selects a supported macOS language, with English fallback; see [languages](docs/LOCALIZATION.md).
 
 ## Questions, problems and requests
 

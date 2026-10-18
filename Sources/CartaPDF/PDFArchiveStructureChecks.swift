@@ -60,9 +60,9 @@ final class PDFArchiveStructureChecks {
             results.append(.init(id: "CartaPDF:ISO32000:associated-file-relationships",
                       specification: "ISO 32000-2:2020", clause: "14.13.1, 14.13.5",
                       testNumber: "native-associated-file-relationships", objectType: "AssociatedFileModel",
-                      requirement: "AF/MCAF sono array di specifiche file con AFRelationship; il tag AF descrive sequenze e non punti MP/DP.",
+                      requirement: L10n.tr("AF/MCAF sono array di specifiche file con AFRelationship; il tag AF descrive sequenze e non punti MP/DP."),
                       status: status,
-                      detail: "Associazioni PDF2 nei dizionari attivi e nelle sequenze marcate; errata §14.13 e AN002. " + model.associationGaps.joined(separator: "; "),
+                      detail: L10n.tr("Associazioni PDF2 nei dizionari attivi e nelle sequenze marcate; errata §14.13 e AN002. ") + model.associationGaps.joined(separator: "; "),
                       locations: Array(model.associationIssues.prefix(64))))
         }
         if profile == .pdfa4e {
@@ -73,15 +73,15 @@ final class PDFArchiveStructureChecks {
                 let audit: PDFArchiveEngineeringChecks.Audit
                 do {
                     guard let id = record.id, try reader.object(id).stream != nil else {
-                        audit = .init(structure: .check(false, "3DD non è un oggetto stream indiretto."),
-                                      payload: .unknown("Payload 3D assente/non referenziabile."))
+                        audit = .init(structure: .check(false, L10n.tr("3DD non è un oggetto stream indiretto.")),
+                                      payload: .unknown(L10n.tr("Payload 3D assente/non referenziabile.")))
                         results += engineeringResults(audit, subtype: subtype, location: record.location, key: record.key)
                         continue
                     }
                     audit = PDFArchiveEngineeringChecks.audit(try reader.decodedStream(id), subtype: subtype)
                 } catch {
-                    audit = .init(structure: .unknown("Flusso 3D non decodificato: " + error.localizedDescription),
-                                  payload: .unknown("Payload 3D non visitato."))
+                    audit = .init(structure: .unknown(L10n.tr("Flusso 3D non decodificato: ") + error.localizedDescription),
+                                  payload: .unknown(L10n.tr("Payload 3D non visitato.")))
                 }
                 results += engineeringResults(audit, subtype: subtype, location: record.location, key: record.key)
             }
@@ -95,7 +95,7 @@ final class PDFArchiveStructureChecks {
                   specification: subtype == "U3D" ? "ECMA-363, 3rd edition" : "ISO 14739-1",
                   clause: subtype == "U3D" ? "5.2, 8.10, 9.1–9.4, 10.4.2" : "6",
                   testNumber: "native-\(subtype.lowercased())-\(category)", objectType: "EngineeringModel",
-                  requirement: category == "structure" ? "Il flusso 3D deve rispettare la struttura del formato dichiarato." : "Il payload 3D richiede la validazione delle entità geometriche e delle estensioni.",
+                  requirement: category == "structure" ? L10n.tr("Il flusso 3D deve rispettare la struttura del formato dichiarato.") : L10n.tr("Il payload 3D richiede la validazione delle entità geometriche e delle estensioni."),
                   status: evaluation.status, detail: location + ": " + evaluation.detail,
                   locations: evaluation.locations.map { location + ": " + $0 })
         }
@@ -108,7 +108,7 @@ final class PDFArchiveStructureChecks {
         let marked = object == "CosDocument" && expression == "Marked == true"
         let embedded = object == "CosDocument" && ["containsEmbeddedFiles == true", "containsEmbeddedFiles == false"].contains(expression)
         guard owned.contains(object) || logical || marked || embedded else { return nil }
-        if reader.encrypted { return .unknown("Contenuti strutturali cifrati: controlli non eseguiti.") }
+        if reader.encrypted { return .unknown(L10n.tr("Contenuti strutturali cifrati: controlli non eseguiti.")) }
         let model = try loadModel(), root = try dictionary(.reference(reader.rootID))
         switch object {
         case "PDAnnot": return try annotation(rule, model: model)
@@ -121,15 +121,15 @@ final class PDFArchiveStructureChecks {
                 return true
             }
         case "PDFormField":
-            guard expression == "containsAA == false" else { return .unknown("Predicato del campo non implementato.") }
-            return try check(model.fields, "AA nei campi modulo") { try self.resolved($0.value["AA"]) == nil }
+            guard expression == "containsAA == false" else { return .unknown(L10n.tr("Predicato del campo non implementato.")) }
+            return try check(model.fields, L10n.tr("AA nei campi modulo")) { try self.resolved($0.value["AA"]) == nil }
         case "PDAcroForm":
             if expression == "containsXFA == false" { return try check(model.forms, "XFA assente") { try self.resolved($0.value["XFA"]) == nil } }
             if expression == "NeedAppearances == null || NeedAppearances == false" { return try check(model.forms, "NeedAppearances assente o false") { record in
                 guard let value = try self.resolved(record.value["NeedAppearances"]) else { return true }
                 if case .boolean(false) = value { return true }; return false
             } }
-            return .unknown("Predicato AcroForm non implementato.")
+            return .unknown(L10n.tr("Predicato AcroForm non implementato."))
         case "PDAdditionalActions": return try additionalActions(root: root, model: model)
         case "PDOCConfig": return try optionalContent(rule, root: root)
         case "SENonStandard": return try roleMap(rule, model: model)
@@ -140,23 +140,23 @@ final class PDFArchiveStructureChecks {
             return .unknown(model.associationGaps.joined(separator: "; "))
         case "PDSignature", "PKCSDataObject", "PDSigRef": return try signature(rule, root: root, model: model)
         case "PD3DStream":
-            guard expression == "Subtype == 'U3D' || Subtype == 'PRC'" else { return .unknown("Predicato 3D non implementato.") }
-            return try check(model.threeD, "Sottotipo dei flussi 3D referenziati; payload U3D/PRC verificato separatamente") { try ["U3D", "PRC"].contains(self.name($0.value["Subtype"]) ?? "") }
+            guard expression == "Subtype == 'U3D' || Subtype == 'PRC'" else { return .unknown(L10n.tr("Predicato 3D non implementato.")) }
+            return try check(model.threeD, L10n.tr("Sottotipo dei flussi 3D referenziati; payload U3D/PRC verificato separatamente")) { try ["U3D", "PRC"].contains(self.name($0.value["Subtype"]) ?? "") }
         default:
             if marked {
                 let mark = try dictionary(root["MarkInfo"])
-                if case .boolean(true)? = try resolved(mark["Marked"]) { return .check(true, "Catalog/MarkInfo/Marked è boolean true.") }
-                return .check(false, "Catalog/MarkInfo/Marked deve essere boolean true.")
+                if case .boolean(true)? = try resolved(mark["Marked"]) { return .check(true, L10n.tr("Catalog/MarkInfo/Marked è boolean true.")) }
+                return .check(false, L10n.tr("Catalog/MarkInfo/Marked deve essere boolean true."))
             }
             if logical {
-                guard model.structureRoot != nil else { return .check(false, "StructTreeRoot assente o non è un dizionario.") }
-                if !model.structureIssues.isEmpty { return .check(false, "Albero strutturale, ParentTree o riferimenti incoerenti.", locations: model.structureIssues) }
+                guard model.structureRoot != nil else { return .check(false, L10n.tr("StructTreeRoot assente o non è un dizionario.")) }
+                if !model.structureIssues.isEmpty { return .check(false, L10n.tr("Albero strutturale, ParentTree o riferimenti incoerenti."), locations: model.structureIssues) }
                 if !model.structureGaps.isEmpty { return .unknown(model.structureGaps.joined(separator: "; ")) }
-                return .check(true, "Albero strutturale, parent e ParentTree coerenti; documento senza contenuto dipinto da assegnare alla struttura.")
+                return .check(true, L10n.tr("Albero strutturale, parent e ParentTree coerenti; documento senza contenuto dipinto da assegnare alla struttura."))
             }
             if embedded {
                 let names = try dictionary(root["Names"]), present = try resolved(names["EmbeddedFiles"]) != nil
-                return .check(expression.hasSuffix("true") ? present : !present, "Chiave Catalog/Names/EmbeddedFiles: \(present).")
+                return .check(expression.hasSuffix("true") ? present : !present, L10n.tr("Chiave Catalog/Names/EmbeddedFiles: \(present)."))
             }
             return nil
         }
@@ -168,22 +168,22 @@ final class PDFArchiveStructureChecks {
     private func identity(_ original: PDFSyntaxValue?) throws -> PDFObjectID? { try PDFArchiveStructureReferences.resolve(original, reader: reader).id }
     private func dictionary(_ value: PDFSyntaxValue?) throws -> [String: PDFSyntaxValue] {
         guard let value = try resolved(value) else { return [:] }
-        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed("dizionario strutturale atteso") }
+        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed(L10n.tr("dizionario strutturale atteso")) }
         return dictionary
     }
     private func array(_ value: PDFSyntaxValue?) throws -> [PDFSyntaxValue] {
         guard let value = try resolved(value) else { return [] }
-        guard let array = value.array else { throw PDFStructureError.malformed("array strutturale atteso") }
+        guard let array = value.array else { throw PDFStructureError.malformed(L10n.tr("array strutturale atteso")) }
         return array
     }
     private func name(_ value: PDFSyntaxValue?) throws -> String? { try resolved(value)?.name }
     private func integer(_ value: PDFSyntaxValue?) throws -> Int? { try resolved(value)?.int }
     private func record(_ value: PDFSyntaxValue, _ location: String) throws -> Record { .init(value: try dictionary(value), id: try identity(value), location: location) }
     private func check(_ records: [Record], _ summary: String, _ predicate: (Record) throws -> Bool) throws -> PDFArchiveRuleEvaluation {
-        guard !records.isEmpty else { return .absent("Nessun oggetto applicabile: " + summary) }
+        guard !records.isEmpty else { return .absent(L10n.tr("Nessun oggetto applicabile: ") + summary) }
         var failed: [String] = []
         for record in records { try Task.checkCancellation(); if try !predicate(record) { failed.append(record.location) } }
-        return .check(failed.isEmpty, "\(records.count) oggetti: " + summary, locations: Array(failed.prefix(64)))
+        return .check(failed.isEmpty, L10n.tr("\(records.count) oggetti: ") + summary, locations: Array(failed.prefix(64)))
     }
     private func loadModel() throws -> Model {
         if cached == nil { cached = Result { try buildModel() } }
@@ -203,13 +203,13 @@ final class PDFArchiveStructureChecks {
             for (index, value) in values.enumerated() {
                 if profile.part == 4 {
                     guard let spec = try resolved(value)?.dictionary else {
-                        model.associationIssues.append(location + "/\(key)[\(index)]: specifica file non dizionario"); continue
+                        model.associationIssues.append(location + L10n.tr("/\(key)[\(index)]: specifica file non dizionario")); continue
                     }
                     if let type = try resolved(spec["Type"]), type.name != "Filespec" {
                         model.associationIssues.append(location + "/\(key)[\(index)]: Type diverso da Filespec")
                     }
                     if try name(spec["AFRelationship"]) == nil {
-                        model.associationIssues.append(location + "/\(key)[\(index)]: AFRelationship assente/non Name")
+                        model.associationIssues.append(location + L10n.tr("/\(key)[\(index)]: AFRelationship assente/non Name"))
                     }
                 }
                 let file = try record(value, location + "/\(key)[\(index)]")
@@ -319,7 +319,7 @@ final class PDFArchiveStructureChecks {
         func field(_ value: PDFSyntaxValue, _ location: String, depth: Int) throws {
             guard depth < 80 else { throw PDFStructureError.limit }
             let item = try record(value, location)
-            guard fieldKeys.insert(item.key).inserted else { throw PDFStructureError.unsupported("albero campi circolare o condiviso") }
+            guard fieldKeys.insert(item.key).inserted else { throw PDFStructureError.unsupported(L10n.tr("albero campi circolare o condiviso")) }
             model.fields.append(item)
             if profile.part == 4 { try associated(item.value, location) }
             try actions(item.value, location)
@@ -376,7 +376,7 @@ final class PDFArchiveStructureChecks {
             var scanned = Set<PDFObjectID>()
             for (id, resources) in model.contentStreams where scanned.insert(id).inserted {
                 let properties = try markedProperties(id: id, resources: resources)
-                if properties.incomplete { model.associationGaps.append("Associazioni dopo immagini inline non completamente analizzate: " + id.syntax) }
+                if properties.incomplete { model.associationGaps.append(L10n.tr("Associazioni dopo immagini inline non completamente analizzate: ") + id.syntax) }
                 if profile.part == 4 { model.associationIssues += properties.associationIssues.map { "stream " + id.syntax + ": " + $0 } }
                 for (index, property) in properties.values.enumerated() {
                     try associated(property, "stream " + id.syntax + "/property[\(index)]")
@@ -430,7 +430,7 @@ final class PDFArchiveStructureChecks {
         while true {
             if let value = try name(current[key]) { return value }
             guard let parent = current["Parent"]?.reference else { return nil }
-            guard seen.insert(parent).inserted, seen.count < 100 else { throw PDFStructureError.unsupported("parent campo circolare") }
+            guard seen.insert(parent).inserted, seen.count < 100 else { throw PDFStructureError.unsupported(L10n.tr("parent campo circolare")) }
             current = try dictionary(.reference(parent))
         }
     }
@@ -439,9 +439,9 @@ final class PDFArchiveStructureChecks {
         func walk(_ value: PDFSyntaxValue, depth: Int) throws {
             try Task.checkCancellation(); count += 1
             guard depth < 80, count < 100_000 else { throw PDFStructureError.limit }
-            if let id = value.reference, !seen.insert(id).inserted { throw PDFStructureError.unsupported("name/number tree circolare") }
+            if let id = value.reference, !seen.insert(id).inserted { throw PDFStructureError.unsupported(L10n.tr("name/number tree circolare")) }
             let dictionary = try self.dictionary(value), values = try array(dictionary[pairs])
-            guard values.count % 2 == 0 else { throw PDFStructureError.malformed("coppie name/number tree") }
+            guard values.count % 2 == 0 else { throw PDFStructureError.malformed(L10n.tr("coppie name/number tree")) }
             for index in stride(from: 1, to: values.count, by: 2) { output.append(values[index]) }
             for child in try array(dictionary["Kids"]) { try walk(child, depth: depth + 1) }
         }
@@ -475,13 +475,13 @@ final class PDFArchiveStructureChecks {
                     else { dictionary = try self.dictionary(property) }
                     values.append(dictionary)
                     if profile.part == 4, operands.first?.name == "AF" {
-                        if operation == "DP" { associationIssues.append("tag AF vietato con DP") }
-                        else if try resolved(dictionary["MCAF"])?.array == nil { associationIssues.append("tag AF senza array MCAF") }
+                        if operation == "DP" { associationIssues.append(L10n.tr("tag AF vietato con DP")) }
+                        else if try resolved(dictionary["MCAF"])?.array == nil { associationIssues.append(L10n.tr("tag AF senza array MCAF")) }
                         else { mcaf.append(dictionary) }
                     }
                 }
                 if profile.part == 4, ["MP", "BMC"].contains(operation), operands.first?.name == "AF" {
-                    associationIssues.append(operation == "MP" ? "tag AF vietato con MP" : "tag AF BMC senza property list MCAF")
+                    associationIssues.append(operation == "MP" ? L10n.tr("tag AF vietato con MP") : L10n.tr("tag AF BMC senza property list MCAF"))
                 }
                 operands.removeAll(keepingCapacity: true)
             } else { operands.append(value); guard operands.count < 100_000 else { throw PDFStructureError.limit } }
@@ -494,7 +494,7 @@ final class PDFArchiveStructureChecks {
             let allowed = quoted(expression)
             return try check(model.annotations, "Sottotipi annotazione ammessi dal profilo") { try allowed.contains(self.name($0.value["Subtype"]) ?? "") }
         }
-        if expression == "CA == null || CA == 1.0" { return try check(model.annotations, "Opacità annotazioni PDF/A-1") { record in
+        if expression == "CA == null || CA == 1.0" { return try check(model.annotations, L10n.tr("Opacità annotazioni PDF/A-1")) { record in
             guard let value = try self.resolved(record.value["CA"]) else { return true }; return value.real == 1
         } }
         if expression.contains("F != null") || expression.hasPrefix("F == null") {
@@ -510,19 +510,19 @@ final class PDFArchiveStructureChecks {
         }
         if expression.contains("containsC") {
             let colored = try model.annotations.filter { try resolved($0.value["C"]) != nil || resolved($0.value["IC"]) != nil }
-            guard !colored.isEmpty else { return .absent("Nessuna annotazione con C o IC.") }
+            guard !colored.isEmpty else { return .absent(L10n.tr("Nessuna annotazione con C o IC.")) }
             let root = try dictionary(.reference(reader.rootID))
             var spaces: [String] = []
             for value in try array(root["OutputIntents"]) {
                 let intent = try dictionary(value)
                 guard try name(intent["S"]) == "GTS_PDFA1", let id = intent["DestOutputProfile"]?.reference else { continue }
                 let bytes = try reader.decodedStream(id)
-                guard bytes.count >= 128 else { return .unknown("ICC troppo corto per stabilire lo spazio colore.") }
+                guard bytes.count >= 128 else { return .unknown(L10n.tr("ICC troppo corto per stabilire lo spazio colore.")) }
                 spaces.append(String(decoding: bytes[16..<20], as: UTF8.self))
             }
-            return .check(!spaces.isEmpty && spaces.allSatisfy { $0 == "RGB " }, "C e IC richiedono output PDF/A-1 RGB; validità ICC verificata separatamente.")
+            return .check(!spaces.isEmpty && spaces.allSatisfy { $0 == "RGB " }, L10n.tr("C e IC richiedono output PDF/A-1 RGB; validità ICC verificata separatamente."))
         }
-        if expression.contains("AP != null") { return try check(model.annotations, "Appearance obbligatoria con eccezioni previste") { record in
+        if expression.contains("AP != null") { return try check(model.annotations, L10n.tr("Appearance obbligatoria con eccezioni previste")) { record in
             let subtype = try self.name(record.value["Subtype"]) ?? ""
             if try self.zeroArea(record) { return true }
             if ["Popup", "Link"].contains(subtype) || (self.profile.part == 4 && subtype == "Projection") { return true }
@@ -532,7 +532,7 @@ final class PDFArchiveStructureChecks {
             guard let value = try self.resolved(record.value["AP"]) else { return true }
             return Set(value.dictionary?.keys.map { $0 } ?? []) == ["N"]
         } }
-        if expression.contains("N_type") { return try check(model.annotations, "Tipo della appearance normale, FT ereditato dal campo") { record in
+        if expression.contains("N_type") { return try check(model.annotations, L10n.tr("Tipo della appearance normale, FT ereditato dal campo")) { record in
             guard let appearance = try self.resolved(record.value["AP"])?.dictionary, Set(appearance.keys) == ["N"] else { return true }
             let button = try self.name(record.value["Subtype"]) == "Widget" && self.inheritedName("FT", in: record) == "Btn"
             if expression.contains("N_type == \"Dict\"") && !button { return true }
@@ -543,7 +543,7 @@ final class PDFArchiveStructureChecks {
             guard let states = try self.resolved(normal)?.dictionary, !states.isEmpty else { return false }
             return try states.values.allSatisfy { try self.isStream($0) }
         } }
-        return .unknown("Predicato annotazione non implementato: " + expression)
+        return .unknown(L10n.tr("Predicato annotazione non implementato: ") + expression)
     }
     private func isStream(_ value: PDFSyntaxValue) throws -> Bool { guard let id = value.reference else { return false }; return try reader.object(id).stream != nil }
     private func zeroArea(_ record: Record) throws -> Bool {
@@ -563,7 +563,7 @@ final class PDFArchiveStructureChecks {
         records += try reader.pageIDs().map { try record(.reference($0), "Page " + $0.syntax) }
         records += try model.annotations.filter { try name($0.value["Subtype"]) != "Widget" }
         let allowed = Set(["E", "X", "D", "U", "Fo", "Bl"])
-        return try check(records, "Chiavi AA ammesse sui contenitori non Widget/FormField") { record in
+        return try check(records, L10n.tr("Chiavi AA ammesse sui contenitori non Widget/FormField")) { record in
             let actions = try self.dictionary(record.value["AA"])
             return Set(actions.keys).isSubset(of: allowed)
         }
@@ -577,22 +577,22 @@ final class PDFArchiveStructureChecks {
             let item = try record(value, "OCProperties/Configs[\(i)]")
             if seen.insert(item.key).inserted { configs.append(item) }
         }
-        guard !configs.isEmpty else { return .absent("Nessuna configurazione OCG.") }
+        guard !configs.isEmpty else { return .absent(L10n.tr("Nessuna configurazione OCG.")) }
         let expression = rule.expression
-        if expression.hasPrefix("Name != null") { return try check(configs, "Nome configurazione OCG") { record in
+        if expression.hasPrefix("Name != null") { return try check(configs, L10n.tr("Nome configurazione OCG")) { record in
             guard let text = try self.resolved(record.value["Name"])?.text else { return false }
             return !expression.contains("length()") || !text.isEmpty
         } }
         if expression == "hasDuplicateName == false" {
             let names = try configs.compactMap { try resolved($0.value["Name"])?.text }
-            return .check(Set(names).count == names.count, "Nomi unici fra tutte le configurazioni OCG.")
+            return .check(Set(names).count == names.count, L10n.tr("Nomi unici fra tutte le configurazioni OCG."))
         }
-        if expression == "AS == null" { return try check(configs, "AS assente") { try self.resolved($0.value["AS"]) == nil } }
+        if expression == "AS == null" { return try check(configs, L10n.tr("AS assente")) { try self.resolved($0.value["AS"]) == nil } }
         if expression == "OCGsNotContainedInOrder == null" {
             let groups = try array(properties["OCGs"])
-            guard groups.allSatisfy({ $0.reference != nil }) else { return .unknown("OCG diretti/non referenziabili nel catalogo.") }
+            guard groups.allSatisfy({ $0.reference != nil }) else { return .unknown(L10n.tr("OCG diretti/non referenziabili nel catalogo.")) }
             let ids = Set(groups.compactMap(\.reference))
-            return try check(configs, "Ogni Order esplicito comprende tutti gli OCG") { record in
+            return try check(configs, L10n.tr("Ogni Order esplicito comprende tutti gli OCG")) { record in
                 guard let order = try self.resolved(record.value["Order"]) else { return true }
                 var found = Set<PDFObjectID>(), visits = 0
                 func walk(_ value: PDFSyntaxValue, depth: Int) throws {
@@ -603,13 +603,13 @@ final class PDFArchiveStructureChecks {
                 try walk(order, depth: 0); return ids.isSubset(of: found)
             }
         }
-        return .unknown("Predicato OCG non implementato.")
+        return .unknown(L10n.tr("Predicato OCG non implementato."))
     }
 
     private func fileSpecification(_ rule: PDFArchiveCatalogueRule, model: Model) throws -> PDFArchiveRuleEvaluation {
         let expression = rule.expression
         if expression == "containsEF == false" { return try check(model.files, "EF vietato in PDF/A-1") { try self.resolved($0.value["EF"]) == nil } }
-        if expression.contains("F != null && UF != null") { return try check(model.files, "F e UF delle specifiche con allegati") { record in
+        if expression.contains("F != null && UF != null") { return try check(model.files, L10n.tr("F e UF delle specifiche con allegati")) { record in
             if try self.resolved(record.value["EF"]) == nil { return true }
             return try self.resolved(record.value["F"])?.data != nil && self.resolved(record.value["UF"])?.data != nil
         } }
@@ -617,10 +617,10 @@ final class PDFArchiveStructureChecks {
             if try self.resolved(record.value["EF"]) == nil { return true }
             return try self.name(record.value["AFRelationship"]) != nil
         } }
-        if expression == "isAssociatedFile == true" { return try check(model.files, "Ogni specifica allegata è referenziata da un AF standard") { record in
+        if expression == "isAssociatedFile == true" { return try check(model.files, L10n.tr("Ogni specifica allegata è referenziata da un AF standard")) { record in
             try self.resolved(record.value["EF"]) == nil || model.associated.contains(record.key)
         } }
-        return .unknown("Predicato specifica file non implementato.")
+        return .unknown(L10n.tr("Predicato specifica file non implementato."))
     }
 
     private func embeddedFile(_ rule: PDFArchiveCatalogueRule, model: Model) throws -> PDFArchiveRuleEvaluation {
@@ -633,36 +633,36 @@ final class PDFArchiveStructureChecks {
         }
         if rule.expression.contains("Subtype != null") { return try check(files, "Sintassi media type degli stream incorporati: " +
             (profile.part == 4 ? "RFC6838 §4.2" : "RFC4288 §4.2") +
-            ". Espressione XML storica conservata: \(rule.expression). La verifica sintattica nativa corregge l'insieme dei caratteri e i limiti; registrazione IANA e corrispondenza payload sono controlli separati.") { record in
+            L10n.tr(". Espressione XML storica conservata: \(rule.expression). La verifica sintattica nativa corregge l'insieme dei caratteri e i limiti; registrazione IANA e corrispondenza payload sono controlli separati.")) { record in
             guard let mime = try self.name(record.value["Subtype"]) else { return false }
             return Self.validMediaType(mime, requireInitialAlphanumeric: self.profile.part == 4)
         } }
-        guard rule.expression.contains("isValidPDFA") else { return .unknown("Predicato file incorporato non implementato.") }
-        guard !files.isEmpty else { return .absent("Nessun allegato referenziato.") }
+        guard rule.expression.contains("isValidPDFA") else { return .unknown(L10n.tr("Predicato file incorporato non implementato.")) }
+        guard !files.isEmpty else { return .absent(L10n.tr("Nessun allegato referenziato.")) }
         var unknown: [String] = [], failures: [String] = []
         let budget = Self.recursion.budget ?? AttachmentBudget()
         for file in files {
             try Task.checkCancellation()
-            guard let id = file.id else { unknown.append(file.location + ": stream indiretto non disponibile"); continue }
+            guard let id = file.id else { unknown.append(file.location + L10n.tr(": stream indiretto non disponibile")); continue }
             let bytes = try reader.decodedStream(id), hash = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
             var state = Self.recursion
             guard state.depth < 5, !state.hashes.contains(hash), budget.reserve(bytes.count) else {
-                unknown.append(file.location + ": limite o ciclo della validazione ricorsiva"); continue
+                unknown.append(file.location + L10n.tr(": limite o ciclo della validazione ricorsiva")); continue
             }
-            guard let declared = PDFArchiveValidator.declaredProfile(data: bytes) else { failures.append(file.location + ": identificazione PDF/A assente/non valida"); continue }
+            guard let declared = PDFArchiveValidator.declaredProfile(data: bytes) else { failures.append(file.location + L10n.tr(": identificazione PDF/A assente/non valida")); continue }
             let allowed = rule.expression.contains("124") ? [1, 2, 4] : [1, 2]
-            guard allowed.contains(declared.part) else { failures.append(file.location + ": parte PDF/A \(declared.part) non ammessa"); continue }
+            guard allowed.contains(declared.part) else { failures.append(file.location + L10n.tr(": parte PDF/A \(declared.part) non ammessa")); continue }
             state.hashes.insert(hash); state.depth += 1; state.budget = budget
             let report = Self.$recursion.withValue(state) { PDFArchiveValidator.validate(data: bytes, profile: declared) }
             switch report.verdict {
-            case .nonconforming: failures.append(file.location + ": PDF/A figlio non conforme (\(report.failedCount) regole violate)")
-            case .indeterminate: unknown.append(file.location + ": validazione PDF/A figlio incompleta")
+            case .nonconforming: failures.append(file.location + L10n.tr(": PDF/A figlio non conforme (\(report.failedCount) regole violate)"))
+            case .indeterminate: unknown.append(file.location + L10n.tr(": validazione PDF/A figlio incompleta"))
             case .conforming: break
             }
         }
-        if !failures.isEmpty { return .check(false, "Allegati PDF/A non validi.", locations: failures) }
+        if !failures.isEmpty { return .check(false, L10n.tr("Allegati PDF/A non validi."), locations: failures) }
         if !unknown.isEmpty { return .unknown(unknown.joined(separator: "; ")) }
-        return .check(true, "Ogni allegato supera ricorsivamente il profilo PDF/A ammesso.")
+        return .check(true, L10n.tr("Ogni allegato supera ricorsivamente il profilo PDF/A ammesso."))
     }
 
     /// RFC6838 §4.2 ABNF, applied to PDF2; PDF/A-3 predates RFC6838 and
@@ -685,7 +685,7 @@ final class PDFArchiveStructureChecks {
 
     private func readStructure(into model: inout Model) throws {
         guard let root = model.structureRoot else { return }
-        if try name(root.value["Type"]) != "StructTreeRoot" { model.structureIssues.append("StructTreeRoot/Type non valido") }
+        if try name(root.value["Type"]) != "StructTreeRoot" { model.structureIssues.append(L10n.tr("StructTreeRoot/Type non valido")) }
         var seen = Set<PDFObjectID>(), steps = 0
         var references: [(owner: Record, container: PDFSyntaxValue?, mcid: Int?, object: PDFSyntaxValue?)] = []
         func walk(_ value: PDFSyntaxValue, parent: Record, depth: Int) throws {
@@ -697,10 +697,10 @@ final class PDFArchiveStructureChecks {
                 if mcid < 0 { model.structureIssues.append(parent.location + "/K: MCID negativo") }
                 references.append((parent, parent.value["Pg"], mcid, nil)); return
             }
-            guard actual.dictionary != nil else { model.structureIssues.append(parent.location + "/K: tipo non valido"); return }
+            guard actual.dictionary != nil else { model.structureIssues.append(parent.location + L10n.tr("/K: tipo non valido")); return }
             let item = try record(value, parent.location + "/K"), type = try name(item.value["Type"])
             if type == "MCR" {
-                guard let mcid = try integer(item.value["MCID"]), mcid >= 0 else { model.structureIssues.append(item.location + ": MCID assente/non valido"); return }
+                guard let mcid = try integer(item.value["MCID"]), mcid >= 0 else { model.structureIssues.append(item.location + L10n.tr(": MCID assente/non valido")); return }
                 let container: PDFSyntaxValue?
                 if try resolved(item.value["Stm"]) != nil { container = item.value["Stm"] }
                 else if try resolved(item.value["Pg"]) != nil { container = item.value["Pg"] }
@@ -710,17 +710,17 @@ final class PDFArchiveStructureChecks {
             if type == "OBJR" { references.append((parent, nil, nil, item.value["Obj"])); return }
             if let id = item.id, !seen.insert(id).inserted { model.structureIssues.append(item.location + ": struttura condivisa/circolare"); return }
             let tag = try name(item.value["S"])
-            if (type != nil && type != "StructElem") || tag == nil { model.structureIssues.append(item.location + ": StructElem/Type/S non valido") }
+            if (type != nil && type != "StructElem") || tag == nil { model.structureIssues.append(item.location + L10n.tr(": StructElem/Type/S non valido")) }
             if let expected = parent.id {
-                if try identity(item.value["P"]) != expected { model.structureIssues.append(item.location + ": P non corrisponde al parent") }
-            } else { model.structureGaps.append("Parent strutturale diretto: identità non verificabile integralmente") }
+                if try identity(item.value["P"]) != expected { model.structureIssues.append(item.location + L10n.tr(": P non corrisponde al parent")) }
+            } else { model.structureGaps.append(L10n.tr("Parent strutturale diretto: identità non verificabile integralmente")) }
             model.elements.append(item)
             if let language = item.value["Lang"] { model.languages.append((language, item.location + "/Lang")) }
             if let child = item.value["K"] { try walk(child, parent: item, depth: depth + 1) }
         }
         if let children = root.value["K"] { try walk(children, parent: root, depth: 0) }
         let tree = try numberTree(root.value["ParentTree"])
-        if let next = try integer(root.value["ParentTreeNextKey"]), let maximum = tree.keys.max(), next <= maximum { model.structureIssues.append("ParentTreeNextKey non supera le chiavi utilizzate") }
+        if let next = try integer(root.value["ParentTreeNextKey"]), let maximum = tree.keys.max(), next <= maximum { model.structureIssues.append(L10n.tr("ParentTreeNextKey non supera le chiavi utilizzate")) }
         let pages = Set(try reader.pageIDs())
         var mcidCache: [PDFObjectID: (ids: Set<Int>, incomplete: Bool)] = [:]
         func actualMCIDs(in id: PDFObjectID) throws -> (ids: Set<Int>, incomplete: Bool)? {
@@ -745,18 +745,18 @@ final class PDFArchiveStructureChecks {
             for property in properties.values {
                 guard let value = try resolved(property["MCID"]) else { continue }
                 guard let mcid = value.int, mcid >= 0 else {
-                    model.structureIssues.append(id.syntax + ": MCID nel contenuto non intero/non negativo"); continue
+                    model.structureIssues.append(id.syntax + L10n.tr(": MCID nel contenuto non intero/non negativo")); continue
                 }
                 if !ids.insert(mcid).inserted { model.structureIssues.append(id.syntax + ": MCID ripetuto nel medesimo contenuto") }
             }
             let result = (ids, properties.incomplete); mcidCache[id] = result; return result
         }
         for reference in references {
-            guard let owner = reference.owner.id else { model.structureGaps.append("StructElem diretto senza identità verificabile"); continue }
+            guard let owner = reference.owner.id else { model.structureGaps.append(L10n.tr("StructElem diretto senza identità verificabile")); continue }
             if let object = reference.object {
                 let dictionary = try self.dictionary(object)
                 if let id = try identity(object), !model.annotationKeys.contains(id.syntax), !model.contentObjectKeys.contains(id.syntax) {
-                    model.structureGaps.append(reference.owner.location + ": OBJR non riferito ad annotazione/XObject registrato")
+                    model.structureGaps.append(reference.owner.location + L10n.tr(": OBJR non riferito ad annotazione/XObject registrato"))
                 }
                 guard let key = try integer(dictionary["StructParent"]), let entry = tree[key], try identity(entry) == owner else {
                     model.structureIssues.append(reference.owner.location + ": OBJR/StructParent/ParentTree incoerente"); continue
@@ -768,25 +768,25 @@ final class PDFArchiveStructureChecks {
                     model.structureIssues.append(reference.owner.location + ": MCID/StructParents/ParentTree incoerente"); continue
                 }
                 if let id = try identity(container), let actual = try actualMCIDs(in: id) {
-                    if actual.incomplete { model.structureGaps.append(id.syntax + ": MCID oltre immagini inline non determinabili") }
+                    if actual.incomplete { model.structureGaps.append(id.syntax + L10n.tr(": MCID oltre immagini inline non determinabili")) }
                     else if !actual.ids.contains(mcid) { model.structureIssues.append(id.syntax + ": MCID \(mcid) referenziato ma inesistente nel contenuto") }
-                } else { model.structureGaps.append(reference.owner.location + ": contenuto MCID non identificabile come pagina/stream") }
-            } else { model.structureGaps.append(reference.owner.location + ": contesto di pagina/stream del contenuto non determinabile") }
+                } else { model.structureGaps.append(reference.owner.location + L10n.tr(": contenuto MCID non identificabile come pagina/stream")) }
+            } else { model.structureGaps.append(reference.owner.location + L10n.tr(": contesto di pagina/stream del contenuto non determinabile")) }
         }
         for value in tree.values {
             let values = try resolved(value)?.array ?? [value]
             for value in values {
                 guard let resolved = try self.resolved(value) else { continue }
                 if let id = try identity(value), seen.contains(id) { continue }
-                if resolved.dictionary != nil { model.structureIssues.append("ParentTree referenzia una struttura fuori dall’albero") }
-                else { model.structureIssues.append("ParentTree contiene un valore non strutturale") }
+                if resolved.dictionary != nil { model.structureIssues.append(L10n.tr("ParentTree referenzia una struttura fuori dall’albero")) }
+                else { model.structureIssues.append(L10n.tr("ParentTree contiene un valore non strutturale")) }
             }
         }
         // Graph consistency does not prove assignment or meaningful tag semantics.
         for (id, _) in model.contentStreams {
             var lexer = PDFSyntaxLexer(try reader.decodedStream(id)); lexer.skip()
             if lexer.offset < lexer.bytes.count {
-                model.structureGaps.append("Assegnazione completa del contenuto, MCID effettivi e semantica dei tag non provate per lo stream " + id.syntax)
+                model.structureGaps.append(L10n.tr("Assegnazione completa del contenuto, MCID effettivi e semantica dei tag non provate per lo stream ") + id.syntax)
                 break
             }
         }
@@ -797,12 +797,12 @@ final class PDFArchiveStructureChecks {
         func walk(_ value: PDFSyntaxValue, depth: Int) throws {
             try Task.checkCancellation(); count += 1
             guard depth < 80, count < 100_000 else { throw PDFStructureError.limit }
-            if let id = value.reference, !seen.insert(id).inserted { throw PDFStructureError.unsupported("ParentTree circolare") }
+            if let id = value.reference, !seen.insert(id).inserted { throw PDFStructureError.unsupported(L10n.tr("ParentTree circolare")) }
             let dictionary = try self.dictionary(value), pairs = try array(dictionary["Nums"])
             guard pairs.count % 2 == 0 else { throw PDFStructureError.malformed("ParentTree/Nums") }
             var prior: Int?
             for offset in stride(from: 0, to: pairs.count, by: 2) {
-                guard let key = try integer(pairs[offset]), result[key] == nil, prior == nil || key > prior! else { throw PDFStructureError.malformed("chiavi ParentTree duplicate/non ordinate") }
+                guard let key = try integer(pairs[offset]), result[key] == nil, prior == nil || key > prior! else { throw PDFStructureError.malformed(L10n.tr("chiavi ParentTree duplicate/non ordinate")) }
                 result[key] = pairs[offset + 1]; prior = key
             }
             for child in try array(dictionary["Kids"]) { try walk(child, depth: depth + 1) }
@@ -810,7 +810,7 @@ final class PDFArchiveStructureChecks {
         try walk(root, depth: 0); return result
     }
     private func roleMap(_ rule: PDFArchiveCatalogueRule, model: Model) throws -> PDFArchiveRuleEvaluation {
-        guard let root = model.structureRoot else { return .absent("Nessuna struttura; presenza richiesta da una regola separata.") }
+        guard let root = model.structureRoot else { return .absent(L10n.tr("Nessuna struttura; presenza richiesta da una regola separata.")) }
         let mappings = try dictionary(root.value["RoleMap"])
         let used = Set(try model.elements.compactMap { try name($0.value["S"]) })
         let nonstandard = used.subtracting(standardTags)
@@ -821,11 +821,11 @@ final class PDFArchiveStructureChecks {
                 if let target = try name(value), !standardTags.contains(target) { invalid.append(tag + " → " + target) }
                 else { unknown = true }
             }
-            if !invalid.isEmpty { return .check(false, "Tag standard rimappati a tipi non standard.", locations: invalid) }
-            if unknown { return .unknown("RoleMap rimappa tipi standard: dipendenza ISO 32000 da riconciliare.") }
-            return .check(true, "Nessun tag standard rimappato a tipo non standard.")
+            if !invalid.isEmpty { return .check(false, L10n.tr("Tag standard rimappati a tipi non standard."), locations: invalid) }
+            if unknown { return .unknown(L10n.tr("RoleMap rimappa tipi standard: dipendenza ISO 32000 da riconciliare.")) }
+            return .check(true, L10n.tr("Nessun tag standard rimappato a tipo non standard."))
         }
-        guard !nonstandard.isEmpty else { return .absent("Nessun tipo strutturale personalizzato utilizzato.") }
+        guard !nonstandard.isEmpty else { return .absent(L10n.tr("Nessun tipo strutturale personalizzato utilizzato.")) }
         var cycles: [String] = [], unmapped: [String] = []
         for tag in nonstandard {
             var current = tag, seen = Set<String>()
@@ -836,11 +836,11 @@ final class PDFArchiveStructureChecks {
                 current = target
             }
         }
-        if rule.expression == "circularMappingExist != true" { return .check(cycles.isEmpty, "Catene RoleMap senza cicli per tipi utilizzati.", locations: cycles) }
+        if rule.expression == "circularMappingExist != true" { return .check(cycles.isEmpty, L10n.tr("Catene RoleMap senza cicli per tipi utilizzati."), locations: cycles) }
         if rule.expression == "isNotMappedToStandardType == false" {
-            return .check(unmapped.isEmpty && cycles.isEmpty, "Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome.", locations: unmapped + cycles)
+            return .check(unmapped.isEmpty && cycles.isEmpty, L10n.tr("Ogni tipo utilizzato raggiunge un tipo standard; equivalenza semantica non dedotta dal nome."), locations: unmapped + cycles)
         }
-        return .unknown("Predicato RoleMap non implementato.")
+        return .unknown(L10n.tr("Predicato RoleMap non implementato."))
     }
     private func language(_ rule: PDFArchiveCatalogueRule, model: Model) throws -> PDFArchiveRuleEvaluation {
         var languages = model.languages, incomplete = false
@@ -857,35 +857,35 @@ final class PDFArchiveStructureChecks {
             guard let value = try resolved(value) else { continue }; applicable += 1
             guard let text = value.text, text.isEmpty || text.range(of: pattern, options: .regularExpression) != nil else { invalid.append(location); continue }
         }
-        if !invalid.isEmpty { return .check(false, "Lang non conforme alla sintassi RFC del profilo.", locations: invalid) }
-        if incomplete { return .unknown("Lang noti validi; property list successive a immagini inline non completamente analizzate.") }
-        return applicable == 0 ? .absent("Nessun Lang in catalogo, struttura o property list referenziate.") : .check(true, "\(applicable) identificatori Lang sintatticamente validi secondo il profilo.")
+        if !invalid.isEmpty { return .check(false, L10n.tr("Lang non conforme alla sintassi RFC del profilo."), locations: invalid) }
+        if incomplete { return .unknown(L10n.tr("Lang noti validi; property list successive a immagini inline non completamente analizzate.")) }
+        return applicable == 0 ? .absent(L10n.tr("Nessun Lang in catalogo, struttura o property list referenziate.")) : .check(true, L10n.tr("\(applicable) identificatori Lang sintatticamente validi secondo il profilo."))
     }
 
     private func signature(_ rule: PDFArchiveCatalogueRule, root: [String: PDFSyntaxValue], model: Model) throws -> PDFArchiveRuleEvaluation {
         if rule.objectType == "PDSigRef" {
-            guard try resolved(dictionary(root["Perms"])["DocMDP"]) != nil else { return .absent("DocMDP assente.") }
+            guard try resolved(dictionary(root["Perms"])["DocMDP"]) != nil else { return .absent(L10n.tr("DocMDP assente.")) }
             var references: [Record] = []
             for signature in model.signatures {
                 for (index, value) in try array(signature.value["Reference"]).enumerated() { references.append(try record(value, signature.location + "/Reference[\(index)]")) }
             }
-            return try check(references, "DigestLocation/Method/Value assenti quando DocMDP è presente") { reference in
+            return try check(references, L10n.tr("DigestLocation/Method/Value assenti quando DocMDP è presente")) { reference in
                 try ["DigestLocation", "DigestMethod", "DigestValue"].allSatisfy { try self.resolved(reference.value[$0]) == nil }
             }
         }
-        guard !model.signatures.isEmpty else { return .absent("Nessun campo firmato o firma DocMDP referenziata.") }
+        guard !model.signatures.isEmpty else { return .absent(L10n.tr("Nessun campo firmato o firma DocMDP referenziata.")) }
         if rule.objectType == "PDSignature" {
             var unknown: [String] = [], invalid: [String] = []
             for signature in model.signatures {
-                guard let id = signature.id else { unknown.append(signature.location + ": posizione di Contents diretto non disponibile"); continue }
+                guard let id = signature.id else { unknown.append(signature.location + L10n.tr(": posizione di Contents diretto non disponibile")); continue }
                 let object = try reader.object(id), values = try array(signature.value["ByteRange"])
                 let numbers = try values.map { try integer($0) }
                 guard numbers.count == 4, numbers.allSatisfy({ $0 != nil }), let a = numbers[0], let b = numbers[1], let c = numbers[2], let d = numbers[3],
                       a == 0, b > 0, c > b, d >= 0, c <= reader.source.count, d <= reader.source.count - c else {
-                    invalid.append(signature.location + ": ByteRange non canonico"); continue
+                    invalid.append(signature.location + L10n.tr(": ByteRange non canonico")); continue
                 }
-                guard let gap = object.memberRanges["Contents"] else { unknown.append(signature.location + ": offset lessicale Contents non disponibile"); continue }
-                guard gap.lowerBound == b, gap.upperBound == c else { invalid.append(signature.location + ": esclusione diversa dal solo Contents"); continue }
+                guard let gap = object.memberRanges["Contents"] else { unknown.append(signature.location + L10n.tr(": offset lessicale Contents non disponibile")); continue }
+                guard gap.lowerBound == b, gap.upperBound == c else { invalid.append(signature.location + L10n.tr(": esclusione diversa dal solo Contents")); continue }
                 let end = c + d
                 if end < reader.source.count {
                     let prefix = reader.source.prefix(end)
@@ -893,20 +893,20 @@ final class PDFArchiveStructureChecks {
                           [Data(), Data([10]), Data([13]), Data([13, 10])].contains(Data(prefix[eof.upperBound...])),
                           let revision = try? PDFStructureDocument(data: Data(prefix)),
                           let earlier = try? revision.object(id), earlier.memberRanges["Contents"] == gap else {
-                        invalid.append(signature.location + ": ByteRange non termina una revisione contenente la firma"); continue
+                        invalid.append(signature.location + L10n.tr(": ByteRange non termina una revisione contenente la firma")); continue
                     }
                 }
             }
-            if !invalid.isEmpty { return .check(false, "ByteRange non copre integralmente la revisione firmata.", locations: invalid) }
+            if !invalid.isEmpty { return .check(false, L10n.tr("ByteRange non copre integralmente la revisione firmata."), locations: invalid) }
             if !unknown.isEmpty { return .unknown(unknown.joined(separator: "; ")) }
-            return .check(true, "ByteRange copre ogni revisione firmata, escludendo esattamente il relativo Contents; integrità crittografica separata.")
+            return .check(true, L10n.tr("ByteRange copre ogni revisione firmata, escludendo esattamente il relativo Contents; integrità crittografica separata."))
         }
         if rule.objectType == "PKCSDataObject" {
-            return try check(model.signatures, "PKCS#7 DER decodificato con Security, firmatari e certificati incorporati") { signature in
+            return try check(model.signatures, L10n.tr("PKCS#7 DER decodificato con Security, firmatari e certificati incorporati")) { signature in
                 guard let bytes = try self.resolved(signature.value["Contents"])?.data else { return false }
                 let der: Data
                 do { der = try self.derEnvelope(bytes) }
-                catch PDFStructureError.limit { throw PDFStructureError.unsupported("limite della visita DER; canonicità non provata") }
+                catch PDFStructureError.limit { throw PDFStructureError.unsupported(L10n.tr("limite della visita DER; canonicità non provata")) }
                 catch is CancellationError { throw CancellationError() }
                 catch { return false }
                 var value: CMSDecoder?
@@ -916,7 +916,7 @@ final class PDFArchiveStructureChecks {
                 var count = 0
                 guard CMSDecoderGetNumSigners(decoder, &count) == errSecSuccess else { return false }
                 if rule.expression == "SignerInfoCount == 1" { return count == 1 }
-                guard rule.expression == "signingCertificatePresent == true" else { throw PDFStructureError.unsupported("predicato PKCS") }
+                guard rule.expression == "signingCertificatePresent == true" else { throw PDFStructureError.unsupported(L10n.tr("predicato PKCS")) }
                 guard count > 0 else { return false }
                 var certificates: CFArray?
                 guard CMSDecoderCopyAllCerts(decoder, &certificates) == errSecSuccess, let embedded = certificates as? [SecCertificate], !embedded.isEmpty else { return false }
@@ -929,7 +929,7 @@ final class PDFArchiveStructureChecks {
                 return true
             }
         }
-        return .unknown("Predicato firma non implementato.")
+        return .unknown(L10n.tr("Predicato firma non implementato."))
     }
     private func derEnvelope(_ data: Data) throws -> Data {
         let envelope = try PDFArchiveDEREnvelope(data)
@@ -961,7 +961,7 @@ struct PDFArchiveDEREnvelope {
         var offset = 0, steps = 0
         let node = try Self.read(source, offset: &offset, end: source.count, depth: 0, steps: &steps)
         guard node.isTag(16), node.constructed, source[offset...].allSatisfy({ $0 == 0 }) else {
-            throw PDFStructureError.malformed("PKCS DER: SEQUENCE esterna o padding non nullo")
+            throw PDFStructureError.malformed(L10n.tr("PKCS DER: SEQUENCE esterna o padding non nullo"))
         }
         data = Data(source[..<offset]); bytes = Array(data); root = node
     }
@@ -970,42 +970,42 @@ struct PDFArchiveDEREnvelope {
         steps += 1
         if steps % 1024 == 0 { try Task.checkCancellation() }
         guard depth < 64, steps < 100_000 else { throw PDFStructureError.limit }
-        guard offset < end else { throw PDFStructureError.malformed("DER: identificatore troncato") }
+        guard offset < end else { throw PDFStructureError.malformed(L10n.tr("DER: identificatore troncato")) }
         let start = offset, first = bytes[offset]; offset += 1
         let tagClass = Int(first >> 6), constructed = first & 0x20 != 0
         var tag = Int(first & 31)
         if tag == 31 {
             tag = 0
-            guard offset < end, bytes[offset] & 127 != 0 else { throw PDFStructureError.malformed("DER: tag non minimo") }
+            guard offset < end, bytes[offset] & 127 != 0 else { throw PDFStructureError.malformed(L10n.tr("DER: tag non minimo")) }
             while true {
-                guard offset < end, tag <= (Int.max - 127) / 128 else { throw PDFStructureError.malformed("DER: tag troncato/troppo grande") }
+                guard offset < end, tag <= (Int.max - 127) / 128 else { throw PDFStructureError.malformed(L10n.tr("DER: tag troncato/troppo grande")) }
                 let byte = bytes[offset]; offset += 1; tag = tag * 128 + Int(byte & 127)
                 if byte & 128 == 0 { break }
             }
-            guard tag >= 31 else { throw PDFStructureError.malformed("DER: tag lungo non minimo") }
+            guard tag >= 31 else { throw PDFStructureError.malformed(L10n.tr("DER: tag lungo non minimo")) }
         }
-        guard offset < end else { throw PDFStructureError.malformed("DER: lunghezza assente") }
+        guard offset < end else { throw PDFStructureError.malformed(L10n.tr("DER: lunghezza assente")) }
         var length = Int(bytes[offset]); offset += 1
         if length & 128 != 0 {
             let count = length & 127
             guard count > 0, count <= MemoryLayout<Int>.size, count <= end - offset, bytes[offset] != 0 else {
-                throw PDFStructureError.malformed("DER: lunghezza indefinita/non minima/troncata")
+                throw PDFStructureError.malformed(L10n.tr("DER: lunghezza indefinita/non minima/troncata"))
             }
             length = 0
             for _ in 0..<count {
-                guard length <= (Int.max - 255) / 256 else { throw PDFStructureError.malformed("DER: lunghezza eccessiva") }
+                guard length <= (Int.max - 255) / 256 else { throw PDFStructureError.malformed(L10n.tr("DER: lunghezza eccessiva")) }
                 length = length * 256 + Int(bytes[offset]); offset += 1
             }
-            guard length >= 128 else { throw PDFStructureError.malformed("DER: lunghezza lunga non minima") }
+            guard length >= 128 else { throw PDFStructureError.malformed(L10n.tr("DER: lunghezza lunga non minima")) }
         }
-        guard length <= end - offset else { throw PDFStructureError.malformed("DER: valore troncato") }
+        guard length <= end - offset else { throw PDFStructureError.malformed(L10n.tr("DER: valore troncato")) }
         let content = offset..<(offset + length)
         if tagClass == 0 {
-            guard tag != 0, tag != 15 else { throw PDFStructureError.malformed("DER: tag universale riservato/EOC") }
+            guard tag != 0, tag != 15 else { throw PDFStructureError.malformed(L10n.tr("DER: tag universale riservato/EOC")) }
             if [16, 17, 8, 11, 29].contains(tag) {
-                guard constructed else { throw PDFStructureError.malformed("DER: tipo costruito codificato primitivo") }
+                guard constructed else { throw PDFStructureError.malformed(L10n.tr("DER: tipo costruito codificato primitivo")) }
             } else if [1, 2, 3, 4, 5, 6, 9, 10, 12, 13, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 30].contains(tag) {
-                guard !constructed else { throw PDFStructureError.malformed("DER: tipo primitivo/stringa costruita") }
+                guard !constructed else { throw PDFStructureError.malformed(L10n.tr("DER: tipo primitivo/stringa costruita")) }
             }
             if !constructed { try primitive(bytes, tag: tag, content: content) }
         }
@@ -1024,44 +1024,44 @@ struct PDFArchiveDEREnvelope {
             guard valid else { throw PDFStructureError.malformed("DER: " + message) }
         }
         switch tag {
-        case 1: try require(value.count == 1 && [0, 255].contains(value[0]), "BOOLEAN non canonico")
+        case 1: try require(value.count == 1 && [0, 255].contains(value[0]), L10n.tr("BOOLEAN non canonico"))
         case 2, 10:
-            try require(!value.isEmpty, "INTEGER/ENUMERATED vuoto")
+            try require(!value.isEmpty, L10n.tr("INTEGER/ENUMERATED vuoto"))
             if value.count > 1 {
-                try require(!(value[0] == 0 && value[1] & 128 == 0) && !(value[0] == 255 && value[1] & 128 != 0), "INTEGER/ENUMERATED non minimo")
+                try require(!(value[0] == 0 && value[1] & 128 == 0) && !(value[0] == 255 && value[1] & 128 != 0), L10n.tr("INTEGER/ENUMERATED non minimo"))
             }
         case 3:
-            try require(!value.isEmpty && value[0] <= 7, "BIT STRING: unused bits")
-            if value.count == 1 { try require(value[0] == 0, "BIT STRING vuoto con bit inutilizzati") }
-            else if value[0] > 0 { try require(value.last! & UInt8((1 << Int(value[0])) - 1) == 0, "BIT STRING: bit inutilizzati non nulli") }
-        case 5: try require(value.isEmpty, "NULL con contenuto")
+            try require(!value.isEmpty && value[0] <= 7, L10n.tr("BIT STRING: unused bits"))
+            if value.count == 1 { try require(value[0] == 0, L10n.tr("BIT STRING vuoto con bit inutilizzati")) }
+            else if value[0] > 0 { try require(value.last! & UInt8((1 << Int(value[0])) - 1) == 0, L10n.tr("BIT STRING: bit inutilizzati non nulli")) }
+        case 5: try require(value.isEmpty, L10n.tr("NULL con contenuto"))
         case 6, 13:
-            try require(!value.isEmpty, "OBJECT IDENTIFIER vuoto")
+            try require(!value.isEmpty, L10n.tr("OBJECT IDENTIFIER vuoto"))
             var first = true
             for byte in value {
-                if first { try require(byte != 128, "OBJECT IDENTIFIER: componente non minimo") }
+                if first { try require(byte != 128, L10n.tr("OBJECT IDENTIFIER: componente non minimo")) }
                 first = byte & 128 == 0
             }
-            try require(first, "OBJECT IDENTIFIER troncato")
-        case 12: try require(String(bytes: value, encoding: .utf8) != nil, "UTF8String non valido")
-        case 18: try require(value.allSatisfy { $0 == 32 || (48...57).contains($0) }, "NumericString non valido")
+            try require(first, L10n.tr("OBJECT IDENTIFIER troncato"))
+        case 12: try require(String(bytes: value, encoding: .utf8) != nil, L10n.tr("UTF8String non valido"))
+        case 18: try require(value.allSatisfy { $0 == 32 || (48...57).contains($0) }, L10n.tr("NumericString non valido"))
         case 19:
             let alphabet = Set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 '()+,-./:=?".utf8)
-            try require(value.allSatisfy { alphabet.contains($0) }, "PrintableString non valido")
-        case 22: try require(value.allSatisfy { $0 < 128 }, "IA5String non ASCII")
-        case 23, 24: try require(validTime(value, generalized: tag == 24), "tempo non canonico/non valido")
-        case 26: try require(value.allSatisfy { (32...126).contains($0) }, "VisibleString non valido")
+            try require(value.allSatisfy { alphabet.contains($0) }, L10n.tr("PrintableString non valido"))
+        case 22: try require(value.allSatisfy { $0 < 128 }, L10n.tr("IA5String non ASCII"))
+        case 23, 24: try require(validTime(value, generalized: tag == 24), L10n.tr("tempo non canonico/non valido"))
+        case 26: try require(value.allSatisfy { (32...126).contains($0) }, L10n.tr("VisibleString non valido"))
         case 28:
-            try require(value.count % 4 == 0, "UniversalString troncato")
+            try require(value.count % 4 == 0, L10n.tr("UniversalString troncato"))
             for i in stride(from: 0, to: value.count, by: 4) {
                 let scalar = value[i..<(i + 4)].reduce(UInt32(0)) { ($0 << 8) | UInt32($1) }
-                try require(UnicodeScalar(scalar) != nil, "UniversalString: scalar non valido")
+                try require(UnicodeScalar(scalar) != nil, L10n.tr("UniversalString: scalar non valido"))
             }
         case 30:
-            try require(value.count % 2 == 0, "BMPString troncato")
+            try require(value.count % 2 == 0, L10n.tr("BMPString troncato"))
             for i in stride(from: 0, to: value.count, by: 2) {
                 let scalar = UInt32(value[i]) * 256 + UInt32(value[i + 1])
-                try require(UnicodeScalar(scalar) != nil, "BMPString: surrogate non valido")
+                try require(UnicodeScalar(scalar) != nil, L10n.tr("BMPString: surrogate non valido"))
             }
         default: break
         }
@@ -1088,13 +1088,13 @@ struct PDFArchiveDEREnvelope {
     /// SET OF nodes are compared lexicographically; arbitrary unknown SETs
     /// are never guessed to have SET OF semantics.
     func checkSetOf(_ node: Node) throws {
-        guard node.constructed else { throw PDFStructureError.malformed("DER SET OF primitivo") }
+        guard node.constructed else { throw PDFStructureError.malformed(L10n.tr("DER SET OF primitivo")) }
         for index in 1..<max(1, node.children.count) {
             let a = Array(bytes[node.children[index - 1].range]), b = Array(bytes[node.children[index].range])
             for i in 0..<max(a.count, b.count) {
                 let left: UInt8 = i < a.count ? a[i] : 0, right: UInt8 = i < b.count ? b[i] : 0
                 if left < right { break }
-                if left > right { throw PDFStructureError.malformed("DER SET OF non ordinato") }
+                if left > right { throw PDFStructureError.malformed(L10n.tr("DER SET OF non ordinato")) }
             }
         }
     }
@@ -1103,25 +1103,25 @@ struct PDFArchiveDEREnvelope {
         let signedDataOID: [UInt8] = [42, 134, 72, 134, 247, 13, 1, 7, 2]
         guard root.children.count == 2, root.children[0].isTag(6), Array(bytes[root.children[0].content]) == signedDataOID,
               root.children[1].isTag(0, 2), root.children[1].constructed, root.children[1].children.count == 1 else {
-            throw PDFStructureError.malformed("PKCS#7: ContentInfo signedData atteso")
+            throw PDFStructureError.malformed(L10n.tr("PKCS#7: ContentInfo signedData atteso"))
         }
         let signed = root.children[1].children[0], values = signed.children
         guard signed.isTag(16), values.count >= 4, values[0].isTag(2), values[1].isTag(17),
-              values[2].isTag(16), values.last!.isTag(17) else { throw PDFStructureError.malformed("PKCS#7: SignedData non valido") }
+              values[2].isTag(16), values.last!.isTag(17) else { throw PDFStructureError.malformed(L10n.tr("PKCS#7: SignedData non valido")) }
         try checkSetOf(values[1]); try checkSetOf(values.last!)
         for value in values.dropFirst(3).dropLast() {
-            guard value.tagClass == 2, [0, 1].contains(value.tag) else { throw PDFStructureError.malformed("PKCS#7: campo SignedData non valido") }
+            guard value.tagClass == 2, [0, 1].contains(value.tag) else { throw PDFStructureError.malformed(L10n.tr("PKCS#7: campo SignedData non valido")) }
             try checkSetOf(value) // certificates / crls are IMPLICIT SET OF.
         }
         for signer in values.last!.children {
-            guard signer.isTag(16), signer.children.count >= 5 else { throw PDFStructureError.malformed("PKCS#7: SignerInfo non valido") }
+            guard signer.isTag(16), signer.children.count >= 5 else { throw PDFStructureError.malformed(L10n.tr("PKCS#7: SignerInfo non valido")) }
             let sid = signer.children[1]
             if sid.isTag(16), let issuer = sid.children.first { try checkName(issuer) }
             for field in signer.children where field.tagClass == 2 && [0, 1].contains(field.tag) && field.constructed {
                 try checkSetOf(field) // authenticated / unauthenticated attributes.
                 for attribute in field.children {
                     guard attribute.isTag(16), attribute.children.count == 2, attribute.children[0].isTag(6), attribute.children[1].isTag(17) else {
-                        throw PDFStructureError.malformed("PKCS#7: Attribute non valido")
+                        throw PDFStructureError.malformed(L10n.tr("PKCS#7: Attribute non valido"))
                     }
                     try checkSetOf(attribute.children[1])
                 }
@@ -1129,24 +1129,24 @@ struct PDFArchiveDEREnvelope {
         }
         for certificates in values.dropFirst(3).dropLast() where certificates.isTag(0, 2) {
             for certificate in certificates.children where certificate.isTag(16) {
-                guard let tbs = certificate.children.first, tbs.isTag(16) else { throw PDFStructureError.malformed("X.509: TBSCertificate assente") }
+                guard let tbs = certificate.children.first, tbs.isTag(16) else { throw PDFStructureError.malformed(L10n.tr("X.509: TBSCertificate assente")) }
                 let shift = tbs.children.first?.isTag(0, 2) == true ? 1 : 0
-                guard tbs.children.count >= shift + 6 else { throw PDFStructureError.malformed("X.509: TBSCertificate troncato") }
+                guard tbs.children.count >= shift + 6 else { throw PDFStructureError.malformed(L10n.tr("X.509: TBSCertificate troncato")) }
                 try checkName(tbs.children[shift + 2]); try checkName(tbs.children[shift + 4])
                 if shift == 1 {
                     let version = tbs.children[0]
-                    guard version.children.count == 1, version.children[0].isTag(2) else { throw PDFStructureError.malformed("X.509: versione non valida") }
+                    guard version.children.count == 1, version.children[0].isTag(2) else { throw PDFStructureError.malformed(L10n.tr("X.509: versione non valida")) }
                     // Version v1(0) has DEFAULT v1 and must be omitted in DER.
-                    if Array(bytes[version.children[0].content]) == [0] { throw PDFStructureError.malformed("X.509: DEFAULT v1 esplicito") }
+                    if Array(bytes[version.children[0].content]) == [0] { throw PDFStructureError.malformed(L10n.tr("X.509: DEFAULT v1 esplicito")) }
                 }
                 for extensionField in tbs.children.dropFirst(shift + 6) where extensionField.isTag(3, 2) {
-                    guard extensionField.children.count == 1, extensionField.children[0].isTag(16) else { throw PDFStructureError.malformed("X.509: Extensions non valido") }
+                    guard extensionField.children.count == 1, extensionField.children[0].isTag(16) else { throw PDFStructureError.malformed(L10n.tr("X.509: Extensions non valido")) }
                     for ext in extensionField.children[0].children {
-                        guard ext.isTag(16), (2...3).contains(ext.children.count), ext.children[0].isTag(6), ext.children.last!.isTag(4) else { throw PDFStructureError.malformed("X.509: Extension non valida") }
+                        guard ext.isTag(16), (2...3).contains(ext.children.count), ext.children[0].isTag(6), ext.children.last!.isTag(4) else { throw PDFStructureError.malformed(L10n.tr("X.509: Extension non valida")) }
                         if ext.children.count == 3 {
                             let critical = ext.children[1]
-                            guard critical.isTag(1) else { throw PDFStructureError.malformed("X.509: critical non booleano") }
-                            if Array(bytes[critical.content]) == [0] { throw PDFStructureError.malformed("X.509: DEFAULT critical false esplicito") }
+                            guard critical.isTag(1) else { throw PDFStructureError.malformed(L10n.tr("X.509: critical non booleano")) }
+                            if Array(bytes[critical.content]) == [0] { throw PDFStructureError.malformed(L10n.tr("X.509: DEFAULT critical false esplicito")) }
                         }
                     }
                 }
@@ -1155,9 +1155,9 @@ struct PDFArchiveDEREnvelope {
     }
 
     private func checkName(_ node: Node) throws {
-        guard node.isTag(16) else { throw PDFStructureError.malformed("X.509: Name non SEQUENCE") }
+        guard node.isTag(16) else { throw PDFStructureError.malformed(L10n.tr("X.509: Name non SEQUENCE")) }
         for rdn in node.children {
-            guard rdn.isTag(17) else { throw PDFStructureError.malformed("X.509: RDN non SET OF") }
+            guard rdn.isTag(17) else { throw PDFStructureError.malformed(L10n.tr("X.509: RDN non SET OF")) }
             try checkSetOf(rdn)
         }
     }

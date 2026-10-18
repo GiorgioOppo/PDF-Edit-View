@@ -8,16 +8,16 @@ enum EditorTool: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .select: return "Seleziona"
-        case .note: return "Nota"
-        case .text: return "Testo"
-        case .draw: return "Disegna"
-        case .erase: return "Gomma"
-        case .rectangle: return "Rettangolo"
-        case .ellipse: return "Ellisse"
-        case .redact: return "Oscura area"
-        case .link: return "Collegamento"
-        case .signature: return "Firma grafica"
+        case .select: return L10n.tr("Seleziona")
+        case .note: return L10n.tr("Nota")
+        case .text: return L10n.tr("Testo")
+        case .draw: return L10n.tr("Disegna")
+        case .erase: return L10n.tr("Gomma")
+        case .rectangle: return L10n.tr("Rettangolo")
+        case .ellipse: return L10n.tr("Ellisse")
+        case .redact: return L10n.tr("Oscura area")
+        case .link: return L10n.tr("Collegamento")
+        case .signature: return L10n.tr("Firma grafica")
         }
     }
     var symbol: String {
@@ -36,15 +36,15 @@ enum EditorTool: String, CaseIterable, Identifiable {
     }
     var hint: String {
         switch self {
-        case .select: return "Seleziona il testo per copiarlo o evidenziarlo. Doppio clic su una nota o un testo aggiunto per modificarlo."
-        case .note: return "Fai clic sulla pagina per aggiungere una nota."
-        case .text: return "Fai clic sulla pagina per aggiungere un riquadro di testo."
-        case .draw: return "Trascina sulla pagina per disegnare a mano libera."
-        case .erase: return "Fai clic su un’annotazione per eliminarla."
-        case .rectangle, .ellipse: return "Trascina sulla pagina per aggiungere una forma."
-        case .redact: return "Trascina sull’area da oscurare per creare una copia rasterizzata senza contenuto originale recuperabile."
-        case .link: return "Trascina sulla pagina per creare un collegamento web."
-        case .signature: return "Fai clic sulla pagina, disegna la firma e inseriscila. È una firma grafica, senza certificato digitale."
+        case .select: return L10n.tr("Seleziona il testo per copiarlo o evidenziarlo. Doppio clic su una nota o un testo aggiunto per modificarlo.")
+        case .note: return L10n.tr("Fai clic sulla pagina per aggiungere una nota.")
+        case .text: return L10n.tr("Fai clic sulla pagina per aggiungere un riquadro di testo.")
+        case .draw: return L10n.tr("Trascina sulla pagina per disegnare a mano libera.")
+        case .erase: return L10n.tr("Fai clic su un’annotazione per eliminarla.")
+        case .rectangle, .ellipse: return L10n.tr("Trascina sulla pagina per aggiungere una forma.")
+        case .redact: return L10n.tr("Trascina sull’area da oscurare per creare una copia rasterizzata senza contenuto originale recuperabile.")
+        case .link: return L10n.tr("Trascina sulla pagina per creare un collegamento web.")
+        case .signature: return L10n.tr("Fai clic sulla pagina, disegna la firma e inseriscila. È una firma grafica, senza certificato digitale.")
         }
     }
 }
@@ -92,7 +92,7 @@ final class CartaAppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidat
             guard let self, self.documents.documents.isEmpty, fileArguments.isEmpty else { return }
             self.documents.newDocument(nil)
             if !CartaSnapshotStore.shared.entries(kind: "Recovery").isEmpty {
-                CartaPanelController.present(CartaHistoryView(model: nil, recovery: true), title: "Recupero documenti")
+                CartaPanelController.present(CartaHistoryView(model: nil, recovery: true), title: L10n.tr("Recupero documenti"))
             }
         }
     }
@@ -136,7 +136,7 @@ final class CartaAppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidat
         }
         if let menu = NSApp.mainMenu { visit(menu) }
     }
-    @objc private func preferences(_ sender: Any?) { CartaPanelController.present(CartaPreferencesView(), title: "Preferenze") }
+    @objc private func preferences(_ sender: Any?) { CartaPanelController.present(CartaPreferencesView(), title: L10n.tr("Preferenze")) }
 
     @objc private func rotatePage(_ sender: Any?) { model?.rotateCurrentPage() }
     @objc private func deletePage(_ sender: Any?) { model?.deleteCurrentPage() }
@@ -170,15 +170,15 @@ final class CartaAppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidat
             menu.addItem(entry)
         }
         if !menu.items.isEmpty { menu.addItem(.separator()) }
-        let clear = NSMenuItem(title: "Cancella elenco", action: #selector(NSDocumentController.clearRecentDocuments(_:)), keyEquivalent: "")
+        let clear = NSMenuItem(title: L10n.tr("Cancella elenco"), action: #selector(NSDocumentController.clearRecentDocuments(_:)), keyEquivalent: "")
         clear.target = documents
         menu.addItem(clear)
     }
     @objc private func showHelp(_ sender: Any?) {
         let alert = NSAlert()
-        alert.messageText = "Usare CartaPDF"
-        alert.informativeText = "Apri un PDF con ⌘O o trascinalo nella finestra. Usa Nota, Testo e Disegna per annotare; fai doppio clic per modificare il contenuto. Seleziona un’annotazione e trascinala per spostarla, oppure usa ⌥ per ridimensionare testo e forme. Tab passa tra le annotazioni ed esce dal documento agli estremi. ⇧⌘K apre Annotazioni da tastiera: creazione, testo, coordinate, dimensioni ed eliminazione con undo. Esc annulla il gesto.\n\nApri Strumenti (⇧⌘T) per unione, divisione avanzata, libretti, scansioni, esportazioni, biblioteca, procedure batch, allegati, livelli, preflight e firme con certificato locale. Le operazioni sui contenuti originali salvano copie separate e segnalano i formati non supportati.\n\n⌘Z annulla, ⌘S salva, ⌘F cerca; ⌥ e rotella ingrandiscono intorno al puntatore. Preferenze configura autore, tratto, cache e scorciatoie. Versioni e recupero conservano copie locali.\n\nL’app elabora tutto sul Mac. Validazione PDF/A offre 11 profili, incluso PDF/A-4, rapporti JSON/testo e regole non verificate esplicite. La copertura ISO completa resta incompleta: un esito indeterminato non attesta conformità. PDF/X e tag accessibili descrivono il proprio ambito senza certificazione ISO."
-        alert.addButton(withTitle: "Ho capito")
+        alert.messageText = L10n.tr("Usare CartaPDF")
+        alert.informativeText = L10n.tr("Apri un PDF con ⌘O o trascinalo nella finestra. Usa Nota, Testo e Disegna per annotare; fai doppio clic per modificare il contenuto. Seleziona un’annotazione e trascinala per spostarla, oppure usa ⌥ per ridimensionare testo e forme. Tab passa tra le annotazioni ed esce dal documento agli estremi. ⇧⌘K apre Annotazioni da tastiera: creazione, testo, coordinate, dimensioni ed eliminazione con undo. Esc annulla il gesto.\n\nApri Strumenti (⇧⌘T) per unione, divisione avanzata, libretti, scansioni, esportazioni, biblioteca, procedure batch, allegati, livelli, preflight e firme con certificato locale. Le operazioni sui contenuti originali salvano copie separate e segnalano i formati non supportati.\n\n⌘Z annulla, ⌘S salva, ⌘F cerca; ⌥ e rotella ingrandiscono intorno al puntatore. Preferenze configura autore, tratto, cache e scorciatoie. Versioni e recupero conservano copie locali.\n\nL’app elabora tutto sul Mac. Validazione PDF/A offre 11 profili, incluso PDF/A-4, rapporti JSON/testo e regole non verificate esplicite. La copertura ISO completa resta incompleta: un esito indeterminato non attesta conformità. PDF/X e tag accessibili descrivono il proprio ambito senza certificazione ISO.")
+        alert.addButton(withTitle: L10n.tr("Ho capito"))
         alert.runModal()
     }
     @objc private func showTools(_ sender: Any?) {
@@ -215,76 +215,76 @@ final class CartaAppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidat
             return result
         }
         let app = submenu("CartaPDF")
-        app.addItem(item("Informazioni su CartaPDF", #selector(NSApplication.orderFrontStandardAboutPanel(_:))))
-        app.addItem(item("Preferenze…", #selector(preferences(_:)), ",", target: self))
+        app.addItem(item(L10n.tr("Informazioni su CartaPDF"), #selector(NSApplication.orderFrontStandardAboutPanel(_:))))
+        app.addItem(item(L10n.tr("Preferenze…"), #selector(preferences(_:)), ",", target: self))
         app.addItem(.separator())
-        let services = NSMenuItem(title: "Servizi", action: nil, keyEquivalent: "")
-        services.submenu = NSMenu(title: "Servizi")
+        let services = NSMenuItem(title: L10n.tr("Servizi"), action: nil, keyEquivalent: "")
+        services.submenu = NSMenu(title: L10n.tr("Servizi"))
         app.addItem(services)
         NSApp.servicesMenu = services.submenu
         app.addItem(.separator())
-        app.addItem(item("Nascondi CartaPDF", #selector(NSApplication.hide(_:)), "h"))
-        app.addItem(item("Nascondi altre", #selector(NSApplication.hideOtherApplications(_:)), "h", modifiers: [.command, .option]))
-        app.addItem(item("Mostra tutte", #selector(NSApplication.unhideAllApplications(_:))))
+        app.addItem(item(L10n.tr("Nascondi CartaPDF"), #selector(NSApplication.hide(_:)), "h"))
+        app.addItem(item(L10n.tr("Nascondi altre"), #selector(NSApplication.hideOtherApplications(_:)), "h", modifiers: [.command, .option]))
+        app.addItem(item(L10n.tr("Mostra tutte"), #selector(NSApplication.unhideAllApplications(_:))))
         app.addItem(.separator())
-        app.addItem(item("Esci da CartaPDF", #selector(NSApplication.terminate(_:)), "q"))
+        app.addItem(item(L10n.tr("Esci da CartaPDF"), #selector(NSApplication.terminate(_:)), "q"))
 
-        let file = submenu("File")
-        file.addItem(item("Nuovo PDF", #selector(NSDocumentController.newDocument(_:)), "n", target: documents))
-        file.addItem(item("Apri…", #selector(NSDocumentController.openDocument(_:)), "o", target: documents))
-        let recent = NSMenuItem(title: "Apri recenti", action: nil, keyEquivalent: "")
-        let recentMenu = NSMenu(title: "Apri recenti")
-        recentMenu.addItem(item("Cancella elenco", #selector(NSDocumentController.clearRecentDocuments(_:)), target: documents))
+        let file = submenu(L10n.tr("File"))
+        file.addItem(item(L10n.tr("Nuovo PDF"), #selector(NSDocumentController.newDocument(_:)), "n", target: documents))
+        file.addItem(item(L10n.tr("Apri…"), #selector(NSDocumentController.openDocument(_:)), "o", target: documents))
+        let recent = NSMenuItem(title: L10n.tr("Apri recenti"), action: nil, keyEquivalent: "")
+        let recentMenu = NSMenu(title: L10n.tr("Apri recenti"))
+        recentMenu.addItem(item(L10n.tr("Cancella elenco"), #selector(NSDocumentController.clearRecentDocuments(_:)), target: documents))
         recent.submenu = recentMenu
         recentMenu.delegate = self
         recentDocumentsMenu = recentMenu
         file.addItem(recent)
         file.addItem(.separator())
-        file.addItem(item("Chiudi", #selector(NSWindow.performClose(_:)), "w"))
-        file.addItem(item("Salva", #selector(NSDocument.save(_:)), "s"))
-        file.addItem(item("Salva con nome…", #selector(NSDocument.saveAs(_:)), "s", modifiers: [.command, .shift]))
+        file.addItem(item(L10n.tr("Chiudi"), #selector(NSWindow.performClose(_:)), "w"))
+        file.addItem(item(L10n.tr("Salva"), #selector(NSDocument.save(_:)), "s"))
+        file.addItem(item(L10n.tr("Salva con nome…"), #selector(NSDocument.saveAs(_:)), "s", modifiers: [.command, .shift]))
         file.addItem(.separator())
-        file.addItem(item("Stampa…", #selector(NSDocument.printDocument(_:)), "p"))
+        file.addItem(item(L10n.tr("Stampa…"), #selector(NSDocument.printDocument(_:)), "p"))
 
-        let edit = submenu("Modifica")
-        edit.addItem(item("Annulla", Selector(("undo:")), "z"))
-        edit.addItem(item("Ripristina", Selector(("redo:")), "z", modifiers: [.command, .shift]))
+        let edit = submenu(L10n.tr("Modifica"))
+        edit.addItem(item(L10n.tr("Annulla"), Selector(("undo:")), "z"))
+        edit.addItem(item(L10n.tr("Ripristina"), Selector(("redo:")), "z", modifiers: [.command, .shift]))
         edit.addItem(.separator())
-        edit.addItem(item("Taglia", #selector(NSText.cut(_:)), "x"))
-        edit.addItem(item("Copia", #selector(NSText.copy(_:)), "c"))
-        edit.addItem(item("Incolla", #selector(NSText.paste(_:)), "v"))
-        edit.addItem(item("Seleziona tutto", #selector(NSText.selectAll(_:)), "a"))
+        edit.addItem(item(L10n.tr("Taglia"), #selector(NSText.cut(_:)), "x"))
+        edit.addItem(item(L10n.tr("Copia"), #selector(NSText.copy(_:)), "c"))
+        edit.addItem(item(L10n.tr("Incolla"), #selector(NSText.paste(_:)), "v"))
+        edit.addItem(item(L10n.tr("Seleziona tutto"), #selector(NSText.selectAll(_:)), "a"))
         edit.addItem(.separator())
-        edit.addItem(item("Cerca nel PDF…", #selector(focusSearch(_:)), "f", target: self))
+        edit.addItem(item(L10n.tr("Cerca nel PDF…"), #selector(focusSearch(_:)), "f", target: self))
 
-        let view = submenu("Vista")
-        view.addItem(item("Mostra / nascondi pagine", #selector(toggleSidebar(_:)), "1", target: self, modifiers: [.command, .option]))
+        let view = submenu(L10n.tr("Vista"))
+        view.addItem(item(L10n.tr("Mostra / nascondi pagine"), #selector(toggleSidebar(_:)), "1", target: self, modifiers: [.command, .option]))
         view.addItem(.separator())
-        view.addItem(item("Ingrandisci", #selector(zoomIn(_:)), "+", target: self))
-        view.addItem(item("Riduci", #selector(zoomOut(_:)), "-", target: self))
-        view.addItem(item("Adatta alla finestra", #selector(fit(_:)), "0", target: self))
-        view.addItem(item("Dimensioni reali", #selector(actualSize(_:)), "0", target: self, modifiers: [.command, .option]))
+        view.addItem(item(L10n.tr("Ingrandisci"), #selector(zoomIn(_:)), "+", target: self))
+        view.addItem(item(L10n.tr("Riduci"), #selector(zoomOut(_:)), "-", target: self))
+        view.addItem(item(L10n.tr("Adatta alla finestra"), #selector(fit(_:)), "0", target: self))
+        view.addItem(item(L10n.tr("Dimensioni reali"), #selector(actualSize(_:)), "0", target: self, modifiers: [.command, .option]))
         view.addItem(.separator())
-        view.addItem(item("Pagina precedente", #selector(previousPage(_:)), "[", target: self))
-        view.addItem(item("Pagina successiva", #selector(nextPage(_:)), "]", target: self))
+        view.addItem(item(L10n.tr("Pagina precedente"), #selector(previousPage(_:)), "[", target: self))
+        view.addItem(item(L10n.tr("Pagina successiva"), #selector(nextPage(_:)), "]", target: self))
 
-        let document = submenu("Documento")
-        document.addItem(item("Annotazioni da tastiera…", #selector(keyboardAnnotations(_:)), "k", target: self, modifiers: [.command, .shift]))
-        document.addItem(item("Evidenzia selezione", #selector(highlight(_:)), "h", target: self, modifiers: [.command, .shift]))
-        document.addItem(item("Ruota pagina a destra", #selector(rotatePage(_:)), "r", target: self))
-        document.addItem(item("Inserisci pagine da PDF…", #selector(insertPages(_:)), target: self))
-        document.addItem(item("Elimina pagina", #selector(deletePage(_:)), target: self))
+        let document = submenu(L10n.tr("Documento"))
+        document.addItem(item(L10n.tr("Annotazioni da tastiera…"), #selector(keyboardAnnotations(_:)), "k", target: self, modifiers: [.command, .shift]))
+        document.addItem(item(L10n.tr("Evidenzia selezione"), #selector(highlight(_:)), "h", target: self, modifiers: [.command, .shift]))
+        document.addItem(item(L10n.tr("Ruota pagina a destra"), #selector(rotatePage(_:)), "r", target: self))
+        document.addItem(item(L10n.tr("Inserisci pagine da PDF…"), #selector(insertPages(_:)), target: self))
+        document.addItem(item(L10n.tr("Elimina pagina"), #selector(deletePage(_:)), target: self))
         document.addItem(.separator())
-        document.addItem(item("Tutti gli strumenti…", #selector(showTools(_:)), "t", target: self, modifiers: [.command, .shift]))
+        document.addItem(item(L10n.tr("Tutti gli strumenti…"), #selector(showTools(_:)), "t", target: self, modifiers: [.command, .shift]))
 
-        let window = submenu("Finestra")
-        window.addItem(item("Riduci a icona", #selector(NSWindow.performMiniaturize(_:)), "m"))
-        window.addItem(item("Ingrandisci", #selector(NSWindow.performZoom(_:))))
+        let window = submenu(L10n.tr("Finestra"))
+        window.addItem(item(L10n.tr("Riduci a icona"), #selector(NSWindow.performMiniaturize(_:)), "m"))
+        window.addItem(item(L10n.tr("Ingrandisci"), #selector(NSWindow.performZoom(_:))))
         window.addItem(.separator())
-        window.addItem(item("Porta tutto in primo piano", #selector(NSApplication.arrangeInFront(_:))))
+        window.addItem(item(L10n.tr("Porta tutto in primo piano"), #selector(NSApplication.arrangeInFront(_:))))
         NSApp.windowsMenu = window
-        let help = submenu("Aiuto")
-        help.addItem(item("Guida di CartaPDF", #selector(showHelp(_:)), target: self))
+        let help = submenu(L10n.tr("Aiuto"))
+        help.addItem(item(L10n.tr("Guida di CartaPDF"), #selector(showHelp(_:)), target: self))
         NSApp.helpMenu = help
         return main
     }

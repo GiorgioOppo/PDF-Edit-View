@@ -45,7 +45,7 @@ final class PDFArchiveFunctionChecksTests:XCTestCase {
         let dictionary = "/FunctionType 0 /Domain [-1 1 -1 1] /Range [-1 1] /Size [21 31] /BitsPerSample 4"
         let resources = "<< /Shading << /S << /ShadingType 1 /ColorSpace /DeviceGray /Function 5 0 R >> >> >>"
         for count in [326,327] { allPass(try check(fixture(stream(Data(repeating:0,count:count),dictionary),resources:resources))) }
-        XCTAssertTrue(try check(fixture(stream(Data(repeating:0,count:325),dictionary),resources:resources)).contains{$0.status == .failed && $0.detail.contains("corto")})
+        XCTAssertTrue(try check(fixture(stream(Data(repeating:0,count:325),dictionary),resources:resources)).contains{$0.status == .failed && diagnosticContains($0.detail, "corto")})
     }
     func testSampledIntegerWidthsOrderAndArrayDimensions() throws {
         for bits in [1,2,4,8,12,16,24,32] {
@@ -74,7 +74,7 @@ final class PDFArchiveFunctionChecksTests:XCTestCase {
     }
     func testFunctionCyclesCannotBecomeAnAbsentSubfunction() throws {
         let result = try rows("<< /FunctionType 3 /Domain [0 1] /Functions [5 0 R] /Bounds [] /Encode [0 1] >>")
-        XCTAssertTrue(result.contains{$0.status == .failed && $0.detail.contains("ricorsivo")})
+        XCTAssertTrue(result.contains{$0.status == .failed && diagnosticContains($0.detail, "ricorsivo")})
     }
     private func calculator(_ program:String) throws -> [PDFArchiveRuleResult] { try check(fixture(stream(Data(program.utf8),"/FunctionType 4 /Domain [0 1] /Range [0 1]"))) }
     func testCalculatorGrammarAndKnownConditionalPathsStayDistinctFromFullExecution() throws {
@@ -97,7 +97,7 @@ final class PDFArchiveFunctionChecksTests:XCTestCase {
         let d = "/FunctionType 4 /Domain [0 1] /Range [0 1 0 1 0 1]"
         let original = "{0 exch 0 exch 0}",repaired = "{0 exch 0       }"
         XCTAssertEqual(original.utf8.count,repaired.utf8.count)
-        XCTAssertTrue(try check(fixture(stream(Data(original.utf8),d),resources:resources)).contains{$0.status == .failed && $0.detail.contains("risultati")})
+        XCTAssertTrue(try check(fixture(stream(Data(original.utf8),d),resources:resources)).contains{$0.status == .failed && diagnosticContains($0.detail, "risultati")})
         let fixed = try check(fixture(stream(Data(repaired.utf8),d),resources:resources))
         XCTAssertFalse(fixed.contains{$0.status == .failed});XCTAssertTrue(fixed.contains{$0.status == .notVerified})
     }
@@ -113,7 +113,7 @@ final class PDFArchiveFunctionChecksTests:XCTestCase {
     func testSharedFunctionIsCheckedAgainstEachTintContext() throws {
         let resources = "<< /ColorSpace << /A [/Separation /A /DeviceGray 5 0 R] /B [/DeviceN [/One /Two] /DeviceRGB 5 0 R] >> >>"
         let result = try rows(linear,resources:resources)
-        XCTAssertTrue(result.contains{$0.status == .passed});XCTAssertTrue(result.contains{$0.status == .failed && $0.detail.contains("contesto")})
+        XCTAssertTrue(result.contains{$0.status == .passed});XCTAssertTrue(result.contains{$0.status == .failed && diagnosticContains($0.detail, "contesto")})
     }
     func testUnusedFormAndAppearanceResourceFunctionsAreInventoried() throws {
         let bad = Data("<< /FunctionType 2 /Domain [1 0] /N 1 >>".utf8)
@@ -149,7 +149,7 @@ final class PDFArchiveFunctionChecksTests:XCTestCase {
     func testReportBudgetPreservesAnExplicitIncompleteResult() throws {
         let spaces = (0..<1025).map{"/C\($0) [/Separation /S /DeviceGray 5 0 R]"}.joined(separator:" ")
         let result = try rows(linear,resources:"<< /ColorSpace << \(spaces) >> >>")
-        XCTAssertTrue(result.contains{$0.status == .notVerified && $0.detail.contains("Limite")})
+        XCTAssertTrue(result.contains{$0.status == .notVerified && diagnosticContains($0.detail, "Limite")})
         let withFailure = try rows(linear,resources:"<< /ColorSpace << \(spaces) /ZZZ [/Separation /Bad /DeviceGray 6 0 R] >> >>",extras:[6:Data("<< /FunctionType 2 /Domain [1 0] /N 1 >>".utf8)])
         XCTAssertTrue(withFailure.contains{$0.status == .failed})
     }

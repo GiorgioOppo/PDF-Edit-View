@@ -14,12 +14,12 @@ enum CartaAutomation {
     static func load(_ path: String, password: String? = nil) throws -> PDFDocument {
         guard let pdf = PDFDocument(url: URL(fileURLWithPath: path)) else { throw PDFWorkspaceError.invalidPDF }
         if pdf.isLocked, let password { _ = pdf.unlock(withPassword: password) }
-        guard !pdf.isLocked else { throw CartaAutomationError.message("PDF protetto: specifica --password-file, senza mettere password nella riga di comando.") }
+        guard !pdf.isLocked else { throw CartaAutomationError.message(L10n.tr("PDF protetto: specifica --password-file, senza mettere password nella riga di comando.")) }
         guard pdf.pageCount > 0 else { throw PDFWorkspaceError.invalidPDF }
         return pdf
     }
     static func merge(_ paths: [String], password: String? = nil) throws -> Data {
-        guard !paths.isEmpty else { throw CartaAutomationError.message("Seleziona almeno un PDF.") }
+        guard !paths.isEmpty else { throw CartaAutomationError.message(L10n.tr("Seleziona almeno un PDF.")) }
         let result = PDFDocument()
         for path in paths {
             try Task.checkCancellation()
@@ -37,9 +37,9 @@ enum CartaAutomation {
     static func write(_ data: Data, to path: String, sources: [String], overwrite: Bool = false) throws {
         let output = URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath()
         guard !sources.contains(where: { URL(fileURLWithPath: $0).standardizedFileURL.resolvingSymlinksInPath() == output }) else {
-            throw CartaAutomationError.message("L’output deve essere diverso dai file sorgente.")
+            throw CartaAutomationError.message(L10n.tr("L’output deve essere diverso dai file sorgente."))
         }
-        guard overwrite || !FileManager.default.fileExists(atPath: output.path) else { throw CartaAutomationError.message("L’output esiste già. Usa --overwrite per sostituirlo esplicitamente.") }
+        guard overwrite || !FileManager.default.fileExists(atPath: output.path) else { throw CartaAutomationError.message(L10n.tr("L’output esiste già. Usa --overwrite per sostituirlo esplicitamente.")) }
         try CartaFileIO.atomicWrite(data, to: output, replaceExisting: overwrite)
     }
     static func cli(_ arguments: [String]) -> Int32 {
@@ -56,21 +56,38 @@ enum CartaAutomation {
             CartaPDF --cli info input.pdf
             CartaPDF --cli merge output.pdf input1.pdf input2.pdf ...
             CartaPDF --cli extract input.pdf output.pdf '1-3,5'
-            CartaPDF --cli split input.pdf cartella
+            CartaPDF --cli split input.pdf folder
             CartaPDF --cli text input.pdf output.txt
             CartaPDF --cli ocr input.pdf output.pdf
             CartaPDF --cli flatten input.pdf output.pdf
             CartaPDF --cli compress input.pdf output.pdf
-            CartaPDF --cli validate-pdfa input.pdf 2u [rapporto.json]
-            Profili:1a,1b,2a,2b,2u,3a,3b,3u,4,4e,4f. Esiti CLI:conforme0,nonconforme2,indeterminato3.
-            Opzioni: --password-file percorso, --overwrite. Nessuna rete, nessuna sovrascrittura dei sorgenti.
+            CartaPDF --cli validate-pdfa input.pdf 2u [report.json]
+            CartaPDF --cli language
             """)
+            print(L10n.tr("Profili:1a,1b,2a,2b,2u,3a,3b,3u,4,4e,4f. Esiti CLI:conforme0,nonconforme2,indeterminato3."))
+            print(L10n.tr("Opzioni: --password-file percorso, --overwrite. Nessuna rete, nessuna sovrascrittura dei sorgenti."))
             return 0
         }
         do {
+            if command == "language" {
+                // Read-only diagnostics for language selection and resources
+                // in the assembled app. No system preference is modified.
+                let info: [String: Any] = [
+                    "selectedLanguage": L10n.language,
+                    "preferredLanguages": Locale.preferredLanguages,
+                    "supportedLanguages": L10n.supportedLanguages,
+                    "catalogueCounts": Dictionary(uniqueKeysWithValues: L10n.supportedLanguages.map {
+                        ($0, L10n.localizedStrings(for: $0).count)
+                    }),
+                    "labels": ["open": L10n.tr("Apri…"), "save": L10n.tr("Salva"), "cancel": L10n.tr("Annulla")]
+                ]
+                let data = try JSONSerialization.data(withJSONObject: info, options: [.prettyPrinted, .sortedKeys])
+                print(String(decoding: data, as: UTF8.self))
+                return 0
+            }
             if command == "validate-pdfa" {
                 guard (3...4).contains(args.count), let profile = PDFArchiveProfile(rawValue: args[2].lowercased()) else {
-                    throw CartaAutomationError.message("Uso: validate-pdfa input.pdf profilo [rapporto.json]. Profili:1a,1b,2a,2b,2u,3a,3b,3u,4,4e,4f.")
+                    throw CartaAutomationError.message(L10n.tr("Uso: validate-pdfa input.pdf profilo [rapporto.json]. Profili:1a,1b,2a,2b,2u,3a,3b,3u,4,4e,4f."))
                 }
                 let report = PDFArchiveValidator.validate(data: try Data(contentsOf: URL(fileURLWithPath: args[1]), options: .mappedIfSafe), profile: profile)
                 let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -84,11 +101,11 @@ enum CartaAutomation {
                 }
             }
             if command == "merge" {
-                guard args.count >= 4 else { throw CartaAutomationError.message("Uso: merge output.pdf input1.pdf input2.pdf") }
+                guard args.count >= 4 else { throw CartaAutomationError.message(L10n.tr("Uso: merge output.pdf input1.pdf input2.pdf")) }
                 let sources = Array(args.dropFirst(2))
                 try write(merge(sources, password: password), to: args[1], sources: sources, overwrite: overwrite)
             } else {
-                guard args.count >= 2 else { throw CartaAutomationError.message("Manca il PDF sorgente.") }
+                guard args.count >= 2 else { throw CartaAutomationError.message(L10n.tr("Manca il PDF sorgente.")) }
                 let input = args[1], pdf = try load(input, password: password)
                 if command == "info" {
                     let info: [String: Any] = ["pages": pdf.pageCount, "encrypted": pdf.isEncrypted, "copying": pdf.allowsCopying,
@@ -96,7 +113,7 @@ enum CartaAutomation {
                     let data = try JSONSerialization.data(withJSONObject: info, options: [.prettyPrinted, .sortedKeys])
                     print(String(decoding: data, as: UTF8.self)); return 0
                 }
-                guard args.count >= 3 else { throw CartaAutomationError.message("Manca il percorso di output.") }
+                guard args.count >= 3 else { throw CartaAutomationError.message(L10n.tr("Manca il percorso di output.")) }
                 let model = PDFEditorModel(); model.replaceDocument(pdf, fileName: URL(fileURLWithPath: input).lastPathComponent)
                 switch command {
                 case "split":
@@ -105,7 +122,7 @@ enum CartaAutomation {
                     let urls = try model.splitPDF(to: folder)
                     print(urls.map(\.path).joined(separator: "\n"))
                 case "extract":
-                    guard args.count >= 4 else { throw CartaAutomationError.message("Manca l’intervallo, per esempio 1-3,5.") }
+                    guard args.count >= 4 else { throw CartaAutomationError.message(L10n.tr("Manca l’intervallo, per esempio 1-3,5.")) }
                     let indices = try PDFEditorModel.parsePageRange(args[3], pageCount: pdf.pageCount)
                     let extracted = try model.extractedDocument(pageIndexes: indices)
                     guard let data = extracted.dataRepresentation() else { throw PDFWorkspaceError.cannotSave }
@@ -120,7 +137,7 @@ enum CartaAutomation {
                     if command == "ocr" { data = try PDFConversionEngine.ocrPDFData(snapshot: snapshot).data }
                     else { data = try PDFConversionEngine.rasterPDFData(snapshot: snapshot, dpi: command == "compress" ? 150 : 200, jpegQuality: command == "compress" ? 0.75 : nil) }
                     try write(data, to: args[2], sources: [input], overwrite: overwrite)
-                default: throw CartaAutomationError.message("Comando sconosciuto. Usa --cli help.")
+                default: throw CartaAutomationError.message(L10n.tr("Comando sconosciuto. Usa --cli help."))
                 }
             }
             return 0
@@ -153,7 +170,7 @@ struct CartaMergeIntent: AppIntent {
                 return data
             }
         }
-        return .result(value: IntentFile(data: data, filename: "Unione.pdf", type: .pdf))
+        return .result(value: IntentFile(data: data, filename: L10n.tr("Unione.pdf"), type: .pdf))
     }
 }
 
@@ -169,7 +186,7 @@ final class CartaMergeScriptCommand: NSScriptCommand {
         MainActor.assumeIsolated {
             do {
                 guard let paths = evaluatedArguments?["files"] as? [String], let destination = evaluatedArguments?["destination"] as? String else {
-                    throw CartaAutomationError.message("Servono files e destination.")
+                    throw CartaAutomationError.message(L10n.tr("Servono files e destination."))
                 }
                 try CartaAutomation.write(CartaAutomation.merge(paths), to: destination, sources: paths)
                 return destination

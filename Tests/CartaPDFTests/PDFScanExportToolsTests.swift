@@ -121,7 +121,7 @@ final class PDFScanExportToolsTests: XCTestCase {
         field.widgetFieldType = .text; field.fieldName = "Codice"; field.maximumLength = 3; field.widgetStringValue = "ABC"
         pdf.page(at: 0)?.addAnnotation(field)
         XCTAssertThrowsError(try ScanCSV.filledDocuments(snapshot: XCTUnwrap(pdf.dataRepresentation()), rows: [["Codice"], ["ABCD"]])) {
-            XCTAssertTrue($0.localizedDescription.contains("3 caratteri"))
+            XCTAssertTrue($0.localizedDescription.contains(L10n.tr("Il campo \("Codice") accetta al massimo \(3) caratteri.")))
         }
         let copies = try ScanCSV.filledDocuments(snapshot: XCTUnwrap(pdf.dataRepresentation()), rows: [["Codice"], ["XYZ"]])
         let reopened = try XCTUnwrap(PDFDocument(data: copies[0]))
@@ -129,7 +129,7 @@ final class PDFScanExportToolsTests: XCTestCase {
         field.setValue(NSNumber(value: 1 << 13), forAnnotationKey: .widgetFieldFlags)
         XCTAssertTrue(field.isPasswordField)
         XCTAssertThrowsError(try ScanCSV.filledDocuments(snapshot: XCTUnwrap(pdf.dataRepresentation()), rows: [["Codice"], ["XYZ"]])) {
-            XCTAssertTrue($0.localizedDescription.contains("password"))
+            XCTAssertTrue(diagnosticContains($0.localizedDescription, "password"))
         }
         XCTAssertEqual(field.widgetStringValue, "ABC")
     }
@@ -261,7 +261,7 @@ final class PDFScanExportToolsTests: XCTestCase {
         XCTAssertFalse(renderer.ready)
         XCTAssertEqual(renderer.message, invalidMessage)
         do { _ = try await renderer.pdf(); XCTFail("Un caricamento HTML fallito non deve esportare il documento precedente.") }
-        catch { XCTAssertTrue(error.localizedDescription.contains("caricamento HTML")) }
+        catch { XCTAssertTrue(diagnosticContains(error.localizedDescription, "caricamento HTML")) }
     }
 
     private func serializedChoice(in data: Data, named name: String) throws -> (value: String, options: [[String]]) {

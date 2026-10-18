@@ -44,10 +44,10 @@ enum PDFRasterSanitizerError: LocalizedError {
     case invalidRegion, invalidPage, oversizedPage, renderingFailed
     var errorDescription: String? {
         switch self {
-        case .invalidRegion: return "L’area da oscurare non è valida o non interseca la pagina."
-        case .invalidPage: return "Il documento contiene una pagina non valida."
-        case .oversizedPage: return "Una pagina è troppo grande per essere rasterizzata in sicurezza a questa risoluzione."
-        case .renderingFailed: return "Non è stato possibile generare il PDF rasterizzato."
+        case .invalidRegion: return L10n.tr("L’area da oscurare non è valida o non interseca la pagina.")
+        case .invalidPage: return L10n.tr("Il documento contiene una pagina non valida.")
+        case .oversizedPage: return L10n.tr("Una pagina è troppo grande per essere rasterizzata in sicurezza a questa risoluzione.")
+        case .renderingFailed: return L10n.tr("Non è stato possibile generare il PDF rasterizzato.")
         }
     }
 }
@@ -187,7 +187,7 @@ extension PDFEditorModel {
         let border = PDFBorder()
         border.lineWidth = CartaPreferences.shared.strokeWidth
         annotation.border = border
-        addMarkup(annotation, on: page, actionName: ellipse ? "Aggiungi ellisse" : "Aggiungi rettangolo")
+        addMarkup(annotation, on: page, actionName: ellipse ? L10n.tr("Aggiungi ellisse") : L10n.tr("Aggiungi rettangolo"))
     }
 
     func addLinkAnnotation(in rectangle: CGRect, on page: PDFPage) {
@@ -195,10 +195,10 @@ extension PDFEditorModel {
         let bounds = rectangle.standardized.intersection(page.bounds(for: .cropBox))
         guard !bounds.isNull, bounds.width >= 3, bounds.height >= 3 else { return }
         let alert = NSAlert()
-        alert.messageText = "Aggiungi collegamento web"
-        alert.informativeText = "Inserisci un indirizzo HTTPS o HTTP completo per l’area selezionata."
-        alert.addButton(withTitle: "Aggiungi")
-        alert.addButton(withTitle: "Annulla")
+        alert.messageText = L10n.tr("Aggiungi collegamento web")
+        alert.informativeText = L10n.tr("Inserisci un indirizzo HTTPS o HTTP completo per l’area selezionata.")
+        alert.addButton(withTitle: L10n.tr("Aggiungi"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         let field = NSTextField(frame: CGRect(x: 0, y: 0, width: 360, height: 24))
         field.stringValue = "https://"
         alert.accessoryView = field
@@ -206,7 +206,7 @@ extension PDFEditorModel {
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         guard let url = URL(string: field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)),
               ["https", "http"].contains(url.scheme?.lowercased() ?? ""), let host = url.host, !host.isEmpty else {
-            errorMessage = "Inserisci un URL valido che inizi con https:// oppure http://."
+            errorMessage = L10n.tr("Inserisci un URL valido che inizi con https:// oppure http://.")
             return
         }
         addWebLink(url, in: bounds, on: page)
@@ -225,14 +225,14 @@ extension PDFEditorModel {
         border.lineWidth = 1
         annotation.border = border
         annotation.contents = url.absoluteString
-        addMarkup(annotation, on: page, actionName: "Aggiungi collegamento")
+        addMarkup(annotation, on: page, actionName: L10n.tr("Aggiungi collegamento"))
     }
 
     func removeWebLink(_ annotation: PDFAnnotation, from page: PDFPage) {
         guard !isProcessing, canEditAnnotations, page.document === document,
               page.annotations.contains(where: { $0 === annotation }), annotation.type == "Link",
               CartaOwnedLink.identity(of: annotation) != nil else { return }
-        removeMarkup(annotation, on: page, actionName: "Elimina collegamento")
+        removeMarkup(annotation, on: page, actionName: L10n.tr("Elimina collegamento"))
     }
 
     private func addMarkup(_ annotation: PDFAnnotation, on page: PDFPage, actionName: String) {
@@ -252,17 +252,17 @@ extension PDFEditorModel {
     func redactRegion(_ rectangle: CGRect, on page: PDFPage) {
         guard !isProcessing else { return }
         guard canEditDocument, document.allowsPrinting, document.allowsCopying, page.document === document else {
-            errorMessage = "Per creare una copia oscurata servono i permessi di modifica, copia e stampa del PDF."
+            errorMessage = L10n.tr("Per creare una copia oscurata servono i permessi di modifica, copia e stampa del PDF.")
             return
         }
         let index = document.index(for: page)
         guard index != NSNotFound else { return }
         let alert = NSAlert()
-        alert.messageText = "Crea una copia oscurata?"
-        alert.informativeText = "Tutte le pagine saranno convertite in immagini a 200 dpi. L’area selezionata verrà sostituita da pixel neri prima di creare il nuovo PDF. La copia perderà testo selezionabile, moduli, collegamenti, annotazioni modificabili, metadati originali ed eventuale protezione con password. Il documento originale rimarrà aperto e invariato."
+        alert.messageText = L10n.tr("Crea una copia oscurata?")
+        alert.informativeText = L10n.tr("Tutte le pagine saranno convertite in immagini a 200 dpi. L’area selezionata verrà sostituita da pixel neri prima di creare il nuovo PDF. La copia perderà testo selezionabile, moduli, collegamenti, annotazioni modificabili, metadati originali ed eventuale protezione con password. Il documento originale rimarrà aperto e invariato.")
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Crea copia oscurata")
-        alert.addButton(withTitle: "Annulla")
+        alert.addButton(withTitle: L10n.tr("Crea copia oscurata"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         // Detach every page before yielding: Undo or another window must never
         // mutate pages while the operation is rendering them.
@@ -278,7 +278,7 @@ extension PDFEditorModel {
         processingIdentifier = identifier
         isProcessing = true
         processingProgress = 0
-        processingMessage = "Creazione della copia oscurata…"
+        processingMessage = L10n.tr("Creazione della copia oscurata…")
         processingTask = Task { @MainActor [weak self] in
             guard let self else { return }
             defer {
@@ -294,10 +294,10 @@ extension PDFEditorModel {
                     if self.processingIdentifier == identifier { self.processingProgress = $0 }
                 }
                 guard self.processingIdentifier == identifier else { return }
-                self.openGeneratedDocument(result, name: "Copia oscurata.pdf")
-                self.statusMessage = "Copia oscurata aperta in una nuova finestra. Salvala con ⌘S."
+                self.openGeneratedDocument(result, name: L10n.tr("Copia oscurata.pdf"))
+                self.statusMessage = L10n.tr("Copia oscurata aperta in una nuova finestra. Salvala con ⌘S.")
             } catch is CancellationError {
-                if self.processingIdentifier == identifier { self.statusMessage = "Oscuramento annullato." }
+                if self.processingIdentifier == identifier { self.statusMessage = L10n.tr("Oscuramento annullato.") }
             } catch {
                 if self.processingIdentifier == identifier { self.errorMessage = error.localizedDescription }
             }
@@ -307,10 +307,10 @@ extension PDFEditorModel {
     func addGraphicalSignature(at point: CGPoint, on page: PDFPage) {
         guard !isProcessing, canEditAnnotations, page.document === document else { return }
         let alert = NSAlert()
-        alert.messageText = "Firma grafica"
-        alert.informativeText = "Disegna la tua firma nel riquadro. Sarà aggiunta come tratto modificabile: non è una firma digitale crittografica e non certifica l’identità."
-        alert.addButton(withTitle: "Inserisci firma")
-        alert.addButton(withTitle: "Annulla")
+        alert.messageText = L10n.tr("Firma grafica")
+        alert.informativeText = L10n.tr("Disegna la tua firma nel riquadro. Sarà aggiunta come tratto modificabile: non è una firma digitale crittografica e non certifica l’identità.")
+        alert.addButton(withTitle: L10n.tr("Inserisci firma"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         let pad = SignaturePadView(frame: CGRect(x: 0, y: 0, width: 460, height: 160))
         alert.accessoryView = pad
         guard alert.runModal() == .alertFirstButtonReturn, !pad.strokes.isEmpty else { return }
@@ -343,8 +343,8 @@ extension PDFEditorModel {
         border.lineWidth = 1.5
         annotation.border = border
         annotation.color = .black
-        annotation.contents = "Firma grafica"
-        addMarkup(annotation, on: page, actionName: "Aggiungi firma grafica")
+        annotation.contents = L10n.tr("Firma grafica")
+        addMarkup(annotation, on: page, actionName: L10n.tr("Aggiungi firma grafica"))
     }
 }
 

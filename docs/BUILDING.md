@@ -49,17 +49,42 @@ python3 Development/verify-features.py
 
 Version 3.6.0 has recorded evidence of **512 tests passing with zero failures**. This count describes that execution; subsequent changes require appropriate new verification.
 
+Repository preparation at commit `9538462` subsequently recorded **517 tests with zero failures**, including one skip on the hosted runner because the optional corpus was absent. The [verified workflow](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39108436451) is historical evidence for that commit, not verification of later localization changes.
+
 Raw `*.log` files are excluded from Git to avoid unintentionally publishing local paths and diagnostics. The commands above regenerate them on your Mac; versioned JSON reports retain selected results and their documented provenance.
 
 ## Continuous integration
 
-The [macOS checks](../.github/workflows/ci.yml) workflow uses GitHub's Apple Silicon `macos-15` runner and explicitly selects Xcode 26.3. It runs `python3 scripts/check-repository.py`, syntax checks, the native suite, a Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
+The [macOS checks](../.github/workflows/ci.yml) workflow uses GitHub's Apple Silicon `macos-15` runner and explicitly selects Xcode 26.3. It runs `python3 scripts/check-repository.py`, `python3 scripts/check-localization.py`, syntax checks, the native suite, a Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The packaged localization checks also exercise twenty language-selection scenarios described below. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
 
 CI does not acquire the corpus, enable VoiceOver, publish releases, or change repository visibility. A local result does not replace the workflow result for a particular commit. If the GitHub image removes the selected toolchain, update the selection in a verified change instead of silently changing SDKs.
 
 ## Resources and manifests
 
 The `Resources/PDFAProfiles` and `Resources/PDFFontData` directories are mirrored under `Sources/CartaPDF/Resources` for SwiftPM. The build script checks that they match. Update both copies together and preserve licenses, attributions, and manifests. Pinned catalogue hashes are also verified in Swift code: updating the manifest alone does not update the validator's integrity checks.
+
+## Localization checks
+
+Translations are versioned under `Sources/CartaPDF/Resources/Localization` in eight `.lproj` directories: `en`, `it`, `es`, `de`, `fr`, `zh-Hans`, `zh-Hant`, and `ja`. The build includes them in both the app's main resources and the SwiftPM resource bundle. Each directory contains `Localizable.strings`, `AppShortcuts.strings`, and `InfoPlist.strings`; these provide application messages, native shortcut phrases, and document-type names.
+
+Run the static checker before a build:
+
+```sh
+python3 scripts/check-localization.py
+```
+
+It compares the tables with the explicit [source inventory](../Development/LocalizationInventory.json), checks source coverage and matching keys, and validates numbered placeholders, native shortcut placeholders, printf formats, fragment whitespace, and English fallback declarations. This check runs in CI; it does not launch the app or establish visual or VoiceOver correctness.
+
+After the normal signed build, verify the assembled application:
+
+```sh
+python3 scripts/check-built-app.py dist/CartaPDF.app
+dist/CartaPDF.app/Contents/MacOS/CartaPDF -AppleLanguages '("de-AT")' --cli language
+```
+
+The packaged check reads the actual eight resource directories and all three table types with Apple's parser, checks matching keys and counts, and compares CLI labels with those packaged translations. It launches twenty isolated cases: eight supported language codes, eight regional preferences, two Chinese script overrides, an unsupported preference followed by French, and an entirely unsupported list that must fall back to English. Each launch uses a temporary working directory and a process-local `-AppleLanguages` argument, without changing system preferences or downloading translations. The JSON diagnostic exposes the selected and preferred languages, supported codes, catalogue counts, and sample labels. Signature, arm64, dataset integrity, and all eleven PDF/A CLI checks remain part of the same packaged verification.
+
+See [localization maintenance](LOCALIZATION.md) for language resolution and translation changes. New passing results must be recorded after these checks actually run; the historical counts above are not updated by adding checks.
 
 ## Development corpus
 

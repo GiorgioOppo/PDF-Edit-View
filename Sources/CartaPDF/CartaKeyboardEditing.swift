@@ -21,16 +21,16 @@ struct CartaKeyboardAnnotationEntry: Identifiable {
     var id: ObjectIdentifier { ObjectIdentifier(annotation) }
     var typeLabel: String {
         switch annotation.type {
-        case "FreeText": return "Testo"
-        case "Text": return "Nota"
-        case "Square": return "Rettangolo"
-        case "Circle": return "Ellisse"
-        case "Link": return "Collegamento"
-        case "Widget": return "Campo modulo"
-        case "Ink": return "Tratto a mano libera"
-        case "Highlight": return "Evidenziazione"
-        case "Stamp": return "Timbro"
-        default: return annotation.type ?? "Annotazione"
+        case "FreeText": return L10n.tr("Testo")
+        case "Text": return L10n.tr("Nota")
+        case "Square": return L10n.tr("Rettangolo")
+        case "Circle": return L10n.tr("Ellisse")
+        case "Link": return L10n.tr("Collegamento")
+        case "Widget": return L10n.tr("Campo modulo")
+        case "Ink": return L10n.tr("Tratto a mano libera")
+        case "Highlight": return L10n.tr("Evidenziazione")
+        case "Stamp": return L10n.tr("Timbro")
+        default: return annotation.type ?? L10n.tr("Annotazione")
         }
     }
     var content: String {
@@ -39,7 +39,7 @@ struct CartaKeyboardAnnotationEntry: Identifiable {
     }
     var label: String {
         let summary = content.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
-        return "Pagina \(pageIndex + 1), \(typeLabel), \(summary.isEmpty ? "senza descrizione" : String(summary.prefix(120)))"
+        return L10n.tr("Pagina \(pageIndex + 1), \(typeLabel), \(summary.isEmpty ? L10n.tr("senza descrizione") : String(summary.prefix(120)))")
     }
 }
 
@@ -47,13 +47,13 @@ enum CartaKeyboardGeometry {
     static func rectangle(x: Double, y: Double, width: Double, height: Double, within pageBounds: CGRect) throws -> CGRect {
         guard [x, y, width, height, Double(pageBounds.minX), Double(pageBounds.minY), Double(pageBounds.maxX), Double(pageBounds.maxY), Double(pageBounds.width), Double(pageBounds.height)].allSatisfy(\.isFinite),
               pageBounds.width > 0, pageBounds.height > 0 else {
-            throw CartaKeyboardEditingError("Coordinate e dimensioni devono essere numeri finiti.")
+            throw CartaKeyboardEditingError(L10n.tr("Coordinate e dimensioni devono essere numeri finiti."))
         }
-        guard width >= 3, height >= 3 else { throw CartaKeyboardEditingError("Larghezza e altezza devono essere almeno 3 pt.") }
+        guard width >= 3, height >= 3 else { throw CartaKeyboardEditingError(L10n.tr("Larghezza e altezza devono essere almeno 3 pt.")) }
         guard (x + width).isFinite, (y + height).isFinite,
               x >= Double(pageBounds.minX), y >= Double(pageBounds.minY),
               x + width <= Double(pageBounds.maxX), y + height <= Double(pageBounds.maxY) else {
-            throw CartaKeyboardEditingError("Il riquadro deve essere interamente nell’area visibile della pagina PDF non ruotata.")
+            throw CartaKeyboardEditingError(L10n.tr("Il riquadro deve essere interamente nell’area visibile della pagina PDF non ruotata."))
         }
         return CGRect(x: x, y: y, width: width, height: height)
     }
@@ -84,10 +84,10 @@ extension PDFEditorModel {
     @discardableResult
     func createKeyboardAnnotation(kind: CartaKeyboardAnnotationKind, pageIndex: Int, content: String, bounds: CGRect) throws -> PDFAnnotation {
         guard !isProcessing, canEditAnnotations else { throw PDFWorkspaceError.editingNotAllowed }
-        guard (0..<pageCount).contains(pageIndex), let page = document.page(at: pageIndex) else { throw CartaKeyboardEditingError("Scegli una pagina esistente.") }
+        guard (0..<pageCount).contains(pageIndex), let page = document.page(at: pageIndex) else { throw CartaKeyboardEditingError(L10n.tr("Scegli una pagina esistente.")) }
         let validBounds = try CartaKeyboardGeometry.rectangle(x: bounds.origin.x, y: bounds.origin.y, width: bounds.width, height: bounds.height, within: page.bounds(for: .cropBox))
         let text = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        if [.text, .note, .typedName].contains(kind), text.isEmpty { throw CartaKeyboardEditingError("Inserisci il testo o il contenuto della nota.") }
+        if [.text, .note, .typedName].contains(kind), text.isEmpty { throw CartaKeyboardEditingError(L10n.tr("Inserisci il testo o il contenuto della nota.")) }
         let type: PDFAnnotationSubtype
         switch kind {
         case .text, .typedName: type = .freeText
@@ -109,7 +109,7 @@ extension PDFEditorModel {
         annotation.border = border
         switch kind {
         case .text, .typedName:
-            guard textFontSize.isFinite else { throw CartaKeyboardEditingError("La dimensione del carattere non è valida.") }
+            guard textFontSize.isFinite else { throw CartaKeyboardEditingError(L10n.tr("La dimensione del carattere non è valida.")) }
             let size = min(max(textFontSize, 6), 144)
             annotation.font = NSFont(name: kind == .typedName ? "Helvetica-Oblique" : textFontName, size: size) ?? .systemFont(ofSize: size)
             annotation.fontColor = textColor
@@ -129,7 +129,7 @@ extension PDFEditorModel {
             annotation.color = .systemBlue
             border.lineWidth = 1
         }
-        addBatchAnnotations([(page, annotation)], actionName: "Aggiungi \(kind.rawValue.lowercased())")
+        addBatchAnnotations([(page, annotation)], actionName: L10n.tr("Aggiungi \(L10n.string(kind.rawValue).lowercased())"))
         goToPage(pageIndex)
         selectAnnotation(annotation, on: page)
         warnIfTextOverflows(annotation)
@@ -137,7 +137,7 @@ extension PDFEditorModel {
     }
 
     func setKeyboardAnnotationBounds(_ bounds: CGRect, for entry: CartaKeyboardAnnotationEntry) throws {
-        guard keyboardCanEdit(entry) else { throw CartaKeyboardEditingError("L’annotazione è protetta, non supportata o non appartiene più a questo documento.") }
+        guard keyboardCanEdit(entry) else { throw CartaKeyboardEditingError(L10n.tr("L’annotazione è protetta, non supportata o non appartiene più a questo documento.")) }
         let valid = try CartaKeyboardGeometry.rectangle(x: bounds.origin.x, y: bounds.origin.y, width: bounds.width, height: bounds.height, within: entry.page.bounds(for: .cropBox))
         if entry.annotation.type == "Link" {
             keyboardSetLinkBounds(valid, annotation: entry.annotation, page: entry.page)
@@ -147,10 +147,10 @@ extension PDFEditorModel {
     }
 
     func setKeyboardAnnotationContent(_ content: String, for entry: CartaKeyboardAnnotationEntry) throws {
-        guard keyboardCanEdit(entry, content: true) else { throw CartaKeyboardEditingError("Il contenuto dell’annotazione è protetto o non modificabile.") }
+        guard keyboardCanEdit(entry, content: true) else { throw CartaKeyboardEditingError(L10n.tr("Il contenuto dell’annotazione è protetto o non modificabile.")) }
         let text = content.trimmingCharacters(in: .whitespacesAndNewlines)
         if entry.annotation.type == "Text" || entry.annotation.type == "FreeText" {
-            guard !text.isEmpty else { throw CartaKeyboardEditingError("Il contenuto non può essere vuoto.") }
+            guard !text.isEmpty else { throw CartaKeyboardEditingError(L10n.tr("Il contenuto non può essere vuoto.")) }
             updateAnnotation(entry.annotation, text: text, on: entry.page)
         } else if entry.annotation.type == "Link" {
             let url = try Self.keyboardWebURL(text)
@@ -161,7 +161,7 @@ extension PDFEditorModel {
     }
 
     func deleteKeyboardAnnotation(_ entry: CartaKeyboardAnnotationEntry) throws {
-        guard keyboardCanEdit(entry) else { throw CartaKeyboardEditingError("L’annotazione è protetta o non può essere eliminata con questo strumento.") }
+        guard keyboardCanEdit(entry) else { throw CartaKeyboardEditingError(L10n.tr("L’annotazione è protetta o non può essere eliminata con questo strumento.")) }
         if entry.annotation.type == "Link" { removeWebLink(entry.annotation, from: entry.page) }
         else { removeAnnotation(entry.annotation, from: entry.page) }
     }
@@ -169,7 +169,7 @@ extension PDFEditorModel {
     private func keyboardSetLinkBounds(_ bounds: CGRect, annotation: PDFAnnotation, page: PDFPage) {
         guard bounds != annotation.bounds else { return }
         let previous = annotation.bounds
-        performChange(named: "Posizione e dimensioni collegamento", relayout: false, mutation: {
+        performChange(named: L10n.tr("Posizione e dimensioni collegamento"), relayout: false, mutation: {
             annotation.bounds = bounds
         }, inverse: { model in model.keyboardSetLinkBounds(previous, annotation: annotation, page: page) })
         pdfView?.annotationsChanged(on: page)
@@ -183,7 +183,7 @@ extension PDFEditorModel {
     }
 
     private func keyboardRestoreDescription(_ text: String?, action: PDFAction?, date: Date?, entry: CartaKeyboardAnnotationEntry, previousText: String?, previousAction: PDFAction?, previousDate: Date?) {
-        performChange(named: "Modifica contenuto annotazione", relayout: false, mutation: {
+        performChange(named: L10n.tr("Modifica contenuto annotazione"), relayout: false, mutation: {
             entry.annotation.contents = text
             entry.annotation.action = action
             entry.annotation.modificationDate = date
@@ -195,13 +195,13 @@ extension PDFEditorModel {
 
     private static func keyboardWebURL(_ text: String) throws -> URL {
         guard let url = URL(string: text), ["https", "http"].contains(url.scheme?.lowercased() ?? ""), let host = url.host, !host.isEmpty else {
-            throw CartaKeyboardEditingError("Inserisci un indirizzo completo con https:// oppure http:// e un nome host.")
+            throw CartaKeyboardEditingError(L10n.tr("Inserisci un indirizzo completo con https:// oppure http:// e un nome host."))
         }
         return url
     }
 
     func showKeyboardEditingWorkspace() {
-        CartaPanelController.present(CartaKeyboardEditingView(model: self), title: "Annotazioni da tastiera", width: 920, height: 740)
+        CartaPanelController.present(CartaKeyboardEditingView(model: self), title: L10n.tr("Annotazioni da tastiera"), width: 920, height: 740)
     }
 }
 
@@ -232,18 +232,18 @@ final class CartaKeyboardEditingController: ObservableObject {
     var targetPage: PDFPage? { selected?.page ?? model.document.page(at: pageNumber - 1) }
     var canChangeGeometry: Bool { selected.map { model.keyboardCanEdit($0) } ?? false }
     var canChangeContent: Bool { selected.map { model.keyboardCanEdit($0, content: true) } ?? false }
-    var statusDescription: String { error.map { "Errore: " + $0 } ?? message }
+    var statusDescription: String { error.map { L10n.tr("Errore: \($0)") } ?? message }
     var boundsDescription: String {
-        guard let page = targetPage else { return "Nessuna pagina disponibile." }
+        guard let page = targetPage else { return L10n.tr("Nessuna pagina disponibile.") }
         let box = page.bounds(for: .cropBox)
-        return String(format: "Area visibile: X da %.2f a %.2f pt; Y da %.2f a %.2f pt. Rotazione pagina: %d gradi.", Double(box.minX), Double(box.maxX), Double(box.minY), Double(box.maxY), page.rotation)
+        return L10n.tr("Area visibile: X da \(Double(box.minX), specifier: "%.2f") a \(Double(box.maxX), specifier: "%.2f") pt; Y da \(Double(box.minY), specifier: "%.2f") a \(Double(box.maxY), specifier: "%.2f") pt. Rotazione pagina: \(page.rotation) gradi.")
     }
 
     func newAnnotation() {
         selectedID = nil
         model.selectAnnotation(nil, on: nil)
         pageNumber = min(max(1, model.currentPageIndex + 1), model.pageCount)
-        content = ""; error = nil; message = "Compila i campi, poi scegli Crea annotazione."
+        content = ""; error = nil; message = L10n.tr("Compila i campi, poi scegli Crea annotazione.")
         resetGeometry()
     }
 
@@ -263,59 +263,59 @@ final class CartaKeyboardEditingController: ObservableObject {
         content = entry.content
         let bounds = entry.annotation.bounds
         x = Double(bounds.minX); y = Double(bounds.minY); width = Double(bounds.width); height = Double(bounds.height)
-        error = nil; message = model.keyboardCanEdit(entry) ? "Annotazione selezionata." : "Annotazione consultabile in sola lettura. Moduli e collegamenti esterni a CartaPDF restano protetti."
+        error = nil; message = model.keyboardCanEdit(entry) ? L10n.tr("Annotazione selezionata.") : L10n.tr("Annotazione consultabile in sola lettura. Moduli e collegamenti esterni a CartaPDF restano protetti.")
         model.goToPage(entry.pageIndex)
         model.selectAnnotation(entry.annotation, on: entry.page)
     }
 
     func synchronizeSelection() {
         if selectedID != nil && selected == nil {
-            selectedID = nil; content = ""; message = "L’annotazione selezionata non è più presente. Scegline un’altra o creane una nuova."
+            selectedID = nil; content = ""; message = L10n.tr("L’annotazione selezionata non è più presente. Scegline un’altra o creane una nuova.")
         }
     }
 
     func create() {
         execute {
-            guard let page = targetPage else { throw CartaKeyboardEditingError("Scegli una pagina esistente.") }
+            guard let page = targetPage else { throw CartaKeyboardEditingError(L10n.tr("Scegli una pagina esistente.")) }
             let bounds = try CartaKeyboardGeometry.rectangle(x: x, y: y, width: width, height: height, within: page.bounds(for: .cropBox))
             let annotation = try model.createKeyboardAnnotation(kind: kind, pageIndex: pageNumber - 1, content: content, bounds: bounds)
             selectedID = ObjectIdentifier(annotation)
             loadSelection()
-            message = "Annotazione creata sulla pagina \(pageNumber). La modifica può essere annullata."
+            message = L10n.tr("Annotazione creata sulla pagina \(pageNumber). La modifica può essere annullata.")
         }
     }
 
     func applyGeometry() {
         execute {
-            guard let entry = selected else { throw CartaKeyboardEditingError("Seleziona un’annotazione ancora presente.") }
+            guard let entry = selected else { throw CartaKeyboardEditingError(L10n.tr("Seleziona un’annotazione ancora presente.")) }
             let bounds = try CartaKeyboardGeometry.rectangle(x: x, y: y, width: width, height: height, within: entry.page.bounds(for: .cropBox))
             try model.setKeyboardAnnotationBounds(bounds, for: entry)
-            message = "Posizione e dimensioni aggiornate."
+            message = L10n.tr("Posizione e dimensioni aggiornate.")
         }
     }
 
     func applyContent() {
         execute {
-            guard let entry = selected else { throw CartaKeyboardEditingError("Seleziona un’annotazione ancora presente.") }
+            guard let entry = selected else { throw CartaKeyboardEditingError(L10n.tr("Seleziona un’annotazione ancora presente.")) }
             try model.setKeyboardAnnotationContent(content, for: entry)
             loadSelection()
-            message = "Contenuto aggiornato."
+            message = L10n.tr("Contenuto aggiornato.")
         }
     }
 
     func deleteSelected() {
         execute {
-            guard let entry = selected else { throw CartaKeyboardEditingError("Seleziona un’annotazione ancora presente.") }
+            guard let entry = selected else { throw CartaKeyboardEditingError(L10n.tr("Seleziona un’annotazione ancora presente.")) }
             try model.deleteKeyboardAnnotation(entry)
             selectedID = nil; content = ""
-            message = "Annotazione eliminata. Usa Annulla per ripristinarla."
+            message = L10n.tr("Annotazione eliminata. Usa Annulla per ripristinarla.")
         }
     }
 
     private func execute(_ operation: () throws -> Void) {
         error = nil
         do {
-            guard !hadDocumentOwner || model.documentOwner != nil else { throw CartaKeyboardEditingError("Il documento è stato chiuso. Riaprilo prima di modificare le annotazioni.") }
+            guard !hadDocumentOwner || model.documentOwner != nil else { throw CartaKeyboardEditingError(L10n.tr("Il documento è stato chiuso. Riaprilo prima di modificare le annotazioni.")) }
             try operation()
         } catch { self.error = error.localizedDescription }
     }
@@ -335,67 +335,67 @@ private struct CartaKeyboardEditingView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Annotazioni da tastiera").font(.title2.bold())
+                Text(L10n.tr("Annotazioni da tastiera")).font(.title2.bold())
                 Spacer()
-                Button("Annulla modifica") { model.undo() }.disabled(!model.canUndo || model.isProcessing)
-                Button("Ripeti modifica") { model.redo() }.disabled(!model.canRedo || model.isProcessing)
+                Button(L10n.tr("Annulla modifica")) { model.undo() }.disabled(!model.canUndo || model.isProcessing)
+                Button(L10n.tr("Ripeti modifica")) { model.redo() }.disabled(!model.canRedo || model.isProcessing)
             }
-            Text("Crea e modifica con campi e pulsanti. Coordinate in punti PDF non ruotati, con origine in basso a sinistra: la rotazione cambia la vista, non X e Y.")
+            Text(L10n.tr("Crea e modifica con campi e pulsanti. Coordinate in punti PDF non ruotati, con origine in basso a sinistra: la rotazione cambia la vista, non X e Y."))
                 .font(.callout).foregroundStyle(.secondary)
             HSplitView {
                 VStack(alignment: .leading) {
-                    Button("Nuova annotazione", action: controller.newAnnotation).keyboardShortcut("n", modifiers: [.command, .shift])
+                    Button(L10n.tr("Nuova annotazione"), action: controller.newAnnotation).keyboardShortcut("n", modifiers: [.command, .shift])
                     List(selection: $controller.selectedID) {
                         ForEach(model.keyboardAnnotationEntries) { entry in
                             Text(entry.label).lineLimit(3).tag(entry.id)
-                                .accessibilityLabel(entry.label + (model.keyboardCanEdit(entry) ? ", modificabile" : ", sola lettura"))
+                                .accessibilityLabel(model.keyboardCanEdit(entry) ? L10n.tr("\(entry.label), modificabile") : L10n.tr("\(entry.label), sola lettura"))
                         }
                     }
-                    .accessibilityLabel("Annotazioni del documento. Usa i tasti freccia per selezionare.")
-                    Text("\(model.keyboardAnnotationEntries.count) annotazioni").font(.caption)
+                    .accessibilityLabel(L10n.tr("Annotazioni del documento. Usa i tasti freccia per selezionare."))
+                    Text(L10n.tr("\(model.keyboardAnnotationEntries.count) annotazioni")).font(.caption)
                 }.frame(minWidth: 240, idealWidth: 290)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         if let selected = controller.selected {
-                            Text(selected.typeLabel + " · pagina \(selected.pageIndex + 1)").font(.headline)
-                            Button("Ricarica i valori selezionati", action: controller.loadSelection)
+                            Text(L10n.tr("\(selected.typeLabel) · pagina \(selected.pageIndex + 1)")).font(.headline)
+                            Button(L10n.tr("Ricarica i valori selezionati"), action: controller.loadSelection)
                         } else {
-                            Picker("Tipo di annotazione", selection: $controller.kind) {
-                                ForEach(CartaKeyboardAnnotationKind.allCases) { Text($0.rawValue).tag($0) }
+                            Picker(L10n.tr("Tipo di annotazione"), selection: $controller.kind) {
+                                ForEach(CartaKeyboardAnnotationKind.allCases) { Text(L10n.string($0.rawValue)).tag($0) }
                             }
-                            Stepper("Pagina: \(controller.pageNumber)", value: $controller.pageNumber, in: 1...max(1, model.pageCount))
-                            if controller.kind == .typedName { Text("Inserisce il nome come testo in corsivo. Non aggiunge una firma digitale né un certificato.").font(.caption) }
+                            Stepper(L10n.tr("Pagina: \(controller.pageNumber)"), value: $controller.pageNumber, in: 1...max(1, model.pageCount))
+                            if controller.kind == .typedName { Text(L10n.tr("Inserisce il nome come testo in corsivo. Non aggiunge una firma digitale né un certificato.")).font(.caption) }
                         }
-                        GroupBox("Contenuto o indirizzo web") {
+                        GroupBox(L10n.tr("Contenuto o indirizzo web")) {
                             TextEditor(text: $controller.content).frame(minHeight: 90)
-                                .accessibilityLabel("Contenuto dell’annotazione o indirizzo HTTP o HTTPS")
+                                .accessibilityLabel(L10n.tr("Contenuto dell’annotazione o indirizzo HTTP o HTTPS"))
                                 .disabled(controller.selected != nil && !controller.canChangeContent)
                         }
                         if controller.selected != nil {
-                            Button("Salva contenuto", action: controller.applyContent).disabled(!controller.canChangeContent)
+                            Button(L10n.tr("Salva contenuto"), action: controller.applyContent).disabled(!controller.canChangeContent)
                         }
-                        GroupBox("Posizione e dimensioni in punti") {
+                        GroupBox(L10n.tr("Posizione e dimensioni in punti")) {
                             Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 10) {
-                                numericField("X, origine orizzontale", value: $controller.x)
-                                numericField("Y, origine verticale", value: $controller.y)
-                                numericField("Larghezza", value: $controller.width)
-                                numericField("Altezza", value: $controller.height)
+                                numericField(L10n.tr("X, origine orizzontale"), value: $controller.x)
+                                numericField(L10n.tr("Y, origine verticale"), value: $controller.y)
+                                numericField(L10n.tr("Larghezza"), value: $controller.width)
+                                numericField(L10n.tr("Altezza"), value: $controller.height)
                             }.padding(8)
                         }.disabled(controller.selected != nil && !controller.canChangeGeometry)
                         Text(controller.boundsDescription).font(.caption).textSelection(.enabled)
                         if controller.selected != nil {
-                            Button("Applica posizione e dimensioni", action: controller.applyGeometry)
+                            Button(L10n.tr("Applica posizione e dimensioni"), action: controller.applyGeometry)
                                 .disabled(!controller.canChangeGeometry).keyboardShortcut(.return, modifiers: .command)
-                            Button("Elimina annotazione", role: .destructive, action: controller.deleteSelected)
+                            Button(L10n.tr("Elimina annotazione"), role: .destructive, action: controller.deleteSelected)
                                 .disabled(!controller.canChangeGeometry)
                         } else {
-                            Button("Crea annotazione", action: controller.create).buttonStyle(.borderedProminent)
+                            Button(L10n.tr("Crea annotazione"), action: controller.create).buttonStyle(.borderedProminent)
                                 .disabled(!model.canEditAnnotations).keyboardShortcut(.return, modifiers: .command)
                         }
                     }.padding(16)
                 }.frame(minWidth: 420)
             }.disabled(model.isProcessing)
-            Text(controller.statusDescription.isEmpty ? "Seleziona un’annotazione o scegli Nuova annotazione." : controller.statusDescription)
+            Text(controller.statusDescription.isEmpty ? L10n.tr("Seleziona un’annotazione o scegli Nuova annotazione.") : controller.statusDescription)
                 .foregroundStyle(controller.error == nil ? Color.secondary : Color.red)
                 .accessibilityFocused($statusFocused)
         }.padding(20).frame(minWidth: 820, minHeight: 620)
@@ -409,9 +409,9 @@ private struct CartaKeyboardEditingView: View {
     private func numericField(_ title: String, value: Binding<Double>) -> some View {
         GridRow {
             Text(title)
-            TextField(title + " in punti", value: value, format: .number.precision(.fractionLength(0...3)))
+            TextField(L10n.tr("\(title) in punti"), value: value, format: .number.precision(.fractionLength(0...3)))
                 .labelsHidden().textFieldStyle(.roundedBorder)
-                .accessibilityLabel(title + ", in punti PDF non ruotati")
+                .accessibilityLabel(L10n.tr("\(title), in punti PDF non ruotati"))
         }
     }
 }

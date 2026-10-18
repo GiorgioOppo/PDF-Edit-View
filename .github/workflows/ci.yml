@@ -36,6 +36,8 @@ jobs:
           xcrun --sdk macosx --show-sdk-version
       - name: Check repository and licensed data
         run: python3 scripts/check-repository.py
+      - name: Check localization resources and source coverage
+        run: python3 scripts/check-localization.py
       - name: Check development script syntax
         run: |
           for script in scripts/test.sh scripts/build-app.sh; do

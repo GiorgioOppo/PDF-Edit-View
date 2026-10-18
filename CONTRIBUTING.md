@@ -41,6 +41,6 @@ Do not rewrite historical reports as though their tests were rerun. When generat
 
 Describe the concrete problem, resulting behavior, checks actually run and remaining limitations. Link relevant issues and include screenshots only if they contain no personal information. Feature changes must update the affected guides or limitations; normative corrections must update the module's evidence.
 
-Repository documentation and GitHub templates use English. The app's current interface is Italian; documentation changes do not imply that an English app localization exists. You may discuss contributions in English or Italian.
+Repository documentation and GitHub templates use English. The app supports seven languages and follows macOS language preferences with English fallback. See [translation maintenance](docs/LOCALIZATION.md) before changing interface strings. You may discuss contributions in English or Italian.
 
 By submitting a contribution, you confirm that you have the right to share it under the code's MIT license or, for separate data, its stated license and provenance. No copyright assignment is required. Resources with their own licenses retain their respective obligations.

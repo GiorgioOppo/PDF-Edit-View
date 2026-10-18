@@ -107,8 +107,8 @@ final class PDFConversionToolsTests: XCTestCase {
         XCTAssertTrue(text.contains("\n\n"))
         let rtf = try PDFConversionEngine.rtfData(from: pdf)
         let decoded = try NSAttributedString(data: rtf, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil)
-        XCTAssertTrue(decoded.string.contains("Pagina 1"))
-        XCTAssertTrue(decoded.string.contains("Pagina 2"))
+        XCTAssertTrue(decoded.string.contains(L10n.tr("Pagina \(1)\n")))
+        XCTAssertTrue(decoded.string.contains(L10n.tr("Pagina \(2)\n")))
         XCTAssertTrue(decoded.string.contains("Seconda pagina"))
     }
 

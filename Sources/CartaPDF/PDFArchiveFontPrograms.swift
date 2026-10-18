@@ -25,28 +25,28 @@ final class PDFArchiveFontProgram {
         native = CGDataProvider(data:data as CFData).flatMap(CGFont.init)
         let bytes = self.bytes
         if bytes.count >= 12, [Data([0,1,0,0]),Data("OTTO".utf8),Data("true".utf8)].contains(Data(bytes[0..<4])) {
-            let count = try Self.u16(bytes,4); guard count > 0, count < 4096, 12 + count * 16 <= bytes.count else { throw PDFStructureError.malformed("directory SFNT") }
+            let count = try Self.u16(bytes,4); guard count > 0, count < 4096, 12 + count * 16 <= bytes.count else { throw PDFStructureError.malformed(L10n.tr("directory SFNT")) }
             var indexed: [String:Range<Int>] = [:]
             for i in 0..<count {
                 let position = 12 + i * 16, tag = String(decoding:bytes[position..<(position+4)],as:UTF8.self)
                 let start = try Self.u32(bytes,position+8), length = try Self.u32(bytes,position+12)
-                guard start <= bytes.count, length <= bytes.count-start, indexed[tag] == nil else { throw PDFStructureError.malformed("tabella SFNT " + tag) }
+                guard start <= bytes.count, length <= bytes.count-start, indexed[tag] == nil else { throw PDFStructureError.malformed(L10n.tr("tabella SFNT ") + tag) }
                 indexed[tag] = start..<(start+length)
             }
             tables = indexed; type1 = nil
-            guard let head = indexed["head"], head.count >= 54, let maxp = indexed["maxp"], maxp.count >= 6 else { throw PDFStructureError.unsupported("SFNT senza head/maxp") }
+            guard let head = indexed["head"], head.count >= 54, let maxp = indexed["maxp"], maxp.count >= 6 else { throw PDFStructureError.unsupported(L10n.tr("SFNT senza head/maxp")) }
             glyphCount = try Self.u16(bytes,maxp.lowerBound+4); unitsPerEm = try Self.u16(bytes,head.lowerBound+18)
-            guard glyphCount > 0, (16...16384).contains(unitsPerEm) else { throw PDFStructureError.malformed("unità/glifi SFNT") }
+            guard glyphCount > 0, (16...16384).contains(unitsPerEm) else { throw PDFStructureError.malformed(L10n.tr("unità/glifi SFNT")) }
             if let range = indexed["CFF "] { cff = try PDFArchiveCFF(data:Data(bytes[range])); format = .sfntCFF }
             else if indexed["glyf"] != nil, indexed["loca"] != nil { cff = nil; format = .sfntTrueType }
-            else { throw PDFStructureError.unsupported("outline SFNT non TrueType/CFF1") }
+            else { throw PDFStructureError.unsupported(L10n.tr("outline SFNT non TrueType/CFF1")) }
             var records: [(Int,Int,Int)] = []
             if let range = indexed["cmap"], range.count >= 4 {
                 let number = try Self.u16(bytes,range.lowerBound+2)
-                guard number < 4096, 4 + number * 8 <= range.count else { throw PDFStructureError.malformed("directory cmap") }
+                guard number < 4096, 4 + number * 8 <= range.count else { throw PDFStructureError.malformed(L10n.tr("directory cmap")) }
                 for i in 0..<number {
                     let position = range.lowerBound+4+i*8, offset = try Self.u32(bytes,position+4)
-                    guard offset <= range.count-2 else { throw PDFStructureError.malformed("offset cmap") }
+                    guard offset <= range.count-2 else { throw PDFStructureError.malformed(L10n.tr("offset cmap")) }
                     records.append((try Self.u16(bytes,position),try Self.u16(bytes,position+2),range.lowerBound+offset))
                 }
             }
@@ -59,10 +59,10 @@ final class PDFArchiveFontProgram {
             format = .type1; cff = nil; tables = [:]; cmapRecords = []
             let parsed = try PDFArchiveType1Program(data:data,length1:type1Length1,length2:type1Length2); type1 = parsed
             glyphCount = native?.numberOfGlyphs ?? parsed.names.count; unitsPerEm = Int(native?.unitsPerEm ?? 1000)
-        } else { throw PDFStructureError.unsupported("programma font non SFNT/CFF1/Type1 supportato") }
+        } else { throw PDFStructureError.unsupported(L10n.tr("programma font non SFNT/CFF1/Type1 supportato")) }
     }
-    static func u16(_ bytes: [UInt8], _ p: Int) throws -> Int { guard p >= 0, p <= bytes.count-2 else { throw PDFStructureError.malformed("font troncato") }; return Int(bytes[p])<<8 | Int(bytes[p+1]) }
-    static func u32(_ bytes: [UInt8], _ p: Int) throws -> Int { guard p >= 0, p <= bytes.count-4 else { throw PDFStructureError.malformed("font troncato") }; return Int(bytes[p])<<24 | Int(bytes[p+1])<<16 | Int(bytes[p+2])<<8 | Int(bytes[p+3]) }
+    static func u16(_ bytes: [UInt8], _ p: Int) throws -> Int { guard p >= 0, p <= bytes.count-2 else { throw PDFStructureError.malformed(L10n.tr("font troncato")) }; return Int(bytes[p])<<8 | Int(bytes[p+1]) }
+    static func u32(_ bytes: [UInt8], _ p: Int) throws -> Int { guard p >= 0, p <= bytes.count-4 else { throw PDFStructureError.malformed(L10n.tr("font troncato")) }; return Int(bytes[p])<<24 | Int(bytes[p+1])<<16 | Int(bytes[p+2])<<8 | Int(bytes[p+3]) }
     func glyph(named name: String) -> Int? {
         if name == ".notdef" { return 0 }
         if let cff,let glyph = cff.customNames.first(where:{$0.value == name})?.key { return glyph }
@@ -116,7 +116,7 @@ final class PDFArchiveFontProgram {
     func variationGlyph(unicode:UInt32,selector:UInt32) throws -> Int? {
         guard let cmap = tables["cmap"],let record = cmapRecords.first(where:{$0.platform == 0 && $0.encoding == 5}) else { return nil }
         try checkedCmap(offset:record.offset,bound:cmap.upperBound)
-        guard try Self.u16(bytes,record.offset) == 14 else { throw PDFStructureError.malformed("cmap UVS non formato14") }
+        guard try Self.u16(bytes,record.offset) == 14 else { throw PDFStructureError.malformed(L10n.tr("cmap UVS non formato14")) }
         let count = try Self.u32(bytes,record.offset+6)
         for i in 0..<count {
             let p = record.offset+10+i*11
@@ -162,7 +162,7 @@ final class PDFArchiveFontProgram {
     }
     private func cmapGlyph(_ code: UInt32, offset: Int, bound: Int) throws -> Int? {
         let bytes = self.bytes, format = try Self.u16(bytes,offset)
-        func word(_ p:Int) throws -> Int { guard p+2 <= bound else { throw PDFStructureError.malformed("cmap fuori tabella") }; return try Self.u16(bytes,p) }
+        func word(_ p:Int) throws -> Int { guard p+2 <= bound else { throw PDFStructureError.malformed(L10n.tr("cmap fuori tabella")) }; return try Self.u16(bytes,p) }
         if format == 0 { let length = try word(offset+2); guard length >= 262, offset+length <= bound else { throw PDFStructureError.malformed("cmap0") }; return code < 256 ? Int(bytes[offset+6+Int(code)]) : 0 }
         if format == 2 {
             try checkedCmap(offset:offset,bound:bound);guard code<=65535 else { return 0 }
@@ -184,7 +184,7 @@ final class PDFArchiveFontProgram {
                 let adjustment = try word(delta+i*2), range = try word(ranges+i*2)
                 if range == 0 { return (Int(code)+adjustment)&65535 }
                 let position = ranges+i*2+range+(Int(code)-(try word(start+i*2)))*2
-                guard position+2 <= offset+length else { throw PDFStructureError.malformed("cmap4 glyph array") }
+                guard position+2 <= offset+length else { throw PDFStructureError.malformed(L10n.tr("cmap4 glyph array")) }
                 let glyph = try word(position); return glyph == 0 ? 0 : (glyph+adjustment)&65535
             }
             return 0
@@ -251,12 +251,12 @@ final class PDFArchiveFontProgram {
             for i in 0..<count where try Self.u16(bytes,vorg.lowerBound+8+i*4) == glyph { origin = Int(Int16(bitPattern:UInt16(try Self.u16(bytes,vorg.lowerBound+10+i*4)))) }
         } else if let loca = tables["loca"],let glyf = tables["glyf"],let head = tables["head"] {
             let format = try Self.u16(bytes,head.lowerBound+50),size = format == 0 ? 2:4
-            guard (glyphCount+1)*size<=loca.count else { throw PDFStructureError.malformed("loca verticale") }
+            guard (glyphCount+1)*size<=loca.count else { throw PDFStructureError.malformed(L10n.tr("loca verticale")) }
             let start = format == 0 ? try Self.u16(bytes,loca.lowerBound+glyph*2)*2:try Self.u32(bytes,loca.lowerBound+glyph*4)
             let end = format == 0 ? try Self.u16(bytes,loca.lowerBound+(glyph+1)*2)*2:try Self.u32(bytes,loca.lowerBound+(glyph+1)*4)
-            guard start<=end,end<=glyf.count else { throw PDFStructureError.malformed("glyf verticale") }
+            guard start<=end,end<=glyf.count else { throw PDFStructureError.malformed(L10n.tr("glyf verticale")) }
             if start == end { origin = bearing }
-            else { guard end-start>=10 else { throw PDFStructureError.malformed("glyph header verticale") };origin = Int(Int16(bitPattern:UInt16(try Self.u16(bytes,glyf.lowerBound+start+8))))+bearing }
+            else { guard end-start>=10 else { throw PDFStructureError.malformed(L10n.tr("glyph header verticale")) };origin = Int(Int16(bitPattern:UInt16(try Self.u16(bytes,glyf.lowerBound+start+8))))+bearing }
         }
         return(Double(advance)*1000/Double(unitsPerEm),origin.map { Double($0)*1000/Double(unitsPerEm) })
     }
@@ -295,7 +295,7 @@ extension PDFArchiveFontProgram {
         var audit = PDFArchiveFontProgramAudit()
         guard format == .sfntTrueType || format == .sfntCFF else {
             if format == .cff,let cff { return cff.programAudit(maximumOperations:maximumOperations) }
-            else { audit.gaps.append("Semantica completa del programma PostScript/CharStrings Type1 non dimostrata.") }
+            else { audit.gaps.append(L10n.tr("Semantica completa del programma PostScript/CharStrings Type1 non dimostrata.")) }
             return audit
         }
         let bytes = self.bytes
@@ -319,38 +319,38 @@ extension PDFArchiveFontProgram {
                 let op = code[cursor];cursor += 1
                 var count = 0
                 if op == 0x40 || op == 0x41 {
-                    guard cursor<code.count else { throw PDFStructureError.malformed(context + ": NPUSH privo di conteggio") }
+                    guard cursor<code.count else { throw PDFStructureError.malformed(context + L10n.tr(": NPUSH privo di conteggio")) }
                     count = Int(code[cursor])*(op == 0x41 ? 2:1);cursor += 1
                 } else if (0xB0...0xB7).contains(op) { count = Int(op-0xB0)+1 }
                 else if (0xB8...0xBF).contains(op) { count = (Int(op-0xB8)+1)*2 }
-                guard count<=code.count-cursor else { throw PDFStructureError.malformed(context + ": PUSH troncato") };cursor += count
+                guard count<=code.count-cursor else { throw PDFStructureError.malformed(context + L10n.tr(": PUSH troncato")) };cursor += count
             }
-            if !code.isEmpty { gap("Bytecode TrueType: token PUSH verificati; stack, salti, FDEF/IDEF, CVT, storage e geometria di hinting non eseguiti.") }
+            if !code.isEmpty { gap(L10n.tr("Bytecode TrueType: token PUSH verificati; stack, salti, FDEF/IDEF, CVT, storage e geometria di hinting non eseguiti.")) }
         }
         do {
             try charge()
             let directoryEnd = 12+(try u16(4))*16
             let occupied = tables.filter{!$0.value.isEmpty}.sorted{$0.value.lowerBound<$1.value.lowerBound}
             for (index,table) in occupied.enumerated() {
-                if table.value.lowerBound<directoryEnd { fail("Tabella \(table.key) sovrapposta alla directory SFNT.") }
-                if index>0,occupied[index-1].value.upperBound>table.value.lowerBound { fail("Tabelle \(occupied[index-1].key)/\(table.key) sovrapposte.") }
+                if table.value.lowerBound<directoryEnd { fail(L10n.tr("Tabella \(table.key) sovrapposta alla directory SFNT.")) }
+                if index>0,occupied[index-1].value.upperBound>table.value.lowerBound { fail(L10n.tr("Tabelle \(occupied[index-1].key)/\(table.key) sovrapposte.")) }
             }
-            guard let head = tables["head"],head.count>=54,let maxp = tables["maxp"],maxp.count>=6 else { throw PDFStructureError.malformed("head/maxp troncate") }
-            if try u32(head.lowerBound+12) != 0x5F0F3CF5 { fail("head.magicNumber non valido.") }
+            guard let head = tables["head"],head.count>=54,let maxp = tables["maxp"],maxp.count>=6 else { throw PDFStructureError.malformed(L10n.tr("head/maxp troncate")) }
+            if try u32(head.lowerBound+12) != 0x5F0F3CF5 { fail(L10n.tr("head.magicNumber non valido.")) }
             if let hhea = tables["hhea"],let hmtx = tables["hmtx"] {
-                if hhea.count<36 { fail("hhea troncata.") }
-                else { let count = try u16(hhea.lowerBound+34);if count == 0 || count>glyphCount || count*4+(glyphCount-count)*2>hmtx.count { fail("hmtx/numberOfHMetrics non coerenti con numGlyphs.") } }
+                if hhea.count<36 { fail(L10n.tr("hhea troncata.")) }
+                else { let count = try u16(hhea.lowerBound+34);if count == 0 || count>glyphCount || count*4+(glyphCount-count)*2>hmtx.count { fail(L10n.tr("hmtx/numberOfHMetrics non coerenti con numGlyphs.")) } }
             }
             if let vhea = tables["vhea"],let vmtx = tables["vmtx"] {
-                if vhea.count<36 { fail("vhea troncata.") }
-                else { let count = try u16(vhea.lowerBound+34);if count == 0 || count>glyphCount || count*4+(glyphCount-count)*2>vmtx.count { fail("vmtx/numberOfVMetrics non coerenti con numGlyphs.") } }
+                if vhea.count<36 { fail(L10n.tr("vhea troncata.")) }
+                else { let count = try u16(vhea.lowerBound+34);if count == 0 || count>glyphCount || count*4+(glyphCount-count)*2>vmtx.count { fail(L10n.tr("vmtx/numberOfVMetrics non coerenti con numGlyphs.")) } }
             }
             if format == .sfntCFF,let vorg = tables["VORG"] {
-                if vorg.count<8 { fail("VORG troncata.") }
+                if vorg.count<8 { fail(L10n.tr("VORG troncata.")) }
                 else {
                     let version = try u32(vorg.lowerBound),count = try u16(vorg.lowerBound+6)
-                    if version != 0x10000 || 8+count*4>vorg.count { fail("VORG versione/lunghezza non valida.") }
-                    else { var previous = -1;for index in 0..<count { let gid = try u16(vorg.lowerBound+8+index*4);if gid<=previous || gid>=glyphCount { fail("VORG GID non ordinati/univoci o fuori numGlyphs.") };previous = gid } }
+                    if version != 0x10000 || 8+count*4>vorg.count { fail(L10n.tr("VORG versione/lunghezza non valida.")) }
+                    else { var previous = -1;for index in 0..<count { let gid = try u16(vorg.lowerBound+8+index*4);if gid<=previous || gid>=glyphCount { fail(L10n.tr("VORG GID non ordinati/univoci o fuori numGlyphs.")) };previous = gid } }
                 }
             }
             if let cmap = tables["cmap"] {
@@ -358,15 +358,15 @@ extension PDFArchiveFontProgram {
                 for record in cmapRecords {
                     do {
                         if inspected.insert(record.offset).inserted { try checkedCmap(offset:record.offset,bound:cmap.upperBound) }
-                        if try Self.u16(bytes,record.offset) == 14,record.platform != 0 || record.encoding != 5 { fail("cmap14 richiede platform0/encoding5.") }
+                        if try Self.u16(bytes,record.offset) == 14,record.platform != 0 || record.encoding != 5 { fail(L10n.tr("cmap14 richiede platform0/encoding5.")) }
                     }
                     catch PDFStructureError.unsupported(let why) { gap(why) }
-                    catch PDFStructureError.limit { gap("Budget verifica cmap superato.") }
+                    catch PDFStructureError.limit { gap(L10n.tr("Budget verifica cmap superato.")) }
                     catch { fail(error.localizedDescription) }
                 }
             }
             if format == .sfntCFF {
-                if cff?.glyphCount != glyphCount { fail("maxp.numGlyphs diverso da CFF CharStrings count.") }
+                if cff?.glyphCount != glyphCount { fail(L10n.tr("maxp.numGlyphs diverso da CFF CharStrings count.")) }
                 if let compact = cff?.programAudit(maximumOperations:remainingOperations) {
                     audit.checkedGlyphs = compact.checkedGlyphs;audit.instructionPrograms = compact.instructionPrograms;audit.instructionBytes = compact.instructionBytes
                     audit.issues += compact.issues
@@ -374,16 +374,16 @@ extension PDFArchiveFontProgram {
                 }
                 return audit
             }
-            if try u32(maxp.lowerBound) != 0x10000 || maxp.count<32 { throw PDFStructureError.malformed("TrueType glyf richiede maxp versione1.0 e32byte") }
-            guard let loca = tables["loca"],let glyf = tables["glyf"] else { throw PDFStructureError.malformed("glyf/loca assenti") }
+            if try u32(maxp.lowerBound) != 0x10000 || maxp.count<32 { throw PDFStructureError.malformed(L10n.tr("TrueType glyf richiede maxp versione1.0 e32byte")) }
+            guard let loca = tables["loca"],let glyf = tables["glyf"] else { throw PDFStructureError.malformed(L10n.tr("glyf/loca assenti")) }
             let locaFormat = try i16(head.lowerBound+50)
-            guard locaFormat == 0 || locaFormat == 1 else { throw PDFStructureError.malformed("indexToLocFormat non0/1") }
+            guard locaFormat == 0 || locaFormat == 1 else { throw PDFStructureError.malformed(L10n.tr("indexToLocFormat non0/1")) }
             let entrySize = locaFormat == 0 ? 2:4
-            guard (glyphCount+1)*entrySize<=loca.count else { throw PDFStructureError.malformed("loca non contiene numGlyphs+1 offset") }
+            guard (glyphCount+1)*entrySize<=loca.count else { throw PDFStructureError.malformed(L10n.tr("loca non contiene numGlyphs+1 offset")) }
             var offsets:[Int] = []
             for gid in 0...glyphCount {
                 let value = locaFormat == 0 ? try u16(loca.lowerBound+gid*2)*2:try u32(loca.lowerBound+gid*4)
-                guard value<=glyf.count,offsets.last.map({$0<=value}) ?? true else { throw PDFStructureError.malformed("loca offset non monotoni/fuori glyf") };offsets.append(value)
+                guard value<=glyf.count,offsets.last.map({$0<=value}) ?? true else { throw PDFStructureError.malformed(L10n.tr("loca offset non monotoni/fuori glyf")) };offsets.append(value)
             }
             struct Component { let glyph:Int;let matchingPoints:(parent:Int,child:Int)? }
             struct GlyphShape { var points = 0;var contours = 0;var components:[Component] = [];var complete = false }
@@ -395,35 +395,35 @@ extension PDFArchiveFontProgram {
                 do {
                     try charge();audit.checkedGlyphs += 1
                     if start == end { shapes[gid].complete = true;continue }
-                    guard end-start>=10 else { throw PDFStructureError.malformed("glyph\(gid): header minore di10byte") }
+                    guard end-start>=10 else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): header minore di10byte")) }
                     let contours = try i16(start)
                     // Every negative count denotes a composite; -1 is only
                     // recommended by both Apple and the OpenType glyf table.
-                    guard try i16(start+2)<=i16(start+6),try i16(start+4)<=i16(start+8) else { throw PDFStructureError.malformed("glyph\(gid): bounding box non valido") }
+                    guard try i16(start+2)<=i16(start+6),try i16(start+4)<=i16(start+8) else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): bounding box non valido")) }
                     var cursor = start+10,instructions = Data()
                     if contours>=0 {
                         try charge(contours)
-                        guard cursor+contours*2<=end else { throw PDFStructureError.malformed("glyph\(gid): endPtsOfContours troncato") }
+                        guard cursor+contours*2<=end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): endPtsOfContours troncato")) }
                         var previous = -1
-                        for _ in 0..<contours { let last = try u16(cursor);cursor += 2;guard last>previous else { throw PDFStructureError.malformed("glyph\(gid): endPtsOfContours non crescente") };previous = last }
+                        for _ in 0..<contours { let last = try u16(cursor);cursor += 2;guard last>previous else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): endPtsOfContours non crescente")) };previous = last }
                         let points = previous+1;shapes[gid].points = points;shapes[gid].contours = contours
-                        if points>maxPoints || contours>maxContours { fail("glyph\(gid): punti/contorni superano maxp.") }
+                        if points>maxPoints || contours>maxContours { fail(L10n.tr("glyph\(gid): punti/contorni superano maxp.")) }
                         if contours == 0,cursor == end { shapes[gid].complete = true;continue }
-                        guard cursor+2<=end else { throw PDFStructureError.malformed("glyph\(gid): instructionLength troncato") }
+                        guard cursor+2<=end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): instructionLength troncato")) }
                         let length = try u16(cursor);cursor += 2
-                        guard length<=end-cursor else { throw PDFStructureError.malformed("glyph\(gid): instructions troncate") }
+                        guard length<=end-cursor else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): instructions troncate")) }
                         instructions = Data(bytes[cursor..<(cursor+length)]);cursor += length
                         var flags:[UInt8] = []
                         try charge(points)
                         while flags.count<points {
-                            guard cursor<end else { throw PDFStructureError.malformed("glyph\(gid): flags troncati") };let flag = bytes[cursor];cursor += 1;var repeatCount = 1
-                            if flag&8 != 0 { guard cursor<end else { throw PDFStructureError.malformed("glyph\(gid): repeat flag troncato") };repeatCount += Int(bytes[cursor]);cursor += 1 }
-                            guard repeatCount<=points-flags.count else { throw PDFStructureError.malformed("glyph\(gid): repeat flag supera i punti") };flags += Array(repeating:flag,count:repeatCount)
-                            if flag&0x80 != 0 { fail("glyph\(gid): flag semplice riservato bit7 non zero.") }
+                            guard cursor<end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): flags troncati")) };let flag = bytes[cursor];cursor += 1;var repeatCount = 1
+                            if flag&8 != 0 { guard cursor<end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): repeat flag troncato")) };repeatCount += Int(bytes[cursor]);cursor += 1 }
+                            guard repeatCount<=points-flags.count else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): repeat flag supera i punti")) };flags += Array(repeating:flag,count:repeatCount)
+                            if flag&0x80 != 0 { fail(L10n.tr("glyph\(gid): flag semplice riservato bit7 non zero.")) }
                         }
                         var needed = 0
                         for flag in flags { needed += flag&2 != 0 ? 1:(flag&16 != 0 ? 0:2);needed += flag&4 != 0 ? 1:(flag&32 != 0 ? 0:2) }
-                        guard needed<=end-cursor else { throw PDFStructureError.malformed("glyph\(gid): coordinate troncate") }
+                        guard needed<=end-cursor else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): coordinate troncate")) }
                         // Coordinates are deltas, not absolute positions. The
                         // two packed arrays have independent signs/short bits.
                         // Compare original control points only: no hinting or
@@ -444,49 +444,49 @@ extension PDFArchiveFontProgram {
                         let x = try coordinateBounds(short:2,same:16),y = try coordinateBounds(short:4,same:32)
                         if let x,let y {
                             let xMin = try i16(start+2),yMin = try i16(start+4),xMax = try i16(start+6),yMax = try i16(start+8)
-                            if x.0<xMin || x.1>xMax || y.0<yMin || y.1>yMax { fail("glyph\(gid): bounding box non contiene i punti originali decodificati.") }
+                            if x.0<xMin || x.1>xMax || y.0<yMin || y.1>yMax { fail(L10n.tr("glyph\(gid): bounding box non contiene i punti originali decodificati.")) }
                         }
                     } else {
                         var more = true,hasInstructions = false
                         while more {
                             try charge()
-                            guard cursor+4<=end else { throw PDFStructureError.malformed("glyph\(gid): componente troncata") }
+                            guard cursor+4<=end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): componente troncata")) }
                             let flags = try u16(cursor),child = try u16(cursor+2);cursor += 4
-                            guard child<glyphCount else { throw PDFStructureError.malformed("glyph\(gid): componente GID fuori numGlyphs") }
+                            guard child<glyphCount else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): componente GID fuori numGlyphs")) }
                             let transforms = [8,64,128].filter{flags&$0 != 0}
-                            guard transforms.count<=1,flags&0x1800 != 0x1800 else { throw PDFStructureError.malformed("glyph\(gid): flag trasformazione componente incompatibili") }
+                            guard transforms.count<=1,flags&0x1800 != 0x1800 else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): flag trasformazione componente incompatibili")) }
                             let length = (flags&1 != 0 ? 4:2)+(flags&8 != 0 ? 2:flags&64 != 0 ? 4:flags&128 != 0 ? 8:0)
-                            guard length<=end-cursor else { throw PDFStructureError.malformed("glyph\(gid): argomenti/matrice componente troncati") }
+                            guard length<=end-cursor else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): argomenti/matrice componente troncati")) }
                             // Point numbers are unsigned, even when XY offsets
                             // of the same physical size would be signed.
                             let matching:(parent:Int,child:Int)?
                             if flags&2 == 0 {
                                 matching = flags&1 != 0 ? (try u16(cursor),try u16(cursor+2)):(Int(bytes[cursor]),Int(bytes[cursor+1]))
-                                if shapes[gid].components.isEmpty { fail("glyph\(gid): primo componente richiede ARGS_ARE_XY_VALUES.") }
-                                gap("Indici degli agganci punto-punto verificati; coordinate finali dopo hinting e trasformazioni non eseguite.")
+                                if shapes[gid].components.isEmpty { fail(L10n.tr("glyph\(gid): primo componente richiede ARGS_ARE_XY_VALUES.")) }
+                                gap(L10n.tr("Indici degli agganci punto-punto verificati; coordinate finali dopo hinting e trasformazioni non eseguite."))
                             } else { matching = nil }
                             shapes[gid].components.append(.init(glyph:child,matchingPoints:matching));cursor += length
-                            if flags&0xE000 != 0 { fail("glyph\(gid): flag componente riservati non zero.") }
+                            if flags&0xE000 != 0 { fail(L10n.tr("glyph\(gid): flag componente riservati non zero.")) }
                             // Apple AATIntro documents a historical bit4
                             // overlap flag ignored by all scalers. Current
                             // OpenType calls it reserved; do not retroactively
                             // reject a legacy TrueType program on that basis.
-                            if flags&0x10 != 0 { gap("Flag componente legacy bit4: edizione/overlap storico non attestati; bit ignorato secondo Apple AAT.") }
+                            if flags&0x10 != 0 { gap(L10n.tr("Flag componente legacy bit4: edizione/overlap storico non attestati; bit ignorato secondo Apple AAT.")) }
                             more = flags&32 != 0;hasInstructions = hasInstructions || flags&256 != 0
                             guard shapes[gid].components.count<=4096 else { throw PDFStructureError.limit }
                         }
-                        if shapes[gid].components.count>maxComponents { fail("glyph\(gid): componenti superano maxp.maxComponentElements.") }
+                        if shapes[gid].components.count>maxComponents { fail(L10n.tr("glyph\(gid): componenti superano maxp.maxComponentElements.")) }
                         if hasInstructions {
-                            guard cursor+2<=end else { throw PDFStructureError.malformed("glyph\(gid): composite instructionLength troncato") };let length = try u16(cursor);cursor += 2
-                            guard length<=end-cursor else { throw PDFStructureError.malformed("glyph\(gid): composite instructions troncate") };instructions = Data(bytes[cursor..<(cursor+length)])
+                            guard cursor+2<=end else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): composite instructionLength troncato")) };let length = try u16(cursor);cursor += 2
+                            guard length<=end-cursor else { throw PDFStructureError.malformed(L10n.tr("glyph\(gid): composite instructions troncate")) };instructions = Data(bytes[cursor..<(cursor+length)])
                         }
                     }
-                    if instructions.count>maxInstructions { fail("glyph\(gid): instructionLength supera maxp.maxSizeOfInstructions.") }
+                    if instructions.count>maxInstructions { fail(L10n.tr("glyph\(gid): instructionLength supera maxp.maxSizeOfInstructions.")) }
                     try instructionTokens(instructions,"glyph\(gid)")
                     shapes[gid].complete = true
                 } catch is CancellationError { throw CancellationError() }
                 catch PDFStructureError.limit {
-                    audit.instructionScanComplete = false;gap("Budget dati glyf/istruzioni superato; verifica incompleta.")
+                    audit.instructionScanComplete = false;gap(L10n.tr("Budget dati glyf/istruzioni superato; verifica incompleta."))
                     if remainingOperations == 0 { break }
                 }
                 catch { audit.instructionScanComplete = false;fail(error.localizedDescription) }
@@ -495,10 +495,10 @@ extension PDFArchiveFontProgram {
             func summary(_ gid:Int,_ active:Set<Int>) throws -> (points:Int,contours:Int,depth:Int) {
                 try charge()
                 if let cached = summaries[gid] { return cached }
-                guard !active.contains(gid) else { throw PDFStructureError.malformed("ciclo nelle componenti glyf") }
+                guard !active.contains(gid) else { throw PDFStructureError.malformed(L10n.tr("ciclo nelle componenti glyf")) }
                 guard active.count<max(0,maximumComponentDepth) else { throw PDFStructureError.limit }
                 let shape = shapes[gid]
-                guard shape.complete else { throw PDFStructureError.unsupported("contorni componente non interamente decodificati") }
+                guard shape.complete else { throw PDFStructureError.unsupported(L10n.tr("contorni componente non interamente decodificati")) }
                 if shape.components.isEmpty { let result = (shape.points,shape.contours,0);summaries[gid] = result;return result }
                 var points = 0,contours = 0,depth = 0,parentMatches:[(index:Int,priorPoints:Int)] = []
                 for child in shape.components {
@@ -508,18 +508,18 @@ extension PDFArchiveFontProgram {
                     // Their positions after hinting remain outside this audit.
                     if let match = child.matchingPoints {
                         parentMatches.append((match.parent,points))
-                        if match.child>=value.points+4 { fail("glyph\(gid): indice punto componente fuori contorni e4phantom points.") }
+                        if match.child>=value.points+4 { fail(L10n.tr("glyph\(gid): indice punto componente fuori contorni e4phantom points.")) }
                     }
                     points += value.points;contours += value.contours;depth = max(depth,value.depth+1)
                     guard points<=1_000_000,contours<=1_000_000 else { throw PDFStructureError.limit }
                 }
                 for match in parentMatches {
-                    if match.index>=points+4 { fail("glyph\(gid): indice punto parent fuori contorni e4phantom points.") }
+                    if match.index>=points+4 { fail(L10n.tr("glyph\(gid): indice punto parent fuori contorni e4phantom points.")) }
                     else if match.index>=match.priorPoints+4 {
                         // The spec explicitly permits parent phantom points;
                         // the numbering at an intermediate incorporation step
                         // is not independently proven by this count-only model.
-                        gap("Numerazione intermedia phantom points del parent composito non provata; nessun indice viene dichiarato fuori range per ipotesi.")
+                        gap(L10n.tr("Numerazione intermedia phantom points del parent composito non provata; nessun indice viene dichiarato fuori range per ipotesi."))
                     }
                 }
                 let result = (points,contours,depth);summaries[gid] = result;return result
@@ -528,86 +528,86 @@ extension PDFArchiveFontProgram {
                 do {
                     let value = try summary(gid,[])
                     let maxCompositePoints = try u16(maxp.lowerBound+10),maxCompositeContours = try u16(maxp.lowerBound+12),maxDepth = try u16(maxp.lowerBound+30)
-                    if value.points>maxCompositePoints || value.contours>maxCompositeContours || value.depth>maxDepth { fail("glyph\(gid): aggregati compositi superano maxp.") }
+                    if value.points>maxCompositePoints || value.contours>maxCompositeContours || value.depth>maxDepth { fail(L10n.tr("glyph\(gid): aggregati compositi superano maxp.")) }
                 } catch is CancellationError { throw CancellationError() }
-                catch PDFStructureError.limit { gap("Budget componenti compositi superato; esito non verificato.") }
-                catch PDFStructureError.unsupported(let why) { gap("glyph\(gid): " + why) }
+                catch PDFStructureError.limit { gap(L10n.tr("Budget componenti compositi superato; esito non verificato.")) }
+                catch PDFStructureError.unsupported(let why) { gap(L10n.tr("glyph\(gid): ") + why) }
                 catch { fail(error.localizedDescription) }
             }
             for tag in ["fpgm","prep"] {
                 if let range = tables[tag] {
                     do { try instructionTokens(Data(bytes[range]),tag) }
                     catch is CancellationError { throw CancellationError() }
-                    catch PDFStructureError.limit { audit.instructionScanComplete = false;gap("Budget fpgm/prep superato; verifica incompleta.") }
+                    catch PDFStructureError.limit { audit.instructionScanComplete = false;gap(L10n.tr("Budget fpgm/prep superato; verifica incompleta.")) }
                     catch { audit.instructionScanComplete = false;fail(error.localizedDescription) }
                 }
             }
-        } catch is CancellationError { audit.instructionScanComplete = false;audit.gaps.append("Verifica programma font annullata.") }
-        catch PDFStructureError.limit { audit.instructionScanComplete = false;audit.gaps.append("Budget di verifica del programma font superato.") }
+        } catch is CancellationError { audit.instructionScanComplete = false;audit.gaps.append(L10n.tr("Verifica programma font annullata.")) }
+        catch PDFStructureError.limit { audit.instructionScanComplete = false;audit.gaps.append(L10n.tr("Budget di verifica del programma font superato.")) }
         catch { fail(error.localizedDescription) }
         return audit
     }
     private func auditCmap(offset:Int,bound:Int) throws {
         let bytes = self.bytes,format = try Self.u16(bytes,offset)
-        func word(_ position:Int) throws -> Int { guard position>=offset,position+2<=bound else { throw PDFStructureError.malformed("cmap troncata") };return try Self.u16(bytes,position) }
-        func dword(_ position:Int) throws -> Int { guard position>=offset,position+4<=bound else { throw PDFStructureError.malformed("cmap troncata") };return try Self.u32(bytes,position) }
-        func gid(_ value:Int) throws { guard value<glyphCount else { throw PDFStructureError.malformed("cmap GID fuori numGlyphs") } }
+        func word(_ position:Int) throws -> Int { guard position>=offset,position+2<=bound else { throw PDFStructureError.malformed(L10n.tr("cmap troncata")) };return try Self.u16(bytes,position) }
+        func dword(_ position:Int) throws -> Int { guard position>=offset,position+4<=bound else { throw PDFStructureError.malformed(L10n.tr("cmap troncata")) };return try Self.u32(bytes,position) }
+        func gid(_ value:Int) throws { guard value<glyphCount else { throw PDFStructureError.malformed(L10n.tr("cmap GID fuori numGlyphs")) } }
         if format == 2 {
             let length = try word(offset+2)
-            guard length>=526,length<=bound-offset else { throw PDFStructureError.malformed("cmap2 lunghezza") }
+            guard length>=526,length<=bound-offset else { throw PDFStructureError.malformed(L10n.tr("cmap2 lunghezza")) }
             var maximum = 0
-            for code in 0..<256 { let key = try word(offset+6+code*2);guard key%8 == 0 else { throw PDFStructureError.malformed("cmap2 subHeaderKey non multiplo8") };maximum = max(maximum,key) }
+            for code in 0..<256 { let key = try word(offset+6+code*2);guard key%8 == 0 else { throw PDFStructureError.malformed(L10n.tr("cmap2 subHeaderKey non multiplo8")) };maximum = max(maximum,key) }
             let subCount = maximum/8+1,glyphArray = offset+518+subCount*8,end = offset+length
-            guard glyphArray<=end else { throw PDFStructureError.malformed("cmap2 subHeaders troncati") }
+            guard glyphArray<=end else { throw PDFStructureError.malformed(L10n.tr("cmap2 subHeaders troncati")) }
             for i in 0..<subCount {
                 let p = offset+518+i*8,first = try word(p),count = try word(p+2),delta = try word(p+4),range = try word(p+6)
-                guard first<=255,count<=256,first+count<=256 else { throw PDFStructureError.malformed("cmap2 firstCode/entryCount") }
+                guard first<=255,count<=256,first+count<=256 else { throw PDFStructureError.malformed(L10n.tr("cmap2 firstCode/entryCount")) }
                 if count>0 {
                     let start = p+6+range
-                    guard range%2 == 0,start>=glyphArray,start<=end,count*2<=end-start else { throw PDFStructureError.malformed("cmap2 idRangeOffset fuori glyphIdArray") }
+                    guard range%2 == 0,start>=glyphArray,start<=end,count*2<=end-start else { throw PDFStructureError.malformed(L10n.tr("cmap2 idRangeOffset fuori glyphIdArray")) }
                     for j in 0..<count { let raw = try word(start+j*2);try gid(raw == 0 ? 0:(raw+delta)&65535) }
                 }
             };return
         }
         if format == 8 {
             let length = try dword(offset+4)
-            guard length>=8208,length<=bound-offset,try word(offset+2) == 0 else { throw PDFStructureError.malformed("cmap8 reserved/length") }
+            guard length>=8208,length<=bound-offset,try word(offset+2) == 0 else { throw PDFStructureError.malformed(L10n.tr("cmap8 reserved/length")) }
             let count = try dword(offset+8204)
-            guard count<1_000_000,count<=(length-8208)/12 else { throw PDFStructureError.malformed("cmap8 gruppi troncati") }
+            guard count<1_000_000,count<=(length-8208)/12 else { throw PDFStructureError.malformed(L10n.tr("cmap8 gruppi troncati")) }
             func is32(_ word:Int)->Bool { bytes[offset+12+word/8] & (1 << (7-word%8)) != 0 }
             var previous = -1
             for i in 0..<count {
                 let p = offset+8208+i*12,first = try dword(p),last = try dword(p+4),start = try dword(p+8)
-                guard first<=last,first>previous else { throw PDFStructureError.malformed("cmap8 gruppi non ordinati") };previous = last
+                guard first<=last,first>previous else { throw PDFStructureError.malformed(L10n.tr("cmap8 gruppi non ordinati")) };previous = last
                 try gid(start+last-first)
                 if last<=65535 && !is32(0) {
-                    for code in first...last where is32(code) { throw PDFStructureError.malformed("cmap8 codice16 marcato is32") }
+                    for code in first...last where is32(code) { throw PDFStructureError.malformed(L10n.tr("cmap8 codice16 marcato is32")) }
                 } else {
-                    for high in (first>>16)...(last>>16) where !is32(high) { throw PDFStructureError.malformed("cmap8 codice32 senza is32") }
+                    for high in (first>>16)...(last>>16) where !is32(high) { throw PDFStructureError.malformed(L10n.tr("cmap8 codice32 senza is32")) }
                 }
             };return
         }
         if format == 14 {
             let length = try dword(offset+2),count = try dword(offset+6)
-            guard length>=10,length<=bound-offset,count<=(length-10)/11 else { throw PDFStructureError.malformed("cmap14 header/length") }
+            guard length>=10,length<=bound-offset,count<=(length-10)/11 else { throw PDFStructureError.malformed(L10n.tr("cmap14 header/length")) }
             let recordsEnd = offset+10+count*11,end = offset+length
             func scalar(_ value:Int)->Bool { value<=0x10FFFF && !(0xD800...0xDFFF).contains(value) }
             func table(_ relative:Int,_ size:Int) throws -> (Int,Int) {
                 let p = offset+relative
-                guard p>=recordsEnd,p<=end-4 else { throw PDFStructureError.malformed("cmap14 offset UVS") }
-                let n = try dword(p);guard n<=(end-p-4)/size else { throw PDFStructureError.malformed("cmap14 UVS troncata") };return (p,n)
+                guard p>=recordsEnd,p<=end-4 else { throw PDFStructureError.malformed(L10n.tr("cmap14 offset UVS")) }
+                let n = try dword(p);guard n<=(end-p-4)/size else { throw PDFStructureError.malformed(L10n.tr("cmap14 UVS troncata")) };return (p,n)
             }
             var previous = -1
             for i in 0..<count {
                 let p = offset+10+i*11,selector = Self.u24(bytes,p),defaultOffset = try dword(p+3),explicitOffset = try dword(p+7)
                 let isSelector = (0x180B...0x180D).contains(selector) || selector == 0x180F || (0xFE00...0xFE0F).contains(selector) || (0xE0100...0xE01EF).contains(selector)
-                guard isSelector,selector>previous else { throw PDFStructureError.malformed("cmap14 selector non valido/ordinato/univoco") };previous = selector
+                guard isSelector,selector>previous else { throw PDFStructureError.malformed(L10n.tr("cmap14 selector non valido/ordinato/univoco")) };previous = selector
                 var defaults:[ClosedRange<Int>] = []
                 if defaultOffset != 0 {
                     let (base,n) = try table(defaultOffset,4);var last = -1
                     for j in 0..<n {
                         let first = Self.u24(bytes,base+4+j*4),end = first+Int(bytes[base+7+j*4])
-                        guard scalar(first),scalar(end),!(first<0xD800 && end>0xDFFF),first>last else { throw PDFStructureError.malformed("cmap14 default UVS range non valido") }
+                        guard scalar(first),scalar(end),!(first<0xD800 && end>0xDFFF),first>last else { throw PDFStructureError.malformed(L10n.tr("cmap14 default UVS range non valido")) }
                         defaults.append(first...end);last = end
                     }
                 }
@@ -615,53 +615,53 @@ extension PDFArchiveFontProgram {
                     let (base,n) = try table(explicitOffset,5);var last = -1,rangeIndex = 0
                     for j in 0..<n {
                         let code = Self.u24(bytes,base+4+j*5)
-                        guard scalar(code),code>last else { throw PDFStructureError.malformed("cmap14 non-default UVS ordine/scalare") };last = code
+                        guard scalar(code),code>last else { throw PDFStructureError.malformed(L10n.tr("cmap14 non-default UVS ordine/scalare")) };last = code
                         while rangeIndex<defaults.count && defaults[rangeIndex].upperBound<code { rangeIndex += 1 }
-                        guard rangeIndex == defaults.count || !defaults[rangeIndex].contains(code) else { throw PDFStructureError.malformed("cmap14 UVS in default e non-default") }
+                        guard rangeIndex == defaults.count || !defaults[rangeIndex].contains(code) else { throw PDFStructureError.malformed(L10n.tr("cmap14 UVS in default e non-default")) }
                         try gid(word(base+7+j*5))
                     }
                 }
             };return
         }
         if [0,4,6].contains(format) {
-            let length = try word(offset+2);guard length>=6,length<=bound-offset else { throw PDFStructureError.malformed("cmap lunghezza non valida") };let end = offset+length
-            if format == 0 { guard length>=262 else { throw PDFStructureError.malformed("cmap0 troncata") };for code in bytes[(offset+6)..<(offset+262)] { try gid(Int(code)) };return }
-            if format == 6 { let first = try word(offset+6),count = try word(offset+8);guard 10+count*2<=length,first+count<=65536 else { throw PDFStructureError.malformed("cmap6 troncata/range") };for i in 0..<count { try gid(word(offset+10+i*2)) };return }
+            let length = try word(offset+2);guard length>=6,length<=bound-offset else { throw PDFStructureError.malformed(L10n.tr("cmap lunghezza non valida")) };let end = offset+length
+            if format == 0 { guard length>=262 else { throw PDFStructureError.malformed(L10n.tr("cmap0 troncata")) };for code in bytes[(offset+6)..<(offset+262)] { try gid(Int(code)) };return }
+            if format == 6 { let first = try word(offset+6),count = try word(offset+8);guard 10+count*2<=length,first+count<=65536 else { throw PDFStructureError.malformed(L10n.tr("cmap6 troncata/range")) };for i in 0..<count { try gid(word(offset+10+i*2)) };return }
             let raw = try word(offset+6),count = raw/2
-            guard raw%2 == 0,count>0,16+count*8<=length else { throw PDFStructureError.malformed("cmap4 segCount/length") }
+            guard raw%2 == 0,count>0,16+count*8<=length else { throw PDFStructureError.malformed(L10n.tr("cmap4 segCount/length")) }
             let ends = offset+14,starts = ends+count*2+2,deltas = starts+count*2,ranges = deltas+count*2,glyphArray = ranges+count*2
-            guard try word(ends+count*2) == 0 else { throw PDFStructureError.malformed("cmap4 reservedPad") }
+            guard try word(ends+count*2) == 0 else { throw PDFStructureError.malformed(L10n.tr("cmap4 reservedPad")) }
             var previous = -1
             for i in 0..<count {
                 let first = try word(starts+i*2),last = try word(ends+i*2),delta = try word(deltas+i*2),range = try word(ranges+i*2)
-                guard first<=last,last>previous else { throw PDFStructureError.malformed("cmap4 segmenti non ordinati") };previous = last
+                guard first<=last,last>previous else { throw PDFStructureError.malformed(L10n.tr("cmap4 segmenti non ordinati")) };previous = last
                 for code in first...last {
                     if range == 0 { try gid((code+delta)&65535) }
                     else {
                         let position = ranges+i*2+range+(code-first)*2
-                        guard position>=glyphArray,position+2<=end else { throw PDFStructureError.malformed("cmap4 idRangeOffset fuori glyphIdArray") }
+                        guard position>=glyphArray,position+2<=end else { throw PDFStructureError.malformed(L10n.tr("cmap4 idRangeOffset fuori glyphIdArray")) }
                         let raw = try word(position);try gid(raw == 0 ? 0:(raw+delta)&65535)
                     }
                 }
             }
-            guard previous == 65535 else { throw PDFStructureError.malformed("cmap4 senza segmento sentinella FFFF") };return
+            guard previous == 65535 else { throw PDFStructureError.malformed(L10n.tr("cmap4 senza segmento sentinella FFFF")) };return
         }
         if format == 10 || format == 12 || format == 13 {
-            let length = try dword(offset+4);guard length<=bound-offset,length>=16 else { throw PDFStructureError.malformed("cmap10/12/13 lunghezza") }
+            let length = try dword(offset+4);guard length<=bound-offset,length>=16 else { throw PDFStructureError.malformed(L10n.tr("cmap10/12/13 lunghezza")) }
             if format == 10 {
                 let first = try dword(offset+12),count = try dword(offset+16)
-                guard count<=65536,20+count*2<=length,first<=0x10FFFF,count<=0x110000-first else { throw PDFStructureError.malformed("cmap10 range") }
+                guard count<=65536,20+count*2<=length,first<=0x10FFFF,count<=0x110000-first else { throw PDFStructureError.malformed(L10n.tr("cmap10 range")) }
                 for index in 0..<count { try gid(word(offset+20+index*2)) };return
             }
-            let count = try dword(offset+12);guard count<=0x110000,16+count*12<=length else { throw PDFStructureError.malformed("cmap12/13 groups") }
+            let count = try dword(offset+12);guard count<=0x110000,16+count*12<=length else { throw PDFStructureError.malformed(L10n.tr("cmap12/13 groups")) }
             var previous = -1
             for i in 0..<count {
                 let position = offset+16+i*12,first = try dword(position),last = try dword(position+4),start = try dword(position+8)
-                guard first<=last,last<=0x10FFFF,first>previous else { throw PDFStructureError.malformed("cmap12/13 gruppi non ordinati") };previous = last
+                guard first<=last,last<=0x10FFFF,first>previous else { throw PDFStructureError.malformed(L10n.tr("cmap12/13 gruppi non ordinati")) };previous = last
                 try gid(start+(format == 12 ? last-first:0))
             };return
         }
-        throw PDFStructureError.unsupported("cmap formato\(format): struttura/mapping non verificati integralmente.")
+        throw PDFStructureError.unsupported(L10n.tr("cmap formato\(format): struttura/mapping non verificati integralmente."))
     }
 }
 
@@ -727,40 +727,40 @@ struct PDFArchiveCFF {
     private let widthContexts:[WidthContext]
     private let fdByGlyph:[Int]
     init(data: Data) throws {
-        let bytes = Array(data);guard bytes.count >= 4, bytes[0] == 1, Int(bytes[2]) >= 4, Int(bytes[2]) <= bytes.count,(1...4).contains(bytes[3]) else { throw PDFStructureError.malformed("CFF header") }
+        let bytes = Array(data);guard bytes.count >= 4, bytes[0] == 1, Int(bytes[2]) >= 4, Int(bytes[2]) <= bytes.count,(1...4).contains(bytes[3]) else { throw PDFStructureError.malformed(L10n.tr("CFF header")) }
         func index(_ offset:Int) throws -> ([Data],Int) {
             let count = try PDFArchiveFontProgram.u16(bytes,offset); if count == 0 { return ([],offset+2) }
-            guard offset+3 <= bytes.count else { throw PDFStructureError.malformed("CFF INDEX") }
-            let size = Int(bytes[offset+2]); guard (1...4).contains(size), count <= 65535, offset+3+(count+1)*size <= bytes.count else { throw PDFStructureError.malformed("CFF offSize") }
+            guard offset+3 <= bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF INDEX")) }
+            let size = Int(bytes[offset+2]); guard (1...4).contains(size), count <= 65535, offset+3+(count+1)*size <= bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF offSize")) }
             var positions:[Int] = []
             for i in 0...count { var value = 0; for byte in bytes[(offset+3+i*size)..<(offset+3+(i+1)*size)] { value = value<<8 | Int(byte) }; positions.append(value) }
             let start = offset+3+(count+1)*size
-            guard positions.first == 1, let last = positions.last, last >= 1, last-1 <= bytes.count-start else { throw PDFStructureError.malformed("CFF INDEX offsets") }
+            guard positions.first == 1, let last = positions.last, last >= 1, last-1 <= bytes.count-start else { throw PDFStructureError.malformed(L10n.tr("CFF INDEX offsets")) }
             var values:[Data] = []
-            for i in 0..<count { guard positions[i]<=positions[i+1],positions[i]>=1 else { throw PDFStructureError.malformed("CFF INDEX order") }; values.append(Data(bytes[(start+positions[i]-1)..<(start+positions[i+1]-1)])) }
+            for i in 0..<count { guard positions[i]<=positions[i+1],positions[i]>=1 else { throw PDFStructureError.malformed(L10n.tr("CFF INDEX order")) }; values.append(Data(bytes[(start+positions[i]-1)..<(start+positions[i+1]-1)])) }
             return (values,start+last-1)
         }
         let names = try index(Int(bytes[2])), tops = try index(names.1), strings = try index(tops.1)
-        guard names.0.count == 1, let top = tops.0.first else { throw PDFStructureError.unsupported("CFF FontSet con più font") }
+        guard names.0.count == 1, let top = tops.0.first else { throw PDFStructureError.unsupported(L10n.tr("CFF FontSet con più font")) }
         let dictionary = try Self.dictionary(top);topDictionary = dictionary;globalSubrs = try index(strings.1).0
-        guard let rawOffset = dictionary[17]?.first,rawOffset>=0,rawOffset<Double(bytes.count),rawOffset.rounded(.towardZero) == rawOffset else { throw PDFStructureError.malformed("CFF CharStrings offset") }
+        guard let rawOffset = dictionary[17]?.first,rawOffset>=0,rawOffset<Double(bytes.count),rawOffset.rounded(.towardZero) == rawOffset else { throw PDFStructureError.malformed(L10n.tr("CFF CharStrings offset")) }
         let offset = Int(rawOffset)
-        guard offset >= 0 else { throw PDFStructureError.malformed("CFF CharStrings") }
-        let characters = try index(offset).0; guard !characters.isEmpty else { throw PDFStructureError.malformed("CFF senza glifi") }
+        guard offset >= 0 else { throw PDFStructureError.malformed(L10n.tr("CFF CharStrings")) }
+        let characters = try index(offset).0; guard !characters.isEmpty else { throw PDFStructureError.malformed(L10n.tr("CFF senza glifi")) }
         charStrings = characters; glyphCount = characters.count
         let isCID = dictionary[1230] != nil, rawCharset = dictionary[15]?.first ?? 0
-        guard rawCharset>=0,rawCharset<Double(bytes.count),rawCharset.rounded(.towardZero) == rawCharset else { throw PDFStructureError.malformed("CFF charset offset") }
+        guard rawCharset>=0,rawCharset<Double(bytes.count),rawCharset.rounded(.towardZero) == rawCharset else { throw PDFStructureError.malformed(L10n.tr("CFF charset offset")) }
         let charset = Int(rawCharset)
         var identifiers = [0], cursor = charset
         if charset <= 2 {
-            guard !isCID else { throw PDFStructureError.malformed("CID CFF con charset predefinito") }
-            if charset == 0 { guard glyphCount<=229 else { throw PDFStructureError.malformed("CFF ISOAdobe charset count") };identifiers += Array(1..<glyphCount) }
+            guard !isCID else { throw PDFStructureError.malformed(L10n.tr("CID CFF con charset predefinito")) }
+            if charset == 0 { guard glyphCount<=229 else { throw PDFStructureError.malformed(L10n.tr("CFF ISOAdobe charset count")) };identifiers += Array(1..<glyphCount) }
             else {
                 let predefined = charset == 1 ? PDFArchiveCFFPredefined.expertCharset:PDFArchiveCFFPredefined.expertSubsetCharset
-                guard glyphCount<=predefined.count else { throw PDFStructureError.malformed("CFF Expert charset count") };identifiers = Array(predefined.prefix(glyphCount))
+                guard glyphCount<=predefined.count else { throw PDFStructureError.malformed(L10n.tr("CFF Expert charset count")) };identifiers = Array(predefined.prefix(glyphCount))
             }
         } else {
-            guard cursor < bytes.count else { throw PDFStructureError.malformed("CFF charset") }
+            guard cursor < bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF charset")) }
             let format = bytes[cursor]; cursor += 1
             if format == 0 {
                 for _ in 1..<glyphCount { identifiers.append(try PDFArchiveFontProgram.u16(bytes,cursor)); cursor += 2 }
@@ -768,25 +768,25 @@ struct PDFArchiveCFF {
                 while identifiers.count < glyphCount {
                     let first = try PDFArchiveFontProgram.u16(bytes,cursor); cursor += 2
                     let extra: Int
-                    if format == 1 { guard cursor<bytes.count else { throw PDFStructureError.malformed("CFF range") }; extra = Int(bytes[cursor]); cursor += 1 }
+                    if format == 1 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF range")) }; extra = Int(bytes[cursor]); cursor += 1 }
                     else { extra = try PDFArchiveFontProgram.u16(bytes,cursor); cursor += 2 }
-                    guard extra+1 <= glyphCount-identifiers.count,first+extra<=65535 else { throw PDFStructureError.malformed("CFF charset range") }
+                    guard extra+1 <= glyphCount-identifiers.count,first+extra<=65535 else { throw PDFStructureError.malformed(L10n.tr("CFF charset range")) }
                     identifiers += Array(first...(first+extra))
                 }
-            } else { throw PDFStructureError.unsupported("CFF charset format") }
+            } else { throw PDFStructureError.unsupported(L10n.tr("CFF charset format")) }
         }
-        guard Set(identifiers).count == identifiers.count else { throw PDFStructureError.malformed("CFF charset SID/CID duplicati") }
+        guard Set(identifiers).count == identifiers.count else { throw PDFStructureError.malformed(L10n.tr("CFF charset SID/CID duplicati")) }
         var cids:[Int:Int] = [:], glyphNames:[Int:String] = [0:".notdef"]
         for (glyph,value) in identifiers.enumerated() {
             if isCID { cids[glyph] = value }
             else if value<PDFArchiveCFFPredefined.strings.count { glyphNames[glyph] = PDFArchiveCFFPredefined.strings[value] }
             else {
-                guard value-391<strings.0.count,let name = String(data:strings.0[value-391],encoding:.ascii),!name.isEmpty else { throw PDFStructureError.malformed("CFF charset SID non definito") };glyphNames[glyph] = name
+                guard value-391<strings.0.count,let name = String(data:strings.0[value-391],encoding:.ascii),!name.isEmpty else { throw PDFStructureError.malformed(L10n.tr("CFF charset SID non definito")) };glyphNames[glyph] = name
             }
         }
         cidByGlyph = cids; customNames = glyphNames
         let rawEncoding = dictionary[16]?.first ?? 0
-        guard rawEncoding>=0,rawEncoding<Double(bytes.count),rawEncoding.rounded(.towardZero) == rawEncoding else { throw PDFStructureError.malformed("CFF Encoding offset") }
+        guard rawEncoding>=0,rawEncoding<Double(bytes.count),rawEncoding.rounded(.towardZero) == rawEncoding else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding offset")) }
         let encodingOffset = Int(rawEncoding);standardEncoding = !isCID && encodingOffset == 0;expertEncoding = !isCID && encodingOffset == 1
         var encoded:[UInt8:Int] = [:]
         if !isCID,encodingOffset == 1 {
@@ -795,25 +795,25 @@ struct PDFArchiveCFF {
         }
         if !isCID,encodingOffset>1 {
             var p = encodingOffset;let format = bytes[p];p += 1
-            guard p<bytes.count else { throw PDFStructureError.malformed("CFF Encoding") }
+            guard p<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding")) }
             let count = Int(bytes[p]);p += 1;var gid = 1
             if format&127 == 0 {
-                guard p+count<=bytes.count,count<glyphCount else { throw PDFStructureError.malformed("CFF Encoding0") }
+                guard p+count<=bytes.count,count<glyphCount else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding0")) }
                 for code in bytes[p..<(p+count)] { encoded[code] = gid;gid += 1 };p += count
             } else if format&127 == 1 {
                 for _ in 0..<count {
-                    guard p+2<=bytes.count else { throw PDFStructureError.malformed("CFF Encoding1") }
+                    guard p+2<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding1")) }
                     let first = Int(bytes[p]),extra = Int(bytes[p+1]);p += 2
-                    guard first+extra<256,gid+extra<glyphCount else { throw PDFStructureError.malformed("CFF Encoding range") }
+                    guard first+extra<256,gid+extra<glyphCount else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding range")) }
                     for code in first...(first+extra) { encoded[UInt8(code)] = gid;gid += 1 }
                 }
-            } else { throw PDFStructureError.unsupported("CFF Encoding format") }
+            } else { throw PDFStructureError.unsupported(L10n.tr("CFF Encoding format")) }
             if format&128 != 0 {
-                guard p<bytes.count else { throw PDFStructureError.malformed("CFF Encoding supplement") };let supplements = Int(bytes[p]);p += 1
+                guard p<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding supplement")) };let supplements = Int(bytes[p]);p += 1
                 for _ in 0..<supplements {
-                    guard p+3<=bytes.count else { throw PDFStructureError.malformed("CFF Encoding supplement") }
+                    guard p+3<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding supplement")) }
                     let code = bytes[p],sid = try PDFArchiveFontProgram.u16(bytes,p+1);p += 3
-                    guard let gid = identifiers.firstIndex(of:sid) else { throw PDFStructureError.malformed("CFF Encoding supplement SID") };encoded[code] = gid
+                    guard let gid = identifiers.firstIndex(of:sid) else { throw PDFStructureError.malformed(L10n.tr("CFF Encoding supplement SID")) };encoded[code] = gid
                 }
             }
         }
@@ -823,14 +823,14 @@ struct PDFArchiveCFF {
     }
     private static func index(_ bytes:[UInt8],at offset:Int) throws -> [Data] {
         let count = try PDFArchiveFontProgram.u16(bytes,offset);if count == 0 { return [] }
-        guard offset+3<=bytes.count else { throw PDFStructureError.malformed("CFF subroutine INDEX") };let size = Int(bytes[offset+2])
-        guard (1...4).contains(size),offset+3+(count+1)*size<=bytes.count else { throw PDFStructureError.malformed("CFF subroutine INDEX offSize") }
+        guard offset+3<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF subroutine INDEX")) };let size = Int(bytes[offset+2])
+        guard (1...4).contains(size),offset+3+(count+1)*size<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF subroutine INDEX offSize")) }
         var positions:[Int] = []
         for i in 0...count { var n = 0;for byte in bytes[(offset+3+i*size)..<(offset+3+(i+1)*size)] { n = n<<8|Int(byte) };positions.append(n) }
         let start = offset+3+(count+1)*size
-        guard positions.first == 1,let end = positions.last,end>=1,end-1<=bytes.count-start else { throw PDFStructureError.malformed("CFF subroutine INDEX bounds") }
+        guard positions.first == 1,let end = positions.last,end>=1,end-1<=bytes.count-start else { throw PDFStructureError.malformed(L10n.tr("CFF subroutine INDEX bounds")) }
         var result:[Data] = []
-        for i in 0..<count { guard positions[i]<=positions[i+1] else { throw PDFStructureError.malformed("CFF subroutine INDEX order") };result.append(Data(bytes[(start+positions[i]-1)..<(start+positions[i+1]-1)])) };return result
+        for i in 0..<count { guard positions[i]<=positions[i+1] else { throw PDFStructureError.malformed(L10n.tr("CFF subroutine INDEX order")) };result.append(Data(bytes[(start+positions[i]-1)..<(start+positions[i+1]-1)])) };return result
     }
     /// All FD selectors and Private/Subrs INDEXes are inventoried, including
     /// dictionaries not selected by the first requested glyph. This proves
@@ -839,41 +839,41 @@ struct PDFArchiveCFF {
         func integer(_ value:Double?)->Int? { guard let value,value.isFinite,value>=0,value<=Double(bytes.count),value.rounded(.towardZero) == value else { return nil };return Int(value) }
         func matrix(_ dictionary:[Int:[Double]]) throws -> [Double]? {
             guard let value = dictionary[1207] else { return nil }
-            guard value.count == 6,value.allSatisfy(\.isFinite),value[0]*value[3]-value[1]*value[2] != 0 else { throw PDFStructureError.malformed("CFF FontMatrix non valida") };return value
+            guard value.count == 6,value.allSatisfy(\.isFinite),value[0]*value[3]-value[1]*value[2] != 0 else { throw PDFStructureError.malformed(L10n.tr("CFF FontMatrix non valida")) };return value
         }
         _ = try matrix(top)
         var dictionaries = [top],selectors = Array(repeating:0,count:glyphCount)
         if isCID {
-            guard let array = top[1236],array.count == 1,let fdOffset = integer(array.first),let selection = top[1237],selection.count == 1,let select = integer(selection.first),select<bytes.count else { throw PDFStructureError.malformed("CFF CID richiede FDArray/FDSelect validi") }
+            guard let array = top[1236],array.count == 1,let fdOffset = integer(array.first),let selection = top[1237],selection.count == 1,let select = integer(selection.first),select<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF CID richiede FDArray/FDSelect validi")) }
             dictionaries = try index(bytes,at:fdOffset).map{try dictionary($0)}
-            guard !dictionaries.isEmpty else { throw PDFStructureError.malformed("CFF FDArray vuoto") }
+            guard !dictionaries.isEmpty else { throw PDFStructureError.malformed(L10n.tr("CFF FDArray vuoto")) }
             if bytes[select] == 0 {
-                guard select+1+glyphCount<=bytes.count else { throw PDFStructureError.malformed("CFF FDSelect0 troncato") }
+                guard select+1+glyphCount<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF FDSelect0 troncato")) }
                 selectors = bytes[(select+1)..<(select+1+glyphCount)].map(Int.init)
             } else if bytes[select] == 3 {
                 let ranges = try PDFArchiveFontProgram.u16(bytes,select+1)
-                guard ranges>0,select+3+ranges*3+2<=bytes.count else { throw PDFStructureError.malformed("CFF FDSelect3 bounds") }
+                guard ranges>0,select+3+ranges*3+2<=bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF FDSelect3 bounds")) }
                 var previous = -1
                 for range in 0..<ranges {
                     let p = select+3+range*3,first = try PDFArchiveFontProgram.u16(bytes,p),end = try PDFArchiveFontProgram.u16(bytes,p+3),fd = Int(bytes[p+2])
-                    guard first>previous,first<end,end<=glyphCount,(range != 0 || first == 0) else { throw PDFStructureError.malformed("CFF FDSelect3 ranges") };previous = first
+                    guard first>previous,first<end,end<=glyphCount,(range != 0 || first == 0) else { throw PDFStructureError.malformed(L10n.tr("CFF FDSelect3 ranges")) };previous = first
                     for glyph in first..<end { selectors[glyph] = fd }
                 }
-                guard try PDFArchiveFontProgram.u16(bytes,select+3+ranges*3) == glyphCount else { throw PDFStructureError.malformed("CFF FDSelect3 sentinel") }
-            } else { throw PDFStructureError.unsupported("CFF FDSelect formato non supportato") }
-            guard selectors.allSatisfy({$0<dictionaries.count}) else { throw PDFStructureError.malformed("CFF FDSelect FD fuori FDArray") }
+                guard try PDFArchiveFontProgram.u16(bytes,select+3+ranges*3) == glyphCount else { throw PDFStructureError.malformed(L10n.tr("CFF FDSelect3 sentinel")) }
+            } else { throw PDFStructureError.unsupported(L10n.tr("CFF FDSelect formato non supportato")) }
+            guard selectors.allSatisfy({$0<dictionaries.count}) else { throw PDFStructureError.malformed(L10n.tr("CFF FDSelect FD fuori FDArray")) }
         }
         var contexts:[WidthContext] = []
         for font in dictionaries {
             var local:[Data] = [],defaultWidth = 0.0,nominalWidth = 0.0
             var privateDictionary:[Int:[Double]] = [:]
             if let entry = font[18] {
-                guard entry.count == 2,let size = integer(entry.first),let offset = integer(entry.last),size<=bytes.count-offset else { throw PDFStructureError.malformed("CFF Private DICT bounds") }
+                guard entry.count == 2,let size = integer(entry.first),let offset = integer(entry.last),size<=bytes.count-offset else { throw PDFStructureError.malformed(L10n.tr("CFF Private DICT bounds")) }
                 privateDictionary = try dictionary(Data(bytes[offset..<(offset+size)]))
-                if let value = privateDictionary[20] { guard value.count == 1,value[0].isFinite else { throw PDFStructureError.malformed("CFF defaultWidthX") };defaultWidth = value[0] }
-                if let value = privateDictionary[21] { guard value.count == 1,value[0].isFinite else { throw PDFStructureError.malformed("CFF nominalWidthX") };nominalWidth = value[0] }
+                if let value = privateDictionary[20] { guard value.count == 1,value[0].isFinite else { throw PDFStructureError.malformed(L10n.tr("CFF defaultWidthX")) };defaultWidth = value[0] }
+                if let value = privateDictionary[21] { guard value.count == 1,value[0].isFinite else { throw PDFStructureError.malformed(L10n.tr("CFF nominalWidthX")) };nominalWidth = value[0] }
                 if let entry = privateDictionary[19] {
-                    guard entry.count == 1,let relative = integer(entry.first),relative<bytes.count-offset else { throw PDFStructureError.malformed("CFF localSubrs offset") }
+                    guard entry.count == 1,let relative = integer(entry.first),relative<bytes.count-offset else { throw PDFStructureError.malformed(L10n.tr("CFF localSubrs offset")) }
                     local = try index(bytes,at:offset+relative)
                 }
             }
@@ -882,40 +882,40 @@ struct PDFArchiveCFF {
         return (contexts,selectors)
     }
     var structureGaps:[String] {
-        widthContexts.contains(where:{$0.fdMatrix != nil}) ? ["CFF FD FontMatrix: composizione con Top FontMatrix non verificata integralmente."]:[]
+        widthContexts.contains(where:{$0.fdMatrix != nil}) ? [L10n.tr("CFF FD FontMatrix: composizione con Top FontMatrix non verificata integralmente.")]:[]
     }
     /// Executes bounded stack/control structure, never rasterizer hinting or
     /// outline geometry. Reserved/legacy and value-undefined cases stay gaps.
     func programAudit(maximumOperations:Int = 2_000_000) -> PDFArchiveFontProgramAudit {
         var audit = PDFArchiveFontProgramAudit(),operations = 0
         audit.gaps = structureGaps
-        audit.gaps.append("Esecuzione completa Type2: geometria outline, sovrapposizione hint, seac e programmi non raggiunti non dimostrati.")
+        audit.gaps.append(L10n.tr("Esecuzione completa Type2: geometria outline, sovrapposizione hint, seac e programmi non raggiunti non dimostrati."))
         func fail(_ detail:String) { if audit.issues.count<64 { audit.issues.append(detail) } }
         func gap(_ detail:String) { if !audit.gaps.contains(detail) { audit.gaps.append(detail) } }
         for (fd,context) in widthContexts.enumerated() {
             // CFF5176 Table23 and Type1§5.3–5.9: delta-array cardinalities.
             for (op,maximum) in [(6,14),(7,10),(8,14),(9,10)] {
-                if let values = context.privateDictionary[op],values.count%2 != 0 || values.count>maximum { fail("CFF FD\(fd) Private: BlueValues/OtherBlues array di cardinalità non valida.") }
+                if let values = context.privateDictionary[op],values.count%2 != 0 || values.count>maximum { fail(L10n.tr("CFF FD\(fd) Private: BlueValues/OtherBlues array di cardinalità non valida.")) }
             }
             for op in [10,11,1209,1210,1211,1214,1217,1218,1219,19,20,21] {
-                if let values = context.privateDictionary[op],values.count != 1 { fail("CFF FD\(fd) Private: operatore scalare \(op) con \(values.count) operandi.") }
+                if let values = context.privateDictionary[op],values.count != 1 { fail(L10n.tr("CFF FD\(fd) Private: operatore scalare \(op) con \(values.count) operandi.")) }
             }
             for op in [1212,1213] {
-                if let values = context.privateDictionary[op],values.count>12 { fail("CFF FD\(fd) Private: StemSnap oltre12 elementi.") }
+                if let values = context.privateDictionary[op],values.count>12 { fail(L10n.tr("CFF FD\(fd) Private: StemSnap oltre12 elementi.")) }
             }
         }
-        guard topDictionary[1206]?.first ?? 2 == 2 else { gap("Type2: CharstringType diverso da2 non eseguito.");return audit }
+        guard topDictionary[1206]?.first ?? 2 == 2 else { gap(L10n.tr("Type2: CharstringType diverso da2 non eseguito."));return audit }
         enum Stop { case returned,finished }
         for glyph in 0..<glyphCount {
             let context = widthContexts[fdByGlyph[glyph]]
             var stack:[Double] = [],transient:[Int:Double] = [:],widthSeen = false,pathStarted = false,stems = 0
-            func require(_ count:Int) throws { guard stack.count>=count else { throw PDFStructureError.malformed("Type2 stack insufficiente") } }
+            func require(_ count:Int) throws { guard stack.count>=count else { throw PDFStructureError.malformed(L10n.tr("Type2 stack insufficiente")) } }
             func integer(_ number:Double,_ field:String) throws -> Int {
-                guard number.isFinite,number.rounded(.towardZero) == number,number>=Double(Int32.min),number<=Double(Int32.max) else { throw PDFStructureError.unsupported("Type2 \(field) non intero/risolto") };return Int(number)
+                guard number.isFinite,number.rounded(.towardZero) == number,number>=Double(Int32.min),number<=Double(Int32.max) else { throw PDFStructureError.unsupported(L10n.tr("Type2 \(field) non intero/risolto")) };return Int(number)
             }
             func clearPath(_ valid:Bool) throws {
-                guard pathStarted else { throw PDFStructureError.malformed("Type2 path senza moveto") }
-                guard valid else { throw PDFStructureError.malformed("Type2 arità operatore path non valida") };stack.removeAll(keepingCapacity:true)
+                guard pathStarted else { throw PDFStructureError.malformed(L10n.tr("Type2 path senza moveto")) }
+                guard valid else { throw PDFStructureError.malformed(L10n.tr("Type2 arità operatore path non valida")) };stack.removeAll(keepingCapacity:true)
             }
             func settleWidth(_ required:Int,stem:Bool = false,finish:Bool = false) {
                 guard !widthSeen else { return };widthSeen = true
@@ -930,33 +930,33 @@ struct PDFArchiveCFF {
                     let op = code[p];p += 1
                     if op>=32 && op<=246 { stack.append(Double(Int(op)-139)) }
                     else if op>=247 && op<=254 {
-                        guard p<code.count else { throw PDFStructureError.malformed("Type2 numero troncato") }
+                        guard p<code.count else { throw PDFStructureError.malformed(L10n.tr("Type2 numero troncato")) }
                         stack.append(Double(op<=250 ? (Int(op)-247)*256+Int(code[p])+108:-(Int(op)-251)*256-Int(code[p])-108));p += 1
                     } else if op == 28 { let n = try PDFArchiveFontProgram.u16(code,p);p += 2;stack.append(Double(Int16(bitPattern:UInt16(n)))) }
                     else if op == 255 { let n = try PDFArchiveFontProgram.u32(code,p);p += 4;stack.append(Double(Int32(bitPattern:UInt32(n)))/65536) }
                     else if op == 10 || op == 29 {
                         try require(1);let index = try integer(stack.removeLast(),"subroutine"),subrs = op == 10 ? context.localSubrs:globalSubrs
                         let bias = subrs.count<1240 ? 107:subrs.count<33900 ? 1131:32768
-                        guard index>=(-bias),index<subrs.count-bias else { throw PDFStructureError.malformed("Type2 subroutine fuori INDEX") }
+                        guard index>=(-bias),index<subrs.count-bias else { throw PDFStructureError.malformed(L10n.tr("Type2 subroutine fuori INDEX")) }
                         if case .finished = try execute(subrs[index+bias],depth:depth+1) { return .finished }
                     } else if op == 11 {
-                        guard depth>0 else { throw PDFStructureError.malformed("Type2 return fuori subroutine") };return .returned
+                        guard depth>0 else { throw PDFStructureError.malformed(L10n.tr("Type2 return fuori subroutine")) };return .returned
                     } else if [1,3,18,23,19,20].contains(op) {
                         settleWidth(0,stem:true)
                         let mask = op == 19 || op == 20
-                        guard stack.count%2 == 0,(mask || stack.count>=2),(!pathStarted || stack.isEmpty) else { throw PDFStructureError.malformed("Type2 arità/posizione dichiarazione stem non valida") }
+                        guard stack.count%2 == 0,(mask || stack.count>=2),(!pathStarted || stack.isEmpty) else { throw PDFStructureError.malformed(L10n.tr("Type2 arità/posizione dichiarazione stem non valida")) }
                         stems += stack.count/2;stack.removeAll(keepingCapacity:true)
                         guard stems<=96 else { throw PDFStructureError.limit }
                         if mask {
-                            guard stems>0 else { throw PDFStructureError.malformed("Type2 mask senza stem") }
+                            guard stems>0 else { throw PDFStructureError.malformed(L10n.tr("Type2 mask senza stem")) }
                             let count = (stems+7)/8
-                            guard count<=code.count-p else { throw PDFStructureError.malformed("Type2 hintmask/cntrmask troncata") }
+                            guard count<=code.count-p else { throw PDFStructureError.malformed(L10n.tr("Type2 hintmask/cntrmask troncata")) }
                             let unused = count*8-stems
-                            guard unused == 0 || code[p+count-1] & UInt8((1<<unused)-1) == 0 else { throw PDFStructureError.malformed("Type2 mask bit inutilizzati non zero") };p += count
+                            guard unused == 0 || code[p+count-1] & UInt8((1<<unused)-1) == 0 else { throw PDFStructureError.malformed(L10n.tr("Type2 mask bit inutilizzati non zero")) };p += count
                         }
                     } else if [4,21,22].contains(op) {
                         let count = op == 21 ? 2:1;settleWidth(count)
-                        guard stack.count == count else { throw PDFStructureError.malformed("Type2 arità moveto non valida") }
+                        guard stack.count == count else { throw PDFStructureError.malformed(L10n.tr("Type2 arità moveto non valida")) }
                         pathStarted = true;stack.removeAll(keepingCapacity:true)
                     } else if op == 5 { try clearPath(stack.count>=2 && stack.count%2 == 0) }
                     else if op == 6 || op == 7 { try clearPath(!stack.isEmpty) }
@@ -966,59 +966,59 @@ struct PDFArchiveCFF {
                     else if [26,27,30,31].contains(op) { try clearPath(stack.count>=4 && [0,1].contains(stack.count%4)) }
                     else if op == 14 {
                         settleWidth(0,finish:true)
-                        guard [0,4].contains(stack.count) else { throw PDFStructureError.malformed("Type2 arità endchar non valida") }
-                        if stack.count == 4 { throw PDFStructureError.unsupported("Type2 seac: dipendenze StandardEncoding/geometria non eseguite") }
+                        guard [0,4].contains(stack.count) else { throw PDFStructureError.malformed(L10n.tr("Type2 arità endchar non valida")) }
+                        if stack.count == 4 { throw PDFStructureError.unsupported(L10n.tr("Type2 seac: dipendenze StandardEncoding/geometria non eseguite")) }
                         return .finished
                     } else if op == 12 {
-                        guard p<code.count else { throw PDFStructureError.malformed("Type2 escape troncato") };let escaped = code[p];p += 1
+                        guard p<code.count else { throw PDFStructureError.malformed(L10n.tr("Type2 escape troncato")) };let escaped = code[p];p += 1
                         switch escaped {
                         case 0:break // deprecated dotsection is a no-op (AppendixC).
                         case 3,4,10,11,12,15,24:
                             try require(2);let b = stack.removeLast(),a = stack.removeLast()
-                            if escaped == 12,b == 0 { throw PDFStructureError.unsupported("Type2 div per zero: risultato indefinito") }
+                            if escaped == 12,b == 0 { throw PDFStructureError.unsupported(L10n.tr("Type2 div per zero: risultato indefinito")) }
                             let value:Double
                             switch escaped { case 3:value = a != 0 && b != 0 ? 1:0;case 4:value = a != 0 || b != 0 ? 1:0;case 10:value = a+b;case 11:value = a-b;case 12:value = a/b;case 15:value = a == b ? 1:0;default:value = a*b }
                             stack.append(value)
                         case 5,9,14,26:
                             try require(1);let value = stack.removeLast()
-                            if escaped == 26,value<0 { throw PDFStructureError.unsupported("Type2 sqrt negativa: risultato indefinito") }
+                            if escaped == 26,value<0 { throw PDFStructureError.unsupported(L10n.tr("Type2 sqrt negativa: risultato indefinito")) }
                             stack.append(escaped == 5 ? (value == 0 ? 1:0):escaped == 9 ? abs(value):escaped == 14 ? -value:sqrt(value))
                         case 18:try require(1);stack.removeLast()
                         case 20:
                             try require(2);let index = try integer(stack.removeLast(),"put"),value = stack.removeLast()
-                            guard (0..<32).contains(index) else { throw PDFStructureError.unsupported("Type2 transient index non risolto") };transient[index] = value
+                            guard (0..<32).contains(index) else { throw PDFStructureError.unsupported(L10n.tr("Type2 transient index non risolto")) };transient[index] = value
                         case 21:
                             try require(1);let index = try integer(stack.removeLast(),"get")
-                            guard let value = transient[index] else { throw PDFStructureError.unsupported("Type2 get prima di put: valore indefinito") };stack.append(value)
+                            guard let value = transient[index] else { throw PDFStructureError.unsupported(L10n.tr("Type2 get prima di put: valore indefinito")) };stack.append(value)
                         case 22:
                             try require(4);let v2 = stack.removeLast(),v1 = stack.removeLast(),s2 = stack.removeLast(),s1 = stack.removeLast();stack.append(v1<=v2 ? s1:s2)
-                        case 23:throw PDFStructureError.unsupported("Type2 random: valore dipendente dal rasterizer non eseguito")
+                        case 23:throw PDFStructureError.unsupported(L10n.tr("Type2 random: valore dipendente dal rasterizer non eseguito"))
                         case 27:try require(1);stack.append(stack.last!)
                         case 28:try require(2);stack.swapAt(stack.count-1,stack.count-2)
                         case 29:
                             try require(2);let index = max(0,try integer(stack.removeLast(),"index"))
-                            guard index<stack.count else { throw PDFStructureError.unsupported("Type2 index fuori stack: risultato indefinito") };stack.append(stack[stack.count-1-index])
+                            guard index<stack.count else { throw PDFStructureError.unsupported(L10n.tr("Type2 index fuori stack: risultato indefinito")) };stack.append(stack[stack.count-1-index])
                         case 30:
                             try require(2);let shift = try integer(stack.removeLast(),"roll"),count = try integer(stack.removeLast(),"roll")
-                            guard count>=0,count<=stack.count else { throw PDFStructureError.unsupported("Type2 roll fuori stack: risultato indefinito") }
+                            guard count>=0,count<=stack.count else { throw PDFStructureError.unsupported(L10n.tr("Type2 roll fuori stack: risultato indefinito")) }
                             if count>0 { let amount = ((shift%count)+count)%count,values = Array(stack.suffix(count));stack.removeLast(count);stack += Array(values.suffix(amount))+Array(values.prefix(count-amount)) }
                         case 34,35,36,37:
                             let count = escaped == 34 ? 7:escaped == 35 ? 13:escaped == 36 ? 9:11;try clearPath(stack.count == count)
-                        default:throw PDFStructureError.unsupported("Type2 operatore escape \(escaped) riservato/legacy non eseguito")
+                        default:throw PDFStructureError.unsupported(L10n.tr("Type2 operatore escape \(escaped) riservato/legacy non eseguito"))
                         }
-                    } else { throw PDFStructureError.unsupported("Type2 operatore \(op) riservato/legacy non eseguito") }
-                    guard stack.count<=48 else { throw PDFStructureError.malformed("Type2 stack oltre48") }
-                    guard stack.allSatisfy(\.isFinite) else { throw PDFStructureError.unsupported("Type2 overflow aritmetico: risultato indefinito") }
+                    } else { throw PDFStructureError.unsupported(L10n.tr("Type2 operatore \(op) riservato/legacy non eseguito")) }
+                    guard stack.count<=48 else { throw PDFStructureError.malformed(L10n.tr("Type2 stack oltre48")) }
+                    guard stack.allSatisfy(\.isFinite) else { throw PDFStructureError.unsupported(L10n.tr("Type2 overflow aritmetico: risultato indefinito")) }
                 }
-                throw PDFStructureError.malformed(depth == 0 ? "Type2 endchar assente":"Type2 subroutine senza return/endchar")
+                throw PDFStructureError.malformed(depth == 0 ? L10n.tr("Type2 endchar assente"):L10n.tr("Type2 subroutine senza return/endchar"))
             }
             do {
                 try Task.checkCancellation();audit.instructionPrograms += 1;audit.instructionBytes += charStrings[glyph].count
                 _ = try execute(charStrings[glyph],depth:0);audit.checkedGlyphs += 1
-            } catch PDFStructureError.malformed(let why) { fail("CFF GID\(glyph): " + why) }
-            catch PDFStructureError.limit { gap("Type2 budget/nesting/stem limit: verifica incompleta.");break }
-            catch is CancellationError { gap("Type2 verifica annullata.");break }
-            catch { gap("CFF GID\(glyph): " + error.localizedDescription) }
+            } catch PDFStructureError.malformed(let why) { fail(L10n.tr("CFF GID\(glyph): ") + why) }
+            catch PDFStructureError.limit { gap(L10n.tr("Type2 budget/nesting/stem limit: verifica incompleta."));break }
+            catch is CancellationError { gap(L10n.tr("Type2 verifica annullata."));break }
+            catch { gap(L10n.tr("CFF GID\(glyph): ") + error.localizedDescription) }
         }
         return audit
     }
@@ -1037,32 +1037,32 @@ struct PDFArchiveCFF {
         var stack:[Double] = [],steps = 0
         enum Outcome { case width(Double),returned,unresolved }
         func interpret(_ input:Data,depth:Int) throws -> Outcome {
-            guard depth<=10 else { throw PDFStructureError.unsupported("Type2 limite di nesting subroutine") }
+            guard depth<=10 else { throw PDFStructureError.unsupported(L10n.tr("Type2 limite di nesting subroutine")) }
             let code = Array(input);var p = 0
-            func arity(_ count:Int) throws { guard stack.count>=count else { throw PDFStructureError.malformed("Type2 stack width insufficiente") } }
+            func arity(_ count:Int) throws { guard stack.count>=count else { throw PDFStructureError.malformed(L10n.tr("Type2 stack width insufficiente")) } }
             while p<code.count {
                 steps += 1;guard steps<=100_000 else { throw PDFStructureError.limit };let value = code[p];p += 1
                 if value>=32 && value<=246 { stack.append(Double(Int(value)-139)) }
                 else if value>=247 && value<=254 {
-                    guard p<code.count else { throw PDFStructureError.malformed("Type2 numero troncato") }
+                    guard p<code.count else { throw PDFStructureError.malformed(L10n.tr("Type2 numero troncato")) }
                     let n = value<=250 ? (Int(value)-247)*256+Int(code[p])+108:-(Int(value)-251)*256-Int(code[p])-108;stack.append(Double(n));p += 1
                 } else if value == 28 { let n = try PDFArchiveFontProgram.u16(code,p);p += 2;stack.append(Double(Int16(bitPattern:UInt16(n)))) }
                 else if value == 255 { let n = try PDFArchiveFontProgram.u32(code,p);p += 4;stack.append(Double(Int32(bitPattern:UInt32(n)))/65536) }
                 else if value == 10 || value == 29 {
                     try arity(1);let index = stack.removeLast(),subrs = value == 10 ? local:globalSubrs,bias = subrs.count<1240 ? 107:subrs.count<33900 ? 1131:32768
-                    guard index.isFinite,index.rounded(.towardZero) == index,index>=Double(-bias),index<Double(subrs.count-bias) else { throw PDFStructureError.malformed("Type2 indice subroutine width non valido") }
+                    guard index.isFinite,index.rounded(.towardZero) == index,index>=Double(-bias),index<Double(subrs.count-bias) else { throw PDFStructureError.malformed(L10n.tr("Type2 indice subroutine width non valido")) }
                     let result = try interpret(subrs[Int(index)+bias],depth:depth+1)
                     switch result { case .returned:break;default:return result }
                 } else if value == 11 { return .returned }
                 else if [1,3,18,19,20,23].contains(value) { return .width(stack.count%2 == 1 ? nominalWidth+stack[0]:defaultWidth) }
                 else if value == 4 || value == 22 {
-                    guard stack.count == 1 || stack.count == 2 else { throw PDFStructureError.malformed("Type2 moveto width arity") };return .width(stack.count == 2 ? nominalWidth+stack[0]:defaultWidth)
+                    guard stack.count == 1 || stack.count == 2 else { throw PDFStructureError.malformed(L10n.tr("Type2 moveto width arity")) };return .width(stack.count == 2 ? nominalWidth+stack[0]:defaultWidth)
                 } else if value == 21 {
-                    guard stack.count == 2 || stack.count == 3 else { throw PDFStructureError.malformed("Type2 rmoveto width arity") };return .width(stack.count == 3 ? nominalWidth+stack[0]:defaultWidth)
+                    guard stack.count == 2 || stack.count == 3 else { throw PDFStructureError.malformed(L10n.tr("Type2 rmoveto width arity")) };return .width(stack.count == 3 ? nominalWidth+stack[0]:defaultWidth)
                 } else if value == 14 {
-                    guard [0,1,4,5].contains(stack.count) else { throw PDFStructureError.malformed("Type2 endchar width arity") };return .width([1,5].contains(stack.count) ? nominalWidth+stack[0]:defaultWidth)
+                    guard [0,1,4,5].contains(stack.count) else { throw PDFStructureError.malformed(L10n.tr("Type2 endchar width arity")) };return .width([1,5].contains(stack.count) ? nominalWidth+stack[0]:defaultWidth)
                 } else if value == 12 {
-                    guard p<code.count else { throw PDFStructureError.malformed("Type2 escape width troncato") };let op = code[p];p += 1
+                    guard p<code.count else { throw PDFStructureError.malformed(L10n.tr("Type2 escape width troncato")) };let op = code[p];p += 1
                     switch op {
                     case 9:try arity(1);stack[stack.count-1] = abs(stack.last!)
                     case 10,11,12,24:
@@ -1076,7 +1076,7 @@ struct PDFArchiveCFF {
                     default:return .unresolved
                     }
                 } else { return .unresolved }
-                guard stack.count<=48,stack.allSatisfy(\.isFinite) else { throw PDFStructureError.malformed("Type2 width stack oltre48/non finito") }
+                guard stack.count<=48,stack.allSatisfy(\.isFinite) else { throw PDFStructureError.malformed(L10n.tr("Type2 width stack oltre48/non finito")) }
             }
             return .unresolved
         }
@@ -1088,22 +1088,22 @@ struct PDFArchiveCFF {
             let value = bytes[cursor]; cursor += 1
             if value <= 21 {
                 let operation: Int
-                if value == 12 { guard cursor<bytes.count else { throw PDFStructureError.malformed("CFF DICT escape") }; operation = 1200+Int(bytes[cursor]); cursor += 1 }
+                if value == 12 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF DICT escape")) }; operation = 1200+Int(bytes[cursor]); cursor += 1 }
                 else { operation = Int(value) }
                 result[operation] = stack; stack = []
             } else if value == 28 { let raw = try PDFArchiveFontProgram.u16(bytes,cursor); cursor += 2; stack.append(Double(Int(Int16(bitPattern:UInt16(raw))))) }
             else if value == 29 { let raw = try PDFArchiveFontProgram.u32(bytes,cursor); cursor += 4; stack.append(Double(Int32(bitPattern:UInt32(raw)))) }
             else if value == 30 {
                 var string = "", ended = false
-                while cursor<bytes.count && !ended { let byte = bytes[cursor]; cursor += 1; for nibble in [byte>>4,byte&15] { if nibble == 15 { ended = true; break }; switch nibble { case 0...9:string += String(nibble); case 10:string += "."; case 11:string += "E"; case 12:string += "E-"; case 14:string += "-"; default:throw PDFStructureError.malformed("CFF real") } } }
-                guard ended,let real = Double(string),real.isFinite else { throw PDFStructureError.malformed("CFF real") }; stack.append(real)
+                while cursor<bytes.count && !ended { let byte = bytes[cursor]; cursor += 1; for nibble in [byte>>4,byte&15] { if nibble == 15 { ended = true; break }; switch nibble { case 0...9:string += String(nibble); case 10:string += "."; case 11:string += "E"; case 12:string += "E-"; case 14:string += "-"; default:throw PDFStructureError.malformed(L10n.tr("CFF real")) } } }
+                guard ended,let real = Double(string),real.isFinite else { throw PDFStructureError.malformed(L10n.tr("CFF real")) }; stack.append(real)
             } else if value >= 32 && value <= 246 { stack.append(Double(Int(value)-139)) }
-            else if value >= 247 && value <= 250 { guard cursor<bytes.count else { throw PDFStructureError.malformed("CFF number") }; stack.append(Double((Int(value)-247)*256+Int(bytes[cursor])+108)); cursor += 1 }
-            else if value >= 251 && value <= 254 { guard cursor<bytes.count else { throw PDFStructureError.malformed("CFF number") }; stack.append(Double(-(Int(value)-251)*256-Int(bytes[cursor])-108)); cursor += 1 }
-            else { throw PDFStructureError.unsupported("CFF DICT number") }
+            else if value >= 247 && value <= 250 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF number")) }; stack.append(Double((Int(value)-247)*256+Int(bytes[cursor])+108)); cursor += 1 }
+            else if value >= 251 && value <= 254 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("CFF number")) }; stack.append(Double(-(Int(value)-251)*256-Int(bytes[cursor])-108)); cursor += 1 }
+            else { throw PDFStructureError.unsupported(L10n.tr("CFF DICT number")) }
             guard stack.count <= 96 else { throw PDFStructureError.limit }
         }
-        guard stack.isEmpty else { throw PDFStructureError.malformed("CFF DICT operandi senza operatore") }
+        guard stack.isEmpty else { throw PDFStructureError.malformed(L10n.tr("CFF DICT operandi senza operatore")) }
         return result
     }
 }
@@ -1123,7 +1123,7 @@ struct PDFArchiveCMap {
     init(data: Data) throws {
         guard data.count <= 16*1024*1024 else { throw PDFStructureError.limit }
         var lexer = PDFSyntaxLexer(data), previous:PDFSyntaxValue?, operands:[PDFSyntaxValue] = []
-        func count(_ previous:PDFSyntaxValue?) throws -> Int { guard let count = previous?.int,count >= 0,count <= 100_000 else { throw PDFStructureError.malformed("conteggio CMap") }; return count }
+        func count(_ previous:PDFSyntaxValue?) throws -> Int { guard let count = previous?.int,count >= 0,count <= 100_000 else { throw PDFStructureError.malformed(L10n.tr("conteggio CMap")) }; return count }
         while true {
             lexer.skip(); if lexer.offset == lexer.bytes.count { break }
             let value = try lexer.value()
@@ -1132,29 +1132,29 @@ struct PDFArchiveCMap {
                     for _ in 0..<(try count(previous)) { guard let low = try lexer.value().data,let high = try lexer.value().data,low.count == high.count,(1...4).contains(low.count),Self.integer(low)<=Self.integer(high) else { throw PDFStructureError.malformed("codespace") }; codeSpaces.append(.init(low:low,high:high)) }
                 } else if operation == "beginnotdefrange" || operation == "beginnotdefchar" {
                     for _ in 0..<(try count(previous)) {
-                        guard let low = try lexer.value().data,(1...4).contains(low.count) else { throw PDFStructureError.malformed("notdef CMap") }
+                        guard let low = try lexer.value().data,(1...4).contains(low.count) else { throw PDFStructureError.malformed(L10n.tr("notdef CMap")) }
                         let high:Data;if operation == "beginnotdefrange" { guard let value = try lexer.value().data,value.count == low.count else { throw PDFStructureError.malformed("notdefrange") };high = value } else { high = low }
-                        guard let cid = try lexer.value().int,cid>=0,Self.integer(low)<=Self.integer(high) else { throw PDFStructureError.malformed("notdef CID") };notdefRanges.append((low,high,cid))
+                        guard let cid = try lexer.value().int,cid>=0,Self.integer(low)<=Self.integer(high) else { throw PDFStructureError.malformed(L10n.tr("notdef CID")) };notdefRanges.append((low,high,cid))
                     }
                 } else if operation == "beginbfchar" || operation == "begincidchar" {
-                    for _ in 0..<(try count(previous)) { guard let code = try lexer.value().data,(1...4).contains(code.count) else { throw PDFStructureError.malformed("CMap source") }; let target = try lexer.value(); if operation == "beginbfchar" { guard let bytes = target.data else { throw PDFStructureError.malformed("bfchar") }; unicode[code] = bytes } else { guard let cid = target.int,cid>=0 else { throw PDFStructureError.malformed("cidchar") }; cids[code] = cid } }
+                    for _ in 0..<(try count(previous)) { guard let code = try lexer.value().data,(1...4).contains(code.count) else { throw PDFStructureError.malformed(L10n.tr("CMap source")) }; let target = try lexer.value(); if operation == "beginbfchar" { guard let bytes = target.data else { throw PDFStructureError.malformed("bfchar") }; unicode[code] = bytes } else { guard let cid = target.int,cid>=0 else { throw PDFStructureError.malformed("cidchar") }; cids[code] = cid } }
                 } else if operation == "beginbfrange" || operation == "begincidrange" {
                     for _ in 0..<(try count(previous)) {
-                        guard let low = try lexer.value().data,let high = try lexer.value().data,low.count == high.count,(1...4).contains(low.count) else { throw PDFStructureError.malformed("CMap range") }
+                        guard let low = try lexer.value().data,let high = try lexer.value().data,low.count == high.count,(1...4).contains(low.count) else { throw PDFStructureError.malformed(L10n.tr("CMap range")) }
                         let first = Self.integer(low),last = Self.integer(high),target = try lexer.value()
                         guard last>=first,last-first<100_000 else { throw PDFStructureError.limit }
                         for offset in 0...(last-first) {
                             let source = Self.bytes(first+offset,count:low.count)
                             if operation == "begincidrange" { guard let cid = target.int,cid>=0,cid<=Int.max-offset else { throw PDFStructureError.malformed("cidrange") }; cids[source] = cid+offset }
-                            else if let array = target.array { guard offset<array.count,let value = array[offset].data else { throw PDFStructureError.malformed("bfrange array") }; unicode[source] = value }
-                            else if let start = target.data { guard start.count <= 32 else { throw PDFStructureError.limit }; var result = Array(start),carry = offset; for i in result.indices.reversed() { let sum = Int(result[i])+(carry&255); result[i] = UInt8(sum&255); carry = (carry>>8)+(sum>>8) }; guard carry == 0 else { throw PDFStructureError.malformed("bfrange overflow") }; unicode[source] = Data(result) }
-                            else { throw PDFStructureError.malformed("bfrange target") }
+                            else if let array = target.array { guard offset<array.count,let value = array[offset].data else { throw PDFStructureError.malformed(L10n.tr("bfrange array")) }; unicode[source] = value }
+                            else if let start = target.data { guard start.count <= 32 else { throw PDFStructureError.limit }; var result = Array(start),carry = offset; for i in result.indices.reversed() { let sum = Int(result[i])+(carry&255); result[i] = UInt8(sum&255); carry = (carry>>8)+(sum>>8) }; guard carry == 0 else { throw PDFStructureError.malformed(L10n.tr("bfrange overflow")) }; unicode[source] = Data(result) }
+                            else { throw PDFStructureError.malformed(L10n.tr("bfrange target")) }
                         }
                     }
                 } else if operation == "usecmap" { baseName = previous?.name;if let baseName { referencedNames.append(baseName) } }
                 else if operation == "def",operands.count >= 2,let key = operands[operands.count-2].name {
                     let value = operands.last!
-                    if key == "WMode" { guard let mode = value.int,[0,1].contains(mode) else { throw PDFStructureError.malformed("WMode CMap") };writingMode = mode;writingModeDefined = true }
+                    if key == "WMode" { guard let mode = value.int,[0,1].contains(mode) else { throw PDFStructureError.malformed(L10n.tr("WMode CMap")) };writingMode = mode;writingModeDefined = true }
                     if key == "CMapName" { name = value.name }
                     if key == "CIDSystemInfo",let dictionary = value.dictionary { registry = dictionary["Registry"]?.text; ordering = dictionary["Ordering"]?.text; supplement = dictionary["Supplement"]?.int }
                     if key == "Registry" { registry = value.text };if key == "Ordering" { ordering = value.text };if key == "Supplement" { supplement = value.int }
@@ -1172,14 +1172,14 @@ struct PDFArchiveCMap {
     func codes(in data:Data) throws -> [Data] {
         let bytes = Array(data); var cursor = 0,result:[Data] = []
         let spaces = codeSpaces.sorted { $0.low.count<$1.low.count }
-        guard !spaces.isEmpty else { throw PDFStructureError.unsupported("CMap senza codespace risolto") }
+        guard !spaces.isEmpty else { throw PDFStructureError.unsupported(L10n.tr("CMap senza codespace risolto")) }
         while cursor<bytes.count {
             var found:Data?
             for space in spaces where cursor+space.low.count<=bytes.count {
                 let code = Data(bytes[cursor..<(cursor+space.low.count)]),number = Self.integer(code)
                 if number>=Self.integer(space.low),number<=Self.integer(space.high) { found = code;break }
             }
-            guard let code = found else { throw PDFStructureError.malformed("codice fuori codespace CMap") }; result.append(code);cursor += code.count
+            guard let code = found else { throw PDFStructureError.malformed(PDFStructureError.cmapCodeOutsideCodespace) }; result.append(code);cursor += code.count
         }
         return result
     }
@@ -1243,9 +1243,9 @@ enum PDFArchiveFontEncoding {
     static func differences(font:[String:PDFSyntaxValue],reader:PDFStructureDocument) throws -> [UInt8:String] {
         let encoding = try reader.dictionary(font["Encoding"]); var result:[UInt8:String] = [:],index = 0
         for item in try reader.resolve(encoding["Differences"])?.array ?? [] {
-            if let value = item.int { guard (0...255).contains(value) else { throw PDFStructureError.malformed("Differences code") };index = value }
-            else if let name = item.name { guard index<256 else { throw PDFStructureError.malformed("Differences overflow") };result[UInt8(index)] = name;index += 1 }
-            else { throw PDFStructureError.malformed("Differences entry") }
+            if let value = item.int { guard (0...255).contains(value) else { throw PDFStructureError.malformed(L10n.tr("Differences code")) };index = value }
+            else if let name = item.name { guard index<256 else { throw PDFStructureError.malformed(L10n.tr("Differences overflow")) };result[UInt8(index)] = name;index += 1 }
+            else { throw PDFStructureError.malformed(L10n.tr("Differences entry")) }
         }
         return result
     }
@@ -1313,11 +1313,11 @@ struct PDFArchiveType1Program {
         if bytes.starts(with:[0x80,1]) {
             var cursor = 0,ascii = Data(),encrypted = Data()
             while cursor<bytes.count {
-                guard cursor+2<=bytes.count,bytes[cursor] == 0x80 else { throw PDFStructureError.malformed("PFB segment") }
+                guard cursor+2<=bytes.count,bytes[cursor] == 0x80 else { throw PDFStructureError.malformed(L10n.tr("PFB segment")) }
                 let type = bytes[cursor+1];cursor += 2;if type == 3 { break }
-                guard cursor+4<=bytes.count,type == 1 || type == 2 else { throw PDFStructureError.unsupported("PFB segment type") }
+                guard cursor+4<=bytes.count,type == 1 || type == 2 else { throw PDFStructureError.unsupported(L10n.tr("PFB segment type")) }
                 let count = Int(bytes[cursor])|Int(bytes[cursor+1])<<8|Int(bytes[cursor+2])<<16|Int(bytes[cursor+3])<<24;cursor += 4
-                guard count<=bytes.count-cursor else { throw PDFStructureError.malformed("PFB length") }
+                guard count<=bytes.count-cursor else { throw PDFStructureError.malformed(L10n.tr("PFB length")) }
                 if type == 1 && encrypted.isEmpty { ascii += Data(bytes[cursor..<(cursor+count)]) };if type == 2 { encrypted += Data(bytes[cursor..<(cursor+count)]) };cursor += count
             }
             clear = ascii;binary = encrypted
@@ -1328,14 +1328,14 @@ struct PDFArchiveType1Program {
                 if token == "eexec",previous == "currentfile" { found = tokens.cursor;break };previous = token
             }
             if let length1,length1>0,length1<=bytes.count { found = length1 }
-            guard var start = found else { throw PDFStructureError.unsupported("Type1 senza eexec standard") }
+            guard var start = found else { throw PDFStructureError.unsupported(L10n.tr("Type1 senza eexec standard")) }
             clear = Data(bytes.prefix(start))
             if length1 == nil {
                 if start<bytes.count,bytes[start] == 13 { start += 1;if start<bytes.count,bytes[start] == 10 { start += 1 } }
                 else if start<bytes.count,bytes[start] == 10 || bytes[start] == 32 { start += 1 }
             }
             let count = length2 ?? (bytes.count-start)
-            guard count>=4,count<=bytes.count-start else { throw PDFStructureError.malformed("Type1 Length2") }
+            guard count>=4,count<=bytes.count-start else { throw PDFStructureError.malformed(L10n.tr("Type1 Length2")) }
             binary = Data(bytes[start..<(start+count)])
         }
         // Read declarative header tokens only. Never execute arbitrary PS.
@@ -1362,7 +1362,7 @@ struct PDFArchiveType1Program {
         func decrypted(_ input:Data,seed:UInt16,discard:Int) throws -> Data {
             var state = UInt32(seed),output = Data()
             for byte in input { output.append(byte ^ UInt8(state>>8));state = ((UInt32(byte)+state)*52845+22719)&65535 }
-            guard discard>=0,discard<=output.count else { throw PDFStructureError.malformed("Type1 lenIV") };return output.dropFirst(discard)
+            guard discard>=0,discard<=output.count else { throw PDFStructureError.malformed(L10n.tr("Type1 lenIV")) };return output.dropFirst(discard)
         }
         var cipher = binary!
         let nonspace = cipher.filter{![9,10,13,32].contains($0)}
@@ -1376,7 +1376,7 @@ struct PDFArchiveType1Program {
             if token == "/CharStrings" { insideChars = true }
             if history.last == "/lenIV",let number = Int(token),(-1...32).contains(number) { lenIV = number }
             if token == "RD" || token == "-|" {
-                guard history.count>=2,let count = Int(history.last!),count>=0,count<=16*1024*1024 else { throw PDFStructureError.unsupported("Type1 RD dinamico") }
+                guard history.count>=2,let count = Int(history.last!),count>=0,count<=16*1024*1024 else { throw PDFStructureError.unsupported(L10n.tr("Type1 RD dinamico")) }
                 let bytes = try parser.binary(count)
                 if insideChars,history[history.count-2].hasPrefix("/") { rawChars[String(history[history.count-2].dropFirst())] = bytes }
                 else if history.count>=3,history[history.count-3] == "dup",let index = Int(history[history.count-2]) { rawSubrs[index] = bytes }
@@ -1384,7 +1384,7 @@ struct PDFArchiveType1Program {
             history.append(token);if history.count>8 { history.removeFirst() }
             if token == "closefile" { break }
         }
-        guard !rawChars.isEmpty,rawChars.count<=65535 else { throw PDFStructureError.unsupported("CharStrings Type1 non individuabili") }
+        guard !rawChars.isEmpty,rawChars.count<=65535 else { throw PDFStructureError.unsupported(L10n.tr("CharStrings Type1 non individuabili")) }
         func decode(_ bytes:Data) throws -> Data { lenIV == -1 ? bytes:try decrypted(bytes,seed:4330,discard:lenIV) }
         charStrings = try rawChars.mapValues(decode);subroutines = try rawSubrs.mapValues(decode)
         names = [".notdef"]+rawChars.keys.filter{$0 != ".notdef"}.sorted()
@@ -1397,14 +1397,14 @@ struct PDFArchiveType1Program {
             while cursor<bytes.count {
                 budget += 1;guard budget<100_000 else { throw PDFStructureError.limit };let value = bytes[cursor];cursor += 1
                 if value >= 32 && value <= 246 { stack.append(Double(Int(value)-139)) }
-                else if value >= 247 && value <= 250 { guard cursor<bytes.count else { throw PDFStructureError.malformed("Type1 number") };stack.append(Double((Int(value)-247)*256+Int(bytes[cursor])+108));cursor += 1 }
-                else if value >= 251 && value <= 254 { guard cursor<bytes.count else { throw PDFStructureError.malformed("Type1 number") };stack.append(Double(-(Int(value)-251)*256-Int(bytes[cursor])-108));cursor += 1 }
+                else if value >= 247 && value <= 250 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("Type1 number")) };stack.append(Double((Int(value)-247)*256+Int(bytes[cursor])+108));cursor += 1 }
+                else if value >= 251 && value <= 254 { guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("Type1 number")) };stack.append(Double(-(Int(value)-251)*256-Int(bytes[cursor])-108));cursor += 1 }
                 else if value == 255 { let raw = try PDFArchiveFontProgram.u32(bytes,cursor);cursor += 4;stack.append(Double(Int32(bitPattern:UInt32(raw)))) }
                 else if value == 13 { guard stack.count>=2 else { throw PDFStructureError.malformed("hsbw") };return stack[stack.count-1]*scale }
                 else if value == 10 { guard let index = stack.popLast(),index>=0,index<=65535,let subroutine = subroutines[Int(index)] else { return nil };if let value = try width(subroutine,depth:depth+1) { return value } }
                 else if value == 11 { return nil }
                 else if value == 12 {
-                    guard cursor<bytes.count else { throw PDFStructureError.malformed("Type1 escape") };let operation = bytes[cursor];cursor += 1
+                    guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("Type1 escape")) };let operation = bytes[cursor];cursor += 1
                     if operation == 7 { guard stack.count>=4 else { throw PDFStructureError.malformed("sbw") };return stack[stack.count-2]*scale }
                     if operation == 12 { guard stack.count>=2 else { return nil };let denominator = stack.removeLast(),numerator = stack.removeLast();guard denominator != 0 else { return nil };stack.append(numerator/denominator) }
                     else { return nil }
@@ -1427,14 +1427,14 @@ struct PDFArchiveType1Program {
             if bytes[start] == 40 {
                 var depth = 1
                 while cursor<bytes.count && depth>0 { let value = bytes[cursor];cursor += 1;if value == 92 && cursor<bytes.count { cursor += 1 } else if value == 40 { depth += 1 } else if value == 41 { depth -= 1 } }
-                guard depth == 0 else { throw PDFStructureError.malformed("Type1 string") };return "(string)"
+                guard depth == 0 else { throw PDFStructureError.malformed(L10n.tr("Type1 string")) };return "(string)"
             }
             while cursor<bytes.count && ![0,9,10,12,13,32,37,40,41,91,93,123,125,47].contains(bytes[cursor]) { cursor += 1 }
             return String(decoding:bytes[start..<cursor],as:UTF8.self)
         }
         mutating func binary(_ count:Int) throws -> Data {
-            guard cursor<bytes.count,[9,10,13,32].contains(bytes[cursor]) else { throw PDFStructureError.malformed("Type1 RD delimiter") };cursor += 1
-            guard count<=bytes.count-cursor else { throw PDFStructureError.malformed("Type1 RD length") };let result = Data(bytes[cursor..<(cursor+count)]);cursor += count;return result
+            guard cursor<bytes.count,[9,10,13,32].contains(bytes[cursor]) else { throw PDFStructureError.malformed(L10n.tr("Type1 RD delimiter")) };cursor += 1
+            guard count<=bytes.count-cursor else { throw PDFStructureError.malformed(L10n.tr("Type1 RD length")) };let result = Data(bytes[cursor..<(cursor+count)]);cursor += count;return result
         }
     }
 }
@@ -1454,10 +1454,10 @@ final class PDFArchiveFontReferenceData {
     private let maps = NSCache<NSString,MapBox>()
     private(set) var glyphs:[String:String] = [:]
     init(directory:URL? = nil) throws {
-        guard let directory = directory ?? PDFArchiveValidator.resourceDirectory()?.deletingLastPathComponent().appendingPathComponent("PDFFontData",isDirectory:true) else { throw PDFStructureError.unsupported("dati font Adobe offline mancanti") }
+        guard let directory = directory ?? PDFArchiveValidator.resourceDirectory()?.deletingLastPathComponent().appendingPathComponent("PDFFontData",isDirectory:true) else { throw PDFStructureError.unsupported(L10n.tr("dati font Adobe offline mancanti")) }
         self.directory = directory
         let data = try Data(contentsOf:directory.appendingPathComponent("MANIFEST.json"))
-        guard Self.hash(data) == Self.manifestSHA256 else { throw PDFStructureError.malformed("inventario dati font Adobe modificato") }
+        guard Self.hash(data) == Self.manifestSHA256 else { throw PDFStructureError.malformed(L10n.tr("inventario dati font Adobe modificato")) }
         let manifest = try JSONDecoder().decode(Manifest.self,from:data)
         var unique:[String:Manifest.Item] = [:]
         for item in manifest.items where item.file.hasPrefix("CMaps/") || item.file.hasPrefix("AGL/") { if unique[item.name] == nil { unique[item.name] = item } }
@@ -1474,13 +1474,13 @@ final class PDFArchiveFontReferenceData {
     }
     private static func hash(_ data:Data)->String { SHA256.hash(data:data).map{String(format:"%02x",$0)}.joined() }
     func bytes(_ name:String) throws -> Data {
-        guard let item = items[name] else { throw PDFStructureError.unsupported("dato Adobe non catalogato: " + name) }
-        let data = try Data(contentsOf:directory.appendingPathComponent(item.file));guard data.count<=16*1024*1024,Self.hash(data) == item.sha256 else { throw PDFStructureError.malformed("hash dato Adobe: " + name) };return data
+        guard let item = items[name] else { throw PDFStructureError.unsupported(L10n.tr("dato Adobe non catalogato: ") + name) }
+        let data = try Data(contentsOf:directory.appendingPathComponent(item.file));guard data.count<=16*1024*1024,Self.hash(data) == item.sha256 else { throw PDFStructureError.malformed(L10n.tr("hash dato Adobe: ") + name) };return data
     }
     func cmap(_ name:String,active:Set<String> = []) throws -> PDFArchiveCMap {
         if name == "Identity-H" || name == "Identity-V" { return .identity(vertical:name == "Identity-V") }
         if let cached = maps.object(forKey:name as NSString) { return cached.map }
-        guard !active.contains(name),active.count<30 else { throw PDFStructureError.unsupported("UseCMap Adobe ricorsivo") }
+        guard !active.contains(name),active.count<30 else { throw PDFStructureError.unsupported(L10n.tr("UseCMap Adobe ricorsivo")) }
         var map = try PDFArchiveCMap(data:bytes(name))
         if let baseName = map.baseName {
             let base = try cmap(baseName,active:active.union([name]))
@@ -1492,7 +1492,7 @@ final class PDFArchiveFontReferenceData {
     func unicode(cid:Int,registry:String,ordering:String,supplement:Int? = nil) throws -> String? {
         guard registry == "Adobe",cid>=0,cid<=65535,["Japan1","GB1","CNS1","Korea1","KR"].contains(ordering) else { return nil }
         let map = try cmap(registry + "-" + ordering + "-UCS2")
-        if let supplement,let available = map.supplement,supplement>available { throw PDFStructureError.unsupported("Supplement CID più recente dei dati Adobe offline") }
+        if let supplement,let available = map.supplement,supplement>available { throw PDFStructureError.unsupported(L10n.tr("Supplement CID più recente dei dati Adobe offline")) }
         return map.unicode[PDFArchiveCMap.bytes(cid,count:2)].flatMap(PDFArchiveCMap.unicodeString)
     }
 }

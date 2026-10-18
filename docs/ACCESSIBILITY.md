@@ -1,6 +1,6 @@
 # Accessibility
 
-The interface includes accessible names, values and units, control states, announcements, and keyboard operations. The **⇧⌘K** annotation panel supports creation, editing, deletion, and adjustment of coordinates and dimensions, with undo. Search the **“Strumenti”** (Tools) catalog with **⇧⌘T**. The app interface is currently in Italian.
+The interface includes accessible names, values and units, control states, announcements, and keyboard operations. **Keyboard Annotations** (**⇧⌘K**) supports creation, editing, deletion, and adjustment of coordinates and dimensions, with undo. Open the **Tools** catalog with **⇧⌘T**. These are the English control names; interface text and accessibility labels follow the selected [app language](LOCALIZATION.md).
 
 ## Available checks
 

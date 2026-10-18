@@ -24,7 +24,7 @@ final class WorkflowController: ObservableObject {
     @Published var keepOutlines = true { didSet { invalidatePlan() } }
     @Published var splitMode: WorkflowSplitMode = .everyN { didSet { invalidatePlan() } }
     @Published var splitCount = 10 { didSet { invalidatePlan() } }
-    @Published var intervals = "tutte" { didSet { invalidatePlan() } }
+    @Published var intervals = "all" { didSet { invalidatePlan() } }
     @Published var marker = "" { didSet { invalidatePlan() } }
     @Published var maxMegabytes: Double = 5 { didSet { invalidatePlan() } }
     @Published var skipMarkers = false { didSet { invalidatePlan() } }
@@ -54,8 +54,8 @@ final class WorkflowController: ObservableObject {
     @Published var overlayOpacity: Double = 0.4 { didSet { invalidatePlan() } }
     @Published var rightFirst = false { didSet { invalidatePlan() } }
     @Published var replacementRange = "1" { didSet { invalidatePlan() } }
-    @Published var contentsTitle = "Indice" { didSet { invalidatePlan() } }
-    @Published var selectionRange = "tutte"
+    @Published var contentsTitle = L10n.tr("Indice") { didSet { invalidatePlan() } }
+    @Published var selectionRange = "all"
     @Published var watermark = WorkflowTextSettings()
     @Published var numbering = WorkflowNumberingSettings()
     @Published var replaceNumbers = false
@@ -110,7 +110,7 @@ final class WorkflowController: ObservableObject {
         return repeated.sorted()
     }
     var selectionError: String? {
-        guard let source = firstSource else { return "Nessun documento." }
+        guard let source = firstSource else { return L10n.tr("Nessun documento.") }
         do { _ = try WorkflowEngine.parseRange(selectionRange, pageCount: source.document.pageCount); return nil }
         catch { return error.localizedDescription }
     }
@@ -137,14 +137,14 @@ final class WorkflowController: ObservableObject {
     }
     var cropBounds: CGRect { firstSource?.document.page(at: cropPageIndex)?.bounds(for: .cropBox) ?? .zero }
     var cropValidation: String? {
-        guard [cropTop, cropLeft, cropBottom, cropRight].allSatisfy({ $0.isFinite && $0 >= 0 }) else { return "I margini devono essere numeri positivi." }
-        if cropBounds.width - cropLeft - cropRight < 18 || cropBounds.height - cropTop - cropBottom < 18 { return "Il ritaglio deve lasciare almeno 18 pt per lato." }
+        guard [cropTop, cropLeft, cropBottom, cropRight].allSatisfy({ $0.isFinite && $0 >= 0 }) else { return L10n.tr("I margini devono essere numeri positivi.") }
+        if cropBounds.width - cropLeft - cropRight < 18 || cropBounds.height - cropTop - cropBottom < 18 { return L10n.tr("Il ritaglio deve lasciare almeno 18 pt per lato.") }
         return nil
     }
     var existingNumbers: Int { WorkflowEngine.existingNumberingCount(model.document) }
     var batesPreview: String {
         let count = selectedIndices?.indices.count ?? 0
-        guard numbering.start >= 0, numbering.start <= Int.max - count, (1...20).contains(numbering.padding) else { return "Parametri non validi" }
+        guard numbering.start >= 0, numbering.start <= Int.max - count, (1...20).contains(numbering.padding) else { return L10n.tr("Parametri non validi") }
         func value(_ number: Int) -> String { let text = String(number); return numbering.batesPrefix + String(repeating: "0", count: max(0, numbering.padding - text.count)) + text }
         return "\(value(numbering.start)) → \(value(numbering.start + max(0, count - 1)))"
     }
@@ -156,11 +156,11 @@ final class WorkflowController: ObservableObject {
             guard let self else { return }
             defer { self.busy = false; self.task = nil; self.batchPassword = "" }
             do {
-                self.message = "In attesa di una risorsa di elaborazione…"
+                self.message = L10n.tr("In attesa di una risorsa di elaborazione…")
                 let limit = CartaPreferences.shared.concurrentJobs
                 try await CartaJobLimiter.shared.withPermit(limit: limit) { try await operation(self) }
             }
-            catch is CancellationError { self.message = "Operazione annullata. I documenti sorgente sono invariati." }
+            catch is CancellationError { self.message = L10n.tr("Operazione annullata. I documenti sorgente sono invariati.") }
             catch { self.error = error.localizedDescription }
         }
     }
@@ -168,7 +168,7 @@ final class WorkflowController: ObservableObject {
     func cancel() { task?.cancel() }
     func invalidatePlan() {
         guard !busy else { return }
-        if !outputs.isEmpty { message = "Parametri cambiati: genera una nuova anteprima prima di salvare." }
+        if !outputs.isEmpty { message = L10n.tr("Parametri cambiati: genera una nuova anteprima prima di salvare.") }
         outputs = []; parts = []; outputURLs = []
     }
     func report(_ fraction: Double, _ text: String) { progress = min(max(fraction, 0), 1); message = text }
@@ -226,18 +226,18 @@ final class WorkflowController: ObservableObject {
             } else {
                 let result = try await WorkflowEngine.merge(controller.sources, alternate: controller.mergeMode == .alternate,
                                                             reverseBacks: controller.reverseBacks, keepOutline: controller.keepOutlines, progress: controller.report)
-                controller.outputs = [WorkflowOutput(name: "Documenti uniti.pdf", document: result)]
+                controller.outputs = [WorkflowOutput(name: L10n.tr("Documenti uniti.pdf"), document: result)]
             }
             controller.selectOutput(0)
-            controller.message = "Anteprima pronta: \(controller.outputs.count) PDF. Le sorgenti non sono state modificate."
+            controller.message = L10n.tr("Anteprima pronta: \(controller.outputs.count) PDF. Le sorgenti non sono state modificate.")
         }
     }
 
     func buildSplit() {
         start { controller in
-            guard let source = controller.firstSource else { throw WorkflowError("Scegli un documento.") }
+            guard let source = controller.firstSource else { throw WorkflowError(L10n.tr("Scegli un documento.")) }
             let bytes = controller.maxMegabytes * 1_000_000
-            guard bytes.isFinite, bytes >= 1024, bytes <= Double(Int.max / 2) else { throw WorkflowError("Dimensione massima non valida.") }
+            guard bytes.isFinite, bytes >= 1024, bytes <= Double(Int.max / 2) else { throw WorkflowError(L10n.tr("Dimensione massima non valida.")) }
             controller.parts = try await WorkflowEngine.planSplit(source.document, mode: controller.splitMode, count: controller.splitCount,
                                                                  intervals: controller.intervals, marker: controller.marker, maxBytes: Int(bytes),
                                                                  skipMarkers: controller.skipMarkers, blankThreshold: controller.blankThreshold, progress: controller.report)
@@ -246,11 +246,11 @@ final class WorkflowController: ObservableObject {
                 try Task.checkCancellation()
                 outputs.append(WorkflowOutput(name: WorkflowEngine.outputName(pattern: controller.namePattern, source: source.title, part: part, index: index),
                                               document: try WorkflowEngine.extract(source.document, indices: part.indices)))
-                controller.report(Double(index + 1) / Double(controller.parts.count), "Anteprima parte \(index + 1)/\(controller.parts.count)")
+                controller.report(Double(index + 1) / Double(controller.parts.count), L10n.tr("Anteprima parte \(index + 1)/\(controller.parts.count)"))
                 await Task.yield()
             }
             controller.outputs = outputs; controller.selectOutput(0)
-            controller.message = "\(outputs.count) file pronti per la revisione."
+            controller.message = L10n.tr("\(outputs.count) file pronti per la revisione.")
         }
     }
 
@@ -270,7 +270,7 @@ final class WorkflowController: ObservableObject {
 
     func chooseDirectory() {
         let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.canCreateDirectories = true
-        panel.prompt = "Scegli cartella"
+        panel.prompt = L10n.tr("Scegli cartella")
         if panel.runModal() == .OK { directory = panel.url }
     }
 
@@ -278,15 +278,15 @@ final class WorkflowController: ObservableObject {
         if directory == nil { chooseDirectory() }
         guard let directory, !outputs.isEmpty else { return }
         if conflictPolicy == .replace && !conflicts.isEmpty {
-            let alert = NSAlert(); alert.messageText = "Sostituire \(conflicts.count) file?"
-            alert.informativeText = conflicts.prefix(12).joined(separator: "\n") + "\nLe sorgenti non possono essere sovrascritte."
-            alert.addButton(withTitle: "Sostituisci copie"); alert.addButton(withTitle: "Annulla")
+            let alert = NSAlert(); alert.messageText = L10n.tr("Sostituire \(conflicts.count) file?")
+            alert.informativeText = conflicts.prefix(12).joined(separator: "\n") + L10n.tr("\nLe sorgenti non possono essere sovrascritte.")
+            alert.addButton(withTitle: L10n.tr("Sostituisci copie")); alert.addButton(withTitle: L10n.tr("Annulla"))
             guard alert.runModal() == .alertFirstButtonReturn else { return }
         }
         start { controller in
             controller.outputURLs = try await WorkflowStagedWriter.write(controller.outputs, directory: directory, policy: controller.conflictPolicy,
                                                                           protectedURLs: controller.sources.compactMap(\.url), progress: controller.report)
-            controller.message = "Salvati e verificati \(controller.outputURLs.count) PDF."
+            controller.message = L10n.tr("Salvati e verificati \(controller.outputURLs.count) PDF.")
         }
     }
 
@@ -320,19 +320,19 @@ final class WorkflowController: ObservableObject {
         guard let source = firstSource else { return }
         do {
             let document = try WorkflowEngine.extract(source.document, indices: pageOrder.map(\.index))
-            outputs = [WorkflowOutput(name: "Pagine organizzate.pdf", document: document)]; selectOutput(0)
+            outputs = [WorkflowOutput(name: L10n.tr("Pagine organizzate.pdf"), document: document)]; selectOutput(0)
         } catch { self.error = error.localizedDescription }
     }
 
     func buildLayout() {
         start { controller in
-            guard let source = controller.firstSource else { throw WorkflowError("Scegli il documento base.") }
+            guard let source = controller.firstSource else { throw WorkflowError(L10n.tr("Scegli il documento base.")) }
             let result: PDFDocument
             let sheet = CGSize(width: controller.sheetWidth, height: controller.sheetHeight)
             switch controller.layoutMode {
             case .organize: result = try WorkflowEngine.extract(source.document, indices: controller.pageOrder.map(\.index))
             case .replace:
-                guard controller.sources.count >= 2 else { throw WorkflowError("Aggiungi il PDF con le pagine sostitutive: viene usato il secondo documento della coda.") }
+                guard controller.sources.count >= 2 else { throw WorkflowError(L10n.tr("Aggiungi il PDF con le pagine sostitutive: viene usato il secondo documento della coda.")) }
                 let selected = try WorkflowEngine.parseRange(controller.replacementRange, pageCount: source.document.pageCount).indices
                 let replacementSource = controller.sources[1]
                 let replacement = try WorkflowEngine.extract(replacementSource.document, indices: WorkflowEngine.parseRange(replacementSource.range, pageCount: replacementSource.document.pageCount).indices)
@@ -343,12 +343,12 @@ final class WorkflowController: ObservableObject {
             case .poster: result = try await WorkflowEngine.poster(source.document, columns: controller.columns, rows: controller.rows, sheet: sheet, overlap: controller.gutter, progress: controller.report)
             case .facing: result = try await WorkflowEngine.facing(source.document, rightFirst: controller.rightFirst, progress: controller.report)
             case .overlay:
-                guard controller.sources.count >= 2 else { throw WorkflowError("Aggiungi il PDF da sovrapporre: viene usato il secondo documento della coda.") }
+                guard controller.sources.count >= 2 else { throw WorkflowError(L10n.tr("Aggiungi il PDF da sovrapporre: viene usato il secondo documento della coda.")) }
                 result = try await WorkflowEngine.overlay(source.document, overlay: controller.sources[1].document, opacity: controller.overlayOpacity, progress: controller.report)
             case .contents: result = try WorkflowEngine.tableOfContents(source.document, title: controller.contentsTitle)
             }
-            controller.outputs = [WorkflowOutput(name: "\((source.title as NSString).deletingPathExtension)-impaginato.pdf", document: result)]
-            controller.selectOutput(0); controller.message = "Anteprima pronta: \(result.pageCount) pagine."
+            controller.outputs = [WorkflowOutput(name: L10n.tr("\((source.title as NSString).deletingPathExtension)-impaginato.pdf"), document: result)]
+            controller.selectOutput(0); controller.message = L10n.tr("Anteprima pronta: \(result.pageCount) pagine.")
         }
     }
 
@@ -367,9 +367,9 @@ final class WorkflowController: ObservableObject {
             try ensureLiveSource()
             guard model.canEditAnnotations else { throw PDFWorkspaceError.editingNotAllowed }
             let indices = try WorkflowEngine.parseRange(selectionRange, pageCount: model.pageCount).indices
-            model.addBatchAnnotations(try WorkflowEngine.watermarkAnnotations(model.document, indices: indices, settings: watermark), actionName: "Filigrana personalizzata")
+            model.addBatchAnnotations(try WorkflowEngine.watermarkAnnotations(model.document, indices: indices, settings: watermark), actionName: L10n.tr("Filigrana personalizzata"))
             sourceRevision = model.contentRevision
-            sources = [try model.workflowSource()]; buildWatermarkPreview(); message = "Filigrana applicata. Puoi annullare dalla finestra del documento."
+            sources = [try model.workflowSource()]; buildWatermarkPreview(); message = L10n.tr("Filigrana applicata. Puoi annullare dalla finestra del documento.")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -399,22 +399,22 @@ final class WorkflowController: ObservableObject {
         do { try ensureLiveSource() } catch { self.error = error.localizedDescription; return }
         guard model.canEditAnnotations else { error = PDFWorkspaceError.editingNotAllowed.localizedDescription; return }
         if existingNumbers > 0 {
-            let alert = NSAlert(); alert.messageText = "Sono presenti \(existingNumbers) numerazioni."
-            alert.informativeText = replaceNumbers ? "Le numerazioni riconosciute verranno sostituite. Controlla l’anteprima prima di continuare." : "La nuova numerazione può sovrapporsi a quella esistente. Controlla l’anteprima."
-            alert.addButton(withTitle: replaceNumbers ? "Sostituisci" : "Aggiungi comunque"); alert.addButton(withTitle: "Annulla")
+            let alert = NSAlert(); alert.messageText = L10n.tr("Sono presenti \(existingNumbers) numerazioni.")
+            alert.informativeText = replaceNumbers ? L10n.tr("Le numerazioni riconosciute verranno sostituite. Controlla l’anteprima prima di continuare.") : L10n.tr("La nuova numerazione può sovrapporsi a quella esistente. Controlla l’anteprima.")
+            alert.addButton(withTitle: replaceNumbers ? L10n.tr("Sostituisci") : L10n.tr("Aggiungi comunque")); alert.addButton(withTitle: L10n.tr("Annulla"))
             guard alert.runModal() == .alertFirstButtonReturn else { return }
         }
         do {
             let indices = try WorkflowEngine.parseRange(selectionRange, pageCount: model.pageCount).indices
             let added = try WorkflowEngine.numberingAnnotations(model.document, indices: indices, name: model.fileName, settings: numbering)
-            model.applyWorkflowAnnotations(added, removing: replaceNumbers ? numberPairs(model.document) : [], actionName: "Intestazioni e numerazione")
+            model.applyWorkflowAnnotations(added, removing: replaceNumbers ? numberPairs(model.document) : [], actionName: L10n.tr("Intestazioni e numerazione"))
             let preferences = UserDefaults.standard
             preferences.set(true, forKey: "Workflow.numbers.saved"); preferences.set(numbering.header, forKey: "Workflow.numbers.header")
             preferences.set(numbering.footer, forKey: "Workflow.numbers.footer"); preferences.set(numbering.batesPrefix, forKey: "Workflow.numbers.prefix")
             preferences.set(numbering.start, forKey: "Workflow.numbers.start"); preferences.set(numbering.padding, forKey: "Workflow.numbers.padding")
             preferences.set(Double(numbering.fontSize), forKey: "Workflow.numbers.font"); preferences.set(numbering.usesBates, forKey: "Workflow.numbers.bates")
             sourceRevision = model.contentRevision
-            sources = [try model.workflowSource()]; setPreview(sources[0].document); message = "Numerazione applicata e impostazioni memorizzate."
+            sources = [try model.workflowSource()]; setPreview(sources[0].document); message = L10n.tr("Numerazione applicata e impostazioni memorizzate.")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -435,28 +435,28 @@ final class WorkflowController: ObservableObject {
             preferences.set(true, forKey: "Workflow.crop.saved"); preferences.set(cropTop, forKey: "Workflow.crop.top")
             preferences.set(cropLeft, forKey: "Workflow.crop.left"); preferences.set(cropBottom, forKey: "Workflow.crop.bottom")
             preferences.set(cropRight, forKey: "Workflow.crop.right"); preferences.set(cropUnit.rawValue, forKey: "Workflow.crop.unit")
-            message = "Ritaglio applicato. Il contenuto escluso resta nel PDF; usa Oscuramento per rimuoverlo."
+            message = L10n.tr("Ritaglio applicato. Il contenuto escluso resta nel PDF; usa Oscuramento per rimuoverlo.")
         } catch { self.error = error.localizedDescription }
     }
 
     private func ensureLiveSource() throws {
-        if hadDocumentOwner && model.documentOwner == nil { throw WorkflowError("Il documento sorgente è stato chiuso. Le copie già preparate restano disponibili; riapri il documento per modificarlo.") }
+        if hadDocumentOwner && model.documentOwner == nil { throw WorkflowError(L10n.tr("Il documento sorgente è stato chiuso. Le copie già preparate restano disponibili; riapri il documento per modificarlo.")) }
         if sourceRevision != model.contentRevision {
             sources = [try model.workflowSource()]; sourceRevision = model.contentRevision
             cropPageIndex = min(cropPageIndex, max(0, model.pageCount - 1)); updateCropImage(); setPreview(sources[0].document)
-            throw WorkflowError("Il documento è cambiato dall’apertura del pannello. L’anteprima è stata aggiornata: ricontrolla la selezione prima di applicare.")
+            throw WorkflowError(L10n.tr("Il documento è cambiato dall’apertura del pannello. L’anteprima è stata aggiornata: ricontrolla la selezione prima di applicare."))
         }
     }
 
     func executeBatch() {
         start { controller in
             controller.outputs = try await WorkflowEngine.runBatch(sources: controller.sources, steps: controller.steps, password: controller.batchPassword, progress: controller.report)
-            controller.selectOutput(0); controller.message = "Procedura completata: \(controller.outputs.count) copie pronte. Scegli la cartella e salva."
+            controller.selectOutput(0); controller.message = L10n.tr("Procedura completata: \(controller.outputs.count) copie pronte. Scegli la cartella e salva.")
         }
     }
 
     func savePreset() {
-        let panel = NSSavePanel(); panel.allowedContentTypes = [.json]; panel.nameFieldStringValue = "Procedura CartaPDF.json"
+        let panel = NSSavePanel(); panel.allowedContentTypes = [.json]; panel.nameFieldStringValue = L10n.tr("Procedura CartaPDF.json")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do { let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]; try encoder.encode(steps).write(to: url, options: .atomic) }
         catch { self.error = error.localizedDescription }
@@ -465,7 +465,7 @@ final class WorkflowController: ObservableObject {
     func loadPreset() {
         let panel = NSOpenPanel(); panel.allowedContentTypes = [.json]
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        do { steps = try JSONDecoder().decode([WorkflowBatchStep].self, from: Data(contentsOf: url)); message = "Procedura caricata. Le password non vengono salvate nei preset." }
+        do { steps = try JSONDecoder().decode([WorkflowBatchStep].self, from: Data(contentsOf: url)); message = L10n.tr("Procedura caricata. Le password non vengono salvate nei preset.") }
         catch { self.error = error.localizedDescription }
     }
 }
@@ -495,10 +495,10 @@ private final class WorkflowWindows: NSObject, NSWindowDelegate {
     private var jobs: [ObjectIdentifier: WorkflowController] = [:]
     func show(model: PDFEditorModel, kind: WorkflowWorkspaceKind) {
         let controller = WorkflowController(model: model, kind: kind)
-        let hosting = NSHostingController(rootView: WorkflowWorkspaceView(controller: controller))
+        let hosting = NSHostingController(rootView: WorkflowWorkspaceView(controller: controller).environment(\.locale, L10n.currentLocale))
         let window = PDFWorkspaceWindow(contentViewController: hosting)
         window.setContentSize(CGSize(width: 1120, height: 780)); window.minSize = CGSize(width: 980, height: 640)
-        window.title = "CartaPDF · \(kind.rawValue)"; window.isReleasedWhenClosed = false; window.delegate = self; window.center()
+        window.title = L10n.tr("CartaPDF · \(L10n.string(kind.rawValue))"); window.isReleasedWhenClosed = false; window.delegate = self; window.center()
         let windowController = NSWindowController(window: window)
         windows.append(windowController); jobs[ObjectIdentifier(window)] = controller
         windowController.showWindow(nil); window.makeKeyAndOrderFront(nil)
@@ -513,8 +513,8 @@ private struct WorkflowPDFPreview: NSViewRepresentable {
     let document: PDFDocument?
     func makeNSView(context: Context) -> PDFView {
         let view = PDFView(); view.autoScales = true; view.displayMode = .singlePageContinuous; view.backgroundColor = .windowBackgroundColor
-        view.setAccessibilityLabel("Anteprima del PDF generato")
-        view.setAccessibilityHelp("Anteprima navigabile PDFKit. Controlla le copie prima di salvarle.")
+        view.setAccessibilityLabel(L10n.tr("Anteprima del PDF generato"))
+        view.setAccessibilityHelp(L10n.tr("Anteprima navigabile PDFKit. Controlla le copie prima di salvarle."))
         return view
     }
     func updateNSView(_ view: PDFView, context: Context) { if view.document !== document { view.document = document; view.autoScales = true } }
@@ -527,11 +527,11 @@ struct WorkflowWorkspaceView: View {
         VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(controller.kind.rawValue).font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                    Text("Elaborazione locale · originali invariati nelle operazioni che generano copie").font(.caption).foregroundStyle(.secondary)
+                    Text(L10n.string(controller.kind.rawValue)).font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                    Text(L10n.tr("Elaborazione locale · originali invariati nelle operazioni che generano copie")).font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
-                if controller.busy { ProgressView(value: controller.progress).frame(width: 150).accessibilityLabel("Avanzamento \(controller.kind.rawValue)").accessibilityValue("\(Int(controller.progress * 100)) percento"); Button("Annulla", action: controller.cancel).keyboardShortcut(.cancelAction).accessibilityLabel("Annulla \(controller.kind.rawValue)") }
+                if controller.busy { ProgressView(value: controller.progress).frame(width: 150).accessibilityLabel(L10n.tr("Avanzamento \(L10n.string(controller.kind.rawValue))")).accessibilityValue(L10n.tr("\(Int(controller.progress * 100)) percento")); Button(L10n.tr("Annulla"), action: controller.cancel).keyboardShortcut(.cancelAction).accessibilityLabel(L10n.tr("Annulla \(L10n.string(controller.kind.rawValue))")) }
             }.padding(20)
             Divider()
             HSplitView {
@@ -556,17 +556,17 @@ struct WorkflowWorkspaceView: View {
             }
             Divider()
             VStack(alignment: .leading, spacing: 5) {
-                if let error = controller.error { CartaPanelAccessibilityStatus(message: error, label: "Errore \(controller.kind.rawValue)", announceOnAppear: true).foregroundStyle(.red) }
-                if !controller.message.isEmpty { CartaPanelAccessibilityStatus(message: controller.message, label: "Stato \(controller.kind.rawValue)", announce: !controller.busy).font(.callout).foregroundStyle(.secondary) }
-                if controller.busy { Text("Puoi annullare: gli output temporanei verranno rimossi.").font(.caption).foregroundStyle(.secondary) }
+                if let error = controller.error { CartaPanelAccessibilityStatus(message: error, label: L10n.tr("Errore \(L10n.string(controller.kind.rawValue))"), announceOnAppear: true).foregroundStyle(.red) }
+                if !controller.message.isEmpty { CartaPanelAccessibilityStatus(message: controller.message, label: L10n.tr("Stato \(L10n.string(controller.kind.rawValue))"), announce: !controller.busy).font(.callout).foregroundStyle(.secondary) }
+                if controller.busy { Text(L10n.tr("Puoi annullare: gli output temporanei verranno rimossi.")).font(.caption).foregroundStyle(.secondary) }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
         }.accessibilityIdentifier("panel.workflow.\(controller.kind.rawValue)")
     }
 
     private var sourceQueue: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack { Text("Documenti · \(controller.totalSelectedPages) pagine selezionate").font(.headline).accessibilityAddTraits(.isHeader); Spacer(); Button("Aggiungi PDF…", action: controller.addFiles) }
-            Text("Trascina i documenti o usa i pulsanti Sposta prima/dopo per riordinarli. Puoi inserire intervalli, pari, dispari o ultima.").font(.caption).foregroundStyle(.secondary)
+            HStack { Text(L10n.tr("Documenti · \(controller.totalSelectedPages) pagine selezionate")).font(.headline).accessibilityAddTraits(.isHeader); Spacer(); Button(L10n.tr("Aggiungi PDF…"), action: controller.addFiles) }
+            Text(L10n.tr("Trascina i documenti o usa i pulsanti Sposta prima/dopo per riordinarli. Puoi inserire intervalli e i comandi \("even"), \("odd") o \("last").")).font(.caption).foregroundStyle(.secondary)
             ForEach(controller.sources) { source in
                 let position = (controller.sources.firstIndex(where: { $0.id == source.id }) ?? 0) + 1
                 VStack(alignment: .leading, spacing: 7) {
@@ -574,31 +574,31 @@ struct WorkflowWorkspaceView: View {
                         Image(systemName: "line.3.horizontal").foregroundStyle(.secondary).accessibilityHidden(true)
                         Text(source.title).font(.headline).lineLimit(2)
                         Spacer()
-                        Button { moveSourceBy(source.id, offset: -1) } label: { Image(systemName: "arrow.up") }.buttonStyle(.borderless).accessibilityLabel("Sposta prima il documento \(position), \(source.title)").disabled(controller.sources.first?.id == source.id)
-                        Button { moveSourceBy(source.id, offset: 1) } label: { Image(systemName: "arrow.down") }.buttonStyle(.borderless).accessibilityLabel("Sposta dopo il documento \(position), \(source.title)").disabled(controller.sources.last?.id == source.id)
-                        Button { controller.removeSource(source.id) } label: { Image(systemName: "xmark.circle") }.buttonStyle(.borderless).help("Rimuovi dalla coda").accessibilityLabel("Rimuovi dalla coda il documento \(position), \(source.title)").accessibilityHint("Conserva il PDF originale.")
+                        Button { moveSourceBy(source.id, offset: -1) } label: { Image(systemName: "arrow.up") }.buttonStyle(.borderless).accessibilityLabel(L10n.tr("Sposta prima il documento \(position), \(source.title)")).disabled(controller.sources.first?.id == source.id)
+                        Button { moveSourceBy(source.id, offset: 1) } label: { Image(systemName: "arrow.down") }.buttonStyle(.borderless).accessibilityLabel(L10n.tr("Sposta dopo il documento \(position), \(source.title)")).disabled(controller.sources.last?.id == source.id)
+                        Button { controller.removeSource(source.id) } label: { Image(systemName: "xmark.circle") }.buttonStyle(.borderless).help(L10n.tr("Rimuovi dalla coda")).accessibilityLabel(L10n.tr("Rimuovi dalla coda il documento \(position), \(source.title)")).accessibilityHint(L10n.tr("Conserva il PDF originale."))
                     }
-                    Text("\(source.document.pageCount) pagine · \(ByteCountFormatter.string(fromByteCount: Int64(source.byteCount), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
-                    TextField("Intervallo", text: Binding(get: { controller.sources.first(where: { $0.id == source.id })?.range ?? "" }, set: { value in
+                    Text(L10n.tr("\(source.document.pageCount) pagine · \(ByteCountFormatter.string(fromByteCount: Int64(source.byteCount), countStyle: .file))")).font(.caption).foregroundStyle(.secondary)
+                    TextField(L10n.tr("Intervallo"), text: Binding(get: { controller.sources.first(where: { $0.id == source.id })?.range ?? "" }, set: { value in
                         if let index = controller.sources.firstIndex(where: { $0.id == source.id }) { controller.sources[index].range = value; controller.invalidatePlan() }
-                    })).textFieldStyle(.roundedBorder).accessibilityLabel("Pagine da usare di \(source.title)").accessibilityHint(sourceRangeHint(source))
+                    })).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Pagine da usare di \(source.title)")).accessibilityHint(sourceRangeHint(source))
                     if let parsed = try? WorkflowEngine.parseRange(source.range, pageCount: source.document.pageCount) {
-                        if !parsed.repeatedPages.isEmpty { Text("Pagine sovrapposte ignorate: \(parsed.repeatedPages.map { String($0 + 1) }.joined(separator: ", "))").font(.caption).foregroundStyle(.orange) }
+                        if !parsed.repeatedPages.isEmpty { Text(L10n.tr("Pagine sovrapposte ignorate: \(parsed.repeatedPages.map { String($0 + 1) }.joined(separator: ", "))")).font(.caption).foregroundStyle(.orange) }
                         HStack(spacing: 5) { ForEach(Array(parsed.indices.prefix(6)), id: \.self) { index in
                             if let page = source.document.page(at: index) {
-                                Image(nsImage: page.thumbnail(of: CGSize(width: 55, height: 70), for: .cropBox)).resizable().scaledToFit().frame(width: 40, height: 52).overlay(alignment: .bottomTrailing) { Text("\(index + 1)").font(.system(size: 9)).padding(2).background(.regularMaterial) }.accessibilityElement(children: .ignore).accessibilityLabel("Miniatura pagina \(index + 1) di \(source.title)")
+                                Image(nsImage: page.thumbnail(of: CGSize(width: 55, height: 70), for: .cropBox)).resizable().scaledToFit().frame(width: 40, height: 52).overlay(alignment: .bottomTrailing) { Text(L10n.tr("\(index + 1)")).font(.system(size: 9)).padding(2).background(.regularMaterial) }.accessibilityElement(children: .ignore).accessibilityLabel(L10n.tr("Miniatura pagina \(index + 1) di \(source.title)"))
                             }
-                        }; if parsed.indices.count > 6 { Text("+\(parsed.indices.count - 6)").font(.caption) } }
+                        }; if parsed.indices.count > 6 { Text(L10n.tr("+\(parsed.indices.count - 6)")).font(.caption) } }
                     } else {
-                        Text((try? rangeError(source)) ?? "Intervallo non valido").font(.caption).foregroundStyle(.red)
+                        Text((try? rangeError(source)) ?? L10n.tr("Intervallo non valido")).font(.caption).foregroundStyle(.red)
                     }
                 }.padding(12).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
-                    .accessibilityElement(children: .contain).accessibilityLabel("Documento \(position), \(source.title)")
+                    .accessibilityElement(children: .contain).accessibilityLabel(L10n.tr("Documento \(position), \(source.title)"))
                     .onDrag { controller.draggedSource = source.id; return NSItemProvider(object: source.id.uuidString as NSString) }
                     .onDrop(of: [.text], delegate: WorkflowSourceDrop(controller: controller, target: source.id))
             }
-            if !controller.duplicateNames.isEmpty { Label("File aggiunti più volte: \(controller.duplicateNames.joined(separator: ", "))", systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange) }
-            if controller.pageFormats.count > 1 { Text("Formati diversi: \(controller.pageFormats.joined(separator: "; "))").font(.caption).foregroundStyle(.orange) }
+            if !controller.duplicateNames.isEmpty { Label(L10n.tr("File aggiunti più volte: \(controller.duplicateNames.joined(separator: ", "))"), systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange) }
+            if controller.pageFormats.count > 1 { Text(L10n.tr("Formati diversi: \(controller.pageFormats.joined(separator: "; "))")).font(.caption).foregroundStyle(.orange) }
         }
     }
 
@@ -608,7 +608,7 @@ struct WorkflowWorkspaceView: View {
 
     private func sourceRangeHint(_ source: WorkflowSource) -> String {
         let error = (try? rangeError(source)) ?? ""
-        return error.isEmpty ? "Intervalli, pari, dispari o ultima. Il documento contiene \(source.document.pageCount) pagine." : "Errore nell’intervallo: \(error)"
+        return error.isEmpty ? L10n.tr("Intervalli e comandi \("even"), \("odd") o \("last"). Il documento contiene \(source.document.pageCount) pagine.") : L10n.tr("Errore nell’intervallo: \(error)")
     }
 
     private func moveSourceBy(_ id: UUID, offset: Int) {
@@ -624,57 +624,57 @@ struct WorkflowWorkspaceView: View {
     private var mergeControls: some View {
         VStack(alignment: .leading, spacing: 16) {
             sourceQueue
-            Picker("Metodo", selection: $controller.mergeMode) { ForEach(WorkflowMergeMode.allCases) { Text($0.rawValue).tag($0) } }
+            Picker(L10n.tr("Metodo"), selection: $controller.mergeMode) { ForEach(WorkflowMergeMode.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
             if controller.mergeMode == .alternate {
-                Text("Primo PDF: fronti. Secondo PDF: retri. Le pagine vengono alternate; quelle in eccesso restano in coda.").font(.caption).foregroundStyle(.secondary)
-                Toggle("Inverti l’ordine dei retri", isOn: $controller.reverseBacks)
+                Text(L10n.tr("Primo PDF: fronti. Secondo PDF: retri. Le pagine vengono alternate; quelle in eccesso restano in coda.")).font(.caption).foregroundStyle(.secondary)
+                Toggle(L10n.tr("Inverti l’ordine dei retri"), isOn: $controller.reverseBacks)
             }
             if controller.mergeMode == .groups {
-                Text("Raggruppa i nomi privi del suffisso numerico: fattura_001 e fattura_002 diventano fattura-unito.pdf. L’ordine della coda è conservato.").font(.caption).foregroundStyle(.secondary)
-                ForEach(WorkflowEngine.groupedSources(controller.sources), id: \.0) { group in Text("\(group.0): \(group.1.count) documenti").font(.caption) }
+                Text(L10n.tr("Raggruppa i nomi privi del suffisso numerico: fattura_001 e fattura_002 diventano fattura-unito.pdf. L’ordine della coda è conservato.")).font(.caption).foregroundStyle(.secondary)
+                ForEach(WorkflowEngine.groupedSources(controller.sources), id: \.0) { group in Text(L10n.tr("\(group.0): \(group.1.count) documenti")).font(.caption) }
             }
-            Toggle("Conserva segnalibri con destinazioni valide", isOn: $controller.keepOutlines)
-            Button("Genera anteprima dell’unione", action: controller.buildMerge).buttonStyle(.borderedProminent).disabled(controller.sources.isEmpty)
+            Toggle(L10n.tr("Conserva segnalibri con destinazioni valide"), isOn: $controller.keepOutlines)
+            Button(L10n.tr("Genera anteprima dell’unione"), action: controller.buildMerge).buttonStyle(.borderedProminent).disabled(controller.sources.isEmpty)
             copyNotice
         }
     }
 
     private var splitControls: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text(controller.firstSource?.title ?? "Nessun PDF").font(.headline)
-            Picker("Dividi per", selection: $controller.splitMode) { ForEach(WorkflowSplitMode.allCases) { Text($0.rawValue).tag($0) } }
+            Text(controller.firstSource?.title ?? L10n.tr("Nessun PDF")).font(.headline)
+            Picker(L10n.tr("Dividi per"), selection: $controller.splitMode) { ForEach(WorkflowSplitMode.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
             switch controller.splitMode {
             case .intervals:
-                TextField("1-3; 4-6; 7-ultima", text: $controller.intervals).textFieldStyle(.roundedBorder).accessibilityLabel("Intervalli per dividere il PDF").accessibilityHint("Punto e virgola separa i file; virgola unisce pagine nello stesso file. \(controller.error ?? "")")
-                Text("Punto e virgola: file separati. Virgola: pagine nello stesso file. Sono ammessi pari, dispari e ultima.").font(.caption).foregroundStyle(.secondary)
+                TextField("1-3; 4-6; 7-last", text: $controller.intervals).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Intervalli per dividere il PDF")).accessibilityHint(L10n.tr("Punto e virgola separa i file; virgola unisce pagine nello stesso file. \(controller.error ?? "")"))
+                Text(L10n.tr("Punto e virgola: file separati. Virgola: pagine nello stesso file. Sono ammessi i comandi \("even"), \("odd") e \("last").")).font(.caption).foregroundStyle(.secondary)
                 if let source = controller.firstSource {
                     ForEach(Array(controller.intervals.split(separator: ";", omittingEmptySubsequences: false).enumerated()), id: \.offset) { _, raw in
                         if let parsed = try? WorkflowEngine.parseRange(String(raw), pageCount: source.document.pageCount) {
-                            Text("\(raw) → \(parsed.indices.count) pagine: \(parsed.indices.prefix(12).map { String($0 + 1) }.joined(separator: ", "))").font(.caption)
+                            Text(L10n.tr("\(raw) → \(parsed.indices.count) pagine: \(parsed.indices.prefix(12).map { String($0 + 1) }.joined(separator: ", "))")).font(.caption)
                             WorkflowThumbnailStrip(source: source, indices: parsed.indices)
-                            if !parsed.repeatedPages.isEmpty { Text("Sovrapposizioni: \(parsed.repeatedPages.map { String($0 + 1) }.joined(separator: ", "))").font(.caption).foregroundStyle(.orange) }
+                            if !parsed.repeatedPages.isEmpty { Text(L10n.tr("Sovrapposizioni: \(parsed.repeatedPages.map { String($0 + 1) }.joined(separator: ", "))")).font(.caption).foregroundStyle(.orange) }
                         } else { Text(rangeError(text: String(raw), pageCount: source.document.pageCount)).font(.caption).foregroundStyle(.red) }
                     }
-                    if !controller.splitOverlap.isEmpty { Text("Pagine presenti in più file: \(controller.splitOverlap.map { String($0 + 1) }.joined(separator: ", "))").font(.caption).foregroundStyle(.orange) }
+                    if !controller.splitOverlap.isEmpty { Text(L10n.tr("Pagine presenti in più file: \(controller.splitOverlap.map { String($0 + 1) }.joined(separator: ", "))")).font(.caption).foregroundStyle(.orange) }
                 }
-            case .everyN: Stepper("Ogni \(controller.splitCount) pagine", value: $controller.splitCount, in: 1...100_000).accessibilityLabel("Pagine per ogni parte").accessibilityValue("\(controller.splitCount) pagine")
+            case .everyN: Stepper(L10n.tr("Ogni \(controller.splitCount) pagine"), value: $controller.splitCount, in: 1...100_000).accessibilityLabel(L10n.tr("Pagine per ogni parte")).accessibilityValue(L10n.tr("\(controller.splitCount) pagine"))
             case .text, .barcode:
-                TextField(controller.splitMode == .text ? "Testo separatore" : "Codice da cercare (vuoto = qualsiasi)", text: $controller.marker).textFieldStyle(.roundedBorder).accessibilityLabel(controller.splitMode == .text ? "Testo che separa le parti" : "Codice a barre che separa le parti").accessibilityHint(controller.splitMode == .text ? "Cerca nel testo selezionabile." : "Lascia vuoto per usare qualsiasi codice riconosciuto.")
-                Toggle("Escludi le pagine separatrici", isOn: $controller.skipMarkers)
-                Text(controller.splitMode == .text ? "La ricerca usa il testo già selezionabile. Per scansioni esegui prima OCR." : "Vision riconosce QR e codici a barre sul Mac. Controlla l’anteprima delle parti.").font(.caption).foregroundStyle(.secondary)
+                TextField(controller.splitMode == .text ? L10n.tr("Testo separatore") : L10n.tr("Codice da cercare (vuoto = qualsiasi)"), text: $controller.marker).textFieldStyle(.roundedBorder).accessibilityLabel(controller.splitMode == .text ? L10n.tr("Testo che separa le parti") : L10n.tr("Codice a barre che separa le parti")).accessibilityHint(controller.splitMode == .text ? L10n.tr("Cerca nel testo selezionabile.") : L10n.tr("Lascia vuoto per usare qualsiasi codice riconosciuto."))
+                Toggle(L10n.tr("Escludi le pagine separatrici"), isOn: $controller.skipMarkers)
+                Text(controller.splitMode == .text ? L10n.tr("La ricerca usa il testo già selezionabile. Per scansioni esegui prima OCR.") : L10n.tr("Vision riconosce QR e codici a barre sul Mac. Controlla l’anteprima delle parti.")).font(.caption).foregroundStyle(.secondary)
             case .blank:
-                Toggle("Escludi le pagine bianche", isOn: $controller.skipMarkers)
-                Slider(value: $controller.blankThreshold, in: 0...0.03) { Text("Tolleranza") }
-                    .accessibilityLabel("Soglia pixel scuri per pagina bianca").accessibilityValue("\(controller.blankThreshold * 100, specifier: "%.2f") percento")
-                Text("Soglia pixel scuri: \(controller.blankThreshold * 100, specifier: "%.2f")%. La classificazione va verificata in anteprima.").font(.caption).foregroundStyle(.secondary)
+                Toggle(L10n.tr("Escludi le pagine bianche"), isOn: $controller.skipMarkers)
+                Slider(value: $controller.blankThreshold, in: 0...0.03) { Text(L10n.tr("Tolleranza")) }
+                    .accessibilityLabel(L10n.tr("Soglia pixel scuri per pagina bianca")).accessibilityValue(L10n.tr("\(controller.blankThreshold * 100, specifier: "%.2f") percento"))
+                Text(L10n.tr("Soglia pixel scuri: \(controller.blankThreshold * 100, specifier: "%.2f")%. La classificazione va verificata in anteprima.")).font(.caption).foregroundStyle(.secondary)
             case .maxBytes:
-                HStack { Text("Limite"); TextField("MB", value: $controller.maxMegabytes, format: .number).frame(width: 80).accessibilityLabel("Dimensione massima per parte, in megabyte"); Text("MB").accessibilityHidden(true) }
-                Text("Il limite viene verificato sui PDF effettivi. Una pagina troppo grande causa un errore; la qualità non viene ridotta automaticamente.").font(.caption).foregroundStyle(.secondary)
-            case .bookmarks: Text("Ogni segnalibro principale con destinazione valida inizia una nuova parte.").font(.caption).foregroundStyle(.secondary)
+                HStack { Text(L10n.tr("Limite")); TextField(L10n.tr("MB"), value: $controller.maxMegabytes, format: .number).frame(width: 80).accessibilityLabel(L10n.tr("Dimensione massima per parte, in megabyte")); Text(L10n.tr("MB")).accessibilityHidden(true) }
+                Text(L10n.tr("Il limite viene verificato sui PDF effettivi. Una pagina troppo grande causa un errore; la qualità non viene ridotta automaticamente.")).font(.caption).foregroundStyle(.secondary)
+            case .bookmarks: Text(L10n.tr("Ogni segnalibro principale con destinazione valida inizia una nuova parte.")).font(.caption).foregroundStyle(.secondary)
             }
-            TextField("Modello nomi", text: $controller.namePattern).textFieldStyle(.roundedBorder).accessibilityLabel("Modello dei nomi delle parti").accessibilityHint("Variabili disponibili: name, index, start, end, pages, label tra parentesi graffe.").onChange(of: controller.namePattern) { _, _ in controller.renameSplitOutputs() }
-            Text("Variabili: {name}, {index:03}, {start}, {end}, {pages}, {label}").font(.caption).foregroundStyle(.secondary)
-            Button("Analizza e prepara anteprima", action: controller.buildSplit).buttonStyle(.borderedProminent)
+            TextField(L10n.tr("Modello nomi"), text: $controller.namePattern).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Modello dei nomi delle parti")).accessibilityHint(L10n.tr("Variabili disponibili: name, index, start, end, pages, label tra parentesi graffe.")).onChange(of: controller.namePattern) { _, _ in controller.renameSplitOutputs() }
+            Text(L10n.tr("Variabili: {name}, {index:03}, {start}, {end}, {pages}, {label}")).font(.caption).foregroundStyle(.secondary)
+            Button(L10n.tr("Analizza e prepara anteprima"), action: controller.buildSplit).buttonStyle(.borderedProminent)
             preparedOutputList
             copyNotice
         }
@@ -682,45 +682,45 @@ struct WorkflowWorkspaceView: View {
 
     private var layoutControls: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Picker("Operazione", selection: $controller.layoutMode) { ForEach(WorkflowLayoutMode.allCases) { Text($0.rawValue).tag($0) } }
+            Picker(L10n.tr("Operazione"), selection: $controller.layoutMode) { ForEach(WorkflowLayoutMode.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
             if controller.layoutMode == .organize { pageOrganizer }
             else if controller.layoutMode == .overlay || controller.layoutMode == .replace {
                 sourceQueue
-                if controller.layoutMode == .overlay { Slider(value: $controller.overlayOpacity, in: 0.05...1) { Text("Opacità") }.accessibilityLabel("Opacità della sovrapposizione").accessibilityValue("\(Int(controller.overlayOpacity * 100)) percento"); Text("Opacità \(Int(controller.overlayOpacity * 100))% · le pagine del secondo PDF vengono ripetute se necessario.").font(.caption) }
-                else { TextField("Pagine da sostituire, es. 2-4", text: $controller.replacementRange).textFieldStyle(.roundedBorder).accessibilityLabel("Pagine da sostituire nel primo PDF").accessibilityHint("Esempio: da 2 a 4. \(controller.error ?? "")"); Text("Il secondo PDF deve fornire lo stesso numero di pagine selezionate.").font(.caption) }
-            } else if controller.layoutMode == .facing { Toggle("Prima metà destra (lettura da destra a sinistra)", isOn: $controller.rightFirst) }
-            else if controller.layoutMode == .contents { TextField("Titolo del sommario", text: $controller.contentsTitle).textFieldStyle(.roundedBorder).accessibilityLabel("Titolo del sommario"); Text("Usa i segnalibri principali; in loro assenza crea una voce per ogni pagina. Ogni voce è cliccabile.").font(.caption) }
+                if controller.layoutMode == .overlay { Slider(value: $controller.overlayOpacity, in: 0.05...1) { Text(L10n.tr("Opacità")) }.accessibilityLabel(L10n.tr("Opacità della sovrapposizione")).accessibilityValue(L10n.tr("\(Int(controller.overlayOpacity * 100)) percento")); Text(L10n.tr("Opacità \(Int(controller.overlayOpacity * 100))% · le pagine del secondo PDF vengono ripetute se necessario.")).font(.caption) }
+                else { TextField(L10n.tr("Pagine da sostituire, es. 2-4"), text: $controller.replacementRange).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Pagine da sostituire nel primo PDF")).accessibilityHint(L10n.tr("Esempio: da 2 a 4. \(controller.error ?? "")")); Text(L10n.tr("Il secondo PDF deve fornire lo stesso numero di pagine selezionate.")).font(.caption) }
+            } else if controller.layoutMode == .facing { Toggle(L10n.tr("Prima metà destra (lettura da destra a sinistra)"), isOn: $controller.rightFirst) }
+            else if controller.layoutMode == .contents { TextField(L10n.tr("Titolo del sommario"), text: $controller.contentsTitle).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Titolo del sommario")); Text(L10n.tr("Usa i segnalibri principali; in loro assenza crea una voce per ogni pagina. Ogni voce è cliccabile.")).font(.caption) }
             else {
                 if controller.layoutMode != .booklet {
-                    Stepper("\(controller.columns) colonne", value: $controller.columns, in: 1...8).accessibilityLabel("Colonne di pagine per foglio").accessibilityValue("\(controller.columns) colonne")
-                    Stepper("\(controller.rows) righe", value: $controller.rows, in: 1...8).accessibilityLabel("Righe di pagine per foglio").accessibilityValue("\(controller.rows) righe")
+                    Stepper(L10n.tr("\(controller.columns) colonne"), value: $controller.columns, in: 1...8).accessibilityLabel(L10n.tr("Colonne di pagine per foglio")).accessibilityValue(L10n.tr("\(controller.columns) colonne"))
+                    Stepper(L10n.tr("\(controller.rows) righe"), value: $controller.rows, in: 1...8).accessibilityLabel(L10n.tr("Righe di pagine per foglio")).accessibilityValue(L10n.tr("\(controller.rows) righe"))
                 }
-                HStack { Text("Foglio pt"); TextField("Larghezza", value: $controller.sheetWidth, format: .number).accessibilityLabel("Larghezza del foglio, in punti"); Text("×").accessibilityHidden(true); TextField("Altezza", value: $controller.sheetHeight, format: .number).accessibilityLabel("Altezza del foglio, in punti") }
-                HStack { Button("A4 orizzontale") { controller.sheetWidth = 841.89; controller.sheetHeight = 595.276 }; Button("A4 verticale") { controller.sheetWidth = 595.276; controller.sheetHeight = 841.89 } }
-                HStack { Text(controller.layoutMode == .poster ? "Sovrapposizione pt" : "Spaziatura pt"); TextField("pt", value: $controller.gutter, format: .number).accessibilityLabel(controller.layoutMode == .poster ? "Sovrapposizione del poster, in punti" : "Spaziatura fra pagine, in punti") }
-                if controller.layoutMode == .booklet { Text("Aggiunge pagine vuote fino a un multiplo di quattro e dispone fronte e retro consecutivi. Stampa fronte/retro con ribaltamento sul lato corto; verifica con una prova.").font(.caption).foregroundStyle(.secondary) }
+                HStack { Text(L10n.tr("Foglio pt")); TextField(L10n.tr("Larghezza"), value: $controller.sheetWidth, format: .number).accessibilityLabel(L10n.tr("Larghezza del foglio, in punti")); Text("×").accessibilityHidden(true); TextField(L10n.tr("Altezza"), value: $controller.sheetHeight, format: .number).accessibilityLabel(L10n.tr("Altezza del foglio, in punti")) }
+                HStack { Button(L10n.tr("A4 orizzontale")) { controller.sheetWidth = 841.89; controller.sheetHeight = 595.276 }; Button(L10n.tr("A4 verticale")) { controller.sheetWidth = 595.276; controller.sheetHeight = 841.89 } }
+                HStack { Text(controller.layoutMode == .poster ? L10n.tr("Sovrapposizione pt") : L10n.tr("Spaziatura pt")); TextField("pt", value: $controller.gutter, format: .number).accessibilityLabel(controller.layoutMode == .poster ? L10n.tr("Sovrapposizione del poster, in punti") : L10n.tr("Spaziatura fra pagine, in punti")) }
+                if controller.layoutMode == .booklet { Text(L10n.tr("Aggiunge pagine vuote fino a un multiplo di quattro e dispone fronte e retro consecutivi. Stampa fronte/retro con ribaltamento sul lato corto; verifica con una prova.")).font(.caption).foregroundStyle(.secondary) }
             }
-            Button("Genera anteprima", action: controller.buildLayout).buttonStyle(.borderedProminent)
-            Text("N-up, libretto, poster, separazione scansioni e sovrapposizione generano PDF statici: il testo/vettori disegnabili restano, campi e annotazioni vengono appiattiti. Organizzazione e sostituzione conservano i campi delle pagine copiate.").font(.caption).foregroundStyle(.secondary)
+            Button(L10n.tr("Genera anteprima"), action: controller.buildLayout).buttonStyle(.borderedProminent)
+            Text(L10n.tr("N-up, libretto, poster, separazione scansioni e sovrapposizione generano PDF statici: il testo/vettori disegnabili restano, campi e annotazioni vengono appiattiti. Organizzazione e sostituzione conservano i campi delle pagine copiate.")).font(.caption).foregroundStyle(.secondary)
             copyNotice
         }
     }
 
     private var pageOrganizer: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("\(controller.pageOrder.count) pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia.").font(.caption).foregroundStyle(.secondary)
+            Text(L10n.tr("\(controller.pageOrder.count) pagine nell’ordine finale. Trascina le miniature; duplica, sposta o elimina prima di aprire la copia.")).font(.caption).foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 105))], spacing: 12) {
                 ForEach(Array(controller.pageOrder.enumerated()), id: \.element.id) { position, token in
                     VStack(spacing: 5) {
                         if let page = controller.firstSource?.document.page(at: token.index) { Image(nsImage: page.thumbnail(of: CGSize(width: 90, height: 120), for: .cropBox)).resizable().scaledToFit().frame(height: 105).accessibilityHidden(true) }
-                        Text("\(position + 1) ← origine \(token.index + 1)").font(.caption2)
+                        Text(L10n.tr("\(position + 1) ← origine \(token.index + 1)")).font(.caption2)
                         HStack(spacing: 9) {
-                            Button { controller.movePageBy(token, offset: -1) } label: { Image(systemName: "arrow.left") }.disabled(position == 0).accessibilityLabel("Sposta prima la pagina in posizione \(position + 1)")
-                            Button { controller.duplicatePage(token) } label: { Image(systemName: "plus.square.on.square") }.help("Duplica in anteprima").accessibilityLabel("Duplica la pagina in posizione \(position + 1)")
-                            Button { controller.movePageBy(token, offset: 1) } label: { Image(systemName: "arrow.right") }.disabled(position == controller.pageOrder.count - 1).accessibilityLabel("Sposta dopo la pagina in posizione \(position + 1)")
-                            Button { controller.deletePage(token) } label: { Image(systemName: "trash") }.disabled(controller.pageOrder.count <= 1).accessibilityLabel("Elimina dalla copia la pagina in posizione \(position + 1)")
+                            Button { controller.movePageBy(token, offset: -1) } label: { Image(systemName: "arrow.left") }.disabled(position == 0).accessibilityLabel(L10n.tr("Sposta prima la pagina in posizione \(position + 1)"))
+                            Button { controller.duplicatePage(token) } label: { Image(systemName: "plus.square.on.square") }.help(L10n.tr("Duplica in anteprima")).accessibilityLabel(L10n.tr("Duplica la pagina in posizione \(position + 1)"))
+                            Button { controller.movePageBy(token, offset: 1) } label: { Image(systemName: "arrow.right") }.disabled(position == controller.pageOrder.count - 1).accessibilityLabel(L10n.tr("Sposta dopo la pagina in posizione \(position + 1)"))
+                            Button { controller.deletePage(token) } label: { Image(systemName: "trash") }.disabled(controller.pageOrder.count <= 1).accessibilityLabel(L10n.tr("Elimina dalla copia la pagina in posizione \(position + 1)"))
                         }.buttonStyle(.borderless)
-                    }.padding(7).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8)).accessibilityElement(children: .contain).accessibilityLabel("Posizione \(position + 1), pagina originale \(token.index + 1)")
+                    }.padding(7).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8)).accessibilityElement(children: .contain).accessibilityLabel(L10n.tr("Posizione \(position + 1), pagina originale \(token.index + 1)"))
                         .onDrag { controller.draggedPage = token.id; return NSItemProvider(object: token.id.uuidString as NSString) }
                         .onDrop(of: [.text], delegate: WorkflowPageDrop(controller: controller, target: token.id))
                 }
@@ -730,69 +730,69 @@ struct WorkflowWorkspaceView: View {
 
     private var selectionControls: some View {
         VStack(alignment: .leading, spacing: 5) {
-            TextField("Pagine: tutte, 1-3, pari…", text: $controller.selectionRange).textFieldStyle(.roundedBorder).accessibilityLabel("Pagine a cui applicare la modifica").accessibilityHint(controller.selectionError.map { "Errore: \($0)" } ?? "Sono ammessi intervalli, pari, dispari, ultima e tutte.")
-            if let error = controller.selectionError { Text(error).font(.caption).foregroundStyle(.red).accessibilityLabel("Errore selezione pagine: \(error)") }
-            else { Text("\(controller.selectedIndices?.indices.count ?? 0) pagine selezionate").font(.caption).foregroundStyle(.secondary) }
+            TextField(L10n.tr("Pagine: \("all"), 1-3, \("even")…"), text: $controller.selectionRange).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Pagine a cui applicare la modifica")).accessibilityHint(controller.selectionError.map { L10n.tr("Errore: \($0)") } ?? L10n.tr("Sono ammessi intervalli e i comandi \("even"), \("odd"), \("last") e \("all")."))
+            if let error = controller.selectionError { Text(error).font(.caption).foregroundStyle(.red).accessibilityLabel(L10n.tr("Errore selezione pagine: \(error)")) }
+            else { Text(L10n.tr("\(controller.selectedIndices?.indices.count ?? 0) pagine selezionate")).font(.caption).foregroundStyle(.secondary) }
         }
     }
 
     private var watermarkControls: some View {
         VStack(alignment: .leading, spacing: 14) {
             selectionControls
-            TextField("Testo della filigrana", text: $controller.watermark.text).textFieldStyle(.roundedBorder).accessibilityLabel("Testo della filigrana")
-            Picker("Carattere", selection: $controller.watermark.fontName) { ForEach(["Helvetica", "Helvetica-Bold", "Times-Roman", "Courier"], id: \.self) { Text($0).tag($0) } }
-            HStack { Text("Dimensione pt"); TextField("pt", value: double($controller.watermark.fontSize), format: .number).accessibilityLabel("Dimensione del carattere della filigrana, in punti") }
-            Picker("Posizione", selection: $controller.watermark.position) { ForEach(WorkflowPosition.allCases) { Text($0.rawValue).tag($0) } }
-            Slider(value: $controller.watermark.opacity, in: 0.05...1) { Text("Opacità") }
-                .accessibilityLabel("Opacità della filigrana").accessibilityValue("\(Int(controller.watermark.opacity * 100)) percento")
-            Text("Opacità \(Int(controller.watermark.opacity * 100))%")
-            ColorPicker("Colore", selection: Binding(get: { Color(nsColor: controller.watermark.color) }, set: { controller.watermark.color = NSColor($0) }), supportsOpacity: false)
-            HStack { Text("Margine pt"); TextField("pt", value: double($controller.watermark.margin), format: .number).accessibilityLabel("Margine della filigrana, in punti") }
-            Button("Aggiorna anteprima", action: controller.buildWatermarkPreview)
-            Button("Applica al documento", action: controller.applyWatermark).buttonStyle(.borderedProminent).disabled(controller.selectionError != nil || !controller.model.canEditAnnotations)
-            Text("La filigrana è un’annotazione modificabile e annullabile. La protezione del documento corrente viene conservata al salvataggio.").font(.caption).foregroundStyle(.secondary)
+            TextField(L10n.tr("Testo della filigrana"), text: $controller.watermark.text).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Testo della filigrana"))
+            Picker(L10n.tr("Carattere"), selection: $controller.watermark.fontName) { ForEach(["Helvetica", "Helvetica-Bold", "Times-Roman", "Courier"], id: \.self) { Text($0).tag($0) } }
+            HStack { Text(L10n.tr("Dimensione pt")); TextField("pt", value: double($controller.watermark.fontSize), format: .number).accessibilityLabel(L10n.tr("Dimensione del carattere della filigrana, in punti")) }
+            Picker(L10n.tr("Posizione"), selection: $controller.watermark.position) { ForEach(WorkflowPosition.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
+            Slider(value: $controller.watermark.opacity, in: 0.05...1) { Text(L10n.tr("Opacità")) }
+                .accessibilityLabel(L10n.tr("Opacità della filigrana")).accessibilityValue(L10n.tr("\(Int(controller.watermark.opacity * 100)) percento"))
+            Text(L10n.tr("Opacità \(Int(controller.watermark.opacity * 100))%"))
+            ColorPicker(L10n.tr("Colore"), selection: Binding(get: { Color(nsColor: controller.watermark.color) }, set: { controller.watermark.color = NSColor($0) }), supportsOpacity: false)
+            HStack { Text(L10n.tr("Margine pt")); TextField("pt", value: double($controller.watermark.margin), format: .number).accessibilityLabel(L10n.tr("Margine della filigrana, in punti")) }
+            Button(L10n.tr("Aggiorna anteprima"), action: controller.buildWatermarkPreview)
+            Button(L10n.tr("Applica al documento"), action: controller.applyWatermark).buttonStyle(.borderedProminent).disabled(controller.selectionError != nil || !controller.model.canEditAnnotations)
+            Text(L10n.tr("La filigrana è un’annotazione modificabile e annullabile. La protezione del documento corrente viene conservata al salvataggio.")).font(.caption).foregroundStyle(.secondary)
         }
     }
 
     private var numberingControls: some View {
         VStack(alignment: .leading, spacing: 14) {
             selectionControls
-            TextField("Intestazione", text: $controller.numbering.header).textFieldStyle(.roundedBorder)
-            Toggle("Numerazione Bates nel piè di pagina", isOn: $controller.numbering.usesBates)
+            TextField(L10n.tr("Intestazione"), text: $controller.numbering.header).textFieldStyle(.roundedBorder)
+            Toggle(L10n.tr("Numerazione Bates nel piè di pagina"), isOn: $controller.numbering.usesBates)
             if controller.numbering.usesBates {
-                TextField("Prefisso", text: $controller.numbering.batesPrefix).textFieldStyle(.roundedBorder).accessibilityLabel("Prefisso della numerazione Bates")
-                HStack { Text("Primo numero"); TextField("1", value: $controller.numbering.start, format: .number).accessibilityLabel("Primo numero Bates"); Text("Cifre"); TextField("6", value: $controller.numbering.padding, format: .number).frame(width: 50).accessibilityLabel("Cifre della numerazione Bates") }
-                Text(controller.batesPreview).font(.system(.callout, design: .monospaced)).textSelection(.enabled).accessibilityLabel("Anteprima numerazione Bates").accessibilityValue(controller.batesPreview)
-            } else { TextField("Piè di pagina", text: $controller.numbering.footer).textFieldStyle(.roundedBorder) }
-            Text("Variabili: {page}, {pages}, {name}, {date}, {bates}").font(.caption).foregroundStyle(.secondary)
-            HStack { Text("Font pt"); TextField("10", value: double($controller.numbering.fontSize), format: .number).accessibilityLabel("Dimensione del carattere della numerazione, in punti"); Text("Margine pt"); TextField("18", value: double($controller.numbering.margin), format: .number).accessibilityLabel("Margine della numerazione, in punti") }
-            if controller.existingNumbers > 0 { Text("Sono state riconosciute \(controller.existingNumbers) numerazioni: verifica eventuali sovrapposizioni.").font(.caption).foregroundStyle(.orange); Toggle("Sostituisci le numerazioni riconosciute", isOn: $controller.replaceNumbers) }
-            Button("Controlla spazio e anteprima", action: controller.buildNumberingPreview)
-            Button("Applica al documento", action: controller.applyNumbering).buttonStyle(.borderedProminent).disabled(controller.selectionError != nil || !controller.model.canEditAnnotations)
-            Text("Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme.").font(.caption).foregroundStyle(.secondary)
+                TextField(L10n.tr("Prefisso"), text: $controller.numbering.batesPrefix).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Prefisso della numerazione Bates"))
+                HStack { Text(L10n.tr("Primo numero")); TextField("1", value: $controller.numbering.start, format: .number).accessibilityLabel(L10n.tr("Primo numero Bates")); Text(L10n.tr("Cifre")); TextField("6", value: $controller.numbering.padding, format: .number).frame(width: 50).accessibilityLabel(L10n.tr("Cifre della numerazione Bates")) }
+                Text(controller.batesPreview).font(.system(.callout, design: .monospaced)).textSelection(.enabled).accessibilityLabel(L10n.tr("Anteprima numerazione Bates")).accessibilityValue(controller.batesPreview)
+            } else { TextField(L10n.tr("Piè di pagina"), text: $controller.numbering.footer).textFieldStyle(.roundedBorder) }
+            Text(L10n.tr("Variabili: {page}, {pages}, {name}, {date}, {bates}")).font(.caption).foregroundStyle(.secondary)
+            HStack { Text(L10n.tr("Font pt")); TextField("10", value: double($controller.numbering.fontSize), format: .number).accessibilityLabel(L10n.tr("Dimensione del carattere della numerazione, in punti")); Text(L10n.tr("Margine pt")); TextField("18", value: double($controller.numbering.margin), format: .number).accessibilityLabel(L10n.tr("Margine della numerazione, in punti")) }
+            if controller.existingNumbers > 0 { Text(L10n.tr("Sono state riconosciute \(controller.existingNumbers) numerazioni: verifica eventuali sovrapposizioni.")).font(.caption).foregroundStyle(.orange); Toggle(L10n.tr("Sostituisci le numerazioni riconosciute"), isOn: $controller.replaceNumbers) }
+            Button(L10n.tr("Controlla spazio e anteprima"), action: controller.buildNumberingPreview)
+            Button(L10n.tr("Applica al documento"), action: controller.applyNumbering).buttonStyle(.borderedProminent).disabled(controller.selectionError != nil || !controller.model.canEditAnnotations)
+            Text(L10n.tr("Font, modelli e parametri Bates vengono ricordati sul Mac. Le modifiche sono annullabili insieme.")).font(.caption).foregroundStyle(.secondary)
         }
     }
 
     private var cropControls: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Stepper("Pagina \(controller.cropPageIndex + 1)", value: $controller.cropPageIndex, in: 0...max(0, (controller.firstSource?.document.pageCount ?? 1) - 1)).accessibilityLabel("Pagina di anteprima del ritaglio").accessibilityValue("\(controller.cropPageIndex + 1)").onChange(of: controller.cropPageIndex) { _, _ in controller.updateCropImage() }
-            Picker("Unità", selection: $controller.cropUnit) { ForEach(WorkflowUnit.allCases) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented)
-            cropField("Superiore", value: $controller.cropTop); cropField("Sinistro", value: $controller.cropLeft)
-            cropField("Inferiore", value: $controller.cropBottom); cropField("Destro", value: $controller.cropRight)
-            Text("Risultato: \((controller.cropBounds.width - controller.cropLeft - controller.cropRight) / controller.cropUnit.factor, specifier: "%.2f") × \((controller.cropBounds.height - controller.cropTop - controller.cropBottom) / controller.cropUnit.factor, specifier: "%.2f") \(controller.cropUnit.rawValue)")
-            Text("Trascina i quattro punti sui lati dell’anteprima. La pagina è mostrata senza rotazione per allineare i margini PDF.").font(.caption).foregroundStyle(.secondary)
+            Stepper(L10n.tr("Pagina \(controller.cropPageIndex + 1)"), value: $controller.cropPageIndex, in: 0...max(0, (controller.firstSource?.document.pageCount ?? 1) - 1)).accessibilityLabel(L10n.tr("Pagina di anteprima del ritaglio")).accessibilityValue(L10n.tr("\(controller.cropPageIndex + 1)")).onChange(of: controller.cropPageIndex) { _, _ in controller.updateCropImage() }
+            Picker(L10n.tr("Unità"), selection: $controller.cropUnit) { ForEach(WorkflowUnit.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }.pickerStyle(.segmented)
+            cropField(L10n.tr("Superiore"), value: $controller.cropTop); cropField(L10n.tr("Sinistro"), value: $controller.cropLeft)
+            cropField(L10n.tr("Inferiore"), value: $controller.cropBottom); cropField(L10n.tr("Destro"), value: $controller.cropRight)
+            Text(L10n.tr("Risultato: \((controller.cropBounds.width - controller.cropLeft - controller.cropRight) / controller.cropUnit.factor, specifier: "%.2f") × \((controller.cropBounds.height - controller.cropTop - controller.cropBottom) / controller.cropUnit.factor, specifier: "%.2f") \(controller.cropUnit.rawValue)"))
+            Text(L10n.tr("Trascina i quattro punti sui lati dell’anteprima. La pagina è mostrata senza rotazione per allineare i margini PDF.")).font(.caption).foregroundStyle(.secondary)
             if let warning = controller.cropValidation { Text(warning).foregroundStyle(.red) }
-            Button("Applica ritaglio", action: controller.applyCrop).buttonStyle(.borderedProminent).disabled(controller.cropValidation != nil || !controller.model.canEditDocument)
-            Button("Azzera margini") { controller.cropTop = 0; controller.cropLeft = 0; controller.cropBottom = 0; controller.cropRight = 0 }
-            Text("Il ritaglio nasconde il contenuto esterno e non lo elimina. Per dati sensibili usa Oscuramento. Gli ultimi margini vengono ricordati localmente.").font(.caption).foregroundStyle(.secondary)
+            Button(L10n.tr("Applica ritaglio"), action: controller.applyCrop).buttonStyle(.borderedProminent).disabled(controller.cropValidation != nil || !controller.model.canEditDocument)
+            Button(L10n.tr("Azzera margini")) { controller.cropTop = 0; controller.cropLeft = 0; controller.cropBottom = 0; controller.cropRight = 0 }
+            Text(L10n.tr("Il ritaglio nasconde il contenuto esterno e non lo elimina. Per dati sensibili usa Oscuramento. Gli ultimi margini vengono ricordati localmente.")).font(.caption).foregroundStyle(.secondary)
         }
     }
 
     private func cropField(_ title: String, value: Binding<Double>) -> some View {
         HStack { Text(title).frame(width: 95, alignment: .leading); TextField(title, value: Binding(get: { value.wrappedValue / controller.cropUnit.factor }, set: { value.wrappedValue = $0 * controller.cropUnit.factor }), format: .number.precision(.fractionLength(0...3)))
-                .accessibilityLabel("Margine \(title.lowercased()) del ritaglio, in \(controller.cropUnit.rawValue)")
-                .accessibilityHint(controller.cropValidation ?? "I margini sono regolabili da tastiera; la stessa impostazione è mostrata nei punti di trascinamento dell’anteprima.")
-            Text(controller.cropUnit.rawValue).accessibilityHidden(true) }
+                .accessibilityLabel(L10n.tr("Margine \(title.lowercased()) del ritaglio, in \(controller.cropUnit.rawValue)"))
+                .accessibilityHint(controller.cropValidation ?? L10n.tr("I margini sono regolabili da tastiera; la stessa impostazione è mostrata nei punti di trascinamento dell’anteprima."))
+            Text(L10n.string(controller.cropUnit.rawValue)).accessibilityHidden(true) }
     }
 
     private func double(_ value: Binding<CGFloat>) -> Binding<Double> { Binding(get: { Double(value.wrappedValue) }, set: { value.wrappedValue = CGFloat($0) }) }
@@ -800,50 +800,50 @@ struct WorkflowWorkspaceView: View {
     private var batchControls: some View {
         VStack(alignment: .leading, spacing: 14) {
             sourceQueue
-            HStack { Text("Procedura").font(.headline).accessibilityAddTraits(.isHeader); Spacer(); Button("Carica…", action: controller.loadPreset).accessibilityLabel("Carica procedura locale"); Button("Salva…", action: controller.savePreset).accessibilityLabel("Salva procedura locale") }
+            HStack { Text(L10n.tr("Procedura")).font(.headline).accessibilityAddTraits(.isHeader); Spacer(); Button(L10n.tr("Carica…"), action: controller.loadPreset).accessibilityLabel(L10n.tr("Carica procedura locale")); Button(L10n.tr("Salva…"), action: controller.savePreset).accessibilityLabel(L10n.tr("Salva procedura locale")) }
             ForEach($controller.steps) { $step in
                 let position = (controller.steps.firstIndex(where: { $0.id == step.id }) ?? 0) + 1
                 VStack(alignment: .leading, spacing: 7) {
                     HStack {
-                        Text(step.kind.rawValue).font(.headline).accessibilityAddTraits(.isHeader)
+                        Text(L10n.string(step.kind.rawValue)).font(.headline).accessibilityAddTraits(.isHeader)
                         Spacer()
-                        Button { moveStep(step.id, -1) } label: { Image(systemName: "arrow.up") }.buttonStyle(.borderless).accessibilityLabel("Sposta prima il passaggio \(position), \(step.kind.rawValue)").disabled(controller.steps.first?.id == step.id)
-                        Button { moveStep(step.id, 1) } label: { Image(systemName: "arrow.down") }.buttonStyle(.borderless).accessibilityLabel("Sposta dopo il passaggio \(position), \(step.kind.rawValue)").disabled(controller.steps.last?.id == step.id)
-                        Button { controller.steps.removeAll { $0.id == step.id } } label: { Image(systemName: "trash") }.buttonStyle(.borderless).accessibilityLabel("Rimuovi il passaggio \(position), \(step.kind.rawValue)")
+                        Button { moveStep(step.id, -1) } label: { Image(systemName: "arrow.up") }.buttonStyle(.borderless).accessibilityLabel(L10n.tr("Sposta prima il passaggio \(position), \(L10n.string(step.kind.rawValue))")).disabled(controller.steps.first?.id == step.id)
+                        Button { moveStep(step.id, 1) } label: { Image(systemName: "arrow.down") }.buttonStyle(.borderless).accessibilityLabel(L10n.tr("Sposta dopo il passaggio \(position), \(L10n.string(step.kind.rawValue))")).disabled(controller.steps.last?.id == step.id)
+                        Button { controller.steps.removeAll { $0.id == step.id } } label: { Image(systemName: "trash") }.buttonStyle(.borderless).accessibilityLabel(L10n.tr("Rimuovi il passaggio \(position), \(L10n.string(step.kind.rawValue))"))
                     }
                     switch step.kind {
-                    case .watermark, .numbers, .bates, .extract: TextField("Testo, prefisso o intervallo", text: $step.text).textFieldStyle(.roundedBorder).accessibilityLabel(batchTextLabel(step.kind))
+                    case .watermark, .numbers, .bates, .extract: TextField(L10n.tr("Testo, prefisso o intervallo"), text: $step.text).textFieldStyle(.roundedBorder).accessibilityLabel(batchTextLabel(step.kind))
                     default: EmptyView()
                     }
                     switch step.kind {
                     case .rotate, .crop, .watermark, .numbers, .bates, .split, .nUp, .flatten, .jpeg:
-                        HStack { Text(parameterName(step.kind)); TextField("Valore", value: $step.value, format: .number).accessibilityLabel("\(step.kind.rawValue): \(parameterName(step.kind))") }
+                        HStack { Text(parameterName(step.kind)); TextField(L10n.tr("Valore"), value: $step.value, format: .number).accessibilityLabel(L10n.tr("\(L10n.string(step.kind.rawValue)): \(parameterName(step.kind))")) }
                     default: EmptyView()
                     }
-                    if [.nUp, .bates, .jpeg].contains(step.kind) { HStack { Text(step.kind == .nUp ? "Righe" : step.kind == .bates ? "Cifre" : "Qualità 0…1"); TextField("Valore", value: $step.secondary, format: .number).accessibilityLabel("\(step.kind.rawValue): \(step.kind == .nUp ? "righe" : step.kind == .bates ? "cifre" : "qualità JPEG da zero a uno")") } }
-                    if step.kind == .protect { SecureField("Password delle copie", text: $controller.batchPassword).textFieldStyle(.roundedBorder).accessibilityLabel("Password per proteggere le copie finali").accessibilityHint("Non viene salvata nel preset; viene rimossa dal campo al termine."); Text("La password non entra nei preset e viene rimossa dal campo a fine elaborazione.").font(.caption) }
-                }.padding(11).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8)).accessibilityElement(children: .contain).accessibilityLabel("Passaggio \(position), \(step.kind.rawValue)")
+                    if [.nUp, .bates, .jpeg].contains(step.kind) { HStack { Text(step.kind == .nUp ? L10n.tr("Righe") : step.kind == .bates ? L10n.tr("Cifre") : L10n.tr("Qualità 0…1")); TextField(L10n.tr("Valore"), value: $step.secondary, format: .number).accessibilityLabel(L10n.tr("\(L10n.string(step.kind.rawValue)): \(step.kind == .nUp ? L10n.tr("righe") : step.kind == .bates ? L10n.tr("cifre") : L10n.tr("qualità JPEG da zero a uno"))")) } }
+                    if step.kind == .protect { SecureField(L10n.tr("Password delle copie"), text: $controller.batchPassword).textFieldStyle(.roundedBorder).accessibilityLabel(L10n.tr("Password per proteggere le copie finali")).accessibilityHint(L10n.tr("Non viene salvata nel preset; viene rimossa dal campo al termine.")); Text(L10n.tr("La password non entra nei preset e viene rimossa dal campo a fine elaborazione.")).font(.caption) }
+                }.padding(11).background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8)).accessibilityElement(children: .contain).accessibilityLabel(L10n.tr("Passaggio \(position), \(L10n.string(step.kind.rawValue))"))
             }
-            HStack { Picker("Passaggio", selection: $controller.newStep) { ForEach(WorkflowBatchKind.allCases) { Text($0.rawValue).tag($0) } }; Button("Aggiungi") { controller.steps.append(WorkflowBatchStep(kind: controller.newStep)) }.accessibilityLabel("Aggiungi il passaggio selezionato alla procedura") }
-            Button("Esegui la procedura sulle copie", action: controller.executeBatch).buttonStyle(.borderedProminent).disabled(controller.sources.isEmpty || controller.steps.isEmpty)
-            Text("I passaggi operano nell’ordine indicato. OCR e copie raster possono appiattire annotazioni e campi; controlla le copie prima del salvataggio. La protezione viene applicata alla copia finale.").font(.caption).foregroundStyle(.secondary)
+            HStack { Picker(L10n.tr("Passaggio"), selection: $controller.newStep) { ForEach(WorkflowBatchKind.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }; Button(L10n.tr("Aggiungi")) { controller.steps.append(WorkflowBatchStep(kind: controller.newStep)) }.accessibilityLabel(L10n.tr("Aggiungi il passaggio selezionato alla procedura")) }
+            Button(L10n.tr("Esegui la procedura sulle copie"), action: controller.executeBatch).buttonStyle(.borderedProminent).disabled(controller.sources.isEmpty || controller.steps.isEmpty)
+            Text(L10n.tr("I passaggi operano nell’ordine indicato. OCR e copie raster possono appiattire annotazioni e campi; controlla le copie prima del salvataggio. La protezione viene applicata alla copia finale.")).font(.caption).foregroundStyle(.secondary)
             preparedOutputList
             copyNotice
         }
     }
 
     private func parameterName(_ kind: WorkflowBatchKind) -> String {
-        switch kind { case .rotate: return "Gradi (multipli di 90)"; case .crop: return "Margine pt"; case .split: return "Pagine per parte"
-        case .nUp: return "Colonne"; case .flatten, .jpeg: return "DPI"; case .bates: return "Primo numero"; default: return "Font pt" }
+        switch kind { case .rotate: return L10n.tr("Gradi (multipli di 90)"); case .crop: return L10n.tr("Margine pt"); case .split: return L10n.tr("Pagine per parte")
+        case .nUp: return L10n.tr("Colonne"); case .flatten, .jpeg: return "DPI"; case .bates: return L10n.tr("Primo numero"); default: return L10n.tr("Font pt") }
     }
 
     private func batchTextLabel(_ kind: WorkflowBatchKind) -> String {
         switch kind {
-        case .watermark: return "Testo del passaggio filigrana"
-        case .numbers: return "Modello del passaggio numerazione"
-        case .bates: return "Prefisso del passaggio Bates"
-        case .extract: return "Intervallo del passaggio estrazione pagine"
-        default: return "Testo del passaggio \(kind.rawValue)"
+        case .watermark: return L10n.tr("Testo del passaggio filigrana")
+        case .numbers: return L10n.tr("Modello del passaggio numerazione")
+        case .bates: return L10n.tr("Prefisso del passaggio Bates")
+        case .extract: return L10n.tr("Intervallo del passaggio estrazione pagine")
+        default: return L10n.tr("Testo del passaggio \(L10n.string(kind.rawValue))")
         }
     }
 
@@ -854,12 +854,12 @@ struct WorkflowWorkspaceView: View {
 
     private var preparedOutputList: some View {
         VStack(alignment: .leading, spacing: 7) {
-            if !controller.outputs.isEmpty { Text("\(controller.outputs.count) file previsti").font(.headline) }
+            if !controller.outputs.isEmpty { Text(L10n.tr("\(controller.outputs.count) file previsti")).font(.headline) }
             ForEach(Array(controller.outputs.enumerated()), id: \.offset) { index, output in
                 Button { controller.selectOutput(index) } label: {
-                    HStack(alignment: .top) { Image(systemName: "doc.richtext"); VStack(alignment: .leading) { Text(controller.finalName(index)).lineLimit(2); Text("\(output.document.pageCount) pagine").font(.caption).foregroundStyle(.secondary) }; Spacer() }
+                    HStack(alignment: .top) { Image(systemName: "doc.richtext"); VStack(alignment: .leading) { Text(controller.finalName(index)).lineLimit(2); Text(L10n.tr("\(output.document.pageCount) pagine")).font(.caption).foregroundStyle(.secondary) }; Spacer() }
                 }.buttonStyle(.plain).padding(7).background(index == controller.selectedOutput ? Color.accentColor.opacity(0.12) : .clear, in: RoundedRectangle(cornerRadius: 6))
-                    .accessibilityLabel("Anteprima \(controller.finalName(index)), \(output.document.pageCount) pagine")
+                    .accessibilityLabel(L10n.tr("Anteprima \(controller.finalName(index)), \(output.document.pageCount) pagine"))
                     .accessibilityAddTraits(index == controller.selectedOutput ? .isSelected : [])
             }
         }
@@ -868,26 +868,26 @@ struct WorkflowWorkspaceView: View {
     private var outputControls: some View {
         VStack(alignment: .leading, spacing: 8) {
             if controller.outputs.count > 1 {
-                Picker("Anteprima", selection: Binding(get: { controller.selectedOutput }, set: { controller.selectOutput($0) })) {
+                Picker(L10n.tr("Anteprima"), selection: Binding(get: { controller.selectedOutput }, set: { controller.selectOutput($0) })) {
                     ForEach(Array(controller.outputs.enumerated()), id: \.offset) { Text($0.element.name).tag($0.offset) }
                 }
             }
-            HStack { Button("Cartella…", action: controller.chooseDirectory).accessibilityLabel("Scegli cartella delle copie").accessibilityValue(controller.directory?.path ?? "Nessuna cartella selezionata"); Text(controller.directory?.lastPathComponent ?? "Scegli la destinazione").font(.caption).lineLimit(1).accessibilityLabel("Cartella di destinazione").accessibilityValue(controller.directory?.path ?? "Non selezionata"); Spacer() }
-            Picker("File esistenti", selection: $controller.conflictPolicy) { ForEach(WorkflowConflictPolicy.allCases) { Text($0.rawValue).tag($0) } }
+            HStack { Button(L10n.tr("Cartella…"), action: controller.chooseDirectory).accessibilityLabel(L10n.tr("Scegli cartella delle copie")).accessibilityValue(controller.directory?.path ?? L10n.tr("Nessuna cartella selezionata")); Text(controller.directory?.lastPathComponent ?? L10n.tr("Scegli la destinazione")).font(.caption).lineLimit(1).accessibilityLabel(L10n.tr("Cartella di destinazione")).accessibilityValue(controller.directory?.path ?? L10n.tr("Non selezionata")); Spacer() }
+            Picker(L10n.tr("File esistenti"), selection: $controller.conflictPolicy) { ForEach(WorkflowConflictPolicy.allCases) { Text(L10n.string($0.rawValue)).tag($0) } }
             if !controller.conflicts.isEmpty {
-                DisclosureGroup("\(controller.conflicts.count) file esistenti in conflitto") {
+                DisclosureGroup(L10n.tr("\(controller.conflicts.count) file esistenti in conflitto")) {
                     ForEach(Array(controller.conflicts.enumerated()), id: \.offset) { Text($0.element).font(.caption).foregroundStyle(.orange) }
                 }.font(.caption)
             }
             HStack {
-                Button("Apri copia selezionata", action: controller.openSelectedOutput)
-                Button("Salva copie verificate", action: controller.saveOutputs).buttonStyle(.borderedProminent)
-                if !controller.outputURLs.isEmpty { Button("Mostra nel Finder", action: controller.revealOutputs) }
+                Button(L10n.tr("Apri copia selezionata"), action: controller.openSelectedOutput)
+                Button(L10n.tr("Salva copie verificate"), action: controller.saveOutputs).buttonStyle(.borderedProminent)
+                if !controller.outputURLs.isEmpty { Button(L10n.tr("Mostra nel Finder"), action: controller.revealOutputs) }
             }.disabled(controller.busy)
         }
     }
 
-    private var copyNotice: some View { Text("Le copie generate non ereditano password o firme digitali delle sorgenti. La struttura delle pagine copiate viene conservata; proteggi le copie se necessario.").font(.caption).foregroundStyle(.secondary) }
+    private var copyNotice: some View { Text(L10n.tr("Le copie generate non ereditano password o firme digitali delle sorgenti. La struttura delle pagine copiate viene conservata; proteggi le copie se necessario.")).font(.caption).foregroundStyle(.secondary) }
 }
 
 @MainActor
@@ -900,11 +900,11 @@ private struct WorkflowThumbnailStrip: View {
                 if let page = source.document.page(at: index) {
                     Image(nsImage: CartaThumbnailCache.shared.image(page: page, documentID: source.id.uuidString, revision: 0, index: index))
                         .resizable().scaledToFit().frame(width: 42, height: 56)
-                        .overlay(alignment: .bottomTrailing) { Text("\(index + 1)").font(.system(size: 9)).padding(2).background(.regularMaterial) }
-                        .accessibilityElement(children: .ignore).accessibilityLabel("Miniatura pagina \(index + 1) di \(source.title)")
+                        .overlay(alignment: .bottomTrailing) { Text(L10n.tr("\(index + 1)")).font(.system(size: 9)).padding(2).background(.regularMaterial) }
+                        .accessibilityElement(children: .ignore).accessibilityLabel(L10n.tr("Miniatura pagina \(index + 1) di \(source.title)"))
                 }
             }
-            if indices.count > 6 { Text("+\(indices.count - 6)").font(.caption) }
+            if indices.count > 6 { Text(L10n.tr("+\(indices.count - 6)")).font(.caption) }
         }
     }
 }
@@ -950,9 +950,9 @@ private struct WorkflowCropCanvas: View {
                 handle(at: CGPoint(x: right, y: (top + bottom) / 2)) { translation in controller.cropRight = min(max(0, controller.cropRight - translation.width / scale), max(0, box.width - controller.cropLeft - 18)) }
             }.frame(width: size.width, height: size.height).position(x: geometry.size.width / 2, y: geometry.size.height / 2)
         }.accessibilityElement(children: .ignore)
-            .accessibilityLabel("Anteprima visiva del ritaglio, pagina \(controller.cropPageIndex + 1)")
-            .accessibilityValue("Margini in punti: superiore \(controller.cropTop, specifier: "%.2f"), sinistro \(controller.cropLeft, specifier: "%.2f"), inferiore \(controller.cropBottom, specifier: "%.2f"), destro \(controller.cropRight, specifier: "%.2f")")
-            .accessibilityHint("Per regolare il ritaglio da tastiera usa i quattro campi dei margini nel pannello a sinistra.")
+            .accessibilityLabel(L10n.tr("Anteprima visiva del ritaglio, pagina \(controller.cropPageIndex + 1)"))
+            .accessibilityValue(L10n.tr("Margini in punti: superiore \(controller.cropTop, specifier: "%.2f"), sinistro \(controller.cropLeft, specifier: "%.2f"), inferiore \(controller.cropBottom, specifier: "%.2f"), destro \(controller.cropRight, specifier: "%.2f")"))
+            .accessibilityHint(L10n.tr("Per regolare il ritaglio da tastiera usa i quattro campi dei margini nel pannello a sinistra."))
     }
 
     private func handle(at point: CGPoint, change: @escaping (CGSize) -> Void) -> some View {

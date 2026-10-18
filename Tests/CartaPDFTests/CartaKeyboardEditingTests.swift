@@ -33,7 +33,7 @@ final class CartaKeyboardEditingTests: XCTestCase {
         let annotation = try model.createKeyboardAnnotation(kind: .text, pageIndex: 0, content: "Originale", bounds: initial)
         let controller = CartaKeyboardEditingController(model: model)
         XCTAssertEqual(controller.selected?.annotation, annotation)
-        XCTAssertTrue(controller.selected?.label.contains("Pagina 1, Testo, Originale") == true)
+        XCTAssertEqual(controller.selected?.label, L10n.tr("Pagina \(1), \(L10n.tr("Testo")), \("Originale")"))
         controller.x = 140; controller.y = 180; controller.width = 190; controller.height = 90
         controller.applyGeometry()
         XCTAssertNil(controller.error)
@@ -144,7 +144,7 @@ final class CartaKeyboardEditingTests: XCTestCase {
         XCTAssertEqual(saved.page(at: 0)?.rotation, 90)
         XCTAssertEqual(saved.page(at: 0)?.annotations.first?.bounds.minX ?? 0, 110, accuracy: 0.01)
         XCTAssertEqual(annotation.bounds.minY, 210)
-        XCTAssertTrue(CartaKeyboardEditingController(model: model).boundsDescription.contains("90 gradi"))
+        XCTAssertEqual(CartaKeyboardEditingController(model: model).boundsDescription, L10n.tr("Area visibile: X da \(100.0, specifier: "%.2f") a \(400.0, specifier: "%.2f") pt; Y da \(200.0, specifier: "%.2f") a \(600.0, specifier: "%.2f") pt. Rotazione pagina: \(90) gradi."))
     }
 
     @MainActor

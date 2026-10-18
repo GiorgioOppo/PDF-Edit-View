@@ -2,19 +2,19 @@
 
 The current version requires macOS 14 or later. To build the app from source, follow [BUILDING](BUILDING.md). The local bundle uses an ad hoc signature and is not notarized with Developer ID; it is not a signed public distribution.
 
-The app interface is currently in Italian. This guide keeps the actual Italian control labels in quotes and explains their meaning in English.
+The app follows macOS language preferences and supports seven languages, including both Chinese scripts, with English fallback. See [language selection](LOCALIZATION.md). This guide uses the English control names; the app displays their translations in the selected language. Search for tools using their displayed names.
 
 ## Open and edit documents
 
 Open a PDF from Finder or from the app. Each document has its own window. Use thumbnails to navigate and reorder pages, search to find text, and reading views to adjust zoom and layout.
 
-Open **“Strumenti”** (Tools) with **⇧⌘T** to search for an operation. Save annotations and ordinary page edits with **⌘S**, and undo them with **⌘Z**. Open the keyboard annotation panel with **⇧⌘K** to edit annotations, including their position and size.
+Open **Tools** with **⇧⌘T** to search for an operation. Save annotations and ordinary page edits with **⌘S**, and undo them with **⌘Z**. Open **Keyboard Annotations** with **⇧⌘K** to edit annotations, including their position and size.
 
 Structural tools, scanning, conversions, and signing prepare separate copies. Check the filename and destination before saving. Keep the original when you need to preserve signatures, interactivity, or an earlier version of the content.
 
 ## Merge documents
 
-1. Search for **“Unisci”** (Merge) in **“Strumenti”** and add documents to the queue.
+1. Search for **“merge”** in **Tools**, open **Advanced Merging**, and add documents to the queue. In another interface language, search for the translated tool name.
 2. Reorder the files and set any page ranges.
 3. Check the preview of the final order and any warnings about duplicates or different formats.
 4. Save the resulting document to a new destination.

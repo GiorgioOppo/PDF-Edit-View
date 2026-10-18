@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Check the [README](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/README.md) and [documentation](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/docs/README.md) first. The app interface is currently Italian. Do not share personal PDFs, passwords, private keys or unreviewed logs. For vulnerabilities, follow [SECURITY.md](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/SECURITY.md).
+        Check the [README](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/README.md) and [documentation](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/docs/README.md) first. The app follows macOS language preferences, with English fallback. Do not share personal PDFs, passwords, private keys or unreviewed logs. For vulnerabilities, follow [SECURITY.md](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/SECURITY.md).
   - type: input
     id: environment
     attributes:

@@ -6,7 +6,7 @@ A free, offline PDF editor for macOS, written in Swift using Apple frameworks on
 
 The repository is named **PDF-Edit-View**; the application and bundle are named **CartaPDF**. This is an independent project, unaffiliated with Adobe. Its tools address workflows familiar from Acrobat Pro, within the [documented limits](#scope-and-limitations). Original code is MIT-licensed; bundled reference data has [separate licenses](THIRD_PARTY_NOTICES.md).
 
-Project guides and GitHub support templates are in English. The application interface is currently primarily Italian, so the guides retain actual control names where needed. Historical machine-readable reports and fixtures may retain their original language.
+Project guides and GitHub support templates are in English. The app supports **Italian, Spanish, English, German, French, Chinese (Simplified and Traditional), and Japanese**. It follows the ordered macOS system or per-app language preferences at launch and falls back to English when none match. Historical machine-readable reports and fixtures retain their original language. See [language selection and translation maintenance](docs/LOCALIZATION.md).
 
 **PDF/A validation is incomplete.** The native validator distinguishes all 11 profiles, including PDF/A-4, 4e and 4f, but does not report full conformance while coverage gaps remain. See [PDF/A status](docs/PDFA.md).
 
@@ -51,7 +51,7 @@ The [requirements inventory](Development/FeatureRequirements.json) lists 100 imp
 
 - [Guide index](docs/README.md), [using the app](docs/USAGE.md) and [command-line interface](docs/CLI.md).
 - [Building and testing](docs/BUILDING.md), [architecture](docs/ARCHITECTURE.md) and [contributing](CONTRIBUTING.md).
-- [Privacy and permissions](docs/PRIVACY.md), [accessibility](docs/ACCESSIBILITY.md) and [security](SECURITY.md).
+- [Privacy and permissions](docs/PRIVACY.md), [accessibility](docs/ACCESSIBILITY.md), [languages](docs/LOCALIZATION.md) and [security](SECURITY.md).
 - [PDF/A status](docs/PDFA.md), [changelog](CHANGELOG.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
 - [Support](SUPPORT.md), [public-release preparation](docs/PUBLIC_RELEASE.md) and [interpreting development evidence](Development/README.md).
 
@@ -79,12 +79,15 @@ Historical version 3.6 evidence from October 18, 2026 records **512 tests passed
 
 Repository preparation added resource-layout and link-persistence regressions: **517 local tests passed, zero failures**. The [verified GitHub run](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39108436451) for commit `9538462` executed 517 tests with zero failures and one skip because the optional local corpus was absent. It also passed the Release build, signature/arm64 checks and packaged CLI smoke tests for all 11 profiles. See [PublicRepositoryAudit](Development/PublicRepositoryAudit.json) for separate local preparation evidence.
 
+Localization verification passed **526 native tests in Italian and 526 in English**, with zero failures. The packaged Release app passed 20 language-selection cases and 88 language/profile comparisons with unchanged PDF/A classifications. All eight catalogues contain 3,038 messages; see [LocalizationVerification](Development/LocalizationVerification.json) for hashes, provenance and limits.
+
 The [CI workflow](.github/workflows/ci.yml) checks repository contents, script syntax, native tests, the Release build and packaged resources/CLI. Hardware checks and the complete manual VoiceOver audit remain separate. Raw logs stay local and are excluded from Git. A successful smoke test does not demonstrate complete ISO conformance.
 
 To check the repository and regenerate the feature report after a real test run:
 
 ```sh
 python3 scripts/check-repository.py
+python3 scripts/check-localization.py
 ./scripts/test.sh > Development/TestResults.log 2>&1
 python3 Development/verify-features.py
 ```

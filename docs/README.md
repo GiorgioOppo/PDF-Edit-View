@@ -1,6 +1,6 @@
 # CartaPDF documentation
 
-CartaPDF is a free, native macOS PDF editor built with Swift and Apple frameworks. The **PDF-Edit&View** project contains its code, tests, and documentation in the [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository; GitHub normalized the repository name. The app is named CartaPDF, and its interface is currently in Italian.
+CartaPDF is a free, native macOS PDF editor built with Swift and Apple frameworks. The **PDF-Edit&View** project contains its code, tests, and documentation in the [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository; GitHub normalized the repository name. The app is named CartaPDF and supports seven languages, selected automatically from macOS preferences with English fallback.
 
 All document processing happens locally. PDF/A inspection covers eleven profiles, but version 3.6.0 does not provide complete ISO validation or emit a conforming verdict. Code is MIT licensed; bundled reference data retain their own licenses.
 
@@ -18,3 +18,5 @@ All document processing happens locally. PDF/A inspection covers eleven profiles
 For contributors, see [CONTRIBUTING](../CONTRIBUTING.md), the [code of conduct](../CODE_OF_CONDUCT.md), [support](../SUPPORT.md), and [security](../SECURITY.md). [Release notes](../CHANGELOG.md) and [data licenses](../THIRD_PARTY_NOTICES.md) are documented separately.
 
 Detailed technical evidence is in [Development](../Development/). These records describe checks performed on the versions they identify; adding documentation or changing the repository does not mean those tests have been rerun.
+
+- [Languages and translation maintenance](LOCALIZATION.md): automatic macOS matching, English fallback, native resources and checks.
