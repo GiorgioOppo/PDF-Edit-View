@@ -21,7 +21,7 @@ final class CartaAccessibilityTests: XCTestCase {
         let view = EditablePDFView(frame: NSRect(x: 0, y: 0, width: 700, height: 800))
         view.editorModel = model; model.attachPDFView(view); view.configureAccessibleActions()
         let actions = try XCTUnwrap(view.accessibilityCustomActions())
-        XCTAssertEqual(actions.map(\.name), ["Annotazioni da tastiera", "Pagina successiva", "Pagina precedente"])
+        XCTAssertEqual(actions.map(\.name), [L10n.tr("Annotazioni da tastiera"), L10n.tr("Pagina successiva"), L10n.tr("Pagina precedente")])
         XCTAssertTrue(try XCTUnwrap(actions[1].handler)())
         XCTAssertEqual(model.currentPageIndex, 1)
         XCTAssertFalse(try XCTUnwrap(actions[1].handler)())

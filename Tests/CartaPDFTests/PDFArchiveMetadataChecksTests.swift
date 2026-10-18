@@ -462,7 +462,7 @@ final class PDFArchiveMetadataChecksTests: XCTestCase {
         let evaluation = try evaluate("XMPProperty", "isValueTypeCorrect == true", generated)
         if URLComponents(string: id)?.scheme == nil {
             XCTAssertEqual(evaluation.status, .notVerified, "Bare Apple ID is a URI-reference, not proof of an absolute URI: \(id)")
-            XCTAssertTrue(evaluation.detail.contains("URI-reference"))
+            XCTAssertTrue(diagnosticContains(evaluation.detail, "URI-reference"))
         } else { XCTAssertEqual(evaluation.status, .passed, evaluation.detail) }
     }
 

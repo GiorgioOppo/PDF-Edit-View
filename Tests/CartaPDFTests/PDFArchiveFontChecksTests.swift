@@ -261,13 +261,13 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         manifest["items"] = items
         try JSONSerialization.data(withJSONObject:manifest,options:.sortedKeys).write(to:manifestURL)
         XCTAssertThrowsError(try PDFArchiveFontReferenceData(directory:temporary)) { error in
-            XCTAssertTrue(error.localizedDescription.contains("inventario dati font Adobe modificato"))
+            XCTAssertTrue(diagnosticContains(error.localizedDescription, "inventario dati font Adobe modificato"))
         }
         // A forged item hash cannot authorize changed bytes: the manifest itself
         // is pinned. With original manifest restored, item hashes still apply.
         try manifestData.write(to:manifestURL)
         XCTAssertThrowsError(try PDFArchiveFontReferenceData(directory:temporary)) { error in
-            XCTAssertTrue(error.localizedDescription.contains("hash dato Adobe: glyphlist.txt"))
+            XCTAssertTrue(error.localizedDescription.contains(L10n.tr("hash dato Adobe: ") + "glyphlist.txt"))
         }
         try FileManager.default.removeItem(at:aglURL)
         XCTAssertThrowsError(try PDFArchiveFontReferenceData(directory:temporary))
@@ -278,7 +278,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         // come from SHA256 before any CMap parser can consume them.
         try Data("untrusted CMap bytes".utf8).write(to:temporary.appendingPathComponent(mapFile))
         XCTAssertThrowsError(try reference.cmap("90ms-RKSJ-H")) { error in
-            XCTAssertTrue(error.localizedDescription.contains("hash dato Adobe: 90ms-RKSJ-H"))
+            XCTAssertTrue(error.localizedDescription.contains(L10n.tr("hash dato Adobe: ") + "90ms-RKSJ-H"))
         }
     }
     func testUnreferencedNamedFontsAreExemptButTfWithoutTextStillSelectsFontClauses() throws {
@@ -370,22 +370,25 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         if !localSubrs.isEmpty { privateData += number(privateDictionary.count+6)+Data([19]) }
         var top = Data([UInt8(charset+139),15,UInt8(encoding+139),16])+number(offset)+Data([17])
         if hasPrivate { top += number(privateData.count)+number(offset+charData.count)+Data([18]) }
-        return header+name+index([top])+Data([0,0])+globals+charData+privateData+(localSubrs.isEmpty ? Data():index(localSubrs))
+        var result = header
+        for part in [name,index([top]),Data([0,0]),globals,charData,privateData] { result.append(part) }
+        if !localSubrs.isEmpty { result.append(index(localSubrs)) }
+        return result
     }
     func testSfntStructureIsCheckedIndependentlyOfNativeAcceptance() throws {
         let bytes = try nativeTrueType(),original = try PDFArchiveFontProgram(data:bytes),audit = original.structuralAudit()
         XCTAssertTrue(audit.issues.isEmpty,audit.issues.joined(separator:"; "))
         XCTAssertEqual(audit.checkedGlyphs,original.glyphCount)
         XCTAssertGreaterThan(audit.instructionBytes,0)
-        XCTAssertTrue(audit.gaps.contains{$0.contains("Bytecode TrueType")})
+        XCTAssertTrue(audit.gaps.contains{diagnosticContains($0, "Bytecode TrueType")})
         let head = try XCTUnwrap(original.tables["head"])
         var forged = bytes;forged.replaceSubrange((head.lowerBound+12)..<(head.lowerBound+16),with:Data([0,0,0,0]))
-        XCTAssertTrue(try PDFArchiveFontProgram(data:forged).structuralAudit().issues.contains{$0.contains("magicNumber")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:forged).structuralAudit().issues.contains{diagnosticContains($0, "magicNumber")})
         let gid = try XCTUnwrap(original.glyph(unicode:65)),loca = try XCTUnwrap(original.tables["loca"]),glyf = try XCTUnwrap(original.tables["glyf"]),array = Array(bytes)
         let format = try PDFArchiveFontProgram.u16(array,head.lowerBound+50)
         let start = format == 0 ? try PDFArchiveFontProgram.u16(array,loca.lowerBound+gid*2)*2:try PDFArchiveFontProgram.u32(array,loca.lowerBound+gid*4)
         forged = bytes;forged.replaceSubrange((glyf.lowerBound+start)..<(glyf.lowerBound+start+2),with:Data([0x7F,0xFF]))
-        XCTAssertTrue(try PDFArchiveFontProgram(data:forged).structuralAudit().issues.contains{$0.contains("endPtsOfContours")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:forged).structuralAudit().issues.contains{diagnosticContains($0, "endPtsOfContours")})
         let pdf = fixture(font:"<< /Type /Font /Subtype /TrueType /BaseFont /ArialMT /Encoding /WinAnsiEncoding /FontDescriptor 5 0 R >>",extras:[5:descriptor(file:6),6:stream("",forged)])
         let model = PDFArchiveFontChecks(reader:try PDFStructureDocument(data:pdf),profile:.pdfa2b).modelChecks
         XCTAssertTrue(model.contains{$0.objectType == "EmbeddedFontProgramModel" && $0.status == .failed})
@@ -399,16 +402,16 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         let simple = word(1)+Data(repeating:0,count:8)+word(0)+word(0)+Data([0x31])
         XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[simple])).structuralAudit().issues.isEmpty)
         let cycle = word(65535)+Data(repeating:0,count:8)+word(3)+word(0)+Data(repeating:0,count:4)
-        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[cycle])).structuralAudit().issues.contains{$0.contains("ciclo")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[cycle])).structuralAudit().issues.contains{diagnosticContains($0, "ciclo")})
         let outside = word(65535)+Data(repeating:0,count:8)+word(3)+word(2)+Data(repeating:0,count:4)
-        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[outside])).structuralAudit().issues.contains{$0.contains("GID fuori")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[outside])).structuralAudit().issues.contains{diagnosticContains($0, "GID fuori")})
         let truncatedPush = word(1)+Data(repeating:0,count:8)+word(0)+word(1)+Data([0xB0,0x31])
         let invalid = try PDFArchiveFontProgram(data:auditFont(glyphs:[truncatedPush])).structuralAudit()
-        XCTAssertTrue(invalid.issues.contains{$0.contains("PUSH troncato")});XCTAssertFalse(invalid.instructionScanComplete)
+        XCTAssertTrue(invalid.issues.contains{diagnosticContains($0, "PUSH troncato")});XCTAssertFalse(invalid.instructionScanComplete)
         let badFpgm = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple],fpgm:Data([0x40,2,1]))).structuralAudit()
-        XCTAssertTrue(badFpgm.issues.contains{$0.contains("fpgm: PUSH troncato")})
+        XCTAssertTrue(badFpgm.issues.contains{($0.contains("fpgm: ") && diagnosticContains($0, "PUSH troncato"))})
         let tokensOnly = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple],fpgm:Data([0xB0,0,0x21]))).structuralAudit()
-        XCTAssertTrue(tokensOnly.issues.isEmpty);XCTAssertTrue(tokensOnly.gaps.contains{$0.contains("hinting non eseguiti")})
+        XCTAssertTrue(tokensOnly.issues.isEmpty);XCTAssertTrue(tokensOnly.gaps.contains{diagnosticContains($0, "hinting non eseguiti")})
     }
     private func auditFont(glyphs:[Data],fpgm:Data = Data(),extraTables:[String:Data] = [:],maxima:[Int] = [4,1,4,1,2,0,0,0,0,8,64,3,8])->Data {
         func word(_ value:Int)->Data { Data([UInt8((value>>8)&255),UInt8(value&255)]) }
@@ -457,15 +460,15 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         let record = try XCTUnwrap(program.cmapRecords.first{$0.platform == 3 && $0.encoding == 1})
         XCTAssertEqual(try PDFArchiveFontProgram.u16(Array(data),record.offset),4)
         var bad = data;bad.replaceSubrange((record.offset+6)..<(record.offset+8),with:Data([0,1]))
-        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{$0.contains("cmap4 segCount")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{diagnosticContains($0, "cmap4 segCount")})
         let count = try PDFArchiveFontProgram.u16(Array(data),4)
         let maxpEntry = try XCTUnwrap((0..<count).map{12+$0*16}.first{String(decoding:data[$0..<($0+4)],as:UTF8.self) == "maxp"})
         bad = data;bad.replaceSubrange((maxpEntry+12)..<(maxpEntry+16),with:Data([0,0,0,6]))
-        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{$0.contains("maxp versione1.0 e32byte")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{diagnosticContains($0, "maxp versione1.0 e32byte")})
         let loca = try XCTUnwrap(program.tables["loca"]),head = try XCTUnwrap(program.tables["head"])
         let size = try PDFArchiveFontProgram.u16(Array(data),head.lowerBound+50) == 0 ? 2:4
         bad = data;bad.replaceSubrange((loca.lowerBound+size)..<(loca.lowerBound+size*2),with:Data(repeating:255,count:size))
-        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{$0.contains("loca offset non monotoni/fuori glyf")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:bad).structuralAudit().issues.contains{diagnosticContains($0, "loca offset non monotoni/fuori glyf")})
     }
     private func fontWord(_ value:Int)->Data { Data([UInt8((value>>8)&255),UInt8(value&255)]) }
     private func fontDword(_ value:Int)->Data { Data([UInt8((value>>24)&255),UInt8((value>>16)&255),UInt8((value>>8)&255),UInt8(value&255)]) }
@@ -495,7 +498,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         for (offset,value,reason) in [(6+0x81*2,7,"subHeaderKey"),(518+8,255,"firstCode/entryCount"),(518+14,65534,"idRangeOffset"),(1046,20,"GID fuori")] {
             var bad = mapping;bad.replaceSubrange(offset..<(offset+2),with:fontWord(value))
             let forged = try fontWithCmap([(3,2,bad)])
-            XCTAssertTrue(forged.structuralAudit().issues.contains{$0.contains(reason)},reason)
+            XCTAssertTrue(forged.structuralAudit().issues.contains{diagnosticContains($0, reason)},reason)
             XCTAssertThrowsError(try forged.glyph(encodedCode:65,platform:3,encoding:2))
         }
     }
@@ -516,7 +519,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         XCTAssertNil(try program.glyph(unicode:0x110000))
         for (offset,replacement,reason) in [(12+0xD800/8,Data([0]),"senza is32"),(12+65/8,Data([64]),"codice16"),(8208+16,fontDword(0xD800DC03),"GID fuori"),(2,fontWord(1),"reserved")] {
             var bad = mapping;bad.replaceSubrange(offset..<(offset+replacement.count),with:replacement)
-            XCTAssertTrue(try fontWithCmap([(0,4,bad)]).structuralAudit().issues.contains{$0.contains(reason)},reason)
+            XCTAssertTrue(try fontWithCmap([(0,4,bad)]).structuralAudit().issues.contains{diagnosticContains($0, reason)},reason)
         }
     }
     func testCmap14DefaultAndNonDefaultSequencesAreSupplementalWithStrictBoundsAndPartition() throws {
@@ -536,10 +539,10 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         for (offset,replacement,reason) in [(13,fontDword(5),"offset UVS"),(33,fontTriple(65),"default e non-default"),(36,fontWord(4),"GID fuori"),(25,fontTriple(0xD800),"range non valido"),(29,fontDword(100),"UVS troncata"),(10,fontTriple(65),"selector non valido")] {
             var bad = variation;bad.replaceSubrange(offset..<(offset+replacement.count),with:replacement)
             let forged = try fontWithCmap([(0,3,base),(0,5,bad)])
-            XCTAssertTrue(forged.structuralAudit().issues.contains{$0.contains(reason)},reason)
+            XCTAssertTrue(forged.structuralAudit().issues.contains{diagnosticContains($0, reason)},reason)
             XCTAssertThrowsError(try forged.variationGlyph(unicode:65,selector:0xFE0F))
         }
-        XCTAssertTrue(try fontWithCmap([(3,1,variation)]).structuralAudit().issues.contains{$0.contains("platform0/encoding5")})
+        XCTAssertTrue(try fontWithCmap([(3,1,variation)]).structuralAudit().issues.contains{diagnosticContains($0, "platform0/encoding5")})
     }
     func testCmap10SupplementaryTrimmedArrayMapsActualGlyphsAndRejectsTruncatedBody() throws {
         var mapping = fontWord(10)+fontWord(0)+fontDword(24)+fontDword(0)
@@ -551,7 +554,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         XCTAssertEqual(try program.glyph(unicode:0x10002),0)
         mapping.replaceSubrange(16..<20,with:fontDword(3))
         let invalid = try fontWithCmap([(0,4,mapping)])
-        XCTAssertTrue(invalid.structuralAudit().issues.contains{$0.contains("cmap10 range")})
+        XCTAssertTrue(invalid.structuralAudit().issues.contains{diagnosticContains($0, "cmap10 range")})
         XCTAssertThrowsError(try invalid.glyph(unicode:0x10000))
     }
     private func cidCffFixture(format:Int,fdMatrix:Data = Data())->(bytes:Data,private1:Int,fdSelect:Int,fdArray:Int,local1:Int) {
@@ -588,8 +591,8 @@ final class PDFArchiveFontChecksTests:XCTestCase {
                 XCTAssertEqual(try XCTUnwrap(program.advance(glyph:glyph)),width,accuracy:0.0000001)
             }
             XCTAssertTrue(program.structuralAudit().issues.isEmpty)
-            XCTAssertFalse(program.structuralAudit().gaps.contains{$0.contains("non inventariati")})
-            XCTAssertTrue(program.structuralAudit().gaps.contains{$0.contains("Esecuzione completa Type2")})
+            XCTAssertFalse(program.structuralAudit().gaps.contains{diagnosticContains($0, "non inventariati")})
+            XCTAssertTrue(program.structuralAudit().gaps.contains{diagnosticContains($0, "Esecuzione completa Type2")})
             let parent = "<< /Type /Font /Subtype /Type0 /BaseFont /CIDTest /Encoding /Identity-H /DescendantFonts [5 0 R] >>"
             for width in [350,351,352] {
                 let child = Data("<< /Type /Font /Subtype /CIDFontType0 /BaseFont /CIDTest /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /FontDescriptor 6 0 R /W [30 [\(width)]] >>".utf8)
@@ -616,7 +619,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         let program = try PDFArchiveFontProgram(data:bytes)
         XCTAssertEqual(try program.cff?.declaredAdvance(glyph:1),150)
         XCTAssertNil(try program.cff?.declaredAdvance(glyph:3))
-        XCTAssertTrue(program.structuralAudit().gaps.contains{$0.contains("FD FontMatrix")})
+        XCTAssertTrue(program.structuralAudit().gaps.contains{diagnosticContains($0, "FD FontMatrix")})
         XCTAssertThrowsError(try PDFArchiveCFF.dictionary(Data([139])))
         XCTAssertThrowsError(try PDFArchiveCFF.dictionary(Data([22,20])))
     }
@@ -647,14 +650,14 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             let result = try type2Audit(valid)
             XCTAssertTrue(result.issues.isEmpty,"\(op): " + result.issues.joined(separator:"; "))
             XCTAssertEqual(result.checkedGlyphs,2)
-            XCTAssertTrue(result.gaps.contains{$0.contains("Esecuzione completa Type2")})
+            XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "Esecuzione completa Type2")})
             let invalidCount = [27,31].contains(op) ? 2:count-1
             let invalid = move+Data(repeating:139,count:invalidCount)+operation+Data([14])
-            XCTAssertTrue(try type2Audit(invalid).issues.contains{$0.contains("arità operatore path")},"\(op)")
+            XCTAssertTrue(try type2Audit(invalid).issues.contains{diagnosticContains($0, "arità operatore path")},"\(op)")
         }
-        XCTAssertTrue(try type2Audit(Data([139,139,5,14])).issues.contains{$0.contains("senza moveto")})
-        XCTAssertTrue(try type2Audit(move).issues.contains{$0.contains("endchar assente")})
-        XCTAssertTrue(try type2Audit(Data([11])).issues.contains{$0.contains("return fuori")})
+        XCTAssertTrue(try type2Audit(Data([139,139,5,14])).issues.contains{diagnosticContains($0, "senza moveto")})
+        XCTAssertTrue(try type2Audit(move).issues.contains{diagnosticContains($0, "endchar assente")})
+        XCTAssertTrue(try type2Audit(Data([11])).issues.contains{diagnosticContains($0, "return fuori")})
         for code in [Data(),Data([28,0]),Data([255,0,0]),Data([12])] { XCTAssertFalse(try type2Audit(code).issues.isEmpty) }
     }
     func testType2HintMasksConsumeBinaryBytesAndValidateUnusedBitsAndDeclarationBoundaries() throws {
@@ -663,18 +666,18 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             XCTAssertTrue(try type2Audit(code).issues.isEmpty)
         }
         for (code,reason) in [(Data([139,189,18,19]),"troncata"),(Data([19,0,14]),"senza stem"),(Data([139,189,18,19,129])+tail,"bit inutilizzati"),(Data([139,189,18,139,139,21,139,189,19,192,14]),"posizione dichiarazione")] {
-            XCTAssertTrue(try type2Audit(code).issues.contains{$0.contains(reason)},reason)
+            XCTAssertTrue(try type2Audit(code).issues.contains{diagnosticContains($0, reason)},reason)
         }
     }
     func testType2SubroutinesShareStackAndTerminateViaReturnOrEndcharWithoutInventingMissingBounds() throws {
         let move = Data([139,139,21])
         XCTAssertTrue(try type2Audit(Data([32,10,14]),local:[move+Data([11])]).issues.isEmpty)
         XCTAssertTrue(try type2Audit(Data([32,29]),global:[Data([14])]).issues.isEmpty)
-        XCTAssertTrue(try type2Audit(Data([32,10,14]),local:[move]).issues.contains{$0.contains("senza return/endchar")})
-        XCTAssertTrue(try type2Audit(Data([33,10,14]),local:[Data([11])]).issues.contains{$0.contains("fuori INDEX")})
+        XCTAssertTrue(try type2Audit(Data([32,10,14]),local:[move]).issues.contains{diagnosticContains($0, "senza return/endchar")})
+        XCTAssertTrue(try type2Audit(Data([33,10,14]),local:[Data([11])]).issues.contains{diagnosticContains($0, "fuori INDEX")})
         let recursion = try type2Audit(Data([32,10,14]),local:[Data([32,10,11])])
         XCTAssertTrue(recursion.issues.isEmpty)
-        XCTAssertTrue(recursion.gaps.contains{$0.contains("budget/nesting")})
+        XCTAssertTrue(recursion.gaps.contains{diagnosticContains($0, "budget/nesting")})
     }
     func testType2DeterministicArithmeticTransientAndConditionalStackAreAuditedButUndefinedAndLegacyCasesStayUnknown() throws {
         let cases:[Data] = [Data([159,169,12,10,14]),Data([189,139,12,20,139,12,21,14]),Data([159,169,140,141,12,22,14]),Data([189,138,12,29,12,10,14]),Data([159,169,141,140,12,30,12,11,14]),Data([12,0,14])]
@@ -684,14 +687,14 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             XCTAssertTrue(audit.issues.isEmpty)
             XCTAssertTrue(audit.gaps.contains{$0.hasPrefix("CFF GID")})
         }
-        XCTAssertTrue(try type2Audit(Data([12,10,14])).issues.contains{$0.contains("stack insufficiente")})
-        XCTAssertTrue(try type2Audit(Data([139,139,21])+Data(repeating:139,count:49)+Data([8,14])).issues.contains{$0.contains("oltre48")})
+        XCTAssertTrue(try type2Audit(Data([12,10,14])).issues.contains{diagnosticContains($0, "stack insufficiente")})
+        XCTAssertTrue(try type2Audit(Data([139,139,21])+Data(repeating:139,count:49)+Data([8,14])).issues.contains{diagnosticContains($0, "oltre48")})
         let budget = try type2Audit(Data([139,139,21,14]),maximumOperations:1)
-        XCTAssertTrue(budget.issues.isEmpty);XCTAssertTrue(budget.gaps.contains{$0.contains("budget/nesting")})
+        XCTAssertTrue(budget.issues.isEmpty);XCTAssertTrue(budget.gaps.contains{diagnosticContains($0, "budget/nesting")})
     }
     func testCffPrivateOperandCardinalityAndInvalidEmbeddedType2GlyphProduceIndependentModelFailures() throws {
         for dictionary in [Data([139,6]),Data([139,140,10]),Data(repeating:139,count:13)+Data([12,12])] {
-            XCTAssertTrue(try type2Audit(Data([14]),privateDictionary:dictionary).issues.contains{$0.contains("Private")})
+            XCTAssertTrue(try type2Audit(Data([14]),privateDictionary:dictionary).issues.contains{diagnosticContains($0, "Private")})
         }
         let characters = Data([139,139,21,139,5,14])
         let bytes = cffFixture(charset:0,encoding:0,count:35,characters:[34:characters])
@@ -711,7 +714,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         XCTAssertTrue(audit.issues.isEmpty,audit.issues.prefix(8).joined(separator:"; "))
         XCTAssertGreaterThan(audit.checkedGlyphs,100)
         XCTAssertGreaterThan(audit.instructionBytes,0)
-        XCTAssertTrue(audit.gaps.contains{$0.contains("Esecuzione completa Type2")})
+        XCTAssertTrue(audit.gaps.contains{diagnosticContains($0, "Esecuzione completa Type2")})
         XCTAssertFalse(audit.instructionScanComplete)
     }
     private let ttMaxima = [512,8,1024,32,2,0,0,0,0,64,64,8,16]
@@ -746,7 +749,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             let audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,composite],maxima:ttMaxima)).structuralAudit()
             XCTAssertTrue(audit.issues.isEmpty,audit.issues.joined(separator:"; "))
             XCTAssertTrue(audit.instructionScanComplete)
-            XCTAssertTrue(audit.gaps.contains{$0.contains("hinting non eseguiti")})
+            XCTAssertTrue(audit.gaps.contains{diagnosticContains($0, "hinting non eseguiti")})
         }
     }
     func testTrueTypeCompositePointMatchingAcceptsContourAndPhantomIndicesWithoutPretendingHintGeometry() throws {
@@ -756,7 +759,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         XCTAssertTrue(audit.instructionScanComplete)
         // Index4 is the fourth phantom point after the original point0.
         // Geometry of the matched/hinted coordinates remains unproved.
-        XCTAssertFalse(audit.gaps.contains{$0.contains("Associazioni punto-punto")})
+        XCTAssertFalse(audit.gaps.contains{diagnosticContains($0, "Associazioni punto-punto")})
     }
     func testTrueTypeCompositePointMatchingRejectsFirstComponentAndOutOfRangeParentOrChild() throws {
         let simple = ttSimple([(0,0)])
@@ -768,7 +771,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             ([(0,0x23,0,0),(0,0,4,255)],"punto componente fuori")]
         for (components,reason) in cases {
             let audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,ttComposite(components)],maxima:ttMaxima)).structuralAudit()
-            XCTAssertTrue(audit.issues.contains{$0.contains(reason)},audit.issues.joined(separator:"; "))
+            XCTAssertTrue(audit.issues.contains{diagnosticContains($0, reason)},audit.issues.joined(separator:"; "))
         }
     }
     func testTrueTypeCompositeUnsignedBytePointIndicesAndNestedExpandedPointsAreVerified() throws {
@@ -782,7 +785,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         XCTAssertTrue(audit.issues.isEmpty,audit.issues.joined(separator:"; "))
         let invalid = ttComposite([(1,0x23,0,0),(0,1,10,5)])
         audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,child,invalid],maxima:ttMaxima)).structuralAudit()
-        XCTAssertTrue(audit.issues.contains{$0.contains("punto parent fuori")})
+        XCTAssertTrue(audit.issues.contains{diagnosticContains($0, "punto parent fuori")})
     }
     func testTrueTypePackedCoordinateDeltasAndActualBoundsAreCheckedIncludingOffCurvePoints() throws {
         // (7,9),(-5,-2),(-5,-2): positive-short, negative-short, same.
@@ -793,7 +796,7 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         for (range,value) in [(6..<8,6),(4..<6,-1)] {
             var invalid = packed;invalid.replaceSubrange(range,with:fontWord(value))
             let audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[invalid])).structuralAudit()
-            XCTAssertTrue(audit.issues.contains{$0.contains("bounding box non contiene")})
+            XCTAssertTrue(audit.issues.contains{diagnosticContains($0, "bounding box non contiene")})
         }
         var repeated = fontWord(1)+fontWord(0)+fontWord(0)+fontWord(3)+fontWord(0)
         repeated += fontWord(2)+fontWord(0)+Data([0x3B,2,1,1,1])
@@ -806,45 +809,45 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         for (field,limit) in [(2,3),(3,1),(12,1)] {
             var maxima = ttMaxima;maxima[field] = limit
             let audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,child,nested],maxima:maxima)).structuralAudit()
-            XCTAssertTrue(audit.issues.contains{$0.contains("aggregati compositi superano maxp")},"field\(field): " + audit.issues.joined(separator:"; "))
+            XCTAssertTrue(audit.issues.contains{diagnosticContains($0, "aggregati compositi superano maxp")},"field\(field): " + audit.issues.joined(separator:"; "))
         }
         var maxima = ttMaxima;maxima[11] = 1
         let audit = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,child],maxima:maxima)).structuralAudit()
-        XCTAssertTrue(audit.issues.contains{$0.contains("maxComponentElements")})
+        XCTAssertTrue(audit.issues.contains{diagnosticContains($0, "maxComponentElements")})
     }
     func testTrueTypeReservedBitsFailButModernOverlapFlagAndEmptyOutlinesRemainAllowed() throws {
         let simple = ttSimple([(0,0)])
         var reserved = simple;reserved[14] |= 0x80
-        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[reserved])).structuralAudit().issues.contains{$0.contains("riservato bit7")})
+        XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[reserved])).structuralAudit().issues.contains{diagnosticContains($0, "riservato bit7")})
         var overlap = simple;overlap[14] |= 0x40
         // Apple older prose reserves bit6; current OpenType defines overlap.
         // Do not turn a current valid extension into an edition-blind failure.
         XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[overlap])).structuralAudit().issues.isEmpty)
         for bit in [0x2000,0x4000,0x8000] {
             let composite = ttComposite([(0,3|bit,0,0)])
-            XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,composite])).structuralAudit().issues.contains{$0.contains("flag componente riservati")})
+            XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,composite])).structuralAudit().issues.contains{diagnosticContains($0, "flag componente riservati")})
         }
         let legacy = try PDFArchiveFontProgram(data:auditFont(glyphs:[simple,ttComposite([(0,0x13,0,0)])])).structuralAudit()
         XCTAssertTrue(legacy.issues.isEmpty)
-        XCTAssertTrue(legacy.gaps.contains{$0.contains("legacy bit4")})
+        XCTAssertTrue(legacy.gaps.contains{diagnosticContains($0, "legacy bit4")})
         XCTAssertTrue(try PDFArchiveFontProgram(data:auditFont(glyphs:[Data(),ttSimple([])])).structuralAudit().issues.isEmpty)
     }
     func testTrueTypeIncompleteChildDoesNotInventOutOfRangePointViolationsAndBudgetsStayUnknown() throws {
         let truncated = fontWord(1)+Data(repeating:0,count:8)
         let composite = ttComposite([(0,0x23,0,0),(0,1,400,400)])
         let bad = try PDFArchiveFontProgram(data:auditFont(glyphs:[truncated,composite],maxima:ttMaxima)).structuralAudit()
-        XCTAssertTrue(bad.issues.contains{$0.contains("endPtsOfContours troncato")})
-        XCTAssertFalse(bad.issues.contains{$0.contains("punto parent fuori") || $0.contains("punto componente fuori")})
-        XCTAssertTrue(bad.gaps.contains{$0.contains("non interamente decodificati")})
+        XCTAssertTrue(bad.issues.contains{diagnosticContains($0, "endPtsOfContours troncato")})
+        XCTAssertFalse(bad.issues.contains{diagnosticContains($0, "punto parent fuori") || diagnosticContains($0, "punto componente fuori")})
+        XCTAssertTrue(bad.gaps.contains{diagnosticContains($0, "non interamente decodificati")})
         let program = try PDFArchiveFontProgram(data:auditFont(glyphs:[ttSimple([(0,0)]),ttComposite([(0,3,0,0)])]))
         for audit in [program.structuralAudit(maximumOperations:1),program.structuralAudit(maximumComponentDepth:1)] {
             XCTAssertTrue(audit.issues.isEmpty,audit.issues.joined(separator:"; "))
-            XCTAssertTrue(audit.gaps.contains{$0.contains("Budget")})
+            XCTAssertTrue(audit.gaps.contains{diagnosticContains($0, "Budget")})
         }
         XCTAssertFalse(program.structuralAudit(maximumOperations:1).instructionScanComplete)
         let numbering = try PDFArchiveFontProgram(data:auditFont(glyphs:[ttSimple([(0,0)]),ttComposite([(0,0x23,0,0),(0,1,5,4)])],maxima:ttMaxima)).structuralAudit()
         XCTAssertTrue(numbering.issues.isEmpty)
-        XCTAssertTrue(numbering.gaps.contains{$0.contains("Numerazione intermedia phantom")})
+        XCTAssertTrue(numbering.gaps.contains{diagnosticContains($0, "Numerazione intermedia phantom")})
     }
     func testTrueTypeCancellationIsUnknownAndActualMalformedBoundsFailEmbeddedModel() async throws {
         let bytes = auditFont(glyphs:[ttSimple([(0,0),(1,1)])])
@@ -853,11 +856,11 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         task.cancel();let cancelled = await task.value
         XCTAssertTrue(cancelled.issues.isEmpty)
         XCTAssertFalse(cancelled.instructionScanComplete)
-        XCTAssertTrue(cancelled.gaps.contains{$0.contains("annullata")})
+        XCTAssertTrue(cancelled.gaps.contains{diagnosticContains($0, "annullata")})
         var malformed = ttSimple([(0,0),(1,1)]);malformed.replaceSubrange(6..<8,with:fontWord(0))
         let pdf = fixture(font:"<< /Type /Font /Subtype /TrueType /BaseFont /Native /FontDescriptor 5 0 R >>",extras:[5:descriptor(file:6),6:stream("",auditFont(glyphs:[malformed]))])
         let rows = try PDFArchiveFontChecks(reader:PDFStructureDocument(data:pdf),profile:.pdfa2b).modelChecks
-        XCTAssertTrue(rows.contains{$0.objectType == "EmbeddedFontProgramModel" && $0.status == .failed && $0.detail.contains("bounding box non contiene")})
+        XCTAssertTrue(rows.contains{$0.objectType == "EmbeddedFontProgramModel" && $0.status == .failed && diagnosticContains($0.detail, "bounding box non contiene")})
     }
     private func evaluate(_ data:Data,profile:PDFArchiveProfile = .pdfa2u,object:String,matching:String) throws -> PDFArchiveRuleEvaluation {
         let rule = try XCTUnwrap(PDFArchiveValidator.catalogue(profile:profile).first{$0.objectType == object && $0.expression.contains(matching)})

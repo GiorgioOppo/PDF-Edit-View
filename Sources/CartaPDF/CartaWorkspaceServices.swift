@@ -142,59 +142,65 @@ struct CartaPreferencesView: View {
     @State private var shortcutMessage = ""
     var body: some View {
         Form {
-            Text("Preferenze locali").font(.title2.bold())
-            TextField("Autore annotazioni", text: $preferences.annotationAuthor)
+            Text(L10n.tr("Preferenze locali")).font(.title2.bold())
+            TextField(L10n.tr("Autore annotazioni"), text: $preferences.annotationAuthor)
             Slider(value: $preferences.strokeWidth, in: 0.5...12, step: 0.5) {
-                Text("Tratto: \(preferences.strokeWidth, specifier: "%.1f") pt")
+                Text(L10n.tr("Tratto: \(preferences.strokeWidth, specifier: "%.1f") pt"))
             }
-            .accessibilityLabel("Spessore del tratto")
-            .accessibilityValue("\(preferences.strokeWidth, specifier: "%.1f") punti")
-            Toggle("Regolarizza i tratti a mano libera", isOn: $preferences.smoothInk)
-            Toggle("Ricerca durante la digitazione", isOn: $preferences.searchAsYouType)
-            Toggle("Copie automatiche di recupero, senza sovrascrivere l’originale", isOn: $preferences.recoveryEnabled)
-            Stepper("Elaborazioni simultanee: \(preferences.concurrentJobs)", value: $preferences.concurrentJobs, in: 1...4)
-            Stepper("Cache miniature: \(preferences.cacheMegabytes) MB", value: $preferences.cacheMegabytes, in: 32...512, step: 32)
-            Slider(value: $preferences.sidebarWidth, in: 180...340) { Text("Larghezza barra laterale") }
-                .accessibilityValue("\(Int(preferences.sidebarWidth)) punti")
+            .accessibilityLabel(L10n.tr("Spessore del tratto"))
+            .accessibilityValue(L10n.tr("\(preferences.strokeWidth, specifier: "%.1f") punti"))
+            Toggle(isOn: $preferences.smoothInk) {
+                Text(L10n.tr("Regolarizza i tratti a mano libera")).fixedSize(horizontal: false, vertical: true)
+            }
+            Toggle(isOn: $preferences.searchAsYouType) {
+                Text(L10n.tr("Ricerca durante la digitazione")).fixedSize(horizontal: false, vertical: true)
+            }
+            Toggle(isOn: $preferences.recoveryEnabled) {
+                Text(L10n.tr("Copie automatiche di recupero, senza sovrascrivere l’originale")).fixedSize(horizontal: false, vertical: true)
+            }
+            Stepper(L10n.tr("Elaborazioni simultanee: \(preferences.concurrentJobs)"), value: $preferences.concurrentJobs, in: 1...4)
+            Stepper(L10n.tr("Cache miniature: \(preferences.cacheMegabytes) MB"), value: $preferences.cacheMegabytes, in: 32...512, step: 32)
+            Slider(value: $preferences.sidebarWidth, in: 180...340) { Text(L10n.tr("Larghezza barra laterale")) }
+                .accessibilityValue(L10n.tr("\(Int(preferences.sidebarWidth)) punti"))
             Divider()
-            Text("Scorciatoie personalizzate").font(.headline)
-            Picker("Comando", selection: $command) {
-                Text("Ricerca").tag("focusSearch:")
-                Text("Strumenti").tag("showTools:")
-                Text("Ruota pagina").tag("rotatePage:")
-                Text("Adatta finestra").tag("fit:")
-                Text("Pagina successiva").tag("nextPage:")
-                Text("Pagina precedente").tag("previousPage:")
+            Text(L10n.tr("Scorciatoie personalizzate")).font(.headline)
+            Picker(L10n.tr("Comando"), selection: $command) {
+                Text(L10n.tr("Ricerca")).tag("focusSearch:")
+                Text(L10n.tr("Strumenti")).tag("showTools:")
+                Text(L10n.tr("Ruota pagina")).tag("rotatePage:")
+                Text(L10n.tr("Adatta finestra")).tag("fit:")
+                Text(L10n.tr("Pagina successiva")).tag("nextPage:")
+                Text(L10n.tr("Pagina precedente")).tag("previousPage:")
             }
             HStack {
-                TextField("Un carattere, con ⌘", text: $shortcut)
-                Button("Assegna") {
+                TextField(L10n.tr("Un carattere, con ⌘"), text: $shortcut)
+                Button(L10n.tr("Assegna")) {
                     guard shortcut.count == 1, !"qwnoscvxazphm,+-".contains(shortcut.lowercased()) else {
-                        shortcutMessage = "Questo tasto è riservato a un comando standard."
+                        shortcutMessage = L10n.tr("Questo tasto è riservato a un comando standard.")
                         return
                     }
                     guard !preferences.shortcuts.contains(where: { $0.key != command && $0.value == shortcut.lowercased() }) else {
-                        shortcutMessage = "Questo tasto è già assegnato. Ripristina prima l’altro comando."
+                        shortcutMessage = L10n.tr("Questo tasto è già assegnato. Ripristina prima l’altro comando.")
                         return
                     }
                     let builtIn = ["focusSearch:": "f", "rotatePage:": "r", "fit:": "0", "nextPage:": "]", "previousPage:": "["]
                     guard !builtIn.contains(where: { $0.key != command && $0.value == shortcut.lowercased() && preferences.shortcuts[$0.key] == nil }) else {
-                        shortcutMessage = "Questo tasto appartiene già a un altro comando. Personalizza prima quel comando."
+                        shortcutMessage = L10n.tr("Questo tasto appartiene già a un altro comando. Personalizza prima quel comando.")
                         return
                     }
                     preferences.shortcuts[command] = shortcut.lowercased()
-                    shortcutMessage = "Scorciatoia ⌘\(shortcut.uppercased()) assegnata."
+                    shortcutMessage = L10n.tr("Scorciatoia ⌘\(shortcut.uppercased()) assegnata.")
                     NotificationCenter.default.post(name: .cartaShortcutsChanged, object: nil)
                 }.disabled(shortcut.count != 1)
-                Button("Ripristina") {
+                Button(L10n.tr("Ripristina")) {
                     preferences.shortcuts.removeValue(forKey: command)
-                    shortcutMessage = "Scorciatoia predefinita ripristinata."
+                    shortcutMessage = L10n.tr("Scorciatoia predefinita ripristinata.")
                     NotificationCenter.default.post(name: .cartaShortcutsChanged, object: nil)
                 }
             }
-            if !shortcutMessage.isEmpty { CartaPanelAccessibilityStatus(message: shortcutMessage, label: "Assegnazione scorciatoia").font(.caption) }
-            Text("I comandi standard di apertura, salvataggio, copia e chiusura restano riservati. La nuova assegnazione viene applicata al menu.")
-                .font(.caption).foregroundStyle(.secondary)
+            if !shortcutMessage.isEmpty { CartaPanelAccessibilityStatus(message: shortcutMessage, label: L10n.tr("Assegnazione scorciatoia")).font(.caption) }
+            Text(L10n.tr("I comandi standard di apertura, salvataggio, copia e chiusura restano riservati. La nuova assegnazione viene applicata al menu."))
+                .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
         }.formStyle(.grouped).padding(16).frame(minWidth: 560, minHeight: 600)
             .accessibilityIdentifier("panel.preferences")
     }
@@ -209,34 +215,34 @@ struct CartaHistoryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text(recovery ? "Recupero documenti" : "Versioni locali").font(.title2.bold())
+                Text(recovery ? L10n.tr("Recupero documenti") : L10n.tr("Versioni locali")).font(.title2.bold())
                 Spacer()
                 if !recovery, let model {
-                    Button("Salva versione adesso") { model.saveLocalVersion(); reload() }
+                    Button(L10n.tr("Salva versione adesso")) { model.saveLocalVersion(); reload() }
                 }
-                Button("Aggiorna", action: reload)
+                Button(L10n.tr("Aggiorna"), action: reload)
             }
-            Text("Le copie restano sul Mac. Il ripristino apre una nuova finestra e conserva il file originale.")
+            Text(L10n.tr("Le copie restano sul Mac. Il ripristino apre una nuova finestra e conserva il file originale."))
                 .foregroundStyle(.secondary)
-            if entries.isEmpty { ContentUnavailableView("Nessuna copia", systemImage: "clock.arrow.circlepath") }
+            if entries.isEmpty { ContentUnavailableView(L10n.tr("Nessuna copia"), systemImage: "clock.arrow.circlepath") }
             List(entries) { entry in
                 HStack {
                     VStack(alignment: .leading) {
                         Text(entry.name).font(.headline)
                         Text(entry.date, style: .date) + Text(" · ") + Text(entry.date, style: .time)
-                        if entry.encrypted { Label("Copia cifrata", systemImage: "lock").font(.caption) }
+                        if entry.encrypted { Label(L10n.tr("Copia cifrata"), systemImage: "lock").font(.caption) }
                     }
                     Spacer()
-                    Button("Apri copia") { restore(entry) }
-                        .accessibilityLabel("Apri copia di \(entry.name), \(entry.date.formatted(date: .abbreviated, time: .shortened))")
-                    Button("Mostra file") {
+                    Button(L10n.tr("Apri copia")) { restore(entry) }
+                        .accessibilityLabel(L10n.tr("Apri copia di \(entry.name), \(entry.date.formatted(date: .abbreviated, time: .shortened))"))
+                    Button(L10n.tr("Mostra file")) {
                         let url = CartaSnapshotStore.shared.baseURL.appendingPathComponent(entry.kind).appendingPathComponent(entry.id.uuidString + ".pdf")
                         NSWorkspace.shared.activateFileViewerSelecting([url])
                     }
-                    .accessibilityLabel("Mostra file della copia \(entry.name) nel Finder")
+                    .accessibilityLabel(L10n.tr("Mostra file della copia \(entry.name) nel Finder"))
                 }.padding(.vertical, 5)
             }
-            if !message.isEmpty { CartaPanelAccessibilityStatus(message: message, label: "Ripristino").foregroundStyle(.secondary) }
+            if !message.isEmpty { CartaPanelAccessibilityStatus(message: message, label: L10n.tr("Ripristino")).foregroundStyle(.secondary) }
         }.padding(24).frame(minWidth: 700, minHeight: 520).onAppear(perform: reload)
             .accessibilityIdentifier(recovery ? "panel.recovery" : "panel.versions")
     }
@@ -248,12 +254,12 @@ struct CartaHistoryView: View {
         do {
             let copy = PDFWorkspaceDocument()
             try copy.read(from: CartaSnapshotStore.shared.data(for: entry), ofType: "com.adobe.pdf")
-            copy.displayName = entry.name + " · recuperato"
+            copy.displayName = entry.name + L10n.tr(" · recuperato")
             copy.updateChangeCount(.changeDone)
             NSDocumentController.shared.addDocument(copy)
             copy.makeWindowControllers()
             copy.showWindows()
-            message = "Copia aperta. Salvala in un percorso a tua scelta."
+            message = L10n.tr("Copia aperta. Salvala in un percorso a tua scelta.")
         } catch { message = error.localizedDescription }
     }
 }
@@ -264,13 +270,13 @@ extension Notification.Name {
 
 @MainActor
 extension PDFEditorModel {
-    func showPreferencesWorkspace() { CartaPanelController.present(CartaPreferencesView(), title: "Preferenze", width: 600, height: 680) }
-    func showRecoveryWorkspace() { CartaPanelController.present(CartaHistoryView(model: self, recovery: true), title: "Recupero") }
-    func showVersionWorkspace() { CartaPanelController.present(CartaHistoryView(model: self, recovery: false), title: "Versioni") }
+    func showPreferencesWorkspace() { CartaPanelController.present(CartaPreferencesView(), title: L10n.tr("Preferenze"), width: 600, height: 680) }
+    func showRecoveryWorkspace() { CartaPanelController.present(CartaHistoryView(model: self, recovery: true), title: L10n.tr("Recupero")) }
+    func showVersionWorkspace() { CartaPanelController.present(CartaHistoryView(model: self, recovery: false), title: L10n.tr("Versioni")) }
     func saveLocalVersion() {
         do {
             _ = try CartaSnapshotStore.shared.write(data: serializedData(), name: fileName, source: documentOwner?.fileURL, kind: "Versions", documentID: localHistoryID)
-            statusMessage = "Versione locale conservata."
+            statusMessage = L10n.tr("Versione locale conservata.")
         } catch { errorMessage = error.localizedDescription }
     }
     func persistReadingState() {

@@ -1,19 +1,19 @@
-# Accessibilità
+# Accessibility
 
-L'interfaccia include nomi accessibili, valori e unità, stati dei controlli, annunci e operazioni da tastiera. Il pannello delle marcature **⇧⌘K** permette creazione, modifica, eliminazione e regolazione di coordinate/dimensioni con undo. Il catalogo Strumenti è ricercabile con **⇧⌘T**.
+The interface includes accessible names, values and units, control states, announcements, and keyboard operations. **Keyboard Annotations** (**⇧⌘K**) supports creation, editing, deletion, and adjustment of coordinates and dimensions, with undo. Open the **Tools** catalog with **⇧⌘T**. These are the English control names; interface text and accessibility labels follow the selected [app language](LOCALIZATION.md).
 
-## Verifiche disponibili
+## Available checks
 
-La revisione statica e i test nativi sono documentati in [AccessibilityPanelAudit](../Development/AccessibilityPanelAudit.json), `CartaAccessibilityTests` e `CartaKeyboardEditingTests`. Queste verifiche controllano aspetti dell'interfaccia supportati dal codice e non sostituiscono una sessione completa con tecnologie assistive.
+Static review and native tests are documented in [AccessibilityPanelAudit](../Development/AccessibilityPanelAudit.json), `CartaAccessibilityTests`, and `CartaKeyboardEditingTests`. These checks cover interface behavior supported by the code and do not replace a complete session using assistive technologies.
 
-**L'audit manuale completo VoiceOver non è stato completato.** Una breve attivazione di VoiceOver non viene presentata come audit superato. Lo stato tecnico resta `manual_verification_pending` nel [rapporto funzionale](../Development/FeatureVerification.json).
+**The complete manual VoiceOver audit has not been completed.** A brief activation of VoiceOver is not presented as a passed audit. The technical status remains `manual_verification_pending` in the [feature report](../Development/FeatureVerification.json).
 
-Scanner fisico, cattura schermo autorizzata e riproduzione della voce richiedono prove reali aggiuntive. Non è dichiarata una conformità generale dell'interfaccia a uno standard di accessibilità.
+Physical scanner use, authorized screen capture, and speech playback require additional tests on real devices. No general conformity of the interface to an accessibility standard is claimed.
 
-## Accessibilità dei documenti PDF
+## Accessibility of PDF documents
 
-La generazione di tag a livello di pagina, lingua e descrizioni non ricostruisce automaticamente la struttura semantica completa del contenuto. I controlli ParentTree/MCID e degli attributi strutturali verificano relazioni modellate, senza attestare significato umano, ordine di lettura o PDF/UA.
+Generating page-level tags, language information, and descriptions does not automatically reconstruct the content's complete semantic structure. ParentTree/MCID and structure attribute checks verify modeled relationships without attesting human meaning, reading order, or PDF/UA conformity.
 
-## Segnalare un problema
+## Report a problem
 
-Indica versione di macOS e CartaPDF, tecnologia assistiva e impostazioni pertinenti, controllo interessato, sequenza di tasti e comportamento atteso/osservato. Usa un PDF sintetico senza informazioni personali. Per le modalità di segnalazione consulta [SUPPORT](../SUPPORT.md).
+Include the macOS and CartaPDF versions, assistive technology and relevant settings, affected control, key sequence, and expected and observed behavior. Use a synthetic PDF without personal information. See [SUPPORT](../SUPPORT.md) for reporting instructions.

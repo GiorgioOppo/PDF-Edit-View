@@ -92,7 +92,7 @@ final class PDFArchiveObjectStreamSyntaxTests:XCTestCase {
         let updated = append(original.0,previous:original.1,objects:[5:objectStream(values:"true")])
         let result = PDFArchiveSyntaxChecks(reader:try PDFStructureDocument(data:updated)).modelResult()
         XCTAssertEqual(result.status,.failed)
-        XCTAssertTrue(result.detail.contains("soltanto un riferimento"))
+        XCTAssertTrue(diagnosticContains(result.detail, "soltanto un riferimento"))
     }
     func testRepublishedPhysicalOffsetValidatesBothOldAndNewIndirectNInterpretations() throws {
         let header = "9 0 10 2 "
@@ -110,7 +110,7 @@ final class PDFArchiveObjectStreamSyntaxTests:XCTestCase {
             let updated = append(original.0,previous:original.1,objects:[6:Data("+1".utf8),7:Data(newFirst.utf8)],republished:[5:physical])
             let result = PDFArchiveSyntaxChecks(reader:try PDFStructureDocument(data:updated)).modelResult()
             XCTAssertEqual(result.status,failed ? .failed:.passed)
-            if !failed { XCTAssertTrue(result.detail.contains("9 oggetti e 2 stream"),result.detail) }
+            if !failed { XCTAssertTrue(result.detail.contains(L10n.tr("Controllati \(9) oggetti e \(2) stream, incluse revisioni xref ibride.")),result.detail) }
         }
     }
     func testTrailingSliceCommentCannotExposeAnotherValueBeforeItsActualLineEnding() throws {
@@ -118,7 +118,7 @@ final class PDFArchiveObjectStreamSyntaxTests:XCTestCase {
         let bad = objectStream(header:header,values:first+"<< /A 1 >>",n:"2")
         let result = try checks(bad).modelResult()
         XCTAssertEqual(result.status,.failed)
-        XCTAssertTrue(result.detail.contains("interrompe un commento"))
+        XCTAssertTrue(diagnosticContains(result.detail, "interrompe un commento"))
         for separator in ["\n","\r\n"] {
             XCTAssertEqual(try checks(objectStream(header:header,values:first+separator+"<< /A 1 >>",n:"2")).modelResult().status,.passed)
         }

@@ -1,20 +1,24 @@
-# Documentazione di CartaPDF
+# CartaPDF documentation
 
-CartaPDF è un editor PDF nativo per macOS, sviluppato in Swift e distribuito gratuitamente. Il progetto **PDF-Edit&View** raccoglie codice, test e documentazione nel repository [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View), con slug normalizzato da GitHub. Il nome dell'app resta CartaPDF.
+CartaPDF is a free, native macOS PDF editor built with Swift and Apple frameworks. The **PDF-Edit&View** project contains its code, tests, and documentation in the [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository; GitHub normalized the repository name. The app is named CartaPDF and supports seven languages, selected automatically from macOS preferences with English fallback.
 
-**English overview:** CartaPDF is a free, local macOS PDF editor built with Swift and Apple frameworks. It includes PDF/A inspection for eleven profiles, but does not provide complete ISO validation or emit a conforming verdict in version 3.6.0. Code is MIT licensed; bundled reference data retain their own licenses.
+All document processing happens locally. PDF/A inspection covers eleven profiles, but version 3.6.0 does not provide complete ISO validation or emit a conforming verdict. Code is MIT licensed; bundled reference data retain their own licenses.
 
-| Documento | Contenuto |
+| Document | Contents |
 | --- | --- |
-| [Guida d'uso](USAGE.md) | Apertura, annotazioni, unione, divisione, esportazione e precauzioni sui salvataggi. |
-| [Compilazione e verifica](BUILDING.md) | Requisiti, build locale, test e provenienza delle evidenze. |
-| [CLI e automazione](CLI.md) | Comandi, codici di uscita, password e Comandi Rapidi. |
-| [Architettura](ARCHITECTURE.md) | Componenti Swift, risorse e percorso di validazione. |
-| [Privacy e permessi](PRIVACY.md) | Elaborazione locale, dati conservati sul Mac e integrazioni di sistema. |
-| [Validazione PDF/A](PDFA.md) | Undici profili, interpretazione dei risultati e limiti obbligatori. |
-| [Accessibilità](ACCESSIBILITY.md) | Controlli disponibili, verifiche automatiche e audit manuali ancora aperti. |
-| [Preparazione alla pubblicazione](PUBLIC_RELEASE.md) | Controlli del repository e passaggi per una futura distribuzione pubblica. |
+| [User guide](USAGE.md) | Opening, annotating, merging, splitting, exporting, and saving documents. |
+| [Building and verification](BUILDING.md) | Requirements, local builds, tests, and evidence provenance. |
+| [CLI and automation](CLI.md) | Commands, exit codes, passwords, and Shortcuts. |
+| [Architecture](ARCHITECTURE.md) | Swift components, resources, and the validation pipeline. |
+| [Privacy and permissions](PRIVACY.md) | Local processing, data stored on the Mac, and system integrations. |
+| [PDF/A validation](PDFA.md) | Eleven profiles, result interpretation, and required limitations. |
+| [Accessibility](ACCESSIBILITY.md) | Available controls, automated checks, and outstanding manual audits. |
+| [Localization interface review](UI_LOCALIZATION_AUDIT.md) | Isolated app copies, native component snapshots, interactive review and evidence limits. |
+| [Preparing a public release](PUBLIC_RELEASE.md) | Repository checks and steps for a future public distribution. |
+| [Publication preparation evidence](../Development/PublicationReadiness.json) | Scoped history and hosted-content checks, current private status and prepared GitHub settings. |
 
-Per collaborare: [CONTRIBUTING](../CONTRIBUTING.md), [codice di condotta](../CODE_OF_CONDUCT.md), [supporto](../SUPPORT.md) e [sicurezza](../SECURITY.md). Le [novità](../CHANGELOG.md) e le [licenze dei dati](../THIRD_PARTY_NOTICES.md) sono documentate separatamente.
+For contributors, see [CONTRIBUTING](../CONTRIBUTING.md), the [code of conduct](../CODE_OF_CONDUCT.md), [support](../SUPPORT.md), and [security](../SECURITY.md). [Release notes](../CHANGELOG.md) and [data licenses](../THIRD_PARTY_NOTICES.md) are documented separately.
 
-Le evidenze tecniche dettagliate si trovano in [Development](../Development/). Sono fotografie delle verifiche eseguite sulle versioni indicate; aggiungere documentazione o modificare il repository non equivale a rieseguire quei test.
+Detailed technical evidence is in [Development](../Development/). These records describe checks performed on the versions they identify; adding documentation or changing the repository does not mean those tests have been rerun.
+
+- [Languages and translation maintenance](LOCALIZATION.md): automatic macOS matching, English fallback, native resources and checks.

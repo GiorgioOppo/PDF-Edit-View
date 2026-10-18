@@ -16,6 +16,34 @@ final class PDFArchiveValidatorTests: XCTestCase {
         }
         XCTAssertEqual(total, 1489)
     }
+    func testResourceDiscoverySupportsFlatAndContentsBundlesWithAuthenticatedCatalogues() throws {
+        let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
+        try FileManager.default.createDirectory(at:temporary,withIntermediateDirectories:true)
+        defer { try? FileManager.default.removeItem(at:temporary) }
+        let project = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let source = project.appendingPathComponent("Resources/PDFAProfiles",isDirectory:true)
+        for (index,relative) in ["PDFAProfiles","Contents/Resources/PDFAProfiles","CartaPDF_CartaPDF.bundle/PDFAProfiles","CartaPDF_CartaPDF.bundle/Contents/Resources/PDFAProfiles"].enumerated() {
+            let root = temporary.appendingPathComponent("layout\(index)",isDirectory:true),directory = root.appendingPathComponent(relative,isDirectory:true)
+            try FileManager.default.createDirectory(at:directory.deletingLastPathComponent(),withIntermediateDirectories:true)
+            try FileManager.default.copyItem(at:source,to:directory)
+            XCTAssertEqual(PDFArchiveValidator.resourceDirectory(searchRoots:[root]),directory)
+            XCTAssertEqual(try PDFArchiveValidator.catalogue(profile:.pdfa4f,directory:directory).count,111)
+        }
+    }
+    func testXCTestProductsAreSearchableWithoutEscapingAnInstalledApp() throws {
+        let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
+        try FileManager.default.createDirectory(at:temporary,withIntermediateDirectories:true)
+        defer { try? FileManager.default.removeItem(at:temporary) }
+        let directory = temporary.appendingPathComponent("CartaPDF_CartaPDF.bundle/PDFAProfiles",isDirectory:true)
+        try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+        try Data("{}".utf8).write(to:directory.appendingPathComponent("MANIFEST.json"))
+        let test = temporary.appendingPathComponent("CartaPDFPackageTests.xctest",isDirectory:true),app = temporary.appendingPathComponent("CartaPDF.app",isDirectory:true)
+        let testRoots = PDFArchiveValidator.resourceSearchRoots(bundleURLs:[test],resourceURLs:[])
+        XCTAssertTrue(testRoots.contains(temporary));XCTAssertEqual(PDFArchiveValidator.resourceDirectory(searchRoots:testRoots),directory)
+        let appRoots = PDFArchiveValidator.resourceSearchRoots(bundleURLs:[app],resourceURLs:[])
+        XCTAssertFalse(appRoots.contains(temporary));XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:appRoots))
+        XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:[temporary.appendingPathComponent("missing")]))
+    }
     func testProfileAwareHeaderAndIdentificationDoNotTreatFourAsTwo() throws {
         let two = PDFArchiveValidator.validate(data: fixture(version: "1.0", part: 2, conformance: "U"), profile: .pdfa2u)
         XCTAssertEqual(try result(two, clause: "6.1.2", number: "1").status, .passed)
@@ -124,7 +152,7 @@ final class PDFArchiveValidatorTests: XCTestCase {
         XCTAssertEqual(restored.sha256, report.sha256); XCTAssertEqual(restored.rules.count, report.rules.count)
         let missing = PDFArchiveValidator.validate(data: data, profile: .pdfa2u, catalogueDirectory: URL(fileURLWithPath: "/private/tmp/no-such-profile-" + UUID().uuidString))
         XCTAssertEqual(missing.verdict, .indeterminate); XCTAssertTrue(missing.rules.isEmpty)
-        XCTAssertTrue(missing.diagnostics.contains { $0.contains("Catalogo") })
+        XCTAssertTrue(missing.diagnostics.contains { diagnosticContains($0, "Catalogo") })
     }
     func testMalformedPdfNeverBecomesConformingAndStillReportsAllCatalogueRules() throws {
         let report = PDFArchiveValidator.validate(data: Data("%PDF-1.7\n%notbinary\ninvalid".utf8), profile: .pdfa2u)
@@ -143,7 +171,7 @@ final class PDFArchiveValidatorTests: XCTestCase {
         try JSONSerialization.data(withJSONObject: manifest).write(to: directory.appendingPathComponent("MANIFEST.json"))
         let report = PDFArchiveValidator.validate(data: fixture(version:"1.7",part:2,conformance:"U"), profile:.pdfa2u, catalogueDirectory:directory)
         XCTAssertEqual(report.verdict,.indeterminate); XCTAssertTrue(report.rules.isEmpty)
-        XCTAssertTrue(report.diagnostics.contains { $0.contains("hash") })
+        XCTAssertTrue(report.diagnostics.contains { diagnosticContains($0, "hash") })
         XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:[directory.appendingPathComponent("missing-installation")]))
     }
     func testDeclaredProfileUsesUnambiguousActualRDFAndDoesNotValidateOrUpgrade() throws {

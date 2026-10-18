@@ -24,13 +24,13 @@ struct WorkflowSource: Identifiable {
     let byteCount: Int
     let formats: [String]
     var range: String
-    init(document: PDFDocument, title: String, url: URL? = nil, range: String = "tutte") {
+    init(document: PDFDocument, title: String, url: URL? = nil, range: String = "all") {
         id = UUID(); self.document = document; self.title = title; self.url = url; self.range = range
         byteCount = url.flatMap { try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize } ?? document.dataRepresentation()?.count ?? 0
         formats = Set((0..<document.pageCount).compactMap(document.page(at:)).map { page -> String in
             let box = page.bounds(for: .cropBox)
             let size = abs(page.rotation % 180) == 90 ? CGSize(width: box.height, height: box.width) : box.size
-            guard size.width.isFinite, size.height.isFinite, abs(size.width) < 1_000_000, abs(size.height) < 1_000_000 else { return "Formato non valido" }
+            guard size.width.isFinite, size.height.isFinite, abs(size.width) < 1_000_000, abs(size.height) < 1_000_000 else { return L10n.tr("Formato non valido") }
             return "\(Int(size.width.rounded())) × \(Int(size.height.rounded())) pt"
         }).sorted()
     }
@@ -85,7 +85,7 @@ enum WorkflowPosition: String, CaseIterable, Identifiable {
 }
 
 struct WorkflowTextSettings {
-    var text = "BOZZA"
+    var text = L10n.tr("BOZZA")
     var fontName = "Helvetica-Bold"
     var fontSize: CGFloat = 48
     var opacity: CGFloat = 0.25
@@ -134,10 +134,10 @@ struct WorkflowBatchStep: Identifiable, Codable {
         self.kind = kind
         switch kind {
         case .rotate: value = 90
-        case .watermark: text = "BOZZA"; value = 48
+        case .watermark: text = L10n.tr("BOZZA"); value = 48
         case .numbers: text = "{page} / {pages}"; value = 10
         case .bates: text = "DOC-"; value = 1; secondary = 6
-        case .extract: text = "tutte"
+        case .extract: text = "all"
         case .nUp: value = 2; secondary = 2
         case .split: value = 10
         case .flatten, .jpeg: value = 144; secondary = 0.7
@@ -151,14 +151,14 @@ enum WorkflowEngine {
     typealias Progress = (Double, String) -> Void
 
     static func parseRange(_ text: String, pageCount: Int) throws -> WorkflowRangeResult {
-        guard pageCount > 0 else { throw WorkflowError("Il documento non contiene pagine.") }
+        guard pageCount > 0 else { throw WorkflowError(L10n.tr("Il documento non contiene pagine.")) }
         let normalized = text.lowercased().replacingOccurrences(of: "–", with: "-").replacingOccurrences(of: "—", with: "-")
             .replacingOccurrences(of: ";", with: ",").replacingOccurrences(of: "\n", with: ",")
         var indices: [Int] = [], repeated: [Int] = []
         let tokens = normalized.split(separator: ",", omittingEmptySubsequences: false)
         for raw in tokens {
             let token = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !token.isEmpty else { throw WorkflowError("Intervallo vuoto vicino a “\(raw)”. Usa 1-3, 5, ultima.") }
+            guard !token.isEmpty else { throw WorkflowError(L10n.tr("Intervallo vuoto vicino a “\(raw)”. Usa 1-3, 5, ultima.")) }
             var selected: [Int]
             switch token {
             case "all", "tutte", "tutti", "*": selected = Array(0..<pageCount)
@@ -169,10 +169,10 @@ enum WorkflowEngine {
                 let parts = token.split(separator: "-", omittingEmptySubsequences: false).map { $0.trimmingCharacters(in: .whitespaces) }
                 func number(_ value: String) -> Int? { value == "ultima" || value == "last" ? pageCount : Int(value) }
                 guard (1...2).contains(parts.count), let first = number(parts[0]), first > 0, first <= pageCount else {
-                    throw WorkflowError("“\(token)” non è valido: le pagine vanno da 1 a \(pageCount).")
+                    throw WorkflowError(L10n.tr("“\(token)” non è valido: le pagine vanno da 1 a \(pageCount)."))
                 }
                 let last = parts.count == 2 ? number(parts[1]) : first
-                guard let last, last >= first, last <= pageCount else { throw WorkflowError("Intervallo “\(token)” invertito o fuori dal documento.") }
+                guard let last, last >= first, last <= pageCount else { throw WorkflowError(L10n.tr("Intervallo “\(token)” invertito o fuori dal documento.")) }
                 selected = Array((first - 1)..<last)
             }
             for index in selected {
@@ -180,19 +180,19 @@ enum WorkflowEngine {
                 else { indices.append(index) }
             }
         }
-        guard !indices.isEmpty else { throw WorkflowError("La selezione non contiene pagine.") }
+        guard !indices.isEmpty else { throw WorkflowError(L10n.tr("La selezione non contiene pagine.")) }
         return WorkflowRangeResult(indices: indices, repeatedPages: repeated)
     }
 
     static func validateSource(_ document: PDFDocument, rendering: Bool = false) throws {
-        guard !document.isLocked else { throw WorkflowError("Sblocca il PDF con la sua password prima di elaborarlo.") }
+        guard !document.isLocked else { throw WorkflowError(L10n.tr("Sblocca il PDF con la sua password prima di elaborarlo.")) }
         guard document.pageCount > 0, document.allowsCopying else { throw PDFWorkspaceError.copyingNotAllowed }
         if rendering && !document.allowsPrinting { throw PDFWorkspaceError.printingNotAllowed }
     }
 
     static func extract(_ document: PDFDocument, indices: [Int], keepOutline: Bool = true) throws -> PDFDocument {
         try validateSource(document)
-        guard !indices.isEmpty, indices.allSatisfy({ (0..<document.pageCount).contains($0) }) else { throw WorkflowError("Selezione di pagine non valida.") }
+        guard !indices.isEmpty, indices.allSatisfy({ (0..<document.pageCount).contains($0) }) else { throw WorkflowError(L10n.tr("Selezione di pagine non valida.")) }
         let result = PDFDocument()
         result.documentAttributes = document.documentAttributes
         var mapping: [Int: PDFPage] = [:]
@@ -215,7 +215,7 @@ enum WorkflowEngine {
             guard let child = sourceNode.child(at: index) else { continue }
             let copied = PDFOutline()
             target.insertChild(copied, at: target.numberOfChildren)
-            copied.label = child.label ?? "Segnalibro"
+            copied.label = child.label ?? L10n.tr("Segnalibro")
             if let destination = child.destination, let page = destination.page, let mapped = mapping[source.index(for: page)] {
                 copied.destination = PDFDestination(page: mapped, at: destination.point)
             }
@@ -226,8 +226,8 @@ enum WorkflowEngine {
 
     static func merge(_ sources: [WorkflowSource], alternate: Bool = false, reverseBacks: Bool = true,
                       keepOutline: Bool = true, progress: Progress = { _, _ in }) async throws -> PDFDocument {
-        guard !sources.isEmpty else { throw WorkflowError("Aggiungi almeno un documento.") }
-        if alternate && sources.count != 2 { throw WorkflowError("L’unione fronte/retro richiede esattamente due PDF: fronti e retri.") }
+        guard !sources.isEmpty else { throw WorkflowError(L10n.tr("Aggiungi almeno un documento.")) }
+        if alternate && sources.count != 2 { throw WorkflowError(L10n.tr("L’unione fronte/retro richiede esattamente due PDF: fronti e retri.")) }
         var selections: [[Int]] = []
         for source in sources {
             try validateSource(source.document)
@@ -250,7 +250,7 @@ enum WorkflowEngine {
             guard let copy = sources[entry.0].document.page(at: entry.1)?.copy() as? PDFPage else { throw PDFWorkspaceError.invalidPDF }
             result.insert(copy, at: result.pageCount)
             mappings[entry.0][entry.1] = copy
-            progress(Double(position + 1) / Double(sequence.count), "\(sources[entry.0].title) · pagina \(entry.1 + 1) · \(position + 1)/\(sequence.count)")
+            progress(Double(position + 1) / Double(sequence.count), L10n.tr("\(sources[entry.0].title) · pagina \(entry.1 + 1) · \(position + 1)/\(sequence.count)"))
             await Task.yield()
         }
         if keepOutline {
@@ -285,72 +285,72 @@ enum WorkflowEngine {
         return names.map { ($0, groups[$0] ?? []) }
     }
 
-    static func planSplit(_ source: PDFDocument, mode: WorkflowSplitMode, count: Int = 10, intervals: String = "tutte",
+    static func planSplit(_ source: PDFDocument, mode: WorkflowSplitMode, count: Int = 10, intervals: String = "all",
                           marker: String = "", maxBytes: Int = 5_000_000, skipMarkers: Bool = false,
                           blankThreshold: Double = 0.002, progress: Progress = { _, _ in }) async throws -> [WorkflowPart] {
         try validateSource(source, rendering: mode == .blank || mode == .barcode)
         let total = source.pageCount
         if mode == .intervals {
             return try intervals.split(separator: ";", omittingEmptySubsequences: false).map {
-                WorkflowPart(indices: try parseRange(String($0), pageCount: total).indices, label: "Intervallo")
+                WorkflowPart(indices: try parseRange(String($0), pageCount: total).indices, label: L10n.tr("Intervallo"))
             }
         }
         if mode == .everyN {
-            guard count > 0 else { throw WorkflowError("N deve essere maggiore di zero.") }
-            return stride(from: 0, to: total, by: count).map { WorkflowPart(indices: Array($0..<min($0 + count, total)), label: "Parte") }
+            guard count > 0 else { throw WorkflowError(L10n.tr("N deve essere maggiore di zero.")) }
+            return stride(from: 0, to: total, by: count).map { WorkflowPart(indices: Array($0..<min($0 + count, total)), label: L10n.tr("Parte")) }
         }
         if mode == .maxBytes {
-            guard maxBytes >= 1024 else { throw WorkflowError("La dimensione massima deve essere almeno 1 KB.") }
+            guard maxBytes >= 1024 else { throw WorkflowError(L10n.tr("La dimensione massima deve essere almeno 1 KB.")) }
             var parts: [WorkflowPart] = [], current: [Int] = []
             for index in 0..<total {
                 try Task.checkCancellation()
                 let candidate = current + [index]
                 let bytes = try serialized(extract(source, indices: candidate)).count
                 if bytes > maxBytes {
-                    guard !current.isEmpty else { throw WorkflowError("La pagina \(index + 1) supera da sola il limite. Aumentalo: i PDF non vengono ricompressi durante questa divisione.") }
-                    parts.append(WorkflowPart(indices: current, label: "Parte", estimatedBytes: try serialized(extract(source, indices: current)).count))
+                    guard !current.isEmpty else { throw WorkflowError(L10n.tr("La pagina \(index + 1) supera da sola il limite. Aumentalo: i PDF non vengono ricompressi durante questa divisione.")) }
+                    parts.append(WorkflowPart(indices: current, label: L10n.tr("Parte"), estimatedBytes: try serialized(extract(source, indices: current)).count))
                     current = [index]
-                    guard try serialized(extract(source, indices: current)).count <= maxBytes else { throw WorkflowError("La pagina \(index + 1) supera da sola il limite scelto.") }
+                    guard try serialized(extract(source, indices: current)).count <= maxBytes else { throw WorkflowError(L10n.tr("La pagina \(index + 1) supera da sola il limite scelto.")) }
                 } else { current = candidate }
-                progress(Double(index + 1) / Double(total), "Misurazione pagina \(index + 1)/\(total)")
+                progress(Double(index + 1) / Double(total), L10n.tr("Misurazione pagina \(index + 1)/\(total)"))
                 await Task.yield()
             }
-            if !current.isEmpty { parts.append(WorkflowPart(indices: current, label: "Parte", estimatedBytes: try serialized(extract(source, indices: current)).count)) }
+            if !current.isEmpty { parts.append(WorkflowPart(indices: current, label: L10n.tr("Parte"), estimatedBytes: try serialized(extract(source, indices: current)).count)) }
             return parts
         }
-        var boundaries: [Int: String] = [0: "Parte"]
+        var boundaries: [Int: String] = [0: L10n.tr("Parte")]
         var excluded: Set<Int> = []
         if mode == .bookmarks {
-            guard let root = source.outlineRoot, root.numberOfChildren > 0 else { throw WorkflowError("Il documento non contiene segnalibri utilizzabili.") }
+            guard let root = source.outlineRoot, root.numberOfChildren > 0 else { throw WorkflowError(L10n.tr("Il documento non contiene segnalibri utilizzabili.")) }
             for index in 0..<root.numberOfChildren {
                 guard let child = root.child(at: index), let page = child.destination?.page else { continue }
                 let pageIndex = source.index(for: page)
-                if pageIndex != NSNotFound { boundaries[pageIndex] = child.label ?? "Parte" }
+                if pageIndex != NSNotFound { boundaries[pageIndex] = child.label ?? L10n.tr("Parte") }
             }
-            guard boundaries.count > 1 || root.child(at: 0)?.destination?.page != nil else { throw WorkflowError("I segnalibri non hanno destinazioni di pagina utilizzabili.") }
+            guard boundaries.count > 1 || root.child(at: 0)?.destination?.page != nil else { throw WorkflowError(L10n.tr("I segnalibri non hanno destinazioni di pagina utilizzabili.")) }
         } else {
-            if mode == .text && marker.trimmingCharacters(in: .whitespaces).isEmpty { throw WorkflowError("Inserisci il testo separatore da cercare.") }
+            if mode == .text && marker.trimmingCharacters(in: .whitespaces).isEmpty { throw WorkflowError(L10n.tr("Inserisci il testo separatore da cercare.")) }
             for index in 0..<total {
                 try Task.checkCancellation()
                 guard let page = source.page(at: index) else { throw PDFWorkspaceError.invalidPDF }
-                var isMarker = false, label = "Parte"
-                if mode == .text { isMarker = (page.string ?? "").localizedCaseInsensitiveContains(marker); label = marker }
+                var isMarker = false, label = L10n.tr("Parte")
+                if mode == .text { isMarker = (page.string ?? L10n.tr("")).localizedCaseInsensitiveContains(marker); label = marker }
                 else if mode == .blank {
                     let raster = try PDFConversionEngine.renderPage(page, dpi: 36)
                     isMarker = try blankFraction(raster.image) <= min(max(blankThreshold, 0), 0.1)
-                    label = "Dopo pagina bianca"
+                    label = L10n.tr("Dopo pagina bianca")
                 } else if mode == .barcode {
                     let raster = try PDFConversionEngine.renderPage(page, dpi: 100)
                     let request = VNDetectBarcodesRequest()
                     try VNImageRequestHandler(cgImage: raster.image, options: [:]).perform([request])
                     let found = (request.results ?? []).compactMap(\.payloadStringValue).first { marker.isEmpty || $0.localizedCaseInsensitiveContains(marker) }
-                    isMarker = found != nil; label = found ?? "Codice"
+                    isMarker = found != nil; label = found ?? L10n.tr("Codice")
                 }
                 if isMarker {
                     if skipMarkers { excluded.insert(index); if index + 1 < total { boundaries[index + 1] = label } }
                     else { boundaries[index] = label }
                 }
-                progress(Double(index + 1) / Double(total), "Analisi pagina \(index + 1)/\(total)")
+                progress(Double(index + 1) / Double(total), L10n.tr("Analisi pagina \(index + 1)/\(total)"))
                 await Task.yield()
             }
         }
@@ -358,9 +358,9 @@ enum WorkflowEngine {
         let parts = starts.enumerated().compactMap { offset, start -> WorkflowPart? in
             let end = offset + 1 < starts.count ? starts[offset + 1] : total
             let indices = (start..<end).filter { !excluded.contains($0) }
-            return indices.isEmpty ? nil : WorkflowPart(indices: indices, label: boundaries[start] ?? "Parte")
+            return indices.isEmpty ? nil : WorkflowPart(indices: indices, label: boundaries[start] ?? L10n.tr("Parte"))
         }
-        guard !parts.isEmpty else { throw WorkflowError("La divisione non produce pagine. Disattiva l’esclusione dei separatori.") }
+        guard !parts.isEmpty else { throw WorkflowError(L10n.tr("La divisione non produce pagine. Disattiva l’esclusione dei separatori.")) }
         return parts
     }
 
@@ -395,7 +395,7 @@ enum WorkflowEngine {
         }
         result = result.components(separatedBy: CharacterSet(charactersIn: "/:\0\n\r")).joined(separator: "_")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        if result.isEmpty { result = "Parte-\(index + 1)" }
+        if result.isEmpty { result = L10n.tr("Parte-\(index + 1)") }
         if result.lowercased().hasSuffix(".pdf") { result = String(result.dropLast(4)) }
         while result.utf8.count > 235 { result.removeLast() }
         return result + ".pdf"
@@ -404,7 +404,7 @@ enum WorkflowEngine {
     static func serialized(_ document: PDFDocument, password: String? = nil) throws -> Data {
         let data: Data?
         if let password {
-            guard !password.isEmpty else { throw WorkflowError("Inserisci una password per le copie protette.") }
+            guard !password.isEmpty else { throw WorkflowError(L10n.tr("Inserisci una password per le copie protette.")) }
             data = document.dataRepresentation(options: [PDFDocumentWriteOption.ownerPasswordOption: password, PDFDocumentWriteOption.userPasswordOption: password])
         } else { data = document.dataRepresentation() }
         guard let data else { throw PDFWorkspaceError.cannotSave }
@@ -418,7 +418,7 @@ enum WorkflowEngine {
 
     private static func draw(_ page: PDFPage, into rect: CGRect, context: CGContext, opacity: CGFloat = 1) throws {
         let size = displayedSize(page)
-        guard size.width > 0, size.height > 0, rect.width > 0, rect.height > 0 else { throw WorkflowError("Dimensioni di pagina non valide.") }
+        guard size.width > 0, size.height > 0, rect.width > 0, rect.height > 0 else { throw WorkflowError(L10n.tr("Dimensioni di pagina non valide.")) }
         let scale = min(rect.width / size.width, rect.height / size.height)
         context.saveGState(); defer { context.restoreGState() }
         context.clip(to: rect)
@@ -436,7 +436,7 @@ enum WorkflowEngine {
             self.context = context
         }
         func begin(_ size: CGSize) throws {
-            guard size.width.isFinite, size.height.isFinite, size.width >= 18, size.height >= 18, size.width <= 20_000, size.height <= 20_000 else { throw WorkflowError("Il foglio deve misurare da 18 a 20.000 punti per lato.") }
+            guard size.width.isFinite, size.height.isFinite, size.width >= 18, size.height >= 18, size.width <= 20_000, size.height <= 20_000 else { throw WorkflowError(L10n.tr("Il foglio deve misurare da 18 a 20.000 punti per lato.")) }
             var rect = CGRect(origin: .zero, size: size)
             let box = NSData(bytes: &rect, length: MemoryLayout<CGRect>.size)
             context.beginPDFPage([kCGPDFContextMediaBox as String: box] as CFDictionary)
@@ -452,11 +452,11 @@ enum WorkflowEngine {
     static func nUp(_ source: PDFDocument, columns: Int, rows: Int, sheet: CGSize, gutter: CGFloat = 12,
                     booklet: Bool = false, progress: Progress = { _, _ in }) async throws -> PDFDocument {
         try validateSource(source, rendering: true)
-        guard (1...8).contains(columns), (1...8).contains(rows), gutter >= 0 else { throw WorkflowError("Usa da 1 a 8 righe/colonne e una spaziatura positiva.") }
+        guard (1...8).contains(columns), (1...8).contains(rows), gutter >= 0 else { throw WorkflowError(L10n.tr("Usa da 1 a 8 righe/colonne e una spaziatura positiva.")) }
         let cols = booklet ? 2 : columns, lineCount = booklet ? 1 : rows
         let capacity = cols * lineCount
         let cell = CGSize(width: (sheet.width - gutter * CGFloat(cols + 1)) / CGFloat(cols), height: (sheet.height - gutter * CGFloat(lineCount + 1)) / CGFloat(lineCount))
-        guard cell.width >= 10, cell.height >= 10 else { throw WorkflowError("Spaziatura troppo grande per il foglio.") }
+        guard cell.width >= 10, cell.height >= 10 else { throw WorkflowError(L10n.tr("Spaziatura troppo grande per il foglio.")) }
         var order: [Int?]
         if booklet {
             let padded = ((source.pageCount + 3) / 4) * 4
@@ -477,7 +477,7 @@ enum WorkflowEngine {
                 try draw(page, into: rect, context: writer.context)
             }
             writer.context.endPDFPage()
-            progress(Double(min(offset + capacity, order.count)) / Double(order.count), "Impaginazione foglio \(offset / capacity + 1)")
+            progress(Double(min(offset + capacity, order.count)) / Double(order.count), L10n.tr("Impaginazione foglio \(offset / capacity + 1)"))
             await Task.yield()
         }
         return try writer.finish()
@@ -486,7 +486,7 @@ enum WorkflowEngine {
     static func poster(_ source: PDFDocument, columns: Int, rows: Int, sheet: CGSize, overlap: CGFloat,
                        progress: Progress = { _, _ in }) async throws -> PDFDocument {
         try validateSource(source, rendering: true)
-        guard (1...12).contains(columns), (1...12).contains(rows), overlap >= 0, overlap < min(sheet.width, sheet.height) / 2 else { throw WorkflowError("Griglia o sovrapposizione del poster non valida.") }
+        guard (1...12).contains(columns), (1...12).contains(rows), overlap >= 0, overlap < min(sheet.width, sheet.height) / 2 else { throw WorkflowError(L10n.tr("Griglia o sovrapposizione del poster non valida.")) }
         let canvas = CGSize(width: sheet.width * CGFloat(columns) - overlap * CGFloat(columns - 1), height: sheet.height * CGFloat(rows) - overlap * CGFloat(rows - 1))
         let writer = try Writer(); var completed = 0
         for index in 0..<source.pageCount {
@@ -498,7 +498,7 @@ enum WorkflowEngine {
                 writer.context.translateBy(x: -CGFloat(column) * (sheet.width - overlap), y: -CGFloat(rows - 1 - row) * (sheet.height - overlap))
                 try draw(page, into: CGRect(origin: .zero, size: canvas), context: writer.context)
                 writer.context.restoreGState(); writer.context.endPDFPage()
-                completed += 1; progress(Double(completed) / Double(source.pageCount * rows * columns), "Tassello \(completed)/\(source.pageCount * rows * columns)")
+                completed += 1; progress(Double(completed) / Double(source.pageCount * rows * columns), L10n.tr("Tassello \(completed)/\(source.pageCount * rows * columns)"))
                 await Task.yield()
             } }
         }
@@ -518,14 +518,14 @@ enum WorkflowEngine {
                 try draw(page, into: CGRect(origin: .zero, size: size), context: writer.context)
                 writer.context.restoreGState(); writer.context.endPDFPage(); await Task.yield()
             }
-            progress(Double(index + 1) / Double(source.pageCount), "Separazione scansione \(index + 1)")
+            progress(Double(index + 1) / Double(source.pageCount), L10n.tr("Separazione scansione \(index + 1)"))
         }
         return try writer.finish()
     }
 
     static func overlay(_ base: PDFDocument, overlay: PDFDocument, opacity: CGFloat, progress: Progress = { _, _ in }) async throws -> PDFDocument {
         try validateSource(base, rendering: true); try validateSource(overlay, rendering: true)
-        guard opacity.isFinite, opacity > 0, opacity <= 1 else { throw WorkflowError("L’opacità deve essere maggiore di zero e non superiore a uno.") }
+        guard opacity.isFinite, opacity > 0, opacity <= 1 else { throw WorkflowError(L10n.tr("L’opacità deve essere maggiore di zero e non superiore a uno.")) }
         let writer = try Writer()
         for index in 0..<base.pageCount {
             try Task.checkCancellation()
@@ -533,17 +533,17 @@ enum WorkflowEngine {
             let size = displayedSize(page); try writer.begin(size)
             try draw(page, into: CGRect(origin: .zero, size: size), context: writer.context)
             try draw(top, into: CGRect(origin: .zero, size: size), context: writer.context, opacity: opacity)
-            writer.context.endPDFPage(); progress(Double(index + 1) / Double(base.pageCount), "Sovrapposizione pagina \(index + 1)"); await Task.yield()
+            writer.context.endPDFPage(); progress(Double(index + 1) / Double(base.pageCount), L10n.tr("Sovrapposizione pagina \(index + 1)")); await Task.yield()
         }
         return try writer.finish()
     }
 
     static func replace(_ source: PDFDocument, indices: [Int], replacements: PDFDocument) throws -> PDFDocument {
         try validateSource(source); try validateSource(replacements)
-        guard !indices.isEmpty, indices.count == replacements.pageCount, Set(indices).count == indices.count else { throw WorkflowError("Seleziona tante pagine quante quelle del PDF sostitutivo, senza duplicati.") }
+        guard !indices.isEmpty, indices.count == replacements.pageCount, Set(indices).count == indices.count else { throw WorkflowError(L10n.tr("Seleziona tante pagine quante quelle del PDF sostitutivo, senza duplicati.")) }
         let result = try extract(source, indices: Array(0..<source.pageCount), keepOutline: false)
         for (position, index) in indices.enumerated() {
-            guard (0..<result.pageCount).contains(index), let copy = replacements.page(at: position)?.copy() as? PDFPage else { throw WorkflowError("Pagina sostitutiva non valida.") }
+            guard (0..<result.pageCount).contains(index), let copy = replacements.page(at: position)?.copy() as? PDFPage else { throw WorkflowError(L10n.tr("Pagina sostitutiva non valida.")) }
             result.removePage(at: index); result.insert(copy, at: index)
         }
         if let root = source.outlineRoot {
@@ -554,7 +554,7 @@ enum WorkflowEngine {
     }
 
     static func template(_ text: String, page: Int, pages: Int, name: String, bates: String = "", date: Date = Date()) -> String {
-        let formatter = DateFormatter(); formatter.locale = Locale(identifier: "it_IT"); formatter.dateFormat = "dd/MM/yyyy"
+        let formatter = DateFormatter(); formatter.locale = L10n.currentLocale; formatter.dateStyle = .short
         return text.replacingOccurrences(of: "{page}", with: String(page)).replacingOccurrences(of: "{pages}", with: String(pages))
             .replacingOccurrences(of: "{name}", with: (name as NSString).deletingPathExtension)
             .replacingOccurrences(of: "{date}", with: formatter.string(from: date)).replacingOccurrences(of: "{bates}", with: bates)
@@ -562,13 +562,13 @@ enum WorkflowEngine {
 
     static func watermarkAnnotations(_ source: PDFDocument, indices: [Int], settings: WorkflowTextSettings) throws -> [(PDFPage, PDFAnnotation)] {
         guard settings.fontSize >= 6, settings.fontSize <= 144, settings.opacity > 0, settings.opacity <= 1,
-              settings.margin.isFinite, settings.margin >= 0, !settings.text.isEmpty else { throw WorkflowError("Testo, dimensione, margini o opacità della filigrana non validi.") }
+              settings.margin.isFinite, settings.margin >= 0, !settings.text.isEmpty else { throw WorkflowError(L10n.tr("Testo, dimensione, margini o opacità della filigrana non validi.")) }
         let font = NSFont(name: settings.fontName, size: settings.fontSize) ?? NSFont.systemFont(ofSize: settings.fontSize)
         return try indices.map { index in
             guard let page = source.page(at: index) else { throw PDFWorkspaceError.invalidPDF }
             let crop = page.bounds(for: .cropBox), available = max(10, crop.width - 2 * settings.margin)
             let height = ceil((settings.text as NSString).boundingRect(with: CGSize(width: available, height: 100_000), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: font]).height) + 12
-            guard crop.width - 2 * settings.margin >= 18, height + 2 * settings.margin <= crop.height else { throw WorkflowError("La filigrana non entra nella pagina \(index + 1). Riduci font, testo o margini.") }
+            guard crop.width - 2 * settings.margin >= 18, height + 2 * settings.margin <= crop.height else { throw WorkflowError(L10n.tr("La filigrana non entra nella pagina \(index + 1). Riduci font, testo o margini.")) }
             let y: CGFloat
             switch settings.position { case .top, .topLeft, .topRight: y = crop.maxY - settings.margin - height
             case .bottom, .bottomLeft, .bottomRight: y = crop.minY + settings.margin
@@ -586,17 +586,17 @@ enum WorkflowEngine {
 
     static func numberingAnnotations(_ source: PDFDocument, indices: [Int], name: String, settings: WorkflowNumberingSettings) throws -> [(PDFPage, PDFAnnotation)] {
         guard (1...20).contains(settings.padding), settings.start >= 0, settings.start <= Int.max - indices.count,
-              settings.fontSize >= 6, settings.fontSize <= 72, settings.margin.isFinite, settings.margin >= 0 else { throw WorkflowError("Impostazioni della numerazione non valide.") }
+              settings.fontSize >= 6, settings.fontSize <= 72, settings.margin.isFinite, settings.margin >= 0 else { throw WorkflowError(L10n.tr("Impostazioni della numerazione non valide.")) }
         var result: [(PDFPage, PDFAnnotation)] = []
         let font = NSFont.monospacedSystemFont(ofSize: settings.fontSize, weight: .regular)
         for (offset, index) in indices.enumerated() {
             guard let page = source.page(at: index) else { throw PDFWorkspaceError.invalidPDF }
             let value = String(settings.start + offset), bates = settings.batesPrefix + String(repeating: "0", count: max(0, settings.padding - value.count)) + value
             let crop = page.bounds(for: .cropBox), width = crop.width - settings.margin * 2
-            guard settings.margin * 2 + settings.fontSize * 1.8 < crop.height else { throw WorkflowError("Margini o font troppo grandi per la pagina \(index + 1).") }
+            guard settings.margin * 2 + settings.fontSize * 1.8 < crop.height else { throw WorkflowError(L10n.tr("Margini o font troppo grandi per la pagina \(index + 1).")) }
             for (header, raw) in [(true, settings.header), (false, settings.usesBates ? "{bates}" : settings.footer)] where !raw.isEmpty {
                 let text = template(raw, page: index + 1, pages: source.pageCount, name: name, bates: bates)
-                guard (text as NSString).size(withAttributes: [.font: font]).width + 8 <= width else { throw WorkflowError("Il testo “\(text)” non entra nel piè pagina. Riduci font/prefisso o margini.") }
+                guard (text as NSString).size(withAttributes: [.font: font]).width + 8 <= width else { throw WorkflowError(L10n.tr("Il testo “\(text)” non entra nel piè pagina. Riduci font/prefisso o margini.")) }
                 let annotation = PDFAnnotation(bounds: CGRect(x: crop.minX + settings.margin, y: header ? crop.maxY - settings.margin - settings.fontSize * 1.8 : crop.minY + settings.margin, width: width, height: settings.fontSize * 1.8), forType: .freeText, withProperties: nil)
                 annotation.contents = text; annotation.font = font; annotation.fontColor = .black; annotation.color = .clear; annotation.alignment = .center
                 let border = PDFBorder(); border.lineWidth = 0; annotation.border = border; annotation.userName = "CartaPDF:workflow-numbering"
@@ -613,17 +613,17 @@ enum WorkflowEngine {
         }.count
     }
 
-    static func tableOfContents(_ source: PDFDocument, title: String = "Indice") throws -> PDFDocument {
+    static func tableOfContents(_ source: PDFDocument, title: String = L10n.tr("Indice")) throws -> PDFDocument {
         try validateSource(source)
         var entries: [(String, Int)] = []
         if let root = source.outlineRoot {
             for index in 0..<root.numberOfChildren {
                 guard let child = root.child(at: index), let page = child.destination?.page else { continue }
                 let pageIndex = source.index(for: page)
-                if pageIndex != NSNotFound { entries.append((child.label ?? "Pagina \(pageIndex + 1)", pageIndex)) }
+                if pageIndex != NSNotFound { entries.append((child.label ?? L10n.tr("Pagina \(pageIndex + 1)"), pageIndex)) }
             }
         }
-        if entries.isEmpty { entries = (0..<source.pageCount).map { ("Pagina \($0 + 1)", $0) } }
+        if entries.isEmpty { entries = (0..<source.pageCount).map { (L10n.tr("Pagina \($0 + 1)"), $0) } }
         let rows = 35, tocCount = (entries.count + rows - 1) / rows, writer = try Writer()
         let size = CGSize(width: 595.276, height: 841.89)
         for toc in 0..<tocCount {
@@ -664,14 +664,14 @@ enum WorkflowStagedWriter {
         let fm = FileManager.default
         var reserved = Set<String>(), urls: [URL] = []
         for name in names {
-            guard !name.isEmpty, name != ".", name != "..", !name.contains("/"), !name.contains("\0") else { throw WorkflowError("Il nome di output deve essere un nome file, senza cartelle o caratteri nulli.") }
+            guard !name.isEmpty, name != ".", name != "..", !name.contains("/"), !name.contains("\0") else { throw WorkflowError(L10n.tr("Il nome di output deve essere un nome file, senza cartelle o caratteri nulli.")) }
             var url = directory.appendingPathComponent(name), suffix = 2
             if policy == .rename {
                 while fm.fileExists(atPath: url.path) || reserved.contains(url.path) {
                     url = directory.appendingPathComponent("\((name as NSString).deletingPathExtension)-\(suffix).pdf"); suffix += 1
                 }
-            } else if reserved.contains(url.path) { throw WorkflowError("Il modello produce due file chiamati “\(name)”. Aggiungi {index} al nome.") }
-            else if policy == .fail && fm.fileExists(atPath: url.path) { throw WorkflowError("Esiste già “\(name)”. Scegli Rinomina o una cartella diversa.") }
+            } else if reserved.contains(url.path) { throw WorkflowError(L10n.tr("Il modello produce due file chiamati “\(name)”. Aggiungi {index} al nome.")) }
+            else if policy == .fail && fm.fileExists(atPath: url.path) { throw WorkflowError(L10n.tr("Esiste già “\(name)”. Scegli Rinomina o una cartella diversa.")) }
             reserved.insert(url.path); urls.append(url)
         }
         return urls
@@ -679,11 +679,11 @@ enum WorkflowStagedWriter {
 
     static func write(_ outputs: [WorkflowOutput], directory: URL, policy: WorkflowConflictPolicy,
                       protectedURLs: [URL] = [], progress: WorkflowEngine.Progress = { _, _ in }) async throws -> [URL] {
-        guard !outputs.isEmpty else { throw WorkflowError("Nessun documento da salvare.") }
+        guard !outputs.isEmpty else { throw WorkflowError(L10n.tr("Nessun documento da salvare.")) }
         let fm = FileManager.default
         let targets = try destinations(names: outputs.map(\.name), directory: directory, policy: policy)
         let protectedPaths = Set(protectedURLs.map { $0.resolvingSymlinksInPath().standardizedFileURL.path })
-        guard targets.allSatisfy({ !protectedPaths.contains($0.resolvingSymlinksInPath().standardizedFileURL.path) }) else { throw WorkflowError("Le copie non possono sostituire i documenti sorgente.") }
+        guard targets.allSatisfy({ !protectedPaths.contains($0.resolvingSymlinksInPath().standardizedFileURL.path) }) else { throw WorkflowError(L10n.tr("Le copie non possono sostituire i documenti sorgente.")) }
         let staging = directory.appendingPathComponent(".CartaPDF-stage-\(UUID().uuidString)")
         try fm.createDirectory(at: staging, withIntermediateDirectories: false)
         defer { try? fm.removeItem(at: staging) }
@@ -691,10 +691,10 @@ enum WorkflowStagedWriter {
             try Task.checkCancellation()
             let data = try WorkflowEngine.serialized(output.document, password: output.password)
             guard let check = PDFDocument(data: data) else { throw PDFWorkspaceError.cannotSave }
-            if let password = output.password { guard check.unlock(withPassword: password) else { throw WorkflowError("La verifica della password della copia non è riuscita.") } }
-            guard check.pageCount == output.document.pageCount else { throw WorkflowError("La verifica del numero di pagine della copia non è riuscita.") }
+            if let password = output.password { guard check.unlock(withPassword: password) else { throw WorkflowError(L10n.tr("La verifica della password della copia non è riuscita.")) } }
+            guard check.pageCount == output.document.pageCount else { throw WorkflowError(L10n.tr("La verifica del numero di pagine della copia non è riuscita.")) }
             try data.write(to: staging.appendingPathComponent("part-\(index).pdf"), options: .atomic)
-            progress(Double(index + 1) / Double(outputs.count) * 0.8, "Preparazione \(output.name) · \(index + 1)/\(outputs.count)")
+            progress(Double(index + 1) / Double(outputs.count) * 0.8, L10n.tr("Preparazione \(output.name) · \(index + 1)/\(outputs.count)"))
             await Task.yield()
         }
         var written: [URL] = [], backups: [(URL, URL)] = []
@@ -702,13 +702,13 @@ enum WorkflowStagedWriter {
             for (index, destination) in targets.enumerated() {
                 try Task.checkCancellation()
                 if fm.fileExists(atPath: destination.path) {
-                    guard policy == .replace else { throw WorkflowError("È comparso un file in conflitto: \(destination.lastPathComponent). Nessuna copia verrà sovrascritta.") }
+                    guard policy == .replace else { throw WorkflowError(L10n.tr("È comparso un file in conflitto: \(destination.lastPathComponent). Nessuna copia verrà sovrascritta.")) }
                     let backup = staging.appendingPathComponent("backup-\(index)")
                     try fm.moveItem(at: destination, to: backup); backups.append((destination, backup))
                 }
                 try fm.moveItem(at: staging.appendingPathComponent("part-\(index).pdf"), to: destination)
                 written.append(destination)
-                progress(0.8 + Double(index + 1) / Double(outputs.count) * 0.2, "Conferma \(index + 1)/\(outputs.count)")
+                progress(0.8 + Double(index + 1) / Double(outputs.count) * 0.2, L10n.tr("Conferma \(index + 1)/\(outputs.count)"))
                 await Task.yield()
             }
             try Task.checkCancellation()
@@ -725,7 +725,7 @@ enum WorkflowStagedWriter {
 extension WorkflowEngine {
     static func runBatch(sources: [WorkflowSource], steps: [WorkflowBatchStep], password: String = "",
                          progress: Progress = { _, _ in }) async throws -> [WorkflowOutput] {
-        guard !sources.isEmpty, !steps.isEmpty else { throw WorkflowError("Scegli documenti e almeno un passaggio.") }
+        guard !sources.isEmpty, !steps.isEmpty else { throw WorkflowError(L10n.tr("Scegli documenti e almeno un passaggio.")) }
         var outputs: [WorkflowOutput] = []
         let rendering = steps.contains { [.nUp, .booklet, .flatten, .jpeg, .ocr].contains($0.kind) }
         for (fileIndex, source) in sources.enumerated() {
@@ -734,9 +734,9 @@ extension WorkflowEngine {
             var protected = false
             for (stepIndex, step) in steps.enumerated() {
                 try Task.checkCancellation()
-                progress((Double(fileIndex) + Double(stepIndex) / Double(steps.count)) / Double(sources.count), "\(source.title) · \(step.kind.rawValue) · passaggio \(stepIndex + 1)/\(steps.count)")
+                progress((Double(fileIndex) + Double(stepIndex) / Double(steps.count)) / Double(sources.count), L10n.tr("\(source.title) · \(L10n.string(step.kind.rawValue)) · passaggio \(stepIndex + 1)/\(steps.count)"))
                 if step.kind == .protect {
-                    guard !password.isEmpty else { throw WorkflowError("Inserisci la password delle copie protette prima di avviare la procedura.") }
+                    guard !password.isEmpty else { throw WorkflowError(L10n.tr("Inserisci la password delle copie protette prima di avviare la procedura.")) }
                     protected = true; continue
                 }
                 var changed: [PDFDocument] = []
@@ -744,16 +744,16 @@ extension WorkflowEngine {
                     switch step.kind {
                     case .rotate:
                         let angle = try integer(step.value, range: -3600...3600)
-                        guard angle % 90 == 0 else { throw WorkflowError("La rotazione deve essere multipla di 90°.") }
+                        guard angle % 90 == 0 else { throw WorkflowError(L10n.tr("La rotazione deve essere multipla di 90°.")) }
                         for index in 0..<document.pageCount { document.page(at: index)?.rotation += angle }
                         changed.append(document)
                     case .reverse: changed.append(try extract(document, indices: Array((0..<document.pageCount).reversed())))
                     case .crop:
-                        guard step.value.isFinite, step.value >= 0 else { throw WorkflowError("Margine non valido nella procedura.") }
+                        guard step.value.isFinite, step.value >= 0 else { throw WorkflowError(L10n.tr("Margine non valido nella procedura.")) }
                         for index in 0..<document.pageCount {
                             guard let page = document.page(at: index) else { throw PDFWorkspaceError.invalidPDF }
                             let box = page.bounds(for: .cropBox), margin = CGFloat(step.value)
-                            guard box.width - margin * 2 >= 18, box.height - margin * 2 >= 18 else { throw WorkflowError("Il margine elimina tutta la pagina \(index + 1) di \(source.title).") }
+                            guard box.width - margin * 2 >= 18, box.height - margin * 2 >= 18 else { throw WorkflowError(L10n.tr("Il margine elimina tutta la pagina \(index + 1) di \(source.title).")) }
                             page.setBounds(box.insetBy(dx: margin, dy: margin), for: .cropBox)
                         }
                         changed.append(document)
@@ -791,18 +791,18 @@ extension WorkflowEngine {
                 await Task.yield()
             }
             for (part, document) in documents.enumerated() {
-                let label = documents.count == 1 ? "elaborato" : "parte-\(part + 1)"
+                let label = documents.count == 1 ? L10n.tr("elaborato") : L10n.tr("parte-\(part + 1)")
                 let name = outputName(pattern: "{name}-\(label)", source: source.title, part: WorkflowPart(indices: Array(0..<document.pageCount), label: label), index: part)
                 outputs.append(WorkflowOutput(name: name, document: document, password: protected ? password : nil))
             }
-            progress(Double(fileIndex + 1) / Double(sources.count), "Completato \(source.title)")
+            progress(Double(fileIndex + 1) / Double(sources.count), L10n.tr("Completato \(source.title)"))
             await Task.yield()
         }
         return outputs
     }
 
     private static func integer(_ value: Double, range: ClosedRange<Int>) throws -> Int {
-        guard value.isFinite, value.rounded() == value, value >= Double(range.lowerBound), value <= Double(range.upperBound) else { throw WorkflowError("Parametro intero non valido: usa un valore tra \(range.lowerBound) e \(range.upperBound).") }
+        guard value.isFinite, value.rounded() == value, value >= Double(range.lowerBound), value <= Double(range.upperBound) else { throw WorkflowError(L10n.tr("Parametro intero non valido: usa un valore tra \(range.lowerBound) e \(range.upperBound).")) }
         return Int(value)
     }
 }

@@ -1,53 +1,59 @@
-# Privacy e permessi
+# Privacy and permissions
 
-CartaPDF elabora i documenti sul Mac. Non richiede account, abbonamenti o un servizio cloud e non contiene telemetria applicativa o servizi AI remoti. OCR, confronto, conversioni, ricerca e verifiche CMS/PDF/A avvengono localmente. Il progetto non carica automaticamente PDF o rapporti su GitHub.
+CartaPDF processes documents on the Mac. It requires no account, subscription, or cloud service and contains no application telemetry or remote AI services. OCR, comparison, conversions, search, and CMS/PDF/A checks run locally. The project does not automatically upload PDFs or reports to GitHub.
 
-Questa descrizione riguarda il codice dell'app. Le impostazioni del sistema, i backup, la sincronizzazione della cartella scelta dall'utente e i servizi esterni aperti volontariamente restano sotto il controllo dell'utente e di macOS.
+This description covers the app's code. System settings, backups, synchronization of user-selected folders, and external services opened voluntarily remain under the control of the user and macOS.
 
-## Connessioni e contenuti esterni
+## Connections and external content
 
-Un collegamento web contenuto in un PDF viene aperto su azione dell'utente tramite le integrazioni di sistema. Il browser o il servizio di destinazione applicano la propria informativa. La conversione HTML usa contenuto statico con JavaScript e risorse remote bloccati.
+Web links in PDFs open through system integrations when the user activates them. The browser or destination service applies its own privacy policy. HTML conversion uses static content with JavaScript and remote resources blocked.
 
-La verifica delle firme non consulta servizi di revoca o timestamp in rete. Il validatore PDF/A non risolve DTD esterne, non apre allegati e non esegue payload. Le URI nei metadati vengono analizzate come dati.
+Signature verification does not contact online revocation or timestamp services. The PDF/A validator does not resolve external DTDs, open attachments, or execute payloads. Metadata URIs are analyzed as data.
 
-Gli script di sviluppo per acquisire il corpus richiedono rete solo quando vengono eseguiti esplicitamente. GitHub e gli strumenti di collaborazione del repository sono servizi distinti dall'app.
+Development scripts for acquiring the corpus require network access only when explicitly run. GitHub and repository collaboration tools are services separate from the app.
 
-## Dati conservati localmente
+## Language preferences
 
-| Dati | Posizione o meccanismo | Contenuto |
+At launch, CartaPDF reads the ordered macOS system or per-app language preferences to select an included translation, with English fallback when no language matches. It does not write `AppleLanguages`, change the system language, or send the preference list to a service. All eight language resource variants are bundled; translations require no network access or download. Selecting an interface language does not translate document contents or change OCR recognition languages.
+
+The read-only `--cli language` diagnostic prints selected, preferred, and supported language codes, resource counts, and sample interface labels to the caller. Automated packaged checks supply `-AppleLanguages` only for each child process; they do not persist a language preference. Like other CLI output, this diagnostic is not uploaded automatically. See [language selection](LOCALIZATION.md).
+
+## Data stored locally
+
+| Data | Location or mechanism | Contents |
 | --- | --- | --- |
-| Documenti e output | Destinazioni scelte dall'utente | PDF, immagini, testo, firme e rapporti esportati. |
-| Preferenze | UserDefaults di `it.cartapdf.editor` | Autore annotazioni, strumenti, scorciatoie, cache, job e impostazioni dei pannelli. |
-| Biblioteca | `~/Library/Application Support/CartaPDF/Library.json` | Percorsi, bookmark, categorie/tag e indice testuale dei documenti importati. |
-| Versioni locali | `~/Library/Application Support/CartaPDF/Versions` | Fino a 20 copie per documento e metadati delle versioni. |
-| Recupero | `~/Library/Application Support/CartaPDF/Recovery` | Copie automatiche dei documenti modificati e metadati associati. |
-| Stato di lettura | `~/Library/Application Support/CartaPDF/Reading` | Pagina, zoom e disposizione; il nome del record deriva dall'hash del percorso. |
-| File temporanei | Directory temporanea di macOS | Dati di lavoro e staging delle operazioni che lo richiedono. |
+| Documents and output | User-selected destinations | Exported PDFs, images, text, signatures, and reports. |
+| Preferences | UserDefaults for `it.cartapdf.editor` | Annotation author, tools, shortcuts, cache, jobs, and panel settings. |
+| Library | `~/Library/Application Support/CartaPDF/Library.json` | Paths, bookmarks, categories/tags, and a text index of imported documents. |
+| Local versions | `~/Library/Application Support/CartaPDF/Versions` | Up to 20 copies per document and version metadata. |
+| Recovery | `~/Library/Application Support/CartaPDF/Recovery` | Automatic copies of modified documents and associated metadata. |
+| Reading state | `~/Library/Application Support/CartaPDF/Reading` | Page, zoom, and layout; the record name is derived from a hash of the path. |
+| Temporary files | macOS temporary directory | Working data and staging for operations that require them. |
 
-Le copie e gli indici locali possono contenere informazioni riservate. Un hash del percorso non cifra il contenuto o i metadati del record. La biblioteca non applica una cifratura aggiuntiva all'indice testuale. Le copie di recupero/versione usano i byte serializzati del documento; la protezione dipende dal documento e dal percorso di salvataggio supportato.
+Local copies and indexes may contain confidential information. Hashing a path does not encrypt the record's content or metadata. The library does not add encryption to its text index. Recovery and version copies use the document's serialized bytes; their protection depends on the document and the supported saving path.
 
-L'autore delle annotazioni ha come valore iniziale il nome completo dell'utente macOS e può essere modificato nelle preferenze. Può finire nei metadati delle annotazioni salvate. Percorsi, nomi, testo e metadati possono comparire nei rapporti o nei file condivisi volontariamente: esaminali prima di pubblicarli.
+The annotation author defaults to the macOS user's full name and can be changed in preferences. It can appear in saved annotation metadata. Paths, names, text, and metadata may appear in reports or files you choose to share; review them before publishing.
 
-## Password, chiavi e certificati
+## Passwords, keys, and certificates
 
-Le password PDF vengono richieste per l'operazione o lette dalla CLI con `--password-file`. L'app non le salva nei preset o nella cronologia. Il file password è creato e gestito dall'utente e può restare sul disco finché non viene rimosso.
+PDF passwords are requested for an operation or read by the CLI with `--password-file`. The app does not save them in presets or history. The password file is created and managed by the user and may remain on disk until removed.
 
-La firma utilizza il certificato locale selezionato; la verifica usa i byte originali e la fiducia disponibile localmente. Le credenziali del Portachiavi e le autorizzazioni di sistema restano gestite da macOS. Non allegare chiavi private, file password o documenti riservati a issue e pull request.
+Signing uses the selected local certificate; verification uses the original bytes and locally available trust. Keychain credentials and system permissions remain managed by macOS. Do not attach private keys, password files, or confidential documents to issues or pull requests.
 
-## Permessi e integrazioni
+## Permissions and integrations
 
-- **File:** l'app accede ai documenti e alle cartelle selezionate e alle proprie directory di supporto locale. Il bundle prodotto dallo script non va presentato come app sandboxed.
-- **Registrazione schermo:** la cattura con ScreenCaptureKit richiede il consenso macOS pertinente.
-- **Scanner:** Image Capture richiede un dispositivo e un driver compatibili, già disponibili sul sistema.
-- **Voce:** la lettura ad alta voce usa le voci presenti sul Mac; l'app non scarica voci.
-- **Automazione:** Comandi Rapidi e AppleScript possono coinvolgere le autorizzazioni di sistema relative al programma chiamante.
+- **Files:** the app accesses selected documents and folders and its own local support directories. The bundle produced by the build script must not be described as a sandboxed app.
+- **Screen recording:** ScreenCaptureKit capture requires the relevant macOS consent.
+- **Scanners:** Image Capture requires a compatible device and driver already available on the system.
+- **Speech:** reading aloud uses voices available on the Mac; the app does not download voices.
+- **Automation:** Shortcuts and AppleScript may involve system permissions for the calling program.
 
-Le prove su scanner fisico, cattura reale e riproduzione audio restano distinte dai test automatici. Non è attestato un audit completo VoiceOver: vedi [ACCESSIBILITY](ACCESSIBILITY.md).
+Physical scanner, actual screen capture, and audio playback checks are separate from automated tests. A complete VoiceOver audit has not been attested; see [ACCESSIBILITY](ACCESSIBILITY.md).
 
-## Gestire o rimuovere i dati
+## Manage or remove data
 
-Usa il pannello della biblioteca per rimuovere le voci indicizzate e i pannelli di versioni/recupero per gestire le copie disponibili. Le preferenze permettono di disattivare le copie automatiche di recupero. Rimuovere un riferimento dalla biblioteca non elimina necessariamente il PDF originale.
+Use the library panel to remove indexed entries and the versions/recovery panels to manage available copies. Preferences let you disable automatic recovery copies. Removing a library reference does not necessarily delete the original PDF.
 
-Per eliminare tutti i dati di supporto, chiudi prima l'app, verifica le copie che vuoi conservare ed elimina tramite Finder la cartella `CartaPDF` in Application Support. Questa operazione rimuove anche indice, versioni e recupero. I PDF salvati altrove, i file password creati dall'utente e le eventuali copie nei backup restano nelle rispettive destinazioni. Le preferenze di sistema sono separate dalla cartella di supporto.
+To delete all support data, first close the app, check which copies you want to keep, and use Finder to delete the `CartaPDF` folder in Application Support. This also removes the index, versions, and recovery copies. PDFs saved elsewhere, user-created password files, and backup copies remain in their respective destinations. System preferences are separate from the support folder.
 
-Per una vulnerabilità che espone dati, segui [SECURITY](../SECURITY.md). Per un problema d'uso senza dati riservati, segui [SUPPORT](../SUPPORT.md).
+For a vulnerability that exposes data, follow [SECURITY](../SECURITY.md). For a usage problem without confidential data, follow [SUPPORT](../SUPPORT.md).

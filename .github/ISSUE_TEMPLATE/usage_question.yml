@@ -1,0 +1,35 @@
+name: Usage or documentation question
+description: Help using CartaPDF, building from source or understanding the documentation.
+title: "[Question] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the [README](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/README.md) and [documentation](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/docs/README.md) first. The app follows macOS language preferences, with English fallback. Do not share personal PDFs, passwords, private keys or unreviewed logs. For vulnerabilities, follow [SECURITY.md](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/SECURITY.md).
+  - type: input
+    id: environment
+    attributes:
+      label: Version and environment
+      description: Include the CartaPDF version or commit and macOS version. For build questions, include the Xcode version and Mac architecture.
+      placeholder: "CartaPDF 3.6.0, macOS 15, Apple Silicon, Xcode 26.3"
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and intended result
+      description: Describe the task you want to complete and where you need help.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: Documentation consulted and steps tried
+      description: Link the relevant guide or section. Include commands or error messages after removing personal information and credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Optional minimal example
+      description: Prefer a newly created synthetic example. Only share files you may redistribute. Check redacted examples for hidden content, earlier revisions and metadata before uploading.

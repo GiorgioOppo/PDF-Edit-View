@@ -72,6 +72,11 @@ cp "$repository_root/README.md" "$resources/README.md"
 cp "$repository_root/LICENSE" "$resources/LICENSE"
 cp -R "$repository_root/Resources/PDFAProfiles" "$resources/PDFAProfiles"
 cp -R "$repository_root/Resources/PDFFontData" "$resources/PDFFontData"
+# The main bundle supplies standard macOS localization (including InfoPlist and
+# App Intents strings); SwiftPM's resource bundle also serves direct launches.
+for localization_directory in "$repository_root/Sources/CartaPDF/Resources/Localization"/*.lproj; do
+  if [[ -d "$localization_directory" ]]; then cp -R "$localization_directory" "$resources/"; fi
+done
 for swift_resource_bundle in "$binary_directory"/CartaPDF_*.bundle; do
   if [[ -d "$swift_resource_bundle" ]]; then cp -R "$swift_resource_bundle" "$resources/"; fi
 done

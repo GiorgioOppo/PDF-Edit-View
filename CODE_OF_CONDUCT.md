@@ -1,20 +1,20 @@
-# Codice di condotta
+# Code of conduct
 
-Il progetto accoglie contributi tecnici e discussioni rispettose, indipendentemente da esperienza, provenienza, lingua, identità o disabilità. È possibile partecipare in italiano o in inglese.
+The project welcomes technical contributions and respectful discussion regardless of experience, background, language, identity or disability. You may participate in English or Italian.
 
-## Comportamenti attesi
+## Expected behavior
 
-- Discute idee e risultati con prove e linguaggio rispettoso.
-- Accetta correzioni motivate e distingue osservazioni, ipotesi e verifiche.
-- Rispetta privacy, licenze e limiti delle persone che partecipano.
-- Mantieni issue e pull request pertinenti al progetto.
+- Discuss ideas and results using evidence and respectful language.
+- Accept reasoned corrections and distinguish observations, assumptions and verified results.
+- Respect participants' privacy, licenses and personal boundaries.
+- Keep issues and pull requests relevant to the project.
 
-Non sono ammessi molestie, minacce, discriminazione, attacchi personali, pubblicazione di informazioni private senza consenso o contenuti che impediscano una collaborazione sicura. Il dissenso tecnico non giustifica comportamenti ostili.
+Harassment, threats, discrimination, personal attacks, publishing private information without consent and content that prevents safe collaboration are not allowed. Technical disagreement does not justify hostile behavior.
 
-## Moderazione
+## Moderation
 
-I manutentori possono chiedere modifiche, rimuovere contenuti inappropriati, chiudere discussioni o limitare la partecipazione in modo proporzionato. Le decisioni devono considerare contesto, impatto e reiterazione.
+Maintainers may request changes, remove inappropriate content, close discussions or restrict participation proportionately. Decisions should consider context, impact and repeated behavior.
 
-Per segnalare un problema, usa gli strumenti di segnalazione di GitHub quando appropriati oppure un canale privato già concordato con i manutentori. Non pubblicare prove che espongano dati personali. Il progetto non indica un contatto privato non verificato; se serve un canale aggiuntivo, chiedine l'attivazione senza dettagli sensibili. Le vulnerabilità del software seguono [SECURITY](SECURITY.md).
+To report a problem, use GitHub's reporting tools when appropriate or a private channel already agreed with the maintainers. Do not publish evidence that exposes personal information. The project does not list an unverified private contact; if another channel is needed, ask for one without including sensitive details. Follow [SECURITY](SECURITY.md) for software vulnerabilities.
 
-Queste regole si applicano agli spazi del progetto e alla partecipazione in sua rappresentanza. Non costituiscono una promessa di sorveglianza continua o di tempi di risposta garantiti.
+These rules apply to project spaces and participation on the project's behalf. They do not promise continuous monitoring or guaranteed response times.

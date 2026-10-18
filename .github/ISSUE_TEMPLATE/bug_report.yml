@@ -1,40 +1,40 @@
-name: Segnalazione di un problema
-description: Un comportamento errato o una regressione riproducibile.
+name: Bug report
+description: Reproducible incorrect behavior or a regression.
 title: "[Bug] "
 body:
   - type: markdown
     attributes:
       value: |
-        Descrivi il problema con un documento sintetico, se possibile. Rimuovi dati personali, firme, password e contenuti riservati da PDF, immagini e log. Per vulnerabilità segui SECURITY.md: non aprire una segnalazione pubblica con dettagli sfruttabili.
+        Describe the problem using a synthetic document where possible. Remove personal information, signatures, passwords and confidential content from PDFs, images and logs. For vulnerabilities, follow [SECURITY.md](https://github.com/GiorgioOppo/PDF-Edit-View/blob/main/SECURITY.md); do not open a public report with exploitable details.
   - type: input
     id: version
     attributes:
-      label: Versione di CartaPDF o commit
-      placeholder: "3.6.0 oppure hash del commit"
+      label: CartaPDF version or commit
+      placeholder: "3.6.0 or commit hash"
     validations:
       required: true
   - type: input
     id: system
     attributes:
-      label: macOS e architettura
+      label: macOS version and architecture
       placeholder: "macOS 15, Apple Silicon"
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Passaggi per riprodurre
-      description: Indica lo strumento, i parametri e il comportamento osservato.
+      label: Steps to reproduce and observed result
+      description: Include the tool, parameters, minimal steps and any error message.
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Risultato atteso
+      label: Expected result
     validations:
       required: true
   - type: textarea
     id: evidence
     attributes:
-      label: Esempio minimo e verifiche
-      description: Per PDF/A indica profilo, ID del controllo e posizione, distinguendo violazione da controllo non verificato. Non allegare copie delle norme ISO o documenti privati.
+      label: Minimal example and checks performed
+      description: For PDF/A, include the profile, check ID and location. Distinguish a demonstrated violation from an unverified check. Do not attach ISO standards or private documents. Prefer a synthetic example with a redistributable license.

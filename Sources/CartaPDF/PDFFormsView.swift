@@ -6,10 +6,10 @@ enum PDFFormFieldKind: String, CaseIterable {
     case text, checkbox, choice, unsupported
     var title: String {
         switch self {
-        case .text: return "Testo"
-        case .checkbox: return "Casella di spunta"
-        case .choice: return "Elenco"
-        case .unsupported: return "Campo non supportato"
+        case .text: return L10n.tr("Testo")
+        case .checkbox: return L10n.tr("Casella di spunta")
+        case .choice: return L10n.tr("Elenco")
+        case .unsupported: return L10n.tr("Campo non supportato")
         }
     }
 }
@@ -45,7 +45,7 @@ extension PDFEditorModel {
                     value = choices[index]
                 }
                 fields.append(PDFFormField(annotation: annotation, pageIndex: pageIndex, kind: kind,
-                                           name: annotation.fieldName ?? "Campo senza nome", value: value,
+                                           name: annotation.fieldName ?? L10n.tr("Campo senza nome"), value: value,
                                            choices: annotation.choices ?? [],
                                            editable: canFillForms && !formWasOriginallyReadOnly(annotation) && kind != .unsupported && !annotation.isPasswordField))
             }
@@ -57,16 +57,16 @@ extension PDFEditorModel {
 
     func setFormValue(_ value: String, for annotation: PDFAnnotation) {
         guard canFillForms, let entry = formFields.first(where: { $0.annotation === annotation }), entry.editable else {
-            errorMessage = "Il campo è di sola lettura o non è supportato."
+            errorMessage = L10n.tr("Il campo è di sola lettura o non è supportato.")
             return
         }
         guard entry.value != value else { return }
         if entry.kind == .text, annotation.maximumLength > 0, value.count > annotation.maximumLength {
-            errorMessage = "Questo campo accetta al massimo \(annotation.maximumLength) caratteri."
+            errorMessage = L10n.tr("Questo campo accetta al massimo \(annotation.maximumLength) caratteri.")
             return
         }
         if entry.kind == .choice, !entry.choices.contains(value) {
-            errorMessage = "Scegli un valore presente nell’elenco."
+            errorMessage = L10n.tr("Scegli un valore presente nell’elenco.")
             return
         }
         let related = formFields.filter {
@@ -87,7 +87,7 @@ extension PDFEditorModel {
 
     private func applyFormValues(_ values: [FormValueState]) {
         let previous = values.map { FormValueState(annotation: $0.annotation, value: $0.annotation.widgetStringValue, state: $0.annotation.buttonWidgetState) }
-        performChange(named: "Compila campo", mutation: {
+        performChange(named: L10n.tr("Compila campo"), mutation: {
             for value in values {
                 value.annotation.isReadOnly = false
                 if value.annotation.widgetFieldType == .button {
@@ -101,28 +101,28 @@ extension PDFEditorModel {
     func prepareForm() {
         guard requireAdvancedPermission(canEditDocument), let page = currentPage else { return }
         let alert = NSAlert()
-        alert.messageText = "Prepara modulo"
-        alert.informativeText = "Aggiunge un campo al centro della pagina corrente. I valori si compilano dal pannello Moduli."
-        let name = NSTextField(string: "Campo \(formFields.count + 1)")
-        name.setAccessibilityLabel("Nome del nuovo campo modulo")
-        name.setAccessibilityHelp("Nome univoco usato nel pannello Moduli e nelle intestazioni CSV.")
+        alert.messageText = L10n.tr("Prepara modulo")
+        alert.informativeText = L10n.tr("Aggiunge un campo al centro della pagina corrente. I valori si compilano dal pannello Moduli.")
+        let name = NSTextField(string: L10n.tr("Campo \(formFields.count + 1)"))
+        name.setAccessibilityLabel(L10n.tr("Nome del nuovo campo modulo"))
+        name.setAccessibilityHelp(L10n.tr("Nome univoco usato nel pannello Moduli e nelle intestazioni CSV."))
         let type = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 250, height: 26))
-        type.setAccessibilityLabel("Tipo del nuovo campo modulo")
-        type.addItems(withTitles: ["Testo", "Casella di spunta", "Elenco"])
-        let choices = NSTextField(string: "Opzione 1, Opzione 2")
-        choices.setAccessibilityLabel("Voci del nuovo elenco")
-        choices.setAccessibilityHelp("Separa le opzioni con virgole; usato soltanto per campi elenco.")
+        type.setAccessibilityLabel(L10n.tr("Tipo del nuovo campo modulo"))
+        type.addItems(withTitles: [L10n.tr("Testo"), L10n.tr("Casella di spunta"), L10n.tr("Elenco")])
+        let choices = NSTextField(string: L10n.tr("Opzione 1, Opzione 2"))
+        choices.setAccessibilityLabel(L10n.tr("Voci del nuovo elenco"))
+        choices.setAccessibilityHelp(L10n.tr("Separa le opzioni con virgole; usato soltanto per campi elenco."))
         let container = NSStackView()
         container.orientation = .vertical
         container.alignment = .leading
         container.spacing = 10
-        container.addArrangedSubview(Self.formAccessory(labels: ["Nome"], fields: [name]))
+        container.addArrangedSubview(Self.formAccessory(labels: [L10n.tr("Nome")], fields: [name]))
         container.addArrangedSubview(type)
-        container.addArrangedSubview(Self.formAccessory(labels: ["Voci elenco"], fields: [choices]))
+        container.addArrangedSubview(Self.formAccessory(labels: [L10n.tr("Voci elenco")], fields: [choices]))
         container.frame = NSRect(x: 0, y: 0, width: 370, height: 110)
         alert.accessoryView = container
-        alert.addButton(withTitle: "Aggiungi campo")
-        alert.addButton(withTitle: "Annulla")
+        alert.addButton(withTitle: L10n.tr("Aggiungi campo"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         name.nextKeyView = type; type.nextKeyView = choices; choices.nextKeyView = alert.buttons[0]
         alert.window.initialFirstResponder = name
         alert.buttons[0].keyEquivalent = "\r"; alert.buttons[0].keyEquivalentModifierMask = [.command]
@@ -138,7 +138,7 @@ extension PDFEditorModel {
         guard requireAdvancedPermission(canEditDocument), document.index(for: page) != NSNotFound else { return }
         let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty, !formFields.contains(where: { $0.name == name }) else {
-            errorMessage = "Assegna al campo un nome non vuoto e diverso dagli altri."
+            errorMessage = L10n.tr("Assegna al campo un nome non vuoto e diverso dagli altri.")
             return
         }
         guard kind != .unsupported else { return }
@@ -166,7 +166,7 @@ extension PDFEditorModel {
         case .choice:
             var options: [String] = []
             for option in choices where !option.isEmpty && !options.contains(option) { options.append(option) }
-            guard !options.isEmpty else { errorMessage = "Inserisci almeno una voce per l’elenco."; return }
+            guard !options.isEmpty else { errorMessage = L10n.tr("Inserisci almeno una voce per l’elenco."); return }
             annotation.widgetFieldType = .choice
             annotation.choices = options
             annotation.values = options
@@ -176,7 +176,7 @@ extension PDFEditorModel {
         }
         // PDFKit initializes the underlying form object when its field type is assigned.
         annotation.fieldName = name
-        addBatchAnnotations([(page, annotation)], actionName: "Aggiungi campo modulo")
+        addBatchAnnotations([(page, annotation)], actionName: L10n.tr("Aggiungi campo modulo"))
     }
 }
 
@@ -200,28 +200,28 @@ struct PDFFormsView: View {
         VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Moduli PDF").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                    Text("Testo, caselle di spunta ed elenchi. Ogni modifica supporta Annulla.").foregroundStyle(.secondary)
-                }
+                    Text(L10n.tr("Moduli PDF")).font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                    Text(L10n.tr("Testo, caselle di spunta ed elenchi. Ogni modifica supporta Annulla.")).foregroundStyle(.secondary)
+                }.fixedSize(horizontal: false, vertical: true)
                 Spacer()
-                Button("Aggiungi campo") { model.prepareForm() }.disabled(!model.canEditDocument)
-                Button("Fine") { dismiss() }.keyboardShortcut(.defaultAction)
+                Button(L10n.tr("Aggiungi campo")) { model.prepareForm() }.disabled(!model.canEditDocument).fixedSize()
+                Button(L10n.tr("Fine")) { dismiss() }.keyboardShortcut(.defaultAction).fixedSize()
             }.padding(22)
             Divider()
-            TextField("Cerca un campo per nome", text: $query).textFieldStyle(.roundedBorder).padding(.horizontal, 22).padding(.top, 12)
-                .accessibilityLabel("Cerca campi modulo per nome").accessibilityHint("Comando F sposta qui il focus.").focused($searchFocused)
+            TextField(L10n.tr("Cerca un campo per nome"), text: $query).textFieldStyle(.roundedBorder).padding(.horizontal, 22).padding(.top, 12)
+                .accessibilityLabel(L10n.tr("Cerca campi modulo per nome")).accessibilityHint(L10n.tr("Comando F sposta qui il focus.")).focused($searchFocused)
             if let error = model.errorMessage {
                 HStack {
-                    CartaPanelAccessibilityStatus(message: error, label: "Errore modulo", announceOnAppear: true).foregroundStyle(.red)
+                    CartaPanelAccessibilityStatus(message: error, label: L10n.tr("Errore modulo"), announceOnAppear: true).foregroundStyle(.red)
                     Spacer()
-                    Button("Chiudi avviso") { model.errorMessage = nil }.buttonStyle(.link)
+                    Button(L10n.tr("Chiudi avviso")) { model.errorMessage = nil }.buttonStyle(.link)
                 }.padding(.horizontal, 22).padding(.vertical, 10)
             }
             if model.formFields.isEmpty {
                 VStack(spacing: 14) {
                     Image(systemName: "list.bullet.rectangle").font(.system(size: 40)).foregroundStyle(.secondary).accessibilityHidden(true)
-                    Text("Il documento non contiene campi modulo.")
-                    Button("Crea un campo") { model.prepareForm() }.disabled(!model.canEditDocument)
+                    Text(L10n.tr("Il documento non contiene campi modulo."))
+                    Button(L10n.tr("Crea un campo")) { model.prepareForm() }.disabled(!model.canEditDocument)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
@@ -232,15 +232,15 @@ struct PDFFormsView: View {
                                     PDFFormFieldRow(model: model, field: field)
                                 }
                             } header: {
-                                Text("Pagina \(index + 1)").font(.headline).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8).accessibilityAddTraits(.isHeader)
+                                Text(L10n.tr("Pagina \(index + 1)")).font(.headline).frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8).accessibilityAddTraits(.isHeader)
                             }
                         }
                     }.padding(22)
                 }
             }
         }
-        .frame(width: 700, height: 560).accessibilityIdentifier("panel.forms")
-        .background { Button("Cerca campo modulo") { searchFocused = true }.keyboardShortcut("f", modifiers: .command).hidden() }
+        .frame(minWidth: 700, minHeight: 560).accessibilityIdentifier("panel.forms")
+        .background { Button(L10n.tr("Cerca campo modulo")) { searchFocused = true }.keyboardShortcut("f", modifiers: .command).hidden() }
     }
 }
 
@@ -254,17 +254,21 @@ private struct PDFFormFieldRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(field.name).font(.headline).accessibilityAddTraits(.isHeader)
-                if isRequired { Text("Obbligatorio").font(.caption).foregroundStyle(.orange) }
-                Text("Pagina \(field.pageIndex + 1) · \(field.kind.title)").font(.caption).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(field.name).font(.headline).accessibilityAddTraits(.isHeader)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(L10n.tr("Pagina \(field.pageIndex + 1) · \(field.kind.title)")).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if isRequired { Text(L10n.tr("Obbligatorio")).font(.caption).foregroundStyle(.orange) }
+                }
                 Spacer()
-                Button("Mostra") {
+                Button(L10n.tr("Mostra")) {
                     model.goToPage(field.pageIndex)
                     model.selectAnnotation(field.annotation, on: model.document.page(at: field.pageIndex))
-                }.buttonStyle(.link).accessibilityLabel("Mostra il campo \(field.name) a pagina \(field.pageIndex + 1)")
+                }.buttonStyle(.link).fixedSize().accessibilityLabel(L10n.tr("Mostra il campo \(field.name) a pagina \(field.pageIndex + 1)"))
             }
             if !field.editable {
-                Text(field.annotation.isPasswordField ? "Campo password non modificabile da questo pannello." : "\(field.value) · Sola lettura")
+                Text(field.annotation.isPasswordField ? L10n.tr("Campo password non modificabile da questo pannello.") : L10n.tr("\(field.value) · Sola lettura"))
                     .foregroundStyle(.secondary)
                 Text(readOnlyReason).font(.caption).foregroundStyle(.secondary)
             } else {
@@ -273,57 +277,57 @@ private struct PDFFormFieldRow: View {
                     HStack {
                         Group {
                             if field.annotation.isMultiline {
-                                TextEditor(text: $draft).frame(minHeight: 70, maxHeight: 100).accessibilityLabel("\(field.name), testo su più righe, pagina \(field.pageIndex + 1)").accessibilityHint(editingHint)
+                                TextEditor(text: $draft).frame(minHeight: 70, maxHeight: 100).accessibilityLabel(L10n.tr("\(field.name), testo su più righe, pagina \(field.pageIndex + 1)")).accessibilityHint(editingHint)
                             } else {
-                                TextField("Valore", text: $draft).textFieldStyle(.roundedBorder)
-                                    .accessibilityLabel("\(field.name), pagina \(field.pageIndex + 1)").accessibilityHint(editingHint)
+                                TextField(L10n.tr("Valore"), text: $draft).textFieldStyle(.roundedBorder)
+                                    .accessibilityLabel(L10n.tr("\(field.name), pagina \(field.pageIndex + 1)")).accessibilityHint(editingHint)
                                     .onSubmit { saveDraft() }
                             }
                         }
                             .onChange(of: draft) { _, _ in edited = draft != field.value }
-                        Button("Applica") { saveDraft() }.disabled(!edited).accessibilityLabel("Applica il valore di \(field.name)")
+                        Button(L10n.tr("Applica")) { saveDraft() }.disabled(!edited).accessibilityLabel(L10n.tr("Applica il valore di \(field.name)"))
                     }
                     HStack {
-                        Text(edited ? "Modifica da applicare" : "Valore confermato").foregroundStyle(edited ? .orange : .secondary)
+                        Text(edited ? L10n.tr("Modifica da applicare") : L10n.tr("Valore confermato")).foregroundStyle(edited ? .orange : .secondary)
                         Spacer()
-                        if field.annotation.maximumLength > 0 { Text("\(draft.count) / \(field.annotation.maximumLength) caratteri") }
+                        if field.annotation.maximumLength > 0 { Text(L10n.tr("\(draft.count) / \(field.annotation.maximumLength) caratteri")) }
                     }.font(.caption)
                 case .checkbox:
-                    Toggle("Selezionata", isOn: Binding(get: { field.value == "true" }, set: { model.setFormValue($0 ? "true" : "false", for: field) }))
-                        .accessibilityLabel("\(field.name), casella di spunta, pagina \(field.pageIndex + 1)").accessibilityHint(isRequired ? "Campo obbligatorio. La modifica viene applicata subito." : "La modifica viene applicata subito.")
+                    Toggle(L10n.tr("Selezionata"), isOn: Binding(get: { field.value == "true" }, set: { model.setFormValue($0 ? "true" : "false", for: field) }))
+                        .accessibilityLabel(L10n.tr("\(field.name), casella di spunta, pagina \(field.pageIndex + 1)")).accessibilityHint(isRequired ? L10n.tr("Campo obbligatorio. La modifica viene applicata subito.") : L10n.tr("La modifica viene applicata subito."))
                 case .choice:
-                    Picker("Valore", selection: Binding(get: { field.value }, set: { model.setFormValue($0, for: field) })) {
+                    Picker(L10n.tr("Valore"), selection: Binding(get: { field.value }, set: { model.setFormValue($0, for: field) })) {
                         ForEach(field.choices, id: \.self) { Text($0).tag($0) }
-                    }.accessibilityLabel("\(field.name), elenco, pagina \(field.pageIndex + 1)").accessibilityHint(isRequired ? "Campo obbligatorio. La scelta viene applicata subito." : "La scelta viene applicata subito.")
+                    }.accessibilityLabel(L10n.tr("\(field.name), elenco, pagina \(field.pageIndex + 1)")).accessibilityHint(isRequired ? L10n.tr("Campo obbligatorio. La scelta viene applicata subito.") : L10n.tr("La scelta viene applicata subito."))
                 case .unsupported: EmptyView()
                 }
                 if model.formFields.filter({ $0.name == field.name }).count > 1 {
-                    Text("Valore condiviso: la modifica aggiorna tutti i campi con questo nome.").font(.caption).foregroundStyle(.secondary)
+                    Text(L10n.tr("Valore condiviso: la modifica aggiorna tutti i campi con questo nome.")).font(.caption).foregroundStyle(.secondary)
                 }
             }
         }
         .padding(16)
         .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
-        .accessibilityElement(children: .contain).accessibilityLabel("Campo \(field.name), \(field.kind.title), pagina \(field.pageIndex + 1)")
+        .accessibilityElement(children: .contain).accessibilityLabel(L10n.tr("Campo \(field.name), \(field.kind.title), pagina \(field.pageIndex + 1)"))
         .onAppear { draft = field.value }
         .onChange(of: field.value) { _, value in draft = value; edited = false }
     }
 
     private func saveDraft() { model.setFormValue(draft, for: field); edited = false }
     private var editingHint: String {
-        let limit = field.annotation.maximumLength > 0 ? "Massimo \(field.annotation.maximumLength) caratteri. " : ""
-        let required = isRequired ? "Campo obbligatorio. " : ""
-        let error = model.errorMessage.map { "Errore: \($0). " } ?? ""
-        return required + limit + error + "Premi Applica per confermare il valore."
+        let limit = field.annotation.maximumLength > 0 ? L10n.tr("Massimo \(field.annotation.maximumLength) caratteri. ") : ""
+        let required = isRequired ? L10n.tr("Campo obbligatorio. ") : ""
+        let error = model.errorMessage.map { L10n.tr("Errore: \($0). ") } ?? ""
+        return required + limit + error + L10n.tr("Premi Applica per confermare il valore.")
     }
     private var isRequired: Bool {
         let flags = (field.annotation.value(forAnnotationKey: .widgetFieldFlags) as? NSNumber)?.intValue ?? 0
         return flags & 2 != 0
     }
     private var readOnlyReason: String {
-        if field.annotation.isPasswordField { return "Il campo contiene una password e non viene mostrato né modificato dal pannello." }
-        if !model.canFillForms { return "I permessi del documento non consentono la compilazione." }
-        if field.kind == .unsupported { return "Questo tipo di widget richiede un motore non disponibile nel pannello." }
-        return "Il PDF dichiara questo campo in sola lettura."
+        if field.annotation.isPasswordField { return L10n.tr("Il campo contiene una password e non viene mostrato né modificato dal pannello.") }
+        if !model.canFillForms { return L10n.tr("I permessi del documento non consentono la compilazione.") }
+        if field.kind == .unsupported { return L10n.tr("Questo tipo di widget richiede un motore non disponibile nel pannello.") }
+        return L10n.tr("Il PDF dichiara questo campo in sola lettura.")
     }
 }

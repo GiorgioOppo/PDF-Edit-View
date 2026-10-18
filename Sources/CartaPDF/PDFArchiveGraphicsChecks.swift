@@ -34,7 +34,7 @@ final class PDFArchiveGraphicsChecks {
         if scanned == nil { scanned = Result { try scan() } }
         var rows:[PDFArchiveRuleResult] = []
         func row(_ id:String,_ status:PDFArchiveRuleStatus,_ detail:String,_ location:String)->PDFArchiveRuleResult {
-            .init(id:"CartaPDF:ICC:"+id,specification:"ICC.1:2001-04 / ICC.1:2010 / ICC.1:2022",clause:"header; tag table; encoded tag structures",testNumber:id,objectType:"ICCStructuralModel",requirement:"Header, tag richiesti nei modelli v4 supportati, strutture binarie e dimensioni dei tipi ICC implementati devono essere coerenti. Il controllo non attesta la colorimetria completa.",status:status,detail:detail,locations:location.isEmpty ? []:[location])
+            .init(id:"CartaPDF:ICC:"+id,specification:"ICC.1:2001-04 / ICC.1:2010 / ICC.1:2022",clause:"header; tag table; encoded tag structures",testNumber:id,objectType:"ICCStructuralModel",requirement:L10n.tr("Header, tag richiesti nei modelli v4 supportati, strutture binarie e dimensioni dei tipi ICC implementati devono essere coerenti. Il controllo non attesta la colorimetria completa."),status:status,detail:detail,locations:location.isEmpty ? []:[location])
         }
         let active = Set(uses.flatMap{[$0.space.id,$0.output?.id,$0.blending?.id].compactMap{$0}})
         var seen = Set<PDFObjectID>()
@@ -44,7 +44,7 @@ final class PDFArchiveGraphicsChecks {
             rows.append(row(icc.id.syntax,status,"Tipi letti: "+audit.checkedTypes.sorted().joined(separator:", ")+". "+(audit.issues+audit.gaps).joined(separator:"; "),icc.location))
         }
         for (index,item) in iccReadIssues.enumerated() { rows.append(row("read-\(index)",item.status,item.detail,item.location)) }
-        if case .failure(let error)? = scanned { rows.append(row("inventory",.notVerified,"Inventario ICC interrotto: "+error.localizedDescription,"")) }
+        if case .failure(let error)? = scanned { rows.append(row("inventory",.notVerified,L10n.tr("Inventario ICC interrotto: ")+error.localizedDescription,"")) }
         return rows
     }
     private func iccReadError(_ error:Error,location:String) {
@@ -62,25 +62,25 @@ final class PDFArchiveGraphicsChecks {
         if (rule.objectType == "Op_q_gsave" && profile.part != 1) || rule.objectType == "PDContentStream" {
             if lexicalEvidence == nil { lexicalEvidence = try PDFArchiveContentScanner(reader:reader).scan(allowPartial:true) }
             let facts = lexicalEvidence!
-            let failures = rule.objectType == "Op_q_gsave" ? (facts.maxQDepth > 28 ? ["profondità \(facts.maxQDepth)"] : []) :
+            let failures = rule.objectType == "Op_q_gsave" ? (facts.maxQDepth > 28 ? [L10n.tr("profondità \(facts.maxQDepth)")] : []) :
                 (rule.expression.contains("inheritedResourceNames") ? facts.inheritedResourceNames : facts.undefinedResourceNames)
-            if !failures.isEmpty { return .check(false,"Inventario di tutti i contenitori di contenuto, inclusi quelli non dipinti.",locations:Array(failures.prefix(64))) }
-            if !(rule.objectType == "Op_q_gsave" ? facts.lexicalComplete : facts.resourceScanComplete) { return .unknown("Inventario dei contenuti incompleto.") }
-            return .check(true,rule.objectType == "Op_q_gsave" ? "Profondità massima q/Q: \(facts.maxQDepth)." : "Risorse nominate risolte nei relativi contenitori.")
+            if !failures.isEmpty { return .check(false,L10n.tr("Inventario di tutti i contenitori di contenuto, inclusi quelli non dipinti."),locations:Array(failures.prefix(64))) }
+            if !(rule.objectType == "Op_q_gsave" ? facts.lexicalComplete : facts.resourceScanComplete) { return .unknown(L10n.tr("Inventario dei contenuti incompleto.")) }
+            return .check(true,rule.objectType == "Op_q_gsave" ? L10n.tr("Profondità massima q/Q: \(facts.maxQDepth).") : L10n.tr("Risorse nominate risolte nei relativi contenitori."))
         }
         if scanned == nil { scanned = Result { try scan() } }
         do { try scanned!.get() } catch is CancellationError { throw CancellationError() }
         catch { let detail = "Interpretazione grafica interrotta: " + error.localizedDescription;if !unknown.contains(detail) { unknown.append(detail) } }
         func result(_ failures:[String], _ count:Int, _ detail:String) -> PDFArchiveRuleEvaluation {
             if !failures.isEmpty { return .check(false,detail,locations:Array(failures.prefix(64))) }
-            if !unknown.isEmpty { return .unknown(detail + " Contesti irrisolti: " + unknown.prefix(8).joined(separator:"; ")) }
-            return count == 0 ? .absent(detail + " Nessun uso applicabile.") : .check(true,detail)
+            if !unknown.isEmpty { return .unknown(detail + L10n.tr(" Contesti irrisolti: ") + unknown.prefix(8).joined(separator:"; ")) }
+            return count == 0 ? .absent(detail + L10n.tr(" Nessun uso applicabile.")) : .check(true,detail)
         }
         let object = rule.objectType, expression = rule.expression
-        if groupRule { return result(groups.filter { $0.kind == "Transparency" }.map(\.location),groups.count,"Gruppi di trasparenza, anche senza Type opzionale.") }
+        if groupRule { return result(groups.filter { $0.kind == "Transparency" }.map(\.location),groups.count,L10n.tr("Gruppi di trasparenza, anche senza Type opzionale.")) }
         if object == "Op_Undefined" { return result(undefined,operations,"Operatori PDF definiti, anche dentro BX/EX.") }
-        if object == "Op_q_gsave" { return result(maxQ > 28 ? ["profondità \(maxQ)"] : [],operations,"Massima profondità q/Q: \(maxQ).") }
-        if object == "PDContentStream" { return result(expression.contains("inheritedResourceNames") ? inherited : missing,operations,"Risoluzione contestuale delle risorse nominate.") }
+        if object == "Op_q_gsave" { return result(maxQ > 28 ? [L10n.tr("profondità \(maxQ)")] : [],operations,L10n.tr("Massima profondità q/Q: \(maxQ).")) }
+        if object == "PDContentStream" { return result(expression.contains("inheritedResourceNames") ? inherited : missing,operations,L10n.tr("Risoluzione contestuale delle risorse nominate.")) }
         if ["PDDeviceRGB","PDDeviceCMYK","PDDeviceGray"].contains(object) {
             let kind = String(object.dropFirst(2)), wanted = kind == "DeviceRGB" ? "RGB " : "CMYK"
             let selected = uses.filter { $0.space.kind == kind }
@@ -91,7 +91,7 @@ final class PDFArchiveGraphicsChecks {
                 if profile.part == 4, effectiveColor($0.blending) == wanted || (wanted == "RGB " && $0.blending?.kind == "CalRGB") { return false }
                 return true
             }.map(\.location)
-            return result(failures,selected.count,"\(kind): Default, output e blending nel contesto del colore effettivamente dipinto.")
+            return result(failures,selected.count,L10n.tr("\(kind): Default, output e blending nel contesto del colore effettivamente dipinto."))
         }
         if object == "PDICCBasedCMYK" {
             let selected = uses.filter { $0.space.kind == "ICCBasedCMYK" }
@@ -105,44 +105,44 @@ final class PDFArchiveGraphicsChecks {
                         if id == other { same = true }
                         else {
                             let one = try PDFArchiveICCProfile(data:reader.decodedStream(id)),two = try PDFArchiveICCProfile(data:reader.decodedStream(other))
-                            guard let first = one.verifiedFingerprint,let second = two.verifiedFingerprint else { unknown.append(item.location + ": Profile ID ICC incoerente con l’impronta ricalcolata");continue }
+                            guard let first = one.verifiedFingerprint,let second = two.verifiedFingerprint else { unknown.append(item.location + L10n.tr(": Profile ID ICC incoerente con l’impronta ricalcolata"));continue }
                             same = first == second
                         }
                         if same { failures.append(item.location) }
                     }
                 }
             }
-            return result(failures,selected.count,"CMYK ICCBased: overprint OPM e identità dei profili applicabili.")
+            return result(failures,selected.count,L10n.tr("CMYK ICCBased: overprint OPM e identità dei profili applicabili."))
         }
         if object == "PDDeviceN" {
             let limit = expression.contains("<= 8") ? 8 : 32
             let failures = deviceNs.filter { expression.contains("nrComponents") ? $0.names.count > limit : !$0.missing.isEmpty }.map(\.location)
-            return result(failures,deviceNs.count,"DeviceN: conteggio componenti e Colorants per le tinte spot.")
+            return result(failures,deviceNs.count,L10n.tr("DeviceN: conteggio componenti e Colorants per le tinte spot."))
         }
-        if object == "PDSeparation" { return result(separations.filter { Set($0.value).count > 1 }.keys.sorted(),separations.count,"AlternateSpace e tintTransform delle Separation omonime confrontati come oggetti decodificati.") }
+        if object == "PDSeparation" { return result(separations.filter { Set($0.value).count > 1 }.keys.sorted(),separations.count,L10n.tr("AlternateSpace e tintTransform delle Separation omonime confrontati come oggetti decodificati.")) }
         if ["ICCInputProfile","ICCOutputProfile","ICCProfile"].contains(object) {
             let selected = object == "ICCProfile" ? iccs.filter { !$0.output } : iccs.filter { $0.output == (object == "ICCOutputProfile") }
             var failures:[String] = []
             for item in selected {
                 if !item.data.structuralIssues.isEmpty { failures.append(item.location + ": " + item.data.structuralIssues.joined(separator:", ")); continue }
-                if object == "ICCProfile" { if item.n == nil || item.n != item.data.components { failures.append(item.location + ": N incompatibile") } }
+                if object == "ICCProfile" { if item.n == nil || item.n != item.data.components { failures.append(item.location + L10n.tr(": N incompatibile")) } }
                 else {
                     let classes = item.output ? ["prtr","mntr"] : ["prtr","mntr","scnr","spac"]
                     let spaces = item.output ? ["RGB ","CMYK","GRAY"] : ["RGB ","CMYK","GRAY","Lab "]
                     if !classes.contains(item.data.deviceClass) || !spaces.contains(item.data.colorSpace) || item.data.majorVersion >= (profile.part == 1 ? 3 : 5) { failures.append(item.location) }
                 }
             }
-            return result(failures,selected.count,"Header ICC, tabella tag, classe, spazio, versione e N reali.")
+            return result(failures,selected.count,L10n.tr("Header ICC, tabella tag, classe, spazio, versione e N reali."))
         }
         if object == "PDInlineImage" {
             if lexicalEvidence == nil { lexicalEvidence = try PDFArchiveContentScanner(reader:reader).scan(allowPartial:true) }
             let facts = lexicalEvidence!, selected = facts.inlineImages
             let missingL = selected.filter { $0.dictionary["L"]?.int == nil || ($0.dictionary["L"]?.int ?? -1) < 0 }.map(\.location)
-            if !missingL.isEmpty { return .check(false,"L obbligatoria in tutte le immagini inline, incluse quelle in contenitori non dipinti.",locations:missingL) }
+            if !missingL.isEmpty { return .check(false,L10n.tr("L obbligatoria in tutte le immagini inline, incluse quelle in contenitori non dipinti."),locations:missingL) }
             let wrong = selected.filter { $0.reliable && $0.dictionary["L"]?.int != $0.length }.map(\.location)
-            if !wrong.isEmpty { return .check(false,"L diversa dal numero di byte inline.",locations:wrong) }
-            if !facts.lexicalComplete || selected.contains(where:{ !$0.reliable }) { return .unknown("Inventario o confine inline filtrato non provato.") }
-            return selected.isEmpty ? .absent("Nessuna immagine inline nell’inventario completo.") : .check(true,"L confrontata con i byte effettivi di tutte le immagini inline.")
+            if !wrong.isEmpty { return .check(false,L10n.tr("L diversa dal numero di byte inline."),locations:wrong) }
+            if !facts.lexicalComplete || selected.contains(where:{ !$0.reliable }) { return .unknown(L10n.tr("Inventario o confine inline filtrato non provato.")) }
+            return selected.isEmpty ? .absent(L10n.tr("Nessuna immagine inline nell’inventario completo.")) : .check(true,L10n.tr("L confrontata con i byte effettivi di tutte le immagini inline."))
         }
         if object == "JPEG2000" {
             let selected = images.filter { filters($0.dictionary).contains("JPXDecode") }
@@ -153,7 +153,7 @@ final class PDFArchiveGraphicsChecks {
                     let chosen = facts.colorSpecs.sorted { $0.precedence < $1.precedence }.first
                     let valid:Bool
                     if expression.hasPrefix("nrColorChannels") {
-                        if !facts.channelCountKnown { unknown.append(image.location + ": canali JP2 non risolti"); continue }
+                        if !facts.channelCountKnown { unknown.append(image.location + L10n.tr(": canali JP2 non risolti")); continue }
                         valid = [1,3,4].contains(facts.components)
                     } else if expression.hasPrefix("bpccBoxPresent") { valid = !facts.bpccPresent && (1...38).contains(facts.bitDepth) }
                     else if hasCS { valid = true }
@@ -161,11 +161,11 @@ final class PDFArchiveGraphicsChecks {
                     else if expression.contains("colrEnumCS") { valid = chosen?.enumerated != 19 }
                     else { valid = chosen.map { [1,2,3].contains($0.method) } ?? false }
                     if !valid { failures.append(image.location) }
-                } catch { unknown.append(image.location + ": JP2 non analizzabile: " + error.localizedDescription) }
+                } catch { unknown.append(image.location + L10n.tr(": JP2 non analizzabile: ") + error.localizedDescription) }
             }
-            return result(failures,selected.count,"JP2/SIZ: canali, colr, APPROX, metodo e profondità.")
+            return result(failures,selected.count,L10n.tr("JP2/SIZ: canali, colr, APPROX, metodo e profondità."))
         }
-        if pageRule { return result(pageRequirements.filter { transparent.contains($0.index) && !$0.hasOutput && !$0.hasGroup }.map { "pagina \($0.index + 1)" },pageRequirements.count,"Pagine trasparenti: output intent applicabile oppure Group/CS.") }
+        if pageRule { return result(pageRequirements.filter { transparent.contains($0.index) && !$0.hasOutput && !$0.hasGroup }.map { "pagina \($0.index + 1)" },pageRequirements.count,L10n.tr("Pagine trasparenti: output intent applicabile oppure Group/CS.")) }
         return nil
     }
     private func filters(_ dictionary:[String:PDFSyntaxValue]) -> [String] { dictionary["Filter"]?.name.map { [$0] } ?? dictionary["Filter"]?.array?.compactMap(\.name) ?? [] }
@@ -180,14 +180,14 @@ final class PDFArchiveGraphicsChecks {
         for item in intents {
             let d = try reader.dictionary(item)
             guard d["S"]?.name == "GTS_PDFA1" else { continue }
-            guard let id = try reader.resolvedObjectID(d["DestOutputProfile"]) else { unknown.append(location + ": output ICC non incorporato");unresolved = true;continue }
+            guard let id = try reader.resolvedObjectID(d["DestOutputProfile"]) else { unknown.append(location + L10n.tr(": output ICC non incorporato"));unresolved = true;continue }
             do {
                 let p = try PDFArchiveICCProfile(data:reader.decodedStream(id))
                 iccs.append(.init(id:id,data:p,n:nil,output:true,location:location + "/OutputIntent"))
                 selected.append(.init(kind:p.colorSpace,id:id))
-            } catch { iccReadError(error,location:location);unknown.append(location + ": ICC non analizzabile: " + error.localizedDescription);unresolved = true }
+            } catch { iccReadError(error,location:location);unknown.append(location + L10n.tr(": ICC non analizzabile: ") + error.localizedDescription);unresolved = true }
         }
-        if Set(selected.compactMap(\.id)).count > 1 { unknown.append(location + ": più profili output distinti");unresolved = true }
+        if Set(selected.compactMap(\.id)).count > 1 { unknown.append(location + L10n.tr(": più profili output distinti"));unresolved = true }
         if unresolved { return .init(kind:"Unknown") }
         return selected.first
     }
@@ -201,7 +201,7 @@ final class PDFArchiveGraphicsChecks {
                 let key = "Default" + name.dropFirst(6)
                 if allowDefault, let replacement = dictionary[String(key)] {
                     let alternative = try color(replacement,resources:resources,location:location + "/" + key,depth:depth + 1,allowDefault:false)
-                    if alternative.kind.hasPrefix("Device") { unknown.append(location + ": Default dipendente dal dispositivo") }
+                    if alternative.kind.hasPrefix("Device") { unknown.append(location + L10n.tr(": Default dipendente dal dispositivo")) }
                     return alternative
                 }
                 return .init(kind:name)
@@ -211,7 +211,7 @@ final class PDFArchiveGraphicsChecks {
             guard let target = dictionary[name] else { missing.append(location + "/ColorSpace/" + name); return .init(kind:"Unknown") }
             return try color(target,resources:resources,location:location + "/" + name,depth:depth + 1)
         }
-        guard let a = resolved?.array, let family = a.first?.name else { unknown.append(location + ": spazio colore non risolto"); return .init(kind:"Unknown") }
+        guard let a = resolved?.array, let family = a.first?.name else { unknown.append(location + L10n.tr(": spazio colore non risolto")); return .init(kind:"Unknown") }
         if ["CalGray","CalRGB","Lab"].contains(family) { return .init(kind:family) }
         if family == "Pattern" { return .init(kind:"Pattern",base:a.count > 1 ? a[1] : nil) }
         if family == "ICCBased", a.count == 2, let id = try reader.resolvedObjectID(a[1]) {
@@ -220,7 +220,7 @@ final class PDFArchiveGraphicsChecks {
                 let p = try PDFArchiveICCProfile(data:reader.decodedStream(id)), n = try reader.resolve(d["N"])?.int
                 iccs.append(.init(id:id,data:p,n:n,output:false,location:location))
                 return .init(kind:p.colorSpace == "CMYK" ? "ICCBasedCMYK" : "ICCBased",id:id)
-            } catch { iccReadError(error,location:location);unknown.append(location + ": ICCBased non analizzabile"); return .init(kind:"Unknown") }
+            } catch { iccReadError(error,location:location);unknown.append(location + L10n.tr(": ICCBased non analizzabile")); return .init(kind:"Unknown") }
         }
         if ["Indexed","I"].contains(family), a.count == 4 { return try color(a[1],resources:resources,location:location + "/Indexed",depth:depth + 1) }
         if family == "Separation", a.count == 4, let name = a[1].name {
@@ -235,7 +235,7 @@ final class PDFArchiveGraphicsChecks {
             for (_,space) in colorants { _ = try color(space,resources:resources,location:location + "/Colorants",depth:depth + 1) }
             return try color(a[2],resources:resources,location:location + "/DeviceN",depth:depth + 1)
         }
-        unknown.append(location + ": spazio " + family + " non risolto")
+        unknown.append(location + L10n.tr(": spazio ") + family + L10n.tr(" non risolto"))
         return .init(kind:"Unknown")
     }
     private func canonical(_ value:PDFSyntaxValue, active:Set<PDFObjectID>, depth:Int = 0) throws -> Data {
@@ -282,12 +282,12 @@ final class PDFArchiveGraphicsChecks {
         }
     }
     private func form(_ id:PDFObjectID, resources:[String:PDFSyntaxValue], state:State, output:Space?, page:Int, active:Set<PDFObjectID>) throws {
-        guard active.count < 50, !active.contains(id) else { throw PDFStructureError.unsupported("Form/appearance circolare") }
+        guard active.count < 50, !active.contains(id) else { throw PDFStructureError.unsupported(L10n.tr("Form/appearance circolare")) }
         let d = try reader.dictionary(.reference(id)), own = d["Resources"] != nil
         let nested = own ? try reader.dictionary(d["Resources"]) : resources, group = try reader.dictionary(d["Group"])
         var state = state
         if !group.isEmpty { groups.append((group["S"]?.name ?? "","Form \(id.syntax)/Group")) }
-        if !group.isEmpty && group["S"]?.name != "Transparency" { unknown.append("Form \(id.syntax): Group/S non supportato") }
+        if !group.isEmpty && group["S"]?.name != "Transparency" { unknown.append(L10n.tr("Form \(id.syntax): Group/S non supportato")) }
         if group["S"]?.name == "Transparency" {
             transparent.insert(page)
             // ISO 32000-1 §11.7.2: non-isolated groups inherit their parent's
@@ -316,7 +316,7 @@ final class PDFArchiveGraphicsChecks {
             if ca < 1 || CA < 1 || (d["BM"] != nil && d["BM"]?.name != "Normal" && d["BM"]?.name != "Compatible") { transparent.insert(page) }
             if d["SMask"] != nil && d["SMask"]?.name != "None" {
                 transparent.insert(page);state.mask = try reader.dictionary(d["SMask"])["G"]?.reference
-                if state.mask == nil { unknown.append(location + ": G della soft mask non risolta") }
+                if state.mask == nil { unknown.append(location + L10n.tr(": G della soft mask non risolta")) }
             } else if d["SMask"]?.name == "None" { state.mask = nil }
             if let font = try reader.resolve(d["Font"])?.array,font.count == 2 { state.font = try reader.dictionary(font[0]) }
         }
@@ -330,13 +330,13 @@ final class PDFArchiveGraphicsChecks {
                 }
             }
             if space.kind == "Pattern" {
-                guard let selected = space.pattern else { unknown.append(location + ": pattern non selezionato"); return }
+                guard let selected = space.pattern else { unknown.append(location + L10n.tr(": pattern non selezionato")); return }
                 let dictionary = try reader.dictionary(selected)
                 if dictionary["PatternType"]?.int == 1, let id = selected.reference {
                     var inside = state
                     inside.fill = .init(kind:"DeviceGray"); inside.stroke = .init(kind:"DeviceGray")
                     if dictionary["PaintType"]?.int == 2 {
-                        guard let base = space.base else { unknown.append(location + ": base pattern non colorato assente"); return }
+                        guard let base = space.base else { unknown.append(location + L10n.tr(": base pattern non colorato assente")); return }
                         let baseSpace = try color(base,resources:resources,location:location + "/PatternBase")
                         uses.append(.init(space:baseSpace,output:output,blending:state.blending,overprint:overprint,opm:state.opm,location:location + "/PatternBase"))
                         inside.fill = baseSpace; inside.stroke = baseSpace
@@ -347,11 +347,11 @@ final class PDFArchiveGraphicsChecks {
                     // Table 77: unspecified parameters come from the beginning
                     // of the stream defining the resource, not the paint-time
                     // gs state. Missing Form Resources leaves that origin open.
-                    if isInherited { unknown.append(location + ": stato iniziale del pattern ereditato non provato") }
+                    if isInherited { unknown.append(location + L10n.tr(": stato iniziale del pattern ereditato non provato")) }
                     let saved = state;state = initial;defer { state = saved }
                     try apply(reader.dictionary(dictionary["ExtGState"]),to:&state)
                     try paint(color(shading["ColorSpace"],resources:resources,location:location + "/PatternShading"),state.fillOP)
-                } else { unknown.append(location + ": programma Pattern non risolto") }
+                } else { unknown.append(location + L10n.tr(": programma Pattern non risolto")) }
                 return
             }
             let effective = space.kind == "DeviceGray" ? try color(.name("DeviceGray"),resources:resources,location:location + "/DefaultGray") : space
@@ -368,7 +368,7 @@ final class PDFArchiveGraphicsChecks {
                 if !Self.operators.contains(op) { undefined.append(location + ": " + op) }
                 switch op {
                 case "q": stack.append(state); maxQ = max(maxQ,stack.count)
-                case "Q": guard let old = stack.popLast() else { throw PDFStructureError.malformed("Q senza q") }; state = old
+                case "Q": guard let old = stack.popLast() else { throw PDFStructureError.malformed(L10n.tr("Q senza q")) }; state = old
                 case "g","rg","k","G","RG","K":
                     let name = ["g":"DeviceGray","G":"DeviceGray","rg":"DeviceRGB","RG":"DeviceRGB","k":"DeviceCMYK","K":"DeviceCMYK"][op]!
                     let space = try color(.name(name),resources:resources,location:location)
@@ -404,12 +404,12 @@ final class PDFArchiveGraphicsChecks {
                                 let nested = font["Resources"] == nil ? resources : try reader.dictionary(font["Resources"])
                                 for code in Set(values.compactMap(\.data).flatMap { Array($0) }) {
                                     guard let name = try PDFArchiveFontEncoding.glyphName(code:code,font:font,reader:reader),
-                                          let procedure = procedures[name]?.reference else { unknown.append(location + ": CharProc Type3 non risolta");continue }
-                                    guard active.count < 50,!active.contains(procedure) else { unknown.append(location + ": CharProc Type3 ricorsiva");continue }
+                                          let procedure = procedures[name]?.reference else { unknown.append(location + L10n.tr(": CharProc Type3 non risolta"));continue }
+                                    guard active.count < 50,!active.contains(procedure) else { unknown.append(location + L10n.tr(": CharProc Type3 ricorsiva"));continue }
                                     var inside = state;inside.font = nil
                                     try streams([procedure],resources:nested,initial:inside,output:output,page:page,active:active.union([procedure]),inherited:font["Resources"] == nil)
                                 }
-                            } else if state.textMode != 3 { unknown.append(location + ": rendering mode Type3 non modellato") }
+                            } else if state.textMode != 3 { unknown.append(location + L10n.tr(": rendering mode Type3 non modellato")) }
                         } else {
                             if [0,2,4,6].contains(state.textMode) { try paint(state.fill,state.fillOP) }
                             if [1,2,5,6].contains(state.textMode) { try paint(state.stroke,state.strokeOP) }
@@ -426,10 +426,10 @@ final class PDFArchiveGraphicsChecks {
                         if d["Subtype"]?.name == "Form", let id = value.reference { try form(id,resources:resources,state:state,output:output,page:page,active:active) }
                         else if d["Subtype"]?.name == "Image", let id = value.reference {
                             images.append(.init(dictionary:d,data:try reader.object(id).stream ?? Data(),location:location + "/Image/" + name,inline:false,reliable:true))
-                            if filters(d).contains("JPXDecode") && filters(d).count > 1 { unknown.append(location + ": JPX con filtri preliminari") }
+                            if filters(d).contains("JPXDecode") && filters(d).count > 1 { unknown.append(location + L10n.tr(": JPX con filtri preliminari")) }
                             if d["ImageMask"]?.bool != true {
                                 if d["ColorSpace"] != nil { try paint(color(d["ColorSpace"],resources:resources,location:location + "/Image"),state.fillOP) }
-                                else if !filters(d).contains("JPXDecode") { unknown.append(location + ": ColorSpace immagine assente") }
+                                else if !filters(d).contains("JPXDecode") { unknown.append(location + L10n.tr(": ColorSpace immagine assente")) }
                             } else { try paint(state.fill,state.fillOP) }
                             if d["SMask"] != nil { transparent.insert(page) }
                         }
@@ -439,7 +439,7 @@ final class PDFArchiveGraphicsChecks {
                 case "BI":
                     let image = try PDFArchiveInlineImage.read(from:&lexer)
                     images.append(.init(dictionary:image.dictionary,data:image.bytes,location:location + "/inline",inline:true,reliable:image.lengthReliable))
-                    if !image.lengthReliable { unknown.append(location + ": confine immagine inline non provato") }
+                    if !image.lengthReliable { unknown.append(location + L10n.tr(": confine immagine inline non provato")) }
                     if image.dictionary["ImageMask"]?.bool != true { try paint(color(image.dictionary["ColorSpace"],resources:resources,location:location + "/Inline"),state.fillOP) }
                     else { try paint(state.fill,state.fillOP) }
                     // Do not turn guessed binary bytes after EI into operators
@@ -450,6 +450,6 @@ final class PDFArchiveGraphicsChecks {
                 operands.removeAll(keepingCapacity:true)
             }
         }
-        guard stack.isEmpty else { throw PDFStructureError.malformed("q/Q non bilanciati") }
+        guard stack.isEmpty else { throw PDFStructureError.malformed(L10n.tr("q/Q non bilanciati")) }
     }
 }

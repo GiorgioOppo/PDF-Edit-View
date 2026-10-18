@@ -98,17 +98,17 @@ final class PDFArchiveICCModelTests:XCTestCase {
     func testV2AndV4HaveDifferentTextTypesAndReservedRanges() throws {
         XCTAssertTrue(try audit(profile(major:2,minor:4)).issues.isEmpty)
         var bad = profile(major:2,minor:4);bad[84] = 1
-        let v2 = try audit(bad);XCTAssertTrue(v2.issues.isEmpty);XCTAssertTrue(v2.gaps.contains{$0.contains("riservato")})
-        XCTAssertTrue(try audit(profile(["cprt":tag("text",Data([65,0]))])).issues.contains{$0.contains("incompatibile")})
+        let v2 = try audit(bad);XCTAssertTrue(v2.issues.isEmpty);XCTAssertTrue(v2.gaps.contains{diagnosticContains($0, "riservato")})
+        XCTAssertTrue(try audit(profile(["cprt":tag("text",Data([65,0]))])).issues.contains{diagnosticContains($0, "incompatibile")})
     }
     func testContiguousLayoutRuleIsLimitedToV44() throws {
         XCTAssertTrue(try audit(profile(minor:3,gap:4)).issues.isEmpty)
-        XCTAssertTrue(try audit(profile(minor:4,gap:4)).issues.contains{$0.contains("non contiguo")})
+        XCTAssertTrue(try audit(profile(minor:4,gap:4)).issues.contains{diagnosticContains($0, "non contiguo")})
         XCTAssertTrue(try audit(profile(minor:4)).issues.isEmpty)
     }
     func testCurveAndParametricPayloadsUseCountsRatherThanCgAcceptance() throws {
-        XCTAssertTrue(try audit(profile(["kTRC":tag("curv",u32(100)+u16(1))])).issues.contains{$0.contains("troncata")})
-        XCTAssertTrue(try audit(profile(["kTRC":tag("para",u16(4)+u16(0)+u32(1))])).issues.contains{$0.contains("troncata")})
+        XCTAssertTrue(try audit(profile(["kTRC":tag("curv",u32(100)+u16(1))])).issues.contains{diagnosticContains($0, "troncata")})
+        XCTAssertTrue(try audit(profile(["kTRC":tag("para",u16(4)+u16(0)+u32(1))])).issues.contains{diagnosticContains($0, "troncata")})
         XCTAssertTrue(try audit(profile(["kTRC":tag("para",u16(0)+u16(0)+u32(65536))])).issues.isEmpty)
     }
     func testMlucBoundsAndMalformedUTF16AreNotRepaired() throws {
@@ -122,7 +122,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
         payload += Data(repeating:0,count:256+2+256)
         XCTAssertTrue(try audit(profile(["test":tag("mft1",payload)])).issues.isEmpty)
         var short = payload;short.removeLast(2)
-        XCTAssertTrue(try audit(profile(["test":tag("mft1",short)])).issues.contains{$0.contains("troncata")})
+        XCTAssertTrue(try audit(profile(["test":tag("mft1",short)])).issues.contains{diagnosticContains($0, "troncata")})
         let lut16 = Data([1,1,2,0])+Data(repeating:0,count:36)+u16(2)+u16(2)+Data(repeating:0,count:12)
         XCTAssertTrue(try audit(profile(["test":tag("mft2",lut16)])).issues.isEmpty)
     }
@@ -130,7 +130,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
         var payload = Data([1,1,0,0])+u32(32)+u32(0)+u32(0)+u32(0)+u32(0);payload += tag("curv",u32(0))
         XCTAssertTrue(try audit(profile(["test":tag("mAB ",payload),"best":tag("mBA ",payload)])).issues.isEmpty)
         var bad = payload;bad.replaceSubrange(4..<8,with:u32(33))
-        XCTAssertTrue(try audit(profile(["A2B0":tag("mAB ",bad)])).issues.contains{$0.contains("offset")})
+        XCTAssertTrue(try audit(profile(["A2B0":tag("mAB ",bad)])).issues.contains{diagnosticContains($0, "offset")})
     }
     func testUnknownPrivateTagIsUnverifiedRatherThanInventedInvalidity() throws {
         let result = try audit(profile(["priv":tag("zzzz",Data([1,2,3,4]))]))
@@ -140,13 +140,13 @@ final class PDFArchiveICCModelTests:XCTestCase {
     }
     func testRequiredV4MatrixModelAndTagTypeAreActuallyInspected() throws {
         var bad = profile();bad.replaceSubrange(16..<20,with:Data("RGB ".utf8))
-        XCTAssertTrue(try audit(bad).issues.contains{$0.contains("incompleto")})
-        XCTAssertTrue(try audit(profile(["wtpt":tag("curv",u32(0))])).issues.contains{$0.contains("incompatibile")})
+        XCTAssertTrue(try audit(bad).issues.contains{diagnosticContains($0, "incompleto")})
+        XCTAssertTrue(try audit(profile(["wtpt":tag("curv",u32(0))])).issues.contains{diagnosticContains($0, "incompatibile")})
     }
     func testLutChannelsAgreeWithProfileDataSpaceAndPCS() throws {
         var payload = Data([1,1,2,0])+Data(repeating:0,count:36)
         payload += Data(repeating:0,count:256+2+256)
-        XCTAssertTrue(try audit(profile(["A2B0":tag("mft1",payload),"B2A0":tag("mft1",payload)])).issues.contains{$0.contains("canali LUT")})
+        XCTAssertTrue(try audit(profile(["A2B0":tag("mft1",payload),"B2A0":tag("mft1",payload)])).issues.contains{diagnosticContains($0, "canali LUT")})
     }
     func testThreeChannelMatrixModelIsNotLimitedToRGB() throws {
         let tags = ["rXYZ":xyz(),"gXYZ":xyz(),"bXYZ":xyz(),"rTRC":tag("curv",u32(0)),"gTRC":tag("curv",u32(0)),"bTRC":tag("curv",u32(0))]
@@ -170,10 +170,10 @@ final class PDFArchiveICCModelTests:XCTestCase {
     }
     func testLutABOnlyPermitsNormativeElementCombinations() throws {
         let empty = Data([1,1,0,0])+Data(repeating:0,count:20)
-        XCTAssertTrue(try audit(profile(["test":tag("mAB ",empty)])).issues.contains{$0.contains("curve B")})
+        XCTAssertTrue(try audit(profile(["test":tag("mAB ",empty)])).issues.contains{diagnosticContains($0, "curve B")})
         var matrix = Data([3,3,0,0])+u32(32)+u32(68)+u32(0)+u32(0)+u32(0)
         matrix += tag("curv",u32(0))+tag("curv",u32(0))+tag("curv",u32(0))+Data(repeating:0,count:48)
-        XCTAssertTrue(try audit(profile(["test":tag("mAB ",matrix)])).issues.contains{$0.contains("comparire insieme")})
+        XCTAssertTrue(try audit(profile(["test":tag("mAB ",matrix)])).issues.contains{diagnosticContains($0, "comparire insieme")})
         matrix.replaceSubrange(12..<16,with:u32(116))
         matrix += tag("curv",u32(0))+tag("curv",u32(0))+tag("curv",u32(0))
         let result = try audit(profile(["test":tag("mAB ",matrix)]));XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
@@ -186,22 +186,22 @@ final class PDFArchiveICCModelTests:XCTestCase {
         }
     }
     func testKnownTagTypeMismatchIsDetectedEvenForOpaqueTypes() throws {
-        XCTAssertTrue(try audit(profile(["pseq":tag("zzzz",Data())])).issues.contains{$0.contains("incompatibile")})
-        XCTAssertTrue(try audit(profile(["clot":tag("ui08",Data([1]))])).issues.contains{$0.contains("incompatibile")})
+        XCTAssertTrue(try audit(profile(["pseq":tag("zzzz",Data())])).issues.contains{diagnosticContains($0, "incompatibile")})
+        XCTAssertTrue(try audit(profile(["clot":tag("ui08",Data([1]))])).issues.contains{diagnosticContains($0, "incompatibile")})
     }
     func testV43PaddingMustBeZeroEvenWhenTagGapsArePermitted() throws {
         var data = profile(minor:3)
         // First sorted element is cprt: a 30-byte mluc followed by two padding bytes.
         let first = 132+4*12
         data[first+30] = 1
-        XCTAssertTrue(try audit(data).issues.contains{$0.contains("padding")})
+        XCTAssertTrue(try audit(data).issues.contains{diagnosticContains($0, "padding")})
     }
     func testD50FourDecimalPrecisionDoesNotInventUniqueFixedPointEncoding() throws {
         var data = profile(minor:4)
         data.replaceSubrange(68..<72,with:u32(0xF6D5));data.replaceSubrange(76..<80,with:u32(0xD32C))
         let v44 = try audit(data);XCTAssertTrue(v44.issues.isEmpty);XCTAssertTrue(v44.gaps.isEmpty)
         data[9] = 0x30
-        let older = try audit(data);XCTAssertTrue(older.issues.isEmpty);XCTAssertTrue(older.gaps.contains{$0.contains("Quantizzazione")})
+        let older = try audit(data);XCTAssertTrue(older.issues.isEmpty);XCTAssertTrue(older.gaps.contains{diagnosticContains($0, "Quantizzazione")})
     }
     func testV2RequiredModelsDoNotInheritV4DisplayAlternativesOrColorantTables() throws {
         let lut = lut8(3,3)
@@ -213,7 +213,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
         XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
         XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))
         let earliest = try audit(profile(["A2B0":lut],major:2,minor:0,device:"nmcl",space:"RGB "))
-        XCTAssertTrue(earliest.issues.isEmpty);XCTAssertTrue(earliest.gaps.contains{$0.contains("v2.0")})
+        XCTAssertTrue(earliest.issues.isEmpty);XCTAssertTrue(earliest.gaps.contains{diagnosticContains($0, "v2.0")})
     }
     func testV2RequiredTagsCoverAllDocumentedClasses() throws {
         for (device,space,missing) in [("scnr","GRAY","kTRC"),("mntr","GRAY","kTRC"),("prtr","GRAY","kTRC"),("prtr","CMYK","A2B1"),("link","CMYK","pseq"),("spac","RGB ","B2A0"),("abst","XYZ ","A2B0"),("nmcl","RGB ","ncl2")] {
@@ -228,11 +228,11 @@ final class PDFArchiveICCModelTests:XCTestCase {
         let matrix = ["rXYZ":xyz(),"gXYZ":xyz(),"bXYZ":xyz(),"rTRC":tag("curv",u32(0)),"gTRC":tag("curv",u32(0)),"bTRC":tag("curv",u32(0))]
         let input = try audit(profile(matrix,major:2,minor:4,device:"scnr",space:"CMY "))
         XCTAssertTrue(input.issues.isEmpty,input.issues.joined(separator:"; "))
-        XCTAssertTrue(try audit(profile(matrix,major:2,minor:4,device:"scnr",space:"CMY ",pcs:"Lab ")).issues.contains{$0.contains("A2B0")})
+        XCTAssertTrue(try audit(profile(matrix,major:2,minor:4,device:"scnr",space:"CMY ",pcs:"Lab ")).issues.contains{diagnosticContains($0, "A2B0")})
         var withLUT = matrix;withLUT["A2B0"] = lut8(3,3)
         XCTAssertTrue(try audit(profile(withLUT,major:2,minor:4,device:"scnr",space:"CMY ",pcs:"Lab ")).issues.isEmpty)
         let unknownDisplay = try audit(profile(matrix,major:2,minor:4,space:"CMY "))
-        XCTAssertTrue(unknownDisplay.issues.isEmpty);XCTAssertTrue(unknownDisplay.gaps.contains{$0.contains("display ICC v2")})
+        XCTAssertTrue(unknownDisplay.issues.isEmpty);XCTAssertTrue(unknownDisplay.gaps.contains{diagnosticContains($0, "display ICC v2")})
     }
     func testNamedColorRecordsAcceptOptionalCoordinatesInBothEditions() throws {
         for major in [2,4] {
@@ -246,24 +246,24 @@ final class PDFArchiveICCModelTests:XCTestCase {
     }
     func testNamedColorBoundsASCIITerminatorsAndCountsAreNotGuessed() throws {
         var short = namedColors(channels:1);short.removeLast()
-        XCTAssertTrue(try audit(profile(["ncl2":short])).issues.contains{$0.contains("troncati")})
-        XCTAssertTrue(try audit(profile(["ncl2":namedColors(name:Data(repeating:65,count:32))])).issues.contains{$0.contains("non terminato")})
-        XCTAssertTrue(try audit(profile(["ncl2":namedColors(name:Data([0xE9,0]))])).issues.contains{$0.contains("non ASCII")})
+        XCTAssertTrue(try audit(profile(["ncl2":short])).issues.contains{diagnosticContains($0, "troncati")})
+        XCTAssertTrue(try audit(profile(["ncl2":namedColors(name:Data(repeating:65,count:32))])).issues.contains{diagnosticContains($0, "non terminato")})
+        XCTAssertTrue(try audit(profile(["ncl2":namedColors(name:Data([0xE9,0]))])).issues.contains{diagnosticContains($0, "non ASCII")})
         var huge = namedColors();huge.replaceSubrange(16..<20,with:u32(0xFFFFFFFF))
-        XCTAssertTrue(try audit(profile(["ncl2":huge])).issues.contains{$0.contains("troncati")})
+        XCTAssertTrue(try audit(profile(["ncl2":huge])).issues.contains{diagnosticContains($0, "troncati")})
         var prefix = namedColors();prefix.replaceSubrange(20..<52,with:Data(repeating:65,count:32))
-        XCTAssertTrue(try audit(profile(["ncl2":prefix])).issues.contains{$0.contains("non terminato")})
+        XCTAssertTrue(try audit(profile(["ncl2":prefix])).issues.contains{diagnosticContains($0, "non terminato")})
     }
     func testNamedColorUnprovenFlagsCoordinateAgreementAndLegacyLabStayUnknown() throws {
         let mismatch = try audit(profile(["ncl2":namedColors(channels:3)]))
-        XCTAssertTrue(mismatch.issues.isEmpty);XCTAssertTrue(mismatch.gaps.contains{$0.contains("coordinate")})
+        XCTAssertTrue(mismatch.issues.isEmpty);XCTAssertTrue(mismatch.gaps.contains{diagnosticContains($0, "coordinate")})
         var flags = namedColors();flags.replaceSubrange(8..<12,with:u32(1))
-        let reserved = try audit(profile(["ncl2":flags]));XCTAssertTrue(reserved.issues.isEmpty);XCTAssertTrue(reserved.gaps.contains{$0.contains("Flag")})
+        let reserved = try audit(profile(["ncl2":flags]));XCTAssertTrue(reserved.issues.isEmpty);XCTAssertTrue(reserved.gaps.contains{diagnosticContains($0, "Flag")})
         var lab = namedColors();lab.replaceSubrange(116..<118,with:u16(0xFF01))
         let outOfDomain = try audit(profile(["ncl2":lab],pcs:"Lab "))
-        XCTAssertTrue(outOfDomain.issues.isEmpty);XCTAssertTrue(outOfDomain.gaps.contains{$0.contains("L*")})
+        XCTAssertTrue(outOfDomain.issues.isEmpty);XCTAssertTrue(outOfDomain.gaps.contains{diagnosticContains($0, "L*")})
         let extra = try audit(profile(["ncl2":namedColors()+Data([1])]))
-        XCTAssertTrue(extra.issues.isEmpty);XCTAssertTrue(extra.gaps.contains{$0.contains("aggiuntivi")})
+        XCTAssertTrue(extra.issues.isEmpty);XCTAssertTrue(extra.gaps.contains{diagnosticContains($0, "aggiuntivi")})
     }
     func testPseqV2UsesCompleteCountedDescriptionsEvenWhenUnaligned() throws {
         let first = legacyDescription(Data([65,66,0]),unicode:[0x41,0],script:Data([65,0]))
@@ -273,7 +273,9 @@ final class PDFArchiveICCModelTests:XCTestCase {
         XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))
     }
     func testPseqV4MlucUsesItsOwnOffsetsAndPermitsSharedStrings() throws {
-        let shared = tag("mluc",u32(2)+u32(12)+Data("enUS".utf8)+u32(2)+u32(40)+Data("enGB".utf8)+u32(2)+u32(40)+u16(65))
+        var sharedPayload = Data()
+        for part in [u32(2),u32(12),Data("enUS".utf8),u32(2),u32(40),Data("enGB".utf8),u32(2),u32(40),u16(65)] { sharedPayload.append(part) }
+        let shared = tag("mluc",sharedPayload)
         let result = try audit(profile(["pseq":sequence(shared,mluc(),records:2,pad:true)]))
         XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
         XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))
@@ -287,28 +289,28 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "));XCTAssertFalse(result.gaps.isEmpty)
         }
         let legacy = try audit(profile(["pseq":sequence(legacyDescription(),legacyDescription())]))
-        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{$0.contains("legacy")})
+        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{diagnosticContains($0, "legacy")})
         let wrongV2 = sequence(regular,regular)+Data(repeating:0,count:160)
-        XCTAssertTrue(try audit(profile(["pseq":wrongV2],major:2,minor:4)).issues.contains{$0.contains("incompatibile")})
+        XCTAssertTrue(try audit(profile(["pseq":wrongV2],major:2,minor:4)).issues.contains{diagnosticContains($0, "incompatibile")})
     }
     func testPseqAmbiguousStorageAndUnprovenSourceRelationsStayUnknown() throws {
         let unknownStorage = mluc()+Data(repeating:0,count:6)
         let result = try audit(profile(["pseq":sequence(unknownStorage,mluc())]))
-        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{$0.contains("ambigua")})
+        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "ambigua")})
         let empty = try audit(profile(["pseq":tag("pseq",u32(0))]))
-        XCTAssertTrue(empty.issues.isEmpty);XCTAssertTrue(empty.gaps.contains{$0.contains("vuota")})
+        XCTAssertTrue(empty.issues.isEmpty);XCTAssertTrue(empty.gaps.contains{diagnosticContains($0, "vuota")})
     }
     func testPseqKnownTruncationAndMalformedEmbeddedStringsFail() throws {
         let hugeCount = tag("pseq",u32(0xFFFFFFFF)+Data(repeating:0,count:64))
-        XCTAssertTrue(try audit(profile(["pseq":hugeCount])).issues.contains{$0.contains("troncati")})
+        XCTAssertTrue(try audit(profile(["pseq":hugeCount])).issues.contains{diagnosticContains($0, "troncati")})
         let wrong = tag("ui08",Data(repeating:0,count:24))
-        XCTAssertTrue(try audit(profile(["pseq":sequence(wrong,mluc())])).issues.contains{$0.contains("incompatibile")})
+        XCTAssertTrue(try audit(profile(["pseq":sequence(wrong,mluc())])).issues.contains{diagnosticContains($0, "incompatibile")})
         let badUTF = tag("mluc",u32(1)+u32(12)+Data("enUS".utf8)+u32(2)+u32(28)+u16(0xD800))
-        XCTAssertTrue(try audit(profile(["pseq":sequence(badUTF,mluc(),pad:true)])).issues.contains{$0.contains("UTF16")})
+        XCTAssertTrue(try audit(profile(["pseq":sequence(badUTF,mluc(),pad:true)])).issues.contains{diagnosticContains($0, "UTF16")})
         var badUnicode = legacyDescription(Data([65,0]),unicode:[65])
-        XCTAssertTrue(try audit(profile(["pseq":sequence(badUnicode,legacyDescription())],major:2,minor:4)).issues.contains{$0.contains("non terminato")})
+        XCTAssertTrue(try audit(profile(["pseq":sequence(badUnicode,legacyDescription())],major:2,minor:4)).issues.contains{diagnosticContains($0, "non terminato")})
         badUnicode = legacyDescription(Data([65,0]),script:Data([65]))
-        XCTAssertTrue(try audit(profile(["pseq":sequence(badUnicode,legacyDescription())],major:2,minor:4)).issues.contains{$0.contains("non terminato")})
+        XCTAssertTrue(try audit(profile(["pseq":sequence(badUnicode,legacyDescription())],major:2,minor:4)).issues.contains{diagnosticContains($0, "non terminato")})
     }
     func testPsidSizedRecordsUseNestedOffsetsAndAllowEntireRecordSharing() throws {
         for shared in [false,true] {
@@ -317,7 +319,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))
         }
         let legacy = try audit(profile(["psid":identifiers()],major:2,minor:4))
-        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{$0.contains("edizione v2")})
+        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{diagnosticContains($0, "edizione v2")})
     }
     func testPsidOffsetsSizesPaddingAndEmbeddedMlucCannotEscapeTheirRecord() throws {
         for (range,value) in [(12..<16,u32(0)),(12..<16,u32(21)),(16..<20,u32(31)),(16..<20,u32(0xFFFFFFFF))] {
@@ -325,20 +327,20 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertFalse(try audit(profile(["psid":bad])).issues.isEmpty)
         }
         var short = identifiers(2);short.replaceSubrange(16..<20,with:u32(32))
-        XCTAssertTrue(try audit(profile(["psid":short])).issues.contains{$0.contains("mluc")})
+        XCTAssertTrue(try audit(profile(["psid":short])).issues.contains{diagnosticContains($0, "mluc")})
         var padding = identifiers();padding[padding.count-1] = 1
-        XCTAssertTrue(try audit(profile(["psid":padding])).issues.contains{$0.contains("padding")})
+        XCTAssertTrue(try audit(profile(["psid":padding])).issues.contains{diagnosticContains($0, "padding")})
         let wrong = try audit(profile(["psid":identifiers(description:legacyDescription())]))
-        XCTAssertTrue(wrong.issues.contains{$0.contains("incompatibile")})
+        XCTAssertTrue(wrong.issues.contains{diagnosticContains($0, "incompatibile")})
     }
     func testStructuredRecordSafetyBudgetStaysUnknownInsteadOfMalformed() throws {
         let result = try audit(profile(["psid":identifiers(4097,shared:true,description:tag("mluc",u32(0)+u32(12)))]))
         XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
-        XCTAssertTrue(result.gaps.contains{$0.contains("budget")})
+        XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "budget")})
         let count = 65_537
         let colors = tag("ncl2",u32(0)+u32(count)+u32(0)+Data(repeating:0,count:64+38*count))
         let named = try audit(profile(["ncl2":colors]))
-        XCTAssertTrue(named.issues.isEmpty);XCTAssertTrue(named.gaps.contains{$0.contains("budget")})
+        XCTAssertTrue(named.issues.isEmpty);XCTAssertTrue(named.gaps.contains{diagnosticContains($0, "budget")})
     }
     func testMpeMatrixAndClutChainsAreStructuredInBothV4Editions() throws {
         let transform = mpe([matrix(2,3),matrix(3,2),clut([2,3],outputs:1)],inputs:2,outputs:1)
@@ -349,14 +351,14 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertTrue(result.checkedTypes.contains("mpet"))
         }
         let legacy = try audit(profile(["test":transform],major:2,minor:4))
-        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{$0.contains("edizione v2")})
+        XCTAssertTrue(legacy.issues.isEmpty);XCTAssertTrue(legacy.gaps.contains{diagnosticContains($0, "edizione v2")})
     }
     func testMpeHeaderAndInterelementChannelsMustAgree() throws {
         for transform in [mpe([matrix()],inputs:2),mpe([matrix()],outputs:2),mpe([matrix(1,2),matrix()])] {
-            XCTAssertTrue(try audit(profile(["test":transform])).issues.contains{$0.contains("canali") || $0.contains("uscita finale")})
+            XCTAssertTrue(try audit(profile(["test":transform])).issues.contains{diagnosticContains($0, "canali") || diagnosticContains($0, "uscita finale")})
         }
         let empty = tag("mpet",u16(1)+u16(1)+u32(0))
-        XCTAssertTrue(try audit(profile(["test":empty])).issues.contains{$0.contains("almeno un elemento")})
+        XCTAssertTrue(try audit(profile(["test":empty])).issues.contains{diagnosticContains($0, "almeno un elemento")})
     }
     func testMpeOffsetsSizesFirstElementAndPaddingAreIndependentOfSharing() throws {
         XCTAssertTrue(try audit(profile(["test":mpe([matrix(),matrix()],shared:true)])).issues.isEmpty)
@@ -365,22 +367,22 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertFalse(try audit(profile(["test":bad])).issues.isEmpty)
         }
         var gap = mpe([matrix()])+Data(repeating:0,count:4);gap.replaceSubrange(16..<20,with:u32(28))
-        XCTAssertTrue(try audit(profile(["test":gap])).issues.contains{$0.contains("immediatamente")})
+        XCTAssertTrue(try audit(profile(["test":gap])).issues.contains{diagnosticContains($0, "immediatamente")})
         var padding = mpe([element("priv",Data([1])),matrix()]);padding[45] = 1
-        XCTAssertTrue(try audit(profile(["test":padding])).issues.contains{$0.contains("padding")})
+        XCTAssertTrue(try audit(profile(["test":padding])).issues.contains{diagnosticContains($0, "padding")})
     }
     func testMpePrivateElementsDoNotHideLaterKnownViolationsOrBecomeInvalid() throws {
         let unknown = try audit(profile(["test":mpe([element("priv",Data([1,2,3,4])),matrix()])]))
-        XCTAssertTrue(unknown.issues.isEmpty);XCTAssertTrue(unknown.gaps.contains{$0.contains("non definito")})
+        XCTAssertTrue(unknown.issues.isEmpty);XCTAssertTrue(unknown.gaps.contains{diagnosticContains($0, "non definito")})
         var short = matrix();short.removeLast(4)
-        XCTAssertTrue(try audit(profile(["test":mpe([element("priv"),short])])).issues.contains{$0.contains("float32")})
+        XCTAssertTrue(try audit(profile(["test":mpe([element("priv"),short])])).issues.contains{diagnosticContains($0, "float32")})
         let typo = try audit(profile(["test":mpe([element("mflt")])]))
         XCTAssertTrue(typo.issues.isEmpty);XCTAssertTrue(typo.gaps.contains{$0.contains("mflt")})
     }
     func testMpeStoredFloatsRejectNonfiniteAndSubnormalButPermitSignedZeroAndNormals() throws {
         for bits in [0x00000001,0x807FFFFF,0x7F800000,0xFF800000,0x7FC00000] {
             var value = matrix();value.replaceSubrange(12..<16,with:u32(bits))
-            XCTAssertTrue(try audit(profile(["test":mpe([value])])).issues.contains{$0.contains("float32Number")})
+            XCTAssertTrue(try audit(profile(["test":mpe([value])])).issues.contains{diagnosticContains($0, "float32Number")})
         }
         for bits in [0x00000000,0x80000000,0x00800000,0x80800000,0x7F7FFFFF,0xFF7FFFFF] {
             var value = matrix();value.replaceSubrange(12..<16,with:u32(bits))
@@ -391,14 +393,14 @@ final class PDFArchiveICCModelTests:XCTestCase {
         for values in [[0],[1],[2]] {
             var value = clut([2]);value[12] = UInt8(values[0])
             if values[0] == 2 { value.removeLast(4) }
-            XCTAssertTrue(try audit(profile(["test":mpe([value])])).issues.contains{$0.contains("CLUT")})
+            XCTAssertTrue(try audit(profile(["test":mpe([value])])).issues.contains{diagnosticContains($0, "CLUT")})
         }
         var unused = clut([2]);unused[13] = 1
-        XCTAssertTrue(try audit(profile(["test":mpe([unused])])).issues.contains{$0.contains("inutilizzate")})
+        XCTAssertTrue(try audit(profile(["test":mpe([unused])])).issues.contains{diagnosticContains($0, "inutilizzate")})
         let sixteen = mpe([clut(Array(repeating:2,count:16))],inputs:16)
         XCTAssertTrue(try audit(profile(["test":sixteen])).issues.isEmpty)
         let tooMany = mpe([element("clut",inputs:17,Data(repeating:0,count:16))],inputs:17)
-        XCTAssertTrue(try audit(profile(["test":tooMany])).issues.contains{$0.contains("sedici")})
+        XCTAssertTrue(try audit(profile(["test":tooMany])).issues.contains{diagnosticContains($0, "sedici")})
     }
     func testMpeCurveSetNestedPositionsAndSharedCurvesKeepMathematicalDomainUnknown() throws {
         let curve = segmented([formula()])
@@ -406,7 +408,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
             let transform = mpe([curveSet([curve,curve],shared:shared)],inputs:2,outputs:2)
             let result = try audit(profile(["test":transform]))
             XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
-            XCTAssertTrue(result.gaps.contains{$0.contains("matematica")})
+            XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "matematica")})
         }
         let sampled = segmented([formula(),tag("samf",u32(2)+floats([0,1])),formula()],breaks:[0,1])
         XCTAssertTrue(try audit(profile(["test":mpe([curveSet([sampled])])])).issues.isEmpty)
@@ -417,7 +419,7 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertTrue(try audit(profile(["test":mpe([curveSet([segmented(segments,breaks:points)])])])).issues.isEmpty)
         }
         let backwards = segmented(segments,breaks:[1,0])
-        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([backwards])])])).issues.contains{$0.contains("decrescenti")})
+        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([backwards])])])).issues.contains{diagnosticContains($0, "decrescenti")})
     }
     func testMpeCurvesRejectTruncationIllegalEndSamplesAndReservedFields() throws {
         let sample = tag("samf",u32(1)+floats([0]))
@@ -425,11 +427,11 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertFalse(try audit(profile(["test":mpe([curveSet([curve])])])).issues.isEmpty)
         }
         var reserved = segmented([formula()]);reserved.replaceSubrange(10..<12,with:u16(1))
-        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([reserved])])])).issues.contains{$0.contains("reserved")})
+        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([reserved])])])).issues.contains{diagnosticContains($0, "reserved")})
         var short = formula();short.removeLast(4)
-        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([segmented([short])])])])).issues.contains{$0.contains("float32")})
+        XCTAssertTrue(try audit(profile(["test":mpe([curveSet([segmented([short])])])])).issues.contains{diagnosticContains($0, "float32")})
         var offset = curveSet([segmented([formula()])]);offset.replaceSubrange(12..<16,with:u32(0))
-        XCTAssertTrue(try audit(profile(["test":mpe([offset])])).issues.contains{$0.contains("offset")})
+        XCTAssertTrue(try audit(profile(["test":mpe([offset])])).issues.contains{diagnosticContains($0, "offset")})
     }
     func testMpeFutureFormulaCurveAndZeroChannelsAreUnknownRatherThanMalformed() throws {
         for curve in [segmented([formula(3)]),tag("zzzz",Data(repeating:0,count:4))] {
@@ -437,33 +439,33 @@ final class PDFArchiveICCModelTests:XCTestCase {
             XCTAssertTrue(result.issues.isEmpty);XCTAssertFalse(result.gaps.isEmpty)
         }
         let zero = try audit(profile(["test":mpe([matrix(0,0)],inputs:0,outputs:0)]))
-        XCTAssertTrue(zero.issues.isEmpty);XCTAssertTrue(zero.gaps.contains{$0.contains("zero canali")})
+        XCTAssertTrue(zero.issues.isEmpty);XCTAssertTrue(zero.gaps.contains{diagnosticContains($0, "zero canali")})
         let extra = try audit(profile(["test":mpe([matrix()+Data(repeating:0,count:4)])]))
-        XCTAssertTrue(extra.issues.isEmpty);XCTAssertTrue(extra.gaps.contains{$0.contains("aggiuntivi")})
+        XCTAssertTrue(extra.issues.isEmpty);XCTAssertTrue(extra.gaps.contains{diagnosticContains($0, "aggiuntivi")})
     }
     func testMpeAcsPassThroughElementsRequireMatchingChannelCounts() throws {
         let begin = element("bACS",u32(0x12345678)),end = element("eACS",u32(0))
         let result = try audit(profile(["test":mpe([begin,matrix(),end])]))
         XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.isEmpty)
         let bad = element("bACS",inputs:1,outputs:2,u32(0))
-        XCTAssertTrue(try audit(profile(["test":mpe([bad],outputs:2)])).issues.contains{$0.contains("ACS")})
+        XCTAssertTrue(try audit(profile(["test":mpe([bad],outputs:2)])).issues.contains{diagnosticContains($0, "ACS")})
     }
     func testMpePublicTransformTagsBindSixteenBitChannelsToProfileSpaces() throws {
         let result = try audit(profile(["D2B0":mpe([matrix(1,3)],outputs:3),"B2D0":mpe([matrix(3,1)],inputs:3)]))
         XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
-        XCTAssertTrue(try audit(profile(["D2B0":mpe([matrix()])])).issues.contains{$0.contains("canali MPE")})
-        XCTAssertTrue(try audit(profile(["B2D0":mpe([matrix()])])).issues.contains{$0.contains("canali MPE")})
+        XCTAssertTrue(try audit(profile(["D2B0":mpe([matrix()])])).issues.contains{diagnosticContains($0, "canali MPE")})
+        XCTAssertTrue(try audit(profile(["B2D0":mpe([matrix()])])).issues.contains{diagnosticContains($0, "canali MPE")})
     }
     func testMpeRecordAndFloatWorkBudgetsRemainUnknown() throws {
         let many = mpe(Array(repeating:matrix(),count:4097),shared:true)
         let result = try audit(profile(["test":many]))
-        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{$0.contains("budget")})
+        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "budget")})
         let large = mpe([matrix(1024,4096)],inputs:1024,outputs:4096)
         let work = try audit(profile(["test":large]))
-        XCTAssertTrue(work.issues.isEmpty);XCTAssertTrue(work.gaps.contains{$0.contains("budget")})
+        XCTAssertTrue(work.issues.isEmpty);XCTAssertTrue(work.gaps.contains{diagnosticContains($0, "budget")})
         let segments = segmented(Array(repeating:formula(),count:4097),breaks:Array(repeating:0,count:4096))
         let curve = try audit(profile(["test":mpe([curveSet([segments])])]))
-        XCTAssertTrue(curve.issues.isEmpty);XCTAssertTrue(curve.gaps.contains{$0.contains("budget")})
+        XCTAssertTrue(curve.issues.isEmpty);XCTAssertTrue(curve.gaps.contains{diagnosticContains($0, "budget")})
     }
     func testIccCancellationIsExplicitlyUnverified() async throws {
         let bytes = profile(["test":mpe([clut([16,16,16])])])
@@ -472,6 +474,6 @@ final class PDFArchiveICCModelTests:XCTestCase {
             return PDFArchiveICCAudit(profile:try PDFArchiveICCProfile(data:bytes))
         }
         let result = try await task.value
-        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{$0.contains("annullati")})
+        XCTAssertTrue(result.issues.isEmpty);XCTAssertTrue(result.gaps.contains{diagnosticContains($0, "annullati")})
     }
 }

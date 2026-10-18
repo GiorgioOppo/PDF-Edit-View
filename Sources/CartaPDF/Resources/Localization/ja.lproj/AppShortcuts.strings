@@ -1,0 +1,2 @@
+/* CartaPDF: bundled offline translations. Preserve placeholder tokens. */
+"Unisci documenti con ${applicationName}" = "${applicationName} で文書を結合";

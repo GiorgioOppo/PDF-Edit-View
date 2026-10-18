@@ -1,43 +1,46 @@
-# Contribuire a CartaPDF
+# Contributing to CartaPDF
 
-Il progetto accoglie correzioni, test e documentazione che mantengano l'app gratuita, completamente locale e basata soltanto su framework Apple. Per l'architettura e i requisiti di build vedi [docs](docs/README.md).
+We welcome fixes, tests and documentation that keep the app free, entirely local and based only on Apple frameworks. See the [documentation](docs/README.md) for the architecture and build requirements.
 
-## Prima di iniziare
+## Before you start
 
-Leggi i [limiti](README.md), le [licenze dei dati](THIRD_PARTY_NOTICES.md) e il [codice di condotta](CODE_OF_CONDUCT.md). Per un difetto ordinario puoi aprire un'issue, se le issue sono abilitate, con un esempio sintetico riproducibile. Per cambiamenti ampi descrivi problema e approccio prima di investire in un'implementazione estesa. Le vulnerabilità seguono [SECURITY](SECURITY.md).
+Read the [limitations](README.md), [data licenses](THIRD_PARTY_NOTICES.md) and [code of conduct](CODE_OF_CONDUCT.md). For an ordinary defect, open an issue with a minimal synthetic example. For larger changes, describe the problem and proposed approach before investing in a substantial implementation. Follow [SECURITY](SECURITY.md) for vulnerabilities.
 
-Non caricare PDF personali, certificati con chiavi private, file password, log contenenti credenziali o copie degli standard senza diritto di redistribuzione. Gli esempi devono essere creati per il test oppure provenire da una fonte con licenza documentata.
+Do not upload personal PDFs, certificates containing private keys, password files, logs containing credentials or copies of standards you do not have permission to redistribute. Examples must be created for testing or come from a source with a documented license.
 
-## Vincoli di implementazione
+## Implementation constraints
 
-- Usa Swift e API pubbliche Apple; non introdurre pacchetti, motori, servizi di rete, telemetria o dipendenze runtime di terze parti.
-- Mantieni espliciti ambito, errori e operazioni che salvano una copia. Non presentare una rasterizzazione come modifica strutturale senza perdita.
-- Rispetta undo, cancellazione, limiti di memoria e autorizzazioni dei documenti nei percorsi pertinenti.
-- Distingui modifica, oscuramento, cifratura e firma; revisioni incrementali e ritaglio non garantiscono rimozione dei dati.
-- Evita modifiche non correlate e preserva le attribuzioni dei dati incorporati.
+- Use Swift and public Apple APIs. Do not introduce third-party packages, engines, network services, telemetry or runtime dependencies.
+- Make scope, errors and operations that save a separate copy explicit. Do not present rasterization as lossless structural editing.
+- Respect undo, cancellation, memory limits and document permissions in the relevant workflows.
+- Distinguish editing, redaction, encryption and signing. Incremental revisions and cropping do not guarantee data removal.
+- Avoid unrelated changes and preserve the attribution of bundled data.
 
-## Validatore PDF/A
+## PDF/A validator
 
-Un controllo nuovo o corretto deve citare una fonte primaria, edizione e clausola nelle evidenze appropriate. Definisci quali oggetti, revisioni e contesti analizza e come tratta null, alias, oggetti privati, input non supportato, limiti e cancellazione. Aggiungi fixture positive e negative che isolino il requisito; includi una regressione quando correggi un difetto reale.
+A new or corrected check must cite a primary source, edition and clause in the appropriate evidence. Define which objects, revisions and contexts it inspects, and how it handles null values, aliases, private objects, unsupported input, limits and cancellation. Add positive and negative fixtures that isolate the requirement, including a regression test when fixing an actual defect.
 
-Non usare il nome di una fixture del corpus come sola prova normativa. Non trasformare un controllo non implementato in `passed` o `notApplicable`. Non rimuovere `scopeGaps` senza dimostrare che l'obbligo corrispondente sia coperto integralmente. La versione corrente non emette conformità ISO globale.
+Do not use a corpus fixture's filename as the only normative evidence. Do not mark an unimplemented check as `passed` or `notApplicable`. Do not remove `scopeGaps` without demonstrating complete coverage of the corresponding obligation. The current version does not report overall ISO conformity.
 
-Cataloghi e tabelle font sono dati fissati e verificati con hash. Se proponi un aggiornamento, conserva provenienza, commit, licenza e byte originali; aggiorna le due copie delle risorse e i contratti nel codice insieme. Non modificare i dati upstream per far passare un controllo.
+Catalogues and font tables are pinned data verified by hashes. When proposing an update, preserve the provenance, commit, license and original bytes. Update both resource copies and their code contracts together. Do not modify upstream data to make a check pass.
 
-## Verificare una modifica
+## Verify a change
 
 ```sh
-./scripts/test.sh --filter NomeSuite
+python3 scripts/check-repository.py
+./scripts/test.sh --filter SuiteName
 ./scripts/test.sh
 ./scripts/build-app.sh
 ```
 
-Scegli verifiche adeguate al cambiamento. Una sola modifica di testo non richiede di dichiarare una nuova prova runtime. Le modifiche a parsing, scritture, firme o risultati del validatore richiedono test mirati sui comportamenti reali. Per UI e hardware documenta ciò che hai osservato e ciò che resta non verificato.
+Choose checks appropriate to the change. A text-only edit does not justify claiming a new runtime verification. Changes to parsing, writing, signing or validator results need targeted tests of actual behavior. For UI and hardware checks, record what you observed and what remains unverified.
 
-Non riscrivere rapporti storici come se la suite fosse stata rieseguita. Quando generi nuove evidenze, indica versione, ambiente, input e hash pertinenti. Le istruzioni sono in [BUILDING](docs/BUILDING.md).
+Do not rewrite historical reports as though their tests were rerun. When generating new evidence, record the version, environment, inputs and relevant hashes. See [BUILDING](docs/BUILDING.md) for instructions.
 
-## Pull request
+## Pull requests
 
-Descrivi il problema concreto, il comportamento risultante, le verifiche realmente eseguite e i limiti residui. Collega le issue pertinenti e includi schermate solo prive di dati personali. Una modifica alle funzionalità deve aggiornare le guide o i limiti interessati; una correzione normativa deve aggiornare l'evidenza del modulo.
+Describe the concrete problem, resulting behavior, checks actually run and remaining limitations. Link relevant issues and include screenshots only if they contain no personal information. Feature changes must update the affected guides or limitations; normative corrections must update the module's evidence.
 
-Inviando un contributo dichiari di avere il diritto di condividerlo secondo la licenza MIT del codice o, per dati separati, secondo la licenza e la provenienza dichiarate. Non è richiesto un trasferimento di copyright. Le risorse con licenze proprie conservano i rispettivi obblighi.
+Repository documentation and GitHub templates use English. The app supports seven languages and follows macOS language preferences with English fallback. See [translation maintenance](docs/LOCALIZATION.md) before changing interface strings. You may discuss contributions in English or Italian.
+
+By submitting a contribution, you confirm that you have the right to share it under the code's MIT license or, for separate data, its stated license and provenance. No copyright assignment is required. Resources with their own licenses retain their respective obligations.

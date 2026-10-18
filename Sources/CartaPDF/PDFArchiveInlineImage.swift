@@ -24,14 +24,14 @@ struct PDFArchiveInlineImage {
             }
             let token = try lexer.value()
             if case .keyword("ID") = token { break }
-            guard let key = token.name, dictionary.count < 1000 else { throw PDFStructureError.malformed("dizionario immagine inline") }
+            guard let key = token.name, dictionary.count < 1000 else { throw PDFStructureError.malformed(L10n.tr("dizionario immagine inline")) }
             let normalized = aliases[key] ?? key
-            guard dictionary[normalized] == nil else { throw PDFStructureError.malformed("chiave inline duplicata") }
+            guard dictionary[normalized] == nil else { throw PDFStructureError.malformed(L10n.tr("chiave inline duplicata")) }
             dictionary[normalized] = try lexer.value()
         }
-        guard lexer.offset < lexer.bytes.count else { throw PDFStructureError.malformed("dati immagine inline assenti") }
+        guard lexer.offset < lexer.bytes.count else { throw PDFStructureError.malformed(L10n.tr("dati immagine inline assenti")) }
         if !PDFSyntaxLexer.space(lexer.bytes[lexer.offset]) && !asciiFilter() {
-            throw PDFStructureError.malformed("ID deve essere seguito da uno spazio")
+            throw PDFStructureError.malformed(L10n.tr("ID deve essere seguito da uno spazio"))
         }
         if PDFSyntaxLexer.space(lexer.bytes[lexer.offset]) {
             if lexer.bytes[lexer.offset] == 13, lexer.offset + 1 < lexer.bytes.count, lexer.bytes[lexer.offset + 1] == 10 { lexer.offset += 2 }
@@ -64,7 +64,7 @@ struct PDFArchiveInlineImage {
                     if filters.allSatisfy({ PDFStreamFilters.supported.contains($0) }) {
                         let samples = try PDFStructureDocument.decode(Data(lexer.bytes[start..<(start+prefix.consumed)]),dictionary:dictionary)
                         if let sampleCount,samples.count != sampleCount {
-                            throw PDFStructureError.malformed("campioni inline: \(samples.count) byte decodificati, attesi \(sampleCount) dalle righe/dimensioni")
+                            throw PDFStructureError.malformed(L10n.tr("campioni inline: \(samples.count) byte decodificati, attesi \(sampleCount) dalle righe/dimensioni"))
                         }
                     }
                 } catch {
@@ -81,10 +81,10 @@ struct PDFArchiveInlineImage {
         }
         if length == nil,let declared = dictionary["L"]?.int,declared >= 0,declared <= 256 * 1024 * 1024 { length = declared }
         if let length {
-            guard length >= 0, length <= 256 * 1024 * 1024, start <= lexer.bytes.count - length else { throw PDFStructureError.malformed("lunghezza immagine inline") }
+            guard length >= 0, length <= 256 * 1024 * 1024, start <= lexer.bytes.count - length else { throw PDFStructureError.malformed(L10n.tr("lunghezza immagine inline")) }
             lexer.offset = start + length
-            guard lexer.offset < lexer.bytes.count, PDFSyntaxLexer.space(lexer.bytes[lexer.offset]) else { throw PDFStructureError.malformed("delimitatore prima di EI") }
-            guard try lexer.word() == "EI" else { throw PDFStructureError.malformed("fine immagine inline") }
+            guard lexer.offset < lexer.bytes.count, PDFSyntaxLexer.space(lexer.bytes[lexer.offset]) else { throw PDFStructureError.malformed(L10n.tr("delimitatore prima di EI")) }
+            guard try lexer.word() == "EI" else { throw PDFStructureError.malformed(L10n.tr("fine immagine inline")) }
             return .init(dictionary: dictionary, bytes: Data(lexer.bytes[start..<(start + length)]), lengthReliable: reliable,decodingIssue:decodingIssue)
         }
         var cursor = start
@@ -97,6 +97,6 @@ struct PDFArchiveInlineImage {
             }
             cursor += 1
         }
-        throw PDFStructureError.malformed("EI non trovato nell’immagine inline")
+        throw PDFStructureError.malformed(L10n.tr("EI non trovato nell’immagine inline"))
     }
 }

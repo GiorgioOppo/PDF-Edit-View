@@ -190,7 +190,7 @@ enum AdvancedScanEngine {
         let indices = Array(0..<source.pageCount)
         let priority = options.prioritizedPage.flatMap { indices.contains($0) ? $0 : nil }
         let order = priority.map { page in [page] + indices.filter { $0 != page } } ?? indices
-        progress(0, "Preparazione di Vision: il primo avvio può richiedere la compilazione locale dei modelli…", [])
+        progress(0, L10n.tr("Preparazione di Vision: il primo avvio può richiedere la compilazione locale dei modelli…"), [])
         for (completed, index) in order.enumerated() {
             do { try autoreleasepool {
                 try cancellation.check()
@@ -226,7 +226,7 @@ enum AdvancedScanEngine {
                 if options.recognize && lines.isEmpty { lines = try recognizedLines(image, languages: options.languages, cancellation: cancellation) }
                 var confidence = lines.isEmpty ? 0 : lines.reduce(Float(0)) { $0 + $1.confidence } / Float(lines.count)
                 if options.recognize, options.retryLowConfidence, confidence < 0.75, options.dpi < 300 {
-                    progress(Double(completed) / Double(source.pageCount), "Pagina \(index + 1): nuovo tentativo a 300 dpi…", reports)
+                    progress(Double(completed) / Double(source.pageCount), L10n.tr("Pagina \(index + 1): nuovo tentativo a 300 dpi…"), reports)
                     let high = try PDFConversionEngine.renderPage(page, dpi: 300)
                     let oriented = CIImage(cgImage: high.image).oriented(orientationAngle == -90 ? .right : orientationAngle == 90 ? .left : orientationAngle == 180 ? .down : .up)
                     let ci = CIContext()
@@ -256,11 +256,11 @@ enum AdvancedScanEngine {
                 try cancellation.check()
                 guard let copy = source.page(at: index)?.copy() as? PDFPage else { throw error }
                 completedPages[index] = copy
-                reports.append(.init(page: index + 1, state: "Originale conservato: \(error.localizedDescription)", confidence: 0, lines: 0, angle: 0))
+                reports.append(.init(page: index + 1, state: L10n.tr("Originale conservato: \(error.localizedDescription)"), confidence: 0, lines: 0, angle: 0))
             }
             let recognizedCount = reports.filter { $0.state == "Riconosciuta" }.count
             let skipped = reports.filter { $0.state == "Testo già presente" }.count
-            progress(Double(reports.count) / Double(source.pageCount), "Pagina \(index + 1) · \(reports.count)/\(source.pageCount) completate · \(recognizedCount) riconosciute · \(skipped) già testuali", reports)
+            progress(Double(reports.count) / Double(source.pageCount), L10n.tr("Pagina \(index + 1) · \(reports.count)/\(source.pageCount) completate · \(recognizedCount) riconosciute · \(skipped) già testuali"), reports)
         }
         for index in indices {
             guard let page = completedPages[index] else { throw PDFConversionError.invalidPage }
@@ -374,12 +374,18 @@ enum ScanExportEngine {
         guard !pages.joined().trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw PDFConversionError.noText }
         let identifier = "urn:uuid:\(UUID().uuidString)"
         let sections = pages.enumerated().map { index, text in
-            "<section id=\"p\(index + 1)\"><h2>Pagina \(index + 1)</h2>" + normalizedParagraphs(text).components(separatedBy: "\n\n").map { "<p>\(xml($0).replacingOccurrences(of: "\n", with: "<br/>"))</p>" }.joined() + "</section>"
+            let heading = xml(L10n.tr("Pagina \(index + 1)"))
+            return "<section id=\"p\(index + 1)\"><h2>\(heading)</h2>" + normalizedParagraphs(text).components(separatedBy: "\n\n").map { "<p>\(xml($0).replacingOccurrences(of: "\n", with: "<br/>"))</p>" }.joined() + "</section>"
         }.joined()
-        let content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"it\"><head><title>\(xml(title))</title></head><body>\(sections)</body></html>"
-        let navigation = "<?xml version=\"1.0\"?><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\"><head><title>Indice</title></head><body><nav epub:type=\"toc\"><ol>" + pages.indices.map { "<li><a href=\"content.xhtml#p\($0 + 1)\">Pagina \($0 + 1)</a></li>" }.joined() + "</ol></nav></body></html>"
+        let content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"und\"><head><title>\(xml(title))</title></head><body>\(sections)</body></html>"
+        let navigationTitle = xml(L10n.tr("Indice"))
+        let navigationItems = pages.indices.map { index in
+            let heading = xml(L10n.tr("Pagina \(index + 1)"))
+            return "<li><a href=\"content.xhtml#p\(index + 1)\">\(heading)</a></li>"
+        }.joined()
+        let navigation = "<?xml version=\"1.0\"?><html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\"><head><title>\(navigationTitle)</title></head><body><nav epub:type=\"toc\"><ol>" + navigationItems + "</ol></nav></body></html>"
         let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime]
-        let package = "<?xml version=\"1.0\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"3.0\" unique-identifier=\"id\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:identifier id=\"id\">\(identifier)</dc:identifier><dc:title>\(xml(title))</dc:title><dc:language>it</dc:language><meta property=\"dcterms:modified\">\(formatter.string(from: Date()))</meta></metadata><manifest><item id=\"content\" href=\"content.xhtml\" media-type=\"application/xhtml+xml\"/><item id=\"nav\" href=\"nav.xhtml\" properties=\"nav\" media-type=\"application/xhtml+xml\"/></manifest><spine><itemref idref=\"content\"/></spine></package>"
+        let package = "<?xml version=\"1.0\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"3.0\" unique-identifier=\"id\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:identifier id=\"id\">\(identifier)</dc:identifier><dc:title>\(xml(title))</dc:title><dc:language>und</dc:language><meta property=\"dcterms:modified\">\(formatter.string(from: Date()))</meta></metadata><manifest><item id=\"content\" href=\"content.xhtml\" media-type=\"application/xhtml+xml\"/><item id=\"nav\" href=\"nav.xhtml\" properties=\"nav\" media-type=\"application/xhtml+xml\"/></manifest><spine><itemref idref=\"content\"/></spine></package>"
         let container = "<?xml version=\"1.0\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"EPUB/package.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>"
         return try ScanStoredZIP.make([("mimetype", Data("application/epub+zip".utf8)), ("META-INF/container.xml", Data(container.utf8)), ("EPUB/package.opf", Data(package.utf8)), ("EPUB/content.xhtml", Data(content.utf8)), ("EPUB/nav.xhtml", Data(navigation.utf8))])
     }
@@ -389,7 +395,7 @@ enum ScanExportEngine {
     }
 
     static func imagePDF(urls: [URL], margin: CGFloat) throws -> Data {
-        guard margin.isFinite, (0...200).contains(margin), !urls.isEmpty else { throw ScanToolError.message("Il margine deve essere compreso tra 0 e 200 punti.") }
+        guard margin.isFinite, (0...200).contains(margin), !urls.isEmpty else { throw ScanToolError.message(L10n.tr("Il margine deve essere compreso tra 0 e 200 punti.")) }
         let data = NSMutableData(); var box = CGRect(origin: .zero, size: PDFConversionEngine.a4Size)
         guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { throw PDFConversionError.cannotRender }
         for url in urls {
@@ -416,12 +422,12 @@ enum ScanStoredZIP {
         return ~crc
     }
     static func make(_ entries: [(String, Data)]) throws -> Data {
-        guard entries.count <= Int(UInt16.max) else { throw ScanToolError.message("Troppi elementi ZIP.") }
+        guard entries.count <= Int(UInt16.max) else { throw ScanToolError.message(L10n.tr("Troppi elementi ZIP.")) }
         var output = Data(), directory = Data()
         func append<T: FixedWidthInteger>(_ value: T, to data: inout Data) { var little = value.littleEndian; withUnsafeBytes(of: &little) { data.append(contentsOf: $0) } }
         for (name, payload) in entries {
             let filename = Data(name.utf8)
-            guard filename.count <= Int(UInt16.max), payload.count < Int(UInt32.max), output.count < Int(UInt32.max) else { throw ScanToolError.message("Il contenuto supera i limiti ZIP32.") }
+            guard filename.count <= Int(UInt16.max), payload.count < Int(UInt32.max), output.count < Int(UInt32.max) else { throw ScanToolError.message(L10n.tr("Il contenuto supera i limiti ZIP32.")) }
             let offset = UInt32(output.count), size = UInt32(payload.count), crc = crc32(payload)
             append(UInt32(0x04034b50), to: &output); append(UInt16(20), to: &output); append(UInt16(0x800), to: &output)
             append(UInt16(0), to: &output); append(UInt16(0), to: &output); append(UInt16(0x21), to: &output)
@@ -452,7 +458,7 @@ enum ScanCSV {
                 recordStarted = true
                 if quoted, index + 1 < characters.count, characters[index + 1] == "\"" { value.append("\""); index += 1 }
                 else if quoted || value.isEmpty { quoted.toggle() }
-                else { throw ScanToolError.message("Virgolette CSV non valide.") }
+                else { throw ScanToolError.message(L10n.tr("Virgolette CSV non valide.")) }
             } else if character == delimiter && !quoted { recordStarted = true; row.append(value); value = "" }
             else if character == "\n" && !quoted {
                 if recordStarted { row.append(value); rows.append(row) }
@@ -461,7 +467,7 @@ enum ScanCSV {
             else { recordStarted = true; value.append(character) }
             index += 1
         }
-        guard !quoted else { throw ScanToolError.message("Il CSV contiene un campo tra virgolette non chiuso.") }
+        guard !quoted else { throw ScanToolError.message(L10n.tr("Il CSV contiene un campo tra virgolette non chiuso.")) }
         if recordStarted { row.append(value); rows.append(row) }
         return rows
     }
@@ -477,7 +483,7 @@ enum ScanCSV {
         let crop = page.bounds(for: .cropBox)
         let region = CGRect(x: crop.minX + normalizedRegion.minX * crop.width, y: crop.minY + normalizedRegion.minY * crop.height,
                             width: normalizedRegion.width * crop.width, height: normalizedRegion.height * crop.height).intersection(crop)
-        guard !region.isNull, region.width > 0, region.height > 0 else { throw ScanToolError.message("L’area della tabella non è valida.") }
+        guard !region.isNull, region.width > 0, region.height > 0 else { throw ScanToolError.message(L10n.tr("L’area della tabella non è valida.")) }
         struct CharacterBox { let bounds: CGRect }
         var characters: [CharacterBox] = []
         for index in 0..<page.numberOfCharacters {
@@ -520,9 +526,9 @@ enum ScanCSV {
     }
 
     static func filledDocuments(snapshot: Data, rows: [[String]]) throws -> [Data] {
-        guard let headers = rows.first, rows.count > 1, Set(headers).count == headers.count, !headers.contains("") else { throw ScanToolError.message("Il CSV deve avere intestazioni univoche e almeno una riga di valori.") }
+        guard let headers = rows.first, rows.count > 1, Set(headers).count == headers.count, !headers.contains("") else { throw ScanToolError.message(L10n.tr("Il CSV deve avere intestazioni univoche e almeno una riga di valori.")) }
         return try rows.dropFirst().map { values in
-            guard values.count == headers.count else { throw ScanToolError.message("Una riga CSV ha un numero di colonne diverso dalle intestazioni.") }
+            guard values.count == headers.count else { throw ScanToolError.message(L10n.tr("Una riga CSV ha un numero di colonne diverso dalle intestazioni.")) }
             let pdf = try PDFConversionEngine.loadSnapshot(snapshot)
             guard pdf.allowsFormFieldEntry else { throw PDFWorkspaceError.editingNotAllowed }
             var found = Set<String>()
@@ -530,13 +536,13 @@ enum ScanCSV {
                 try Task.checkCancellation()
                 for field in pdf.page(at: index)?.annotations ?? [] where field.type == "Widget" {
                     guard let name = field.fieldName, let column = headers.firstIndex(of: name) else { continue }
-                    guard !field.isReadOnly else { throw ScanToolError.message("Il campo \(name) è in sola lettura.") }
-                    guard !field.isPasswordField else { throw ScanToolError.message("Il campo password \(name) non viene compilato tramite CSV.") }
+                    guard !field.isReadOnly else { throw ScanToolError.message(L10n.tr("Il campo \(name) è in sola lettura.")) }
+                    guard !field.isPasswordField else { throw ScanToolError.message(L10n.tr("Il campo password \(name) non viene compilato tramite CSV.")) }
                     let value = values[column]
                     switch field.widgetFieldType {
                     case .text:
                         guard field.maximumLength <= 0 || value.count <= field.maximumLength else {
-                            throw ScanToolError.message("Il campo \(name) accetta al massimo \(field.maximumLength) caratteri.")
+                            throw ScanToolError.message(L10n.tr("Il campo \(name) accetta al massimo \(field.maximumLength) caratteri."))
                         }
                         field.widgetStringValue = value
                     case .choice:
@@ -544,20 +550,20 @@ enum ScanCSV {
                         if let index = choices.firstIndex(of: value) {
                             field.widgetStringValue = exports.indices.contains(index) ? exports[index] : value
                         } else if exports.contains(value) { field.widgetStringValue = value }
-                        else { throw ScanToolError.message("Il valore di \(name) non è tra le opzioni consentite.") }
+                        else { throw ScanToolError.message(L10n.tr("Il valore di \(name) non è tra le opzioni consentite.")) }
                     case .button:
-                        guard field.widgetControlType == .checkBoxControl else { throw ScanToolError.message("Il campo \(name) non è una casella di spunta supportata.") }
+                        guard field.widgetControlType == .checkBoxControl else { throw ScanToolError.message(L10n.tr("Il campo \(name) non è una casella di spunta supportata.")) }
                         switch value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
                         case "1", "true", "yes", "si", "sì": field.buttonWidgetState = .onState
                         case "0", "false", "no", "": field.buttonWidgetState = .offState
-                        default: throw ScanToolError.message("La casella \(name) richiede sì/no, true/false oppure 1/0; un valore vuoto la deseleziona.")
+                        default: throw ScanToolError.message(L10n.tr("La casella \(name) richiede sì/no, true/false oppure 1/0; un valore vuoto la deseleziona."))
                         }
-                    default: throw ScanToolError.message("Tipo di campo non supportato: \(name).")
+                    default: throw ScanToolError.message(L10n.tr("Tipo di campo non supportato: \(name)."))
                     }
                     found.insert(name)
                 }
             }
-            guard found.count == headers.count else { throw ScanToolError.message("Campi non trovati: \(headers.filter { !found.contains($0) }.joined(separator: ", ")).") }
+            guard found.count == headers.count else { throw ScanToolError.message(L10n.tr("Campi non trovati: \(headers.filter { !found.contains($0) }.joined(separator: ", ")).")) }
             guard let data = pdf.dataRepresentation() else { throw PDFWorkspaceError.cannotSave }
             return data
         }
@@ -567,7 +573,7 @@ enum ScanCSV {
 @MainActor
 final class ScanHTMLRenderer: NSObject, ObservableObject, WKNavigationDelegate {
     @Published var ready = false
-    @Published var message = "Scegli un file HTML locale. Script e richieste di rete vengono bloccati."
+    @Published var message = L10n.tr("Scegli un file HTML locale. Script e richieste di rete vengono bloccati.")
     let webView: WKWebView
     private var generation = UUID()
     private var currentNavigation: WKNavigation?
@@ -593,21 +599,21 @@ final class ScanHTMLRenderer: NSObject, ObservableObject, WKNavigationDelegate {
                 Task { @MainActor in
                     guard let self, self.generation == id else { return }
                     guard let list else {
-                        self.message = error.map { "\($0.localizedDescription) \(($0 as NSError).userInfo)" } ?? "Blocco risorse non disponibile."
+                        self.message = error.map { "\($0.localizedDescription) \(($0 as NSError).userInfo)" } ?? L10n.tr("Blocco risorse non disponibile.")
                         return
                     }
                     self.webView.configuration.userContentController.removeAllContentRuleLists()
                     self.webView.configuration.userContentController.add(list)
                     let csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; script-src 'none'; connect-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'\">"
                     self.currentNavigation = self.webView.loadHTMLString(csp + html, baseURL: nil)
-                    self.message = "Caricamento locale… Immagini e font esterni sono esclusi."
+                    self.message = L10n.tr("Caricamento locale… Immagini e font esterni sono esclusi.")
                 }
             }
         } catch { message = error.localizedDescription }
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard let navigation, navigation === currentNavigation else { return }
-        ready = true; message = "HTML pronto. Il rendering WebKit viene suddiviso in pagine A4: controlla i salti di pagina di righe e tabelle."
+        ready = true; message = L10n.tr("HTML pronto. Il rendering WebKit viene suddiviso in pagine A4: controlla i salti di pagina di righe e tabelle.")
     }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         guard let navigation, navigation === currentNavigation else { return }
@@ -620,7 +626,7 @@ final class ScanHTMLRenderer: NSObject, ObservableObject, WKNavigationDelegate {
         decisionHandler(navigationAction.request.url?.scheme == "about" ? .allow : .cancel)
     }
     func pdf() async throws -> PDFDocument {
-        guard ready else { throw ScanToolError.message("Attendi il caricamento HTML.") }
+        guard ready else { throw ScanToolError.message(L10n.tr("Attendi il caricamento HTML.")) }
         let id = generation
         ready = false
         defer { if generation == id { ready = true } }
@@ -629,7 +635,7 @@ final class ScanHTMLRenderer: NSObject, ObservableObject, WKNavigationDelegate {
         try Task.checkCancellation()
         guard generation == id else { throw CancellationError() }
         guard let values = metrics as? [String: Any], let width = values["width"] as? Double, let height = values["height"] as? Double,
-              width.isFinite, height.isFinite, width > 0, height > 0, height / width < 1500 else { throw ScanToolError.message("Dimensioni HTML non valide o documento troppo lungo.") }
+              width.isFinite, height.isFinite, width > 0, height > 0, height / width < 1500 else { throw ScanToolError.message(L10n.tr("Dimensioni HTML non valide o documento troppo lungo.")) }
         let a4 = PDFConversionEngine.a4Size
         let pageHeight = width * Double(a4.height / a4.width)
         let output = NSMutableData(); var box = CGRect(origin: .zero, size: a4)

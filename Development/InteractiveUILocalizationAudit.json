@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "record_type": "interactive_localization_ui_review",
+  "status": "blocked_on_native_automation_service",
+  "created_utc": "2026-10-18T09:33:10.515262+00:00",
+  "base_commit": "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+  "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
+  "scope": "Partial interactive review of the English interface: native PDF file picker and initial open-document editor. Further interactions and the other seven locale variants remain pending after the native automation service stopped responding.",
+  "separate_historical_evidence": "Development/UILocalizationVerification.json",
+  "all_locale_interactive_checks_completed": false,
+  "completed_locale_count": 0,
+  "recorded_interaction_count": 2,
+  "preparation": {
+    "provenance": "Existing isolated-copy preparation manifest and hashes rechecked before the separate interactive observations recorded below. Preparation alone does not establish a GUI review.",
+    "manifest_sha256": "58e9728b854e9c1f42d001231e2be1df0342996fa81f3248fe15b15c16ca7ce2",
+    "base_executable_sha256": "f984dbc4316fbf97cbb2dad9a61f72ffad23392b55f1ddc63b7fe0b006def64a",
+    "base_info_plist_sha256": "1570caa79adaf302339785bec0f9171ce8229c830c5f6522159c689e073e696b",
+    "base_localization_table_sha256": {
+      "en.lproj/Localizable.strings": "e59fe3ebb08b2b862501cdcad7789b235d42d9f83ec3f80a6806b00e5ecc8190",
+      "en.lproj/AppShortcuts.strings": "4fed4a0bebcfa90f9a62315dc658aa2c63c20680656c8c52f0acb88e737eb254",
+      "en.lproj/InfoPlist.strings": "5cdca4442cb2553dc694faf62876c106620dec6cecaf5737af468cc758229afe",
+      "it.lproj/Localizable.strings": "7d74a83c837000dc137241657c99fe38350c7a26d4278f1228216666a9620660",
+      "it.lproj/AppShortcuts.strings": "ffa2716310d586cc4a39b442b8f90b35df0a1ad36485abd43f3e5d9b60851955",
+      "it.lproj/InfoPlist.strings": "1188a720f6b3074b5514795bb03fcbf168d6344adc65a3031bb733f8162ce1ba",
+      "es.lproj/Localizable.strings": "b799113fce5921a9cc595289969da1da05d92ba5ffd16094e7881ce1e3c4df96",
+      "es.lproj/AppShortcuts.strings": "95f3ed0ef5d3bfb761b523f587245da5ad3ad7d0ae46eb09d7e4448dd33d6af2",
+      "es.lproj/InfoPlist.strings": "1188a720f6b3074b5514795bb03fcbf168d6344adc65a3031bb733f8162ce1ba",
+      "de.lproj/Localizable.strings": "8ad4c1ba7a83fd0aa2188f7888d51e8ddd47f8145f0da6f9bdc1acb97d689910",
+      "de.lproj/AppShortcuts.strings": "022fe1939ef56c2268ea48f933d51b8eb1538227972e29c53d0a58a9d83310e8",
+      "de.lproj/InfoPlist.strings": "114bbb07cfe518141c665200474c7a5e97df00f392202b5e7b3a006083e3afd5",
+      "fr.lproj/Localizable.strings": "5830793eb49e2af35042379ee8f94381aadd2cf9d3561ded2b24c8e783d419a9",
+      "fr.lproj/AppShortcuts.strings": "9a1c193429d08d54f83c479652b22fdb6b889b40cbf9cbf3a16fe7fbd13988eb",
+      "fr.lproj/InfoPlist.strings": "9e67f6d9b4742318449130d4bda3133dfa22d80268c9ce49e2b0d6a8b12135c9",
+      "zh-Hans.lproj/Localizable.strings": "016bd5e68c32b1588ad2a81494093e183ae6b37e87c62df12757cafb62bd11c9",
+      "zh-Hans.lproj/AppShortcuts.strings": "547b3623e6fe63d556071f5c5837569aea64e7c4e409dfe4acb8f84347a2bf88",
+      "zh-Hans.lproj/InfoPlist.strings": "ade903f3332f551065759cad7cb6296ce3ad60ddbe5484f2ba42814885809b21",
+      "zh-Hant.lproj/Localizable.strings": "b0bda6cd3ae7a679a2e03d6f088da2c0d139151eabf86085deeb395cc9857625",
+      "zh-Hant.lproj/AppShortcuts.strings": "c6a6c011f4d7623f342a65b56e002bc75a59a62fe8c4d349242e3a05b1b17ab2",
+      "zh-Hant.lproj/InfoPlist.strings": "517de6cb39e3c43a446a200d61fbf9e9e76dc839ac4c62cb3e720d28eb92da73",
+      "ja.lproj/Localizable.strings": "61909a2eed1d950e2323682da13e00125202da05e8e0f433d883a059efee4949",
+      "ja.lproj/AppShortcuts.strings": "508b5e647f8fb6ae994b37ba69955aefbce3d9c6486a5256b35a784dabc6c21a",
+      "ja.lproj/InfoPlist.strings": "56c9f9799769e4b8c31b53cece04a714b398d3c8b4638f1251cad3d42a8c38c4"
+    },
+    "prepared_copy_hashes_rechecked": true,
+    "source_app_unchanged": true,
+    "original_preparation_gui_launched": false,
+    "original_preparation_manual_ui_audit_completed": false
+  },
+  "fixtures": [
+    {
+      "relative_name": "UI-Audit-Reproducible.pdf",
+      "sha256": "ef753abe64d163a4a10ae8fb500503b07611a435f26f173bcea0a56f80750088",
+      "synthetic": true,
+      "generator": "Development/make-ui-audit-fixture.py",
+      "committed": false
+    }
+  ],
+  "review_method": {
+    "required": "Use native CUA to interact with each running isolated app. Inspect rendered screenshots together with the accessibility hierarchy.",
+    "planned_surface_count_per_locale": 14,
+    "native_component_snapshots_count_as_interactive": false,
+    "record_only_executed_actions": true,
+    "screenshot_storage": "in_session_memory/tool_image_attachment",
+    "screenshot_hash_policy": "Hash actual retained screenshot bytes only. The English editor screenshot was displayed as a CUA tool image, but its in-session bytes were lost when the CUA kernel reset. Its byte count and hash remain null; no local screenshot path is inferred.",
+    "observation_fields": [
+      "id",
+      "surface_id",
+      "observed_at_utc",
+      "route",
+      "actions_performed",
+      "window_size_points",
+      "observed_text",
+      "accessibility_observation",
+      "visual_observation",
+      "outcome",
+      "screenshot_capture_id",
+      "screenshot_storage",
+      "screenshot_pixel_size",
+      "screenshot_byte_count",
+      "screenshot_sha256",
+      "screenshot_hash_unavailable_reason",
+      "issue_ids"
+    ],
+    "outcomes": [
+      "reviewed",
+      "issue_found",
+      "corrected_and_rechecked",
+      "unavailable"
+    ],
+    "screenshot_retention": "Screenshot bytes may remain in the live CUA JavaScript session and be displayed as tool image attachments. No local screenshot path is inferred or fabricated. Record the actual in-session capture identifier and byte-derived SHA-256.",
+    "observed_capture_storage": "tool_image_attachment"
+  },
+  "planned_surfaces": [
+    {
+      "id": "main-and-menus",
+      "route_identifier": "workspace.document",
+      "actions": [
+        "Open the synthetic PDF through the native file picker.",
+        "Expand application, File, Edit, View, Document, Window and Help menus.",
+        "Inspect visible localized titles and Undo/Redo.",
+        "Resize within the supported minimum and inspect compact controls."
+      ]
+    },
+    {
+      "id": "sidebar-navigation",
+      "route_identifier": "sidebar.bookmarks",
+      "actions": [
+        "Switch pages, search, contents and notes.",
+        "Use page navigation and inspect counts.",
+        "Expand long bookmark titles and exercise the sidebar selector fallback."
+      ]
+    },
+    {
+      "id": "tools",
+      "route_identifier": "panel.tools",
+      "actions": [
+        "Visit each tool category.",
+        "Search for a localized tool title and clear the query.",
+        "Scroll to the final tool cards and inspect wrapping and disabled states."
+      ]
+    },
+    {
+      "id": "preferences",
+      "route_identifier": "panel.preferences",
+      "actions": [
+        "Open Preferences.",
+        "Inspect author, stroke, cache, recovery and keyboard shortcuts.",
+        "Scroll to the final option and inspect long labels."
+      ]
+    },
+    {
+      "id": "annotations",
+      "route_identifier": "tool.keyboard-editing",
+      "actions": [
+        "Select Note, Text and Draw and inspect style controls.",
+        "Open keyboard annotations and inspect selection, position and dimensions.",
+        "Create and undo a synthetic annotation without saving over the fixture."
+      ]
+    },
+    {
+      "id": "merge",
+      "route_identifier": "tool.merge-workspace",
+      "actions": [
+        "Add the synthetic input PDFs.",
+        "Inspect ordering and page-range controls.",
+        "Generate an in-memory preview and inspect destination/save labels."
+      ]
+    },
+    {
+      "id": "split",
+      "route_identifier": "tool.split-workspace",
+      "actions": [
+        "Expand the split-method selector.",
+        "Inspect ranges, quantity, naming and separator controls.",
+        "Generate an in-memory preview and inspect output labels."
+      ]
+    },
+    {
+      "id": "layout-and-printing",
+      "route_identifier": "tool.layout-workspace",
+      "actions": [
+        "Expand the page-layout method selector.",
+        "Inspect N-up, booklet, poster and overlay controls.",
+        "Inspect crop and numbering panels, units and preview explanations."
+      ]
+    },
+    {
+      "id": "scanning-and-ocr",
+      "route_identifier": "tool.scan-workspace",
+      "actions": [
+        "Expand recognition-language and processing selectors.",
+        "Scroll through the options and inspect all report columns.",
+        "Run or cancel synthetic local OCR and inspect status labels.",
+        "Open scanner settings; record absent hardware separately."
+      ]
+    },
+    {
+      "id": "export",
+      "route_identifier": "tool.export-workspace",
+      "actions": [
+        "Expand the export-format selector.",
+        "Inspect text, image, HTML and CSV-related option layouts.",
+        "Open a destination picker and cancel or save only to a temporary audit output."
+      ]
+    },
+    {
+      "id": "forms",
+      "route_identifier": "tool.forms",
+      "actions": [
+        "Search the synthetic fields.",
+        "Edit text and checkbox values, then undo or discard changes.",
+        "Inspect field creation and CSV filling labels."
+      ]
+    },
+    {
+      "id": "pdf-structure",
+      "route_identifier": "tool.structure-workspace",
+      "actions": [
+        "Inspect properties, page labels, images, attachments, portfolio and layers.",
+        "Switch to original content and scroll to its last control.",
+        "Inspect long descriptions and explanatory messages."
+      ]
+    },
+    {
+      "id": "certificates",
+      "route_identifier": "tool.certificate-workspace",
+      "actions": [
+        "Inspect identity selection, signing reason and offline verification labels.",
+        "Scroll to the final notice.",
+        "Do not infer certificate signing or trust verification from an empty identity list."
+      ]
+    },
+    {
+      "id": "pdfa",
+      "route_identifier": "tool.pdfa-validator",
+      "actions": [
+        "Expand the profile picker and inspect all eleven profile labels.",
+        "Validate the synthetic PDF locally.",
+        "Expand rule filters and inspect selected rule details and incomplete-coverage messages.",
+        "Inspect report export controls."
+      ]
+    }
+  ],
+  "locales": [
+    {
+      "language": "en",
+      "status": "partial",
+      "bundle_identifier": "it.cartapdf.uiaudit.en",
+      "prepared_app_relative_name": "CartaPDF UI en.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "0c1e6d40772d6a7dbff5f1b68ce786f4716dd4dcbf70f8e1f560ed64e7fc8891",
+      "observations": [
+        {
+          "observed_at_utc": null,
+          "observed_date": "2026-10-18",
+          "timestamp_precision": "Exact interaction timestamps were not retained.",
+          "surface_id": "main-and-menus",
+          "outcome": "reviewed",
+          "issue_ids": [],
+          "id": "en-native-open-picker",
+          "route": {
+            "type": "native_file_picker",
+            "entry": "Command-O",
+            "fixture_relative_name": "UI-Audit-Reproducible.pdf"
+          },
+          "actions_performed": [
+            "Opened the native PDF picker with Command-O.",
+            "Used Go to Folder to locate the synthetic fixture.",
+            "Selected the fixture and pressed Return."
+          ],
+          "window_size_points": null,
+          "observed_text": "Native open-dialog controls were observed in the accessibility hierarchy.",
+          "accessibility_observation": "The root agent observed the open dialog, located the synthetic fixture and confirmed its selection. Raw hierarchy and picker paths are omitted.",
+          "visual_observation": null,
+          "coverage_limit": "Only the recorded file-selection interaction; expanded menus and other picker states remain pending.",
+          "screenshot_capture_id": null,
+          "screenshot_storage": null,
+          "screenshot_pixel_size": null,
+          "screenshot_byte_count": null,
+          "screenshot_sha256": null,
+          "screenshot_hash_unavailable_reason": "No picker screenshot bytes or image attachment were reported as retained."
+        },
+        {
+          "observed_at_utc": null,
+          "observed_date": "2026-10-18",
+          "timestamp_precision": "Exact interaction timestamps were not retained.",
+          "surface_id": "main-and-menus",
+          "outcome": "reviewed",
+          "issue_ids": [],
+          "id": "en-open-document-editor",
+          "route": {
+            "type": "open_document_editor",
+            "fixture_relative_name": "UI-Audit-Reproducible.pdf"
+          },
+          "actions_performed": [
+            "Inspected the open-document accessibility hierarchy.",
+            "Captured and visually inspected the actual running editor through native CUA."
+          ],
+          "window_size_points": {
+            "width": 1200,
+            "height": 820,
+            "measurement": "Content viewport reported by the root agent."
+          },
+          "observed_text": "English interface labels, a three-page synthetic PDF and three rendered page thumbnails.",
+          "accessibility_observation": "The editor hierarchy reported three pages.",
+          "visual_observation": {
+            "appearance": "dark",
+            "pdf_content_visible": true,
+            "page_thumbnails_visible": 3,
+            "interface_text_readable": true,
+            "clipping_observed": false,
+            "scope": "Initial open-document editor at the recorded viewport."
+          },
+          "coverage_limit": "Expanded menus, search results, a compact supported width and other panels were not verified.",
+          "screenshot_capture_id": "en-open-document-editor-CUA-tool-image",
+          "screenshot_identifier_kind": "Descriptive reference to the observed tool image, not a local file path.",
+          "screenshot_storage": "tool_image_attachment",
+          "screenshot_pixel_size": {
+            "width": 2400,
+            "height": 1640
+          },
+          "screenshot_byte_count": null,
+          "screenshot_sha256": null,
+          "screenshot_hash_unavailable_reason": "The screenshot was displayed by CUA; its in-session buffer was lost on kernel reset before its byte count or SHA-256 was computed."
+        }
+      ],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      },
+      "pending_coverage": "Expanded menus, search, supported minimum width and all other planned surfaces remain pending."
+    },
+    {
+      "language": "it",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.it",
+      "prepared_app_relative_name": "CartaPDF UI it.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "6a3fac6363f5897e45faa0e2325b49f07c57dfa7f3d63e1edfcca3ad6f5adfe2",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "es",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.es",
+      "prepared_app_relative_name": "CartaPDF UI es.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "840ffe9f4f4dbc297e00ab7b6ceb64a8006d0b1a6dfefdb93f1bdf3943336288",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "de",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.de",
+      "prepared_app_relative_name": "CartaPDF UI de.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "f3553d75c422712e6342e72c1ab3f536c354ca6e0dd77fa7b71332e51f11f3bc",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "fr",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.fr",
+      "prepared_app_relative_name": "CartaPDF UI fr.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "4375282ca7648f562758322e9e0e8286307ab9bdb5d59833107dc60954732062",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "zh-Hans",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.zh-Hans",
+      "prepared_app_relative_name": "CartaPDF UI zh-Hans.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "ba82db9013d8bf7767ac8db2617ffbd214146a016c80f27d91bd426d81ffde9e",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "zh-Hant",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.zh-Hant",
+      "prepared_app_relative_name": "CartaPDF UI zh-Hant.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "0db10e862f9def95ac61888ac364fc58286cfa002838b322fa88bc7bce6a5dae",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    },
+    {
+      "language": "ja",
+      "status": "pending",
+      "bundle_identifier": "it.cartapdf.uiaudit.ja",
+      "prepared_app_relative_name": "CartaPDF UI ja.app",
+      "core_executable_sha256": "cf001d34ab067e2cab81ea87a14cfb86b1f9a75442b61b1472d392d8f092ae0b",
+      "launcher_sha256": "d4dcc2a406bc77036aead0a7a04bcb1bf23c9155de090e8b0d8e7d2abf3e1a17",
+      "observations": [],
+      "issues": [],
+      "rechecks": [],
+      "cleanup": {
+        "application_closed": null,
+        "fixture_unchanged": null
+      }
+    }
+  ],
+  "corrections": [],
+  "cleanup": {
+    "all_audit_apps_closed": null,
+    "all_original_fixture_hashes_unchanged": null,
+    "fixture_final_recheck": "Unavailable: the previously verified temporary fixture was no longer present in the supporting agent execution environment at the final record update. The original fixture hash remains recorded above.",
+    "system_language_preferences_changed": false,
+    "system_language_preference_evidence": "The recorded actions used isolated launchers and native app/file-picker UI; no action changed the macOS preferred-language order.",
+    "production_app_preferences_changed": null,
+    "VoiceOver_activated": false,
+    "application_cleanup_evidence": "The native automation service was unavailable, so temporary audit app closure could not be confirmed.",
+    "source_documents_saved_over": false
+  },
+  "limitations": [
+    "Only the English file picker and initial open-document editor interaction were observed. No locale variant completed the full planned interactive checklist.",
+    "The English editor image was displayed as a tool attachment; screenshot bytes were lost on CUA kernel reset, so no byte hash, byte count or local image file is asserted.",
+    "Expanded menus, search, minimum-width states and every other planned panel remain pending.",
+    "The post-timeout app state and closure of the English audit app remain unverified.",
+    "The final fixture hash recheck remains unavailable; the earlier preparation hash is retained without claiming a final immutability check.",
+    "Native component snapshots are separate historical evidence and do not fill missing interactive checks.",
+    "Scanner acquisition and certificate signing need separate hardware or test identities.",
+    "This localization review establishes no complete VoiceOver audit or complete ISO PDF/A conformance validation."
+  ],
+  "updated_utc": "2026-10-18T09:49:08.098359+00:00",
+  "observation_provenance": "Executed by the root Codex agent through native CUA and transcribed from its explicit reports. The supporting evidence agent performed read-only artifact and sanitized diagnostic checks, without app interaction.",
+  "automation_service_failure": {
+    "attempted_action": "Command-F in the English editor",
+    "sequence": [
+      {
+        "operation": "Native CUA keyboard action",
+        "elapsed_seconds": 21.9,
+        "reported_result": "Timeout and kernel reset; resulting app state unknown."
+      },
+      {
+        "operation": "Native CUA rebind by bundle identifier",
+        "elapsed_seconds": 9.2,
+        "reported_result": "Native pipe startup failed."
+      },
+      {
+        "operation": "Native CUA application inventory",
+        "elapsed_seconds": 6.5,
+        "reported_result": "Service startup request failed."
+      }
+    ],
+    "resulting_application_state": "Unverified after the timeout.",
+    "alternative_ui_automation_executed": false,
+    "cause_attribution": "Observed errors concern the native automation service connection/startup. They do not establish an app crash or its current running state.",
+    "sanitized_diagnostic_review": {
+      "method": "Read-only review of macOS DiagnosticReports. Raw reports, host paths and unrelated process data are omitted.",
+      "new_report_for_current_failure_found": false,
+      "latest_existing_service_report": {
+        "process": "SkyComputerUseService",
+        "timestamp": "2026-10-18 10:36:55.3492 +0200",
+        "exception_type": "EXC_BREAKPOINT",
+        "signal": "SIGTRAP",
+        "module": "libswiftCore.dylib",
+        "symbols": [
+          "_assertionFailure",
+          "Array.remove(at:)"
+        ],
+        "relation_to_current_attempt": "Historical report from the earlier audit; not a new report for this failure."
+      },
+      "new_CartaPDF_crash_report_found": false,
+      "latest_existing_CartaPDF_report_date": "2026-10-17",
+      "absence_of_report_proves_application_running": false
+    }
+  }
+}

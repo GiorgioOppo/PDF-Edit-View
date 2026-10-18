@@ -62,6 +62,6 @@ final class CartaArchiveValidationTests: XCTestCase {
         try await Task.sleep(for: .milliseconds(150))
         XCTAssertNil(state.report)
         XCTAssertEqual(state.profile, .pdfa4f)
-        XCTAssertTrue(state.status.contains("Avvia la verifica"))
+        XCTAssertTrue(diagnosticContains(state.status, "Avvia la verifica"))
     }
 }

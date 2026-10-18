@@ -1,80 +1,81 @@
-# CLI e automazione locale
+# CLI and local automation
 
-L'eseguibile del bundle accetta `--cli` ed esegue le operazioni sul Mac senza aprire l'interfaccia principale. Gli esempi presuppongono una build creata con [BUILDING](BUILDING.md).
+The bundle executable accepts `--cli` and performs operations on the Mac without opening the main interface. These examples assume a build created using [BUILDING](BUILDING.md).
 
 ```sh
 dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help
 ```
 
-## Comandi
+## Commands
 
-| Comando dopo `--cli` | Risultato |
+| Command after `--cli` | Result |
 | --- | --- |
-| `info input.pdf` | JSON con pagine, cifratura, autorizzazioni e numero di caratteri estratti. |
-| `merge output.pdf input1.pdf input2.pdf ...` | Unione ordinata di almeno due documenti. |
-| `extract input.pdf output.pdf '1-3,5'` | Copia delle pagine selezionate, numerate da 1. |
-| `split input.pdf cartella` | Divisione in file di una pagina nella cartella indicata. |
-| `text input.pdf output.txt` | Estrazione testuale UTF-8. |
-| `ocr input.pdf output.pdf` | OCR tramite Vision e nuova copia PDF. |
-| `flatten input.pdf output.pdf` | Copia rasterizzata a 200 DPI. |
-| `compress input.pdf output.pdf` | Copia rasterizzata a 150 DPI con JPEG; riduzione della dimensione non garantita. |
-| `validate-pdfa input.pdf profilo [rapporto.json]` | Rapporto PDF/A JSON; senza destinazione, scrive sullo standard output. |
+| `language` | JSON with selected/preferred languages, packaged catalogue counts and translated control labels; no preferences are changed. |
+| `info input.pdf` | JSON with page count, encryption, permissions, and extracted character count. |
+| `merge output.pdf input1.pdf input2.pdf ...` | Ordered merge of at least two documents. |
+| `extract input.pdf output.pdf '1-3,5'` | Copy of selected pages, numbered from 1. |
+| `split input.pdf folder` | One-page files written to the specified folder. |
+| `text input.pdf output.txt` | UTF-8 text extraction. |
+| `ocr input.pdf output.pdf` | OCR through Vision and a new PDF copy. |
+| `flatten input.pdf output.pdf` | Rasterized copy at 200 DPI. |
+| `compress input.pdf output.pdf` | Rasterized copy at 150 DPI with JPEG; a smaller file is not guaranteed. |
+| `validate-pdfa input.pdf profile [report.json]` | PDF/A JSON report; writes to standard output if no destination is supplied. |
 
-I criteri avanzati di divisione, le lingue OCR e gli altri parametri degli strumenti grafici non sono tutti esposti da questa CLI.
+The CLI does not expose every advanced splitting criterion, OCR language setting, or parameter available in the graphical tools.
 
 ```sh
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli merge Unione.pdf A.pdf B.pdf
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli extract A.pdf Estratto.pdf '1-3,5'
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli split A.pdf Pagine
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4f Rapporto.json
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli merge Merged.pdf A.pdf B.pdf
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli extract A.pdf Extracted.pdf '1-3,5'
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli split A.pdf Pages
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4f Report.json
 ```
 
-## PDF/A e codici di uscita
+## PDF/A and exit codes
 
-Profili accettati: `1a`, `1b`, `2a`, `2b`, `2u`, `3a`, `3b`, `3u`, `4`, `4e`, `4f`.
+Accepted profiles: `1a`, `1b`, `2a`, `2b`, `2u`, `3a`, `3b`, `3u`, `4`, `4e`, `4f`.
 
-| Codice | Significato |
+| Code | Meaning |
 | --- | --- |
-| `0` | Operazione ordinaria completata. Per `validate-pdfa` sarebbe conformità integrale: **non viene emessa in 3.6.0**. |
-| `1` | Errore di uso, lettura, scrittura o esecuzione. |
-| `2` | `validate-pdfa`: almeno una violazione dimostrata. |
-| `3` | `validate-pdfa`: esito indeterminato, con verifiche o obblighi incompleti. |
+| `0` | Ordinary operation completed. For `validate-pdfa`, this would mean complete conformity: **it is not emitted in 3.6.0**. |
+| `1` | Usage, read, write, or execution error. |
+| `2` | `validate-pdfa`: at least one demonstrated violation. |
+| `3` | `validate-pdfa`: indeterminate result, with incomplete checks or obligations. |
 
-Un codice 2 o 3 di `validate-pdfa` è un risultato del validatore, non necessariamente un guasto del processo. Negli script che interrompono l'esecuzione sui codici diversi da zero, gestiscilo esplicitamente:
+Exit code 2 or 3 from `validate-pdfa` is a validator result, not necessarily a process failure. Handle it explicitly in scripts that stop on a nonzero exit code:
 
 ```sh
 status=0
-dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4 Rapporto.json || status=$?
+dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli validate-pdfa A.pdf 4 Report.json || status=$?
 case "$status" in
-  0) printf '%s\n' 'Conformità integrale attestata' ;;
-  2) printf '%s\n' 'Violazioni: leggere il rapporto' ;;
-  3) printf '%s\n' 'Verifica incompleta: leggere il rapporto' ;;
+  0) printf '%s\n' 'Complete conformity attested' ;;
+  2) printf '%s\n' 'Violations: read the report' ;;
+  3) printf '%s\n' 'Incomplete validation: read the report' ;;
   *) exit "$status" ;;
 esac
 ```
 
-Lo stato 0 è previsto per una futura implementazione completa. Non usare l'assenza di violazioni, un singolo `passed` o il numero delle regole come attestazione di conformità. Leggi anche `scopeGaps` e i controlli aggiuntivi del modello. Vedi [PDFA](PDFA.md).
+Exit code 0 is reserved for a future complete implementation. Do not treat the absence of violations, a single `passed` result, or the number of rules as an attestation of conformity. Read `scopeGaps` and the additional model checks as well. See [PDFA](PDFA.md).
 
-## Password e destinazioni
+## Passwords and destinations
 
-Per le operazioni che aprono il documento tramite PDFKit, usa `--password-file percorso`. Il file viene letto localmente; proteggilo con i permessi appropriati e non inserirlo nel repository. La password non va passata come argomento diretto né salvata in esempi, preset o log.
+For operations that open the document through PDFKit, use `--password-file path`. The file is read locally; protect it with appropriate permissions and keep it out of the repository. Do not pass the password as a direct argument or save it in examples, presets, or logs.
 
-`validate-pdfa` analizza i byte originali e non decifra il documento con `--password-file`; un PDF cifrato viene trattato secondo le regole archivistiche e i limiti del parser.
+`validate-pdfa` analyzes the original bytes and does not decrypt the document using `--password-file`; encrypted PDFs are handled according to the archival rules and parser limitations.
 
-Le scritture a file rifiutano di sovrascrivere i sorgenti. `--overwrite` consente di sostituire un output esistente per i comandi che scrivono tramite la destinazione file. `split` usa una cartella e la propria gestione dei conflitti: non presumere che `--overwrite` autorizzi la sostituzione dei file prodotti. Usa destinazioni distinte e controlla i risultati prima di eliminare gli originali.
+File-writing operations refuse to overwrite source files. `--overwrite` allows an existing output to be replaced for commands that write through a file destination. `split` uses a folder and its own conflict handling; do not assume that `--overwrite` permits replacing the files it produces. Use separate destinations and check the results before deleting originals.
 
-OCR, appiattimento e compressione possono cambiare testo selezionabile, interattività, cifratura e firme della copia. Le operazioni rispettano le autorizzazioni PDF supportate e possono rifiutare documenti protetti.
+OCR, flattening, and compression can change selectable text, interactivity, encryption, and signatures in the copy. Operations respect supported PDF permissions and may reject protected documents.
 
-## Comandi Rapidi e AppleScript
+## Shortcuts and AppleScript
 
-Dopo aver aperto l'app, cerca **Unisci PDF** in Comandi Rapidi. L'App Intent riceve i documenti e restituisce un file unito, conservando i sorgenti.
+After opening the app, search for **“Merge PDFs”** in Shortcuts. The App Intent receives documents and returns a merged file, preserving the sources. This is the English action title; search for its translated name when using another selected language. See [languages](LOCALIZATION.md).
 
-Il dizionario AppleScript espone:
+The AppleScript dictionary exposes:
 
 ```applescript
 tell application id "it.cartapdf.editor"
-    merge PDFs files {"/percorso/A.pdf", "/percorso/B.pdf"} destination "/percorso/Unione.pdf"
+    merge PDFs files {"/path/A.pdf", "/path/B.pdf"} destination "/path/Merged.pdf"
 end tell
 ```
 
-La CLI e l'Intent hanno test automatici. Il dizionario AppleScript è stato compilato in Script Editor; il dispatch effettivo dal programma resta una verifica manuale aperta, come indicato nel [rapporto funzionale](../Development/FeatureVerification.json).
+The CLI and the Intent have automated tests. The AppleScript dictionary has been compiled in Script Editor; actual dispatch from the calling program remains an outstanding manual check, as recorded in the [feature report](../Development/FeatureVerification.json).

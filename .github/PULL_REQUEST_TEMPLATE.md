@@ -1,12 +1,12 @@
-## Problema e risultato
+## Problem and result
 
-Descrivi il caso concreto e il comportamento dopo la modifica.
+Describe the concrete case and the behavior after the change. Link related issues when applicable.
 
-## Verifica
+## Verification
 
 - [ ] `python3 scripts/check-repository.py`
-- [ ] Test nativi pertinenti con `./scripts/test.sh`
-- [ ] Documentazione aggiornata, inclusi limiti e compatibilità quando cambiano
-- [ ] Nessuna dipendenza runtime esterna, richiesta di rete automatica o raccolta di documenti dell’utente
+- [ ] Relevant native tests with `./scripts/test.sh`, or an explanation of why runtime tests are not applicable
+- [ ] Documentation updated, including limitations and compatibility when they change
+- [ ] No external runtime dependencies, automatic network requests or collection of users' documents
 
-Indica comandi eseguiti, risultati e verifiche manuali ancora necessarie. Per controlli PDF/A cita una fonte primaria e aggiungi una regressione che separi violazione dimostrata, ambiguità e limite operativo. Non includere credenziali, documenti riservati o copie delle norme ISO.
+State the commands run, their results and any manual checks still needed. For PDF/A checks, cite a primary source and add a regression that distinguishes a demonstrated violation, ambiguity and an operational limit. Do not include credentials, confidential documents or copies of ISO standards.

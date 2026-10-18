@@ -1,52 +1,54 @@
-# Guida d'uso
+# User guide
 
-La versione corrente richiede macOS 14 o successivo. Per compilare l'app dai sorgenti, segui [BUILDING](BUILDING.md). Il bundle locale è firmato ad hoc e non è notarizzato Developer ID; non costituisce una distribuzione firmata per il pubblico.
+The current version requires macOS 14 or later. To build the app from source, follow [BUILDING](BUILDING.md). The local bundle uses an ad hoc signature and is not notarized with Developer ID; it is not a signed public distribution.
 
-## Aprire e modificare
+The app follows macOS language preferences and supports seven languages, including both Chinese scripts, with English fallback. See [language selection](LOCALIZATION.md). This guide uses the English control names; the app displays their translations in the selected language. Search for tools using their displayed names.
 
-Apri un PDF dal Finder oppure dall'app. Ogni documento ha una finestra indipendente. Usa le miniature per raggiungere e riordinare le pagine, la ricerca per trovare testo e le viste di lettura per regolare zoom e disposizione.
+## Open and edit documents
 
-Apri **Strumenti** con **⇧⌘T** per cercare un'operazione. Le annotazioni e le modifiche ordinarie alle pagine si salvano con **⌘S** e si annullano con **⌘Z**. Il pannello da tastiera delle marcature si apre con **⇧⌘K** e permette di modificare anche posizione e dimensioni.
+Open a PDF from Finder or from the app. Each document has its own window. Use thumbnails to navigate and reorder pages, search to find text, and reading views to adjust zoom and layout.
 
-Gli strumenti strutturali, le scansioni, le conversioni e le firme preparano copie separate. Controlla il nome e la destinazione prima di salvare. Mantieni l'originale quando devi conservare firme, interattività o una versione precedente del contenuto.
+Open **Tools** with **⇧⌘T** to search for an operation. Save annotations and ordinary page edits with **⌘S**, and undo them with **⌘Z**. Open **Keyboard Annotations** with **⇧⌘K** to edit annotations, including their position and size.
 
-## Unire documenti
+Structural tools, scanning, conversions, and signing prepare separate copies. Check the filename and destination before saving. Keep the original when you need to preserve signatures, interactivity, or an earlier version of the content.
 
-1. Cerca **Unisci** in Strumenti e aggiungi i documenti alla coda.
-2. Riordina i file e imposta gli eventuali intervalli di pagine.
-3. Controlla l'anteprima dell'ordine finale e le segnalazioni su duplicati o formati diversi.
-4. Salva il documento risultante in una nuova destinazione.
+## Merge documents
 
-Sono disponibili anche unione alternata fronte/retro e gruppi per nome. I documenti protetti devono essere accessibili e consentire l'operazione richiesta.
+1. Search for **“merge”** in **Tools**, open **Advanced Merging**, and add documents to the queue. In another interface language, search for the translated tool name.
+2. Reorder the files and set any page ranges.
+3. Check the preview of the final order and any warnings about duplicates or different formats.
+4. Save the resulting document to a new destination.
 
-## Dividere documenti
+Alternating front/back merging and grouping by name are also available. Protected documents must be accessible and permit the requested operation.
 
-Gli strumenti di divisione supportano intervalli, ogni N pagine, segnalibri, testo separatore, pagine bianche, QR/codici a barre e dimensione massima dell'output. Scegli il criterio, verifica l'anteprima dei gruppi e dei nomi, poi scegli la cartella di destinazione. I criteri basati sul contenuto o sul riconoscimento possono richiedere correzioni manuali.
+## Split documents
 
-La CLI `split` produce una pagina per file; i criteri avanzati sono disponibili nell'interfaccia. Vedi [CLI](CLI.md).
+Splitting tools support page ranges, every N pages, bookmarks, separator text, blank pages, QR/barcodes, and a maximum output size. Choose the criterion, check the preview of groups and names, then choose the destination folder. Criteria based on content or recognition may need manual corrections.
 
-## Scansioni e conversioni
+The `split` CLI command produces one page per file; advanced criteria are available in the app interface. See [CLI](CLI.md).
 
-L'OCR usa Vision sul Mac. Seleziona le lingue e controlla il testo riconosciuto, soprattutto per colonne, tabelle e documenti inclinati. Acquisizione da scanner, cattura schermo e lettura ad alta voce dipendono da dispositivi, autorizzazioni e risorse del sistema.
+## Scanning and conversions
 
-TXT, RTF, DOCX ed EPUB esportano il testo supportato: non ricostruiscono fedelmente una pagina Office con formule, tabelle e immagini. L'HTML importato è statico; JavaScript e risorse remote sono bloccati. Le conversioni raster, l'appiattimento e la compressione possono perdere testo selezionabile, annotazioni, moduli, firme o protezioni nella copia. La compressione non garantisce un file più piccolo.
+OCR uses Vision on the Mac. Select the languages and check the recognized text, especially for columns, tables, and skewed documents. Scanner acquisition, screen capture, and reading aloud depend on system devices, permissions, and resources.
 
-## Contenuto nascosto, cifratura e firme
+TXT, RTF, DOCX, and EPUB exports contain supported text; they do not faithfully reconstruct an Office page with formulas, tables, and images. Imported HTML is static; JavaScript and remote resources are blocked. Raster conversion, flattening, and compression can remove selectable text, annotations, forms, signatures, or protections from the copy. Compression does not guarantee a smaller file.
 
-Il ritaglio modifica l'area visibile e lascia i contenuti sottostanti nel PDF. La modifica di testo o la rimozione di un allegato può conservare i byte nelle revisioni precedenti. Per oscurare informazioni usa lo strumento di oscuramento in copia raster e controlla l'output, incluse tutte le pagine interessate.
+## Hidden content, encryption, and signatures
 
-Il salvataggio ordinario mantiene la cifratura del documento supportato. Alcune elaborazioni producono una copia con caratteristiche diverse; controlla le indicazioni dello strumento. Le operazioni strutturali non decifrano PDF protetti.
+Cropping changes the visible area and leaves the underlying content in the PDF. Editing text or removing an attachment may leave its bytes in earlier revisions. To redact information, use the redaction tool that creates a raster copy and inspect the output, including every affected page.
 
-La firma CMS con certificato locale e la firma grafica sono strumenti diversi. La verifica è offline e riguarda integrità, revisione firmata e fiducia disponibile localmente: non prova revoca aggiornata, timestamp TSA, validazione a lungo termine, PAdES completo o qualifica legale. Modificare un documento firmato può invalidare la firma o aggiungere una revisione non coperta da essa.
+Ordinary saving preserves encryption for supported documents. Some processing tools create a copy with different properties; check the tool's instructions. Structural operations do not decrypt protected PDFs.
 
-## Rapporti archivistici
+CMS signing with a local certificate and a graphical signature are separate tools. Verification runs offline and checks integrity, the signed revision, and locally available trust. It does not establish current revocation status, TSA timestamps, long-term validation, complete PAdES support, or legally qualified status. Editing a signed document can invalidate its signature or add a revision that the signature does not cover.
 
-La generazione PDF/A tramite CoreGraphics e il rapporto del validatore sono operazioni distinte. Scegli il profilo richiesto e leggi sia le violazioni sia le verifiche incomplete. **CartaPDF 3.6.0 non attesta conformità ISO PDF/A integrale**. Le regole superate non cancellano le lacune del modello. Vedi [PDFA](PDFA.md).
+## Archival reports
 
-La preparazione di un intento ICC CMYK non certifica PDF/X. I tag e le descrizioni a livello di pagina non certificano PDF/UA.
+PDF/A generation through CoreGraphics and the validator report are separate operations. Choose the required profile and read both violations and incomplete checks. **CartaPDF 3.6.0 does not attest complete ISO PDF/A conformity**. Passed rules do not eliminate gaps in the model. See [PDFA](PDFA.md).
 
-## Biblioteca e recupero
+Preparing a CMYK ICC output intent does not certify PDF/X. Page-level tags and descriptions do not certify PDF/UA.
 
-La biblioteca conserva un indice locale e riferimenti ai file; se li sposti fuori dall'app, può essere necessario aggiornare il collegamento. Le cartelle monitorate funzionano mentre l'app e il relativo pannello sono aperti.
+## Library and recovery
 
-Le preferenze permettono di gestire le copie automatiche di recupero. Il pannello delle versioni conserva fino a 20 versioni per documento. Questi dati occupano spazio sul Mac e possono includere contenuti sensibili: consulta [PRIVACY](PRIVACY.md) prima di condividere cartelle, backup o rapporti diagnostici.
+The library stores a local index and file references. If you move files outside the app, you may need to update their references. Watched folders operate while the app and the relevant panel are open.
+
+Preferences let you manage automatic recovery copies. The versions panel keeps up to 20 versions per document. These records use disk space on the Mac and may contain sensitive content; read [PRIVACY](PRIVACY.md) before sharing folders, backups, or diagnostic reports.

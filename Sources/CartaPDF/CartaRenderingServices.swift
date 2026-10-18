@@ -90,7 +90,7 @@ struct CartaThumbnailSidebar: View {
             }
             .onAppear { proxy.scrollTo(model.currentPageIndex, anchor: .center) }
         }
-        .accessibilityLabel("Pagine. Trascina una miniatura per riordinare.")
+        .accessibilityLabel(L10n.tr("Pagine. Trascina una miniatura per riordinare."))
     }
 }
 
@@ -114,7 +114,7 @@ private struct CartaThumbnailCell: View {
                 Text("\(index + 1)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             }.contentShape(Rectangle())
         }.buttonStyle(.plain)
-        .accessibilityLabel("Pagina \(index + 1)")
+        .accessibilityLabel(L10n.tr("Pagina \(index + 1)"))
         .accessibilityAddTraits(model.currentPageIndex == index ? .isSelected : [])
         .task(id: model.contentRevision) {
             await Task.yield()
@@ -148,7 +148,7 @@ extension PDFEditorModel {
         if let annotation {
             if let font = annotation.font { textFontName = font.fontName; textFontSize = font.pointSize }
             if let color = annotation.fontColor { textColor = color }
-            statusMessage = "Annotazione selezionata. Trascina per spostare; ⌥ trascina per ridimensionare testo e forme."
+            statusMessage = L10n.tr("Annotazione selezionata. Trascina per spostare; ⌥ trascina per ridimensionare testo e forme.")
         }
         pdfView?.needsDisplay = true
     }
@@ -169,7 +169,7 @@ extension PDFEditorModel {
         let flags = (annotation.value(forAnnotationKey: .flags) as? NSNumber)?.intValue ?? 0
         guard flags & ((1 << 6) | (1 << 7)) == 0 else { return }
         let old = annotation.bounds
-        performChange(named: "Sposta annotazione", relayout: false, mutation: {
+        performChange(named: L10n.tr("Sposta annotazione"), relayout: false, mutation: {
             annotation.bounds = bounds
             pdfView?.annotationsChanged(on: page)
         }, inverse: { model in model.moveAnnotation(annotation, to: old, on: page) })
@@ -184,11 +184,11 @@ extension PDFEditorModel {
     private func setAnnotationStyle(_ annotation: PDFAnnotation, on page: PDFPage, font: NSFont, color: NSColor) {
         let flags = (annotation.value(forAnnotationKey: .flags) as? NSNumber)?.intValue ?? 0
         guard flags & ((1 << 6) | (1 << 7) | (1 << 9)) == 0 else {
-            errorMessage = "L’annotazione è protetta e non consente modifiche allo stile."
+            errorMessage = L10n.tr("L’annotazione è protetta e non consente modifiche allo stile.")
             return
         }
         let oldFont = annotation.font ?? .systemFont(ofSize: 18), oldColor = annotation.fontColor ?? .black
-        performChange(named: "Stile annotazione", relayout: false, mutation: {
+        performChange(named: L10n.tr("Stile annotazione"), relayout: false, mutation: {
             annotation.font = font
             annotation.fontColor = color
             pdfView?.annotationsChanged(on: page)
@@ -202,14 +202,14 @@ extension PDFEditorModel {
         let measured = (contents as NSString).boundingRect(with: NSSize(width: max(1, annotation.bounds.width - 12), height: 1_000_000),
             options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: font])
         if measured.height + 12 > annotation.bounds.height + 1 {
-            statusMessage = "Il testo supera il riquadro: ridimensiona l’annotazione o riduci il carattere."
+            statusMessage = L10n.tr("Il testo supera il riquadro: ridimensiona l’annotazione o riduci il carattere.")
         }
     }
 
     func searchSnippet(for selection: PDFSelection) -> String {
-        guard let page = selection.pages.first, let text = page.string else { return selection.string ?? "Risultato" }
+        guard let page = selection.pages.first, let text = page.string else { return selection.string ?? L10n.tr("Risultato") }
         let range = selection.numberOfTextRanges(on: page) > 0 ? selection.range(at: 0, on: page) : (text as NSString).range(of: selection.string ?? searchQuery, options: .caseInsensitive)
-        guard range.location != NSNotFound else { return selection.string ?? "Risultato" }
+        guard range.location != NSNotFound else { return selection.string ?? L10n.tr("Risultato") }
         let ns = text as NSString
         let start = max(0, range.location - 45), end = min(ns.length, NSMaxRange(range) + 75)
         return (start > 0 ? "…" : "") + ns.substring(with: NSRange(location: start, length: end - start)).replacingOccurrences(of: "\n", with: " ") + (end < ns.length ? "…" : "")

@@ -1,0 +1,282 @@
+{
+  "date_utc": "2026-10-18T08:18:54.106230+00:00",
+  "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
+  "base_commit": "cd00ebeb128e4f1c87a17a342af7ff750b7dd989",
+  "scope": "Seven interface languages, eight script localizations, ordered macOS/per-app preferences at launch, English fallback.",
+  "runtime": {
+    "free": true,
+    "local_only": true,
+    "external_swift_packages": 0,
+    "translation_network_requests": 0,
+    "frameworks": "Apple only",
+    "system_preferences_modified": false
+  },
+  "languages": [
+    "en",
+    "it",
+    "es",
+    "de",
+    "fr",
+    "zh-Hans",
+    "zh-Hant",
+    "ja"
+  ],
+  "current_Mac_language_probe": {
+    "preferredLanguages": [
+      "it-IT"
+    ],
+    "selectedLanguage": "it",
+    "labels": {
+      "cancel": "Annulla",
+      "open": "Apri…",
+      "save": "Salva"
+    }
+  },
+  "static_check": {
+    "languages": [
+      "en",
+      "it",
+      "es",
+      "de",
+      "fr",
+      "zh-Hans",
+      "zh-Hant",
+      "ja"
+    ],
+    "keys_per_language": 3038,
+    "source_keys_checked": 2906,
+    "placeholders_formats_and_fragment_whitespace": "passed",
+    "native_shortcut_and_document_type_tables": "passed",
+    "English_fallback": "en",
+    "system_preferences_modified": false
+  },
+  "Foundation_tables_parsed": 24,
+  "native_tests": {
+    "it": {
+      "tests": 526,
+      "failures": 0,
+      "seconds": 19.392,
+      "log_sha256": "129eed683588dead85df80902739dbce57830d44afb99f826b2d0a9410b906da",
+      "raw_log_not_tracked": true
+    },
+    "en": {
+      "tests": 526,
+      "failures": 0,
+      "seconds": 18.153,
+      "log_sha256": "36a60fd4363995faa2c43af4d910e8de52ef282b65c84ba6b56b0b01ce476d12",
+      "raw_log_not_tracked": true
+    }
+  },
+  "english_test_launch": "xcrun xctest -AppleLanguages '(\"en\")' -XCTest All <built test bundle>",
+  "packaged_check": {
+    "packaged_CLI_profiles": [
+      "1a",
+      "1b",
+      "2a",
+      "2b",
+      "2u",
+      "3a",
+      "3b",
+      "3u",
+      "4",
+      "4e",
+      "4f"
+    ],
+    "catalogue_entries": 1489,
+    "font_resources": 215,
+    "signature": "passed",
+    "architecture": "arm64",
+    "input_unchanged": true,
+    "complete_ISO_validation_proven": false,
+    "locale_profile_checks": 88,
+    "locale_model_statuses_unchanged": true,
+    "packaged_localizations": [
+      "en",
+      "it",
+      "es",
+      "de",
+      "fr",
+      "zh-Hans",
+      "zh-Hant",
+      "ja"
+    ],
+    "localization_table_entries": {
+      "Localizable": 3038,
+      "AppShortcuts": 1,
+      "InfoPlist": 1
+    },
+    "language_selection_cases": [
+      {
+        "preferences": [
+          "en"
+        ],
+        "selected": "en"
+      },
+      {
+        "preferences": [
+          "it"
+        ],
+        "selected": "it"
+      },
+      {
+        "preferences": [
+          "es"
+        ],
+        "selected": "es"
+      },
+      {
+        "preferences": [
+          "de"
+        ],
+        "selected": "de"
+      },
+      {
+        "preferences": [
+          "fr"
+        ],
+        "selected": "fr"
+      },
+      {
+        "preferences": [
+          "zh-Hans"
+        ],
+        "selected": "zh-Hans"
+      },
+      {
+        "preferences": [
+          "zh-Hant"
+        ],
+        "selected": "zh-Hant"
+      },
+      {
+        "preferences": [
+          "ja"
+        ],
+        "selected": "ja"
+      },
+      {
+        "preferences": [
+          "it-IT"
+        ],
+        "selected": "it"
+      },
+      {
+        "preferences": [
+          "es-MX"
+        ],
+        "selected": "es"
+      },
+      {
+        "preferences": [
+          "de-AT"
+        ],
+        "selected": "de"
+      },
+      {
+        "preferences": [
+          "fr-CA"
+        ],
+        "selected": "fr"
+      },
+      {
+        "preferences": [
+          "en-GB"
+        ],
+        "selected": "en"
+      },
+      {
+        "preferences": [
+          "ja-JP"
+        ],
+        "selected": "ja"
+      },
+      {
+        "preferences": [
+          "zh-CN"
+        ],
+        "selected": "zh-Hans"
+      },
+      {
+        "preferences": [
+          "zh-TW"
+        ],
+        "selected": "zh-Hant"
+      },
+      {
+        "preferences": [
+          "zh-Hans-TW"
+        ],
+        "selected": "zh-Hans"
+      },
+      {
+        "preferences": [
+          "zh-Hant-CN"
+        ],
+        "selected": "zh-Hant"
+      },
+      {
+        "preferences": [
+          "pt-BR",
+          "fr-CA"
+        ],
+        "selected": "fr"
+      },
+      {
+        "preferences": [
+          "pt-BR",
+          "ru-RU",
+          "ar-SA"
+        ],
+        "selected": "en"
+      }
+    ],
+    "system_preferences_modified": false
+  },
+  "packaging_provenance": "Release build signed ad hoc; verified an identical-byte temporary copy with generated filesystem metadata removed. No user source or document metadata changed.",
+  "release_binary_sha256": "f60b784324326690be30df6fcf13fb96456cad893a25d4f8e9cc3deb76bee556",
+  "localization_inventory_sha256": "3d5e9d2683ba45d587cf8d53c70de66b386018930ff862940e96dd5a137e5243",
+  "localization_resources_sha256": {
+    "Sources/CartaPDF/Resources/Localization/de.lproj/AppShortcuts.strings": "022fe1939ef56c2268ea48f933d51b8eb1538227972e29c53d0a58a9d83310e8",
+    "Sources/CartaPDF/Resources/Localization/de.lproj/InfoPlist.strings": "114bbb07cfe518141c665200474c7a5e97df00f392202b5e7b3a006083e3afd5",
+    "Sources/CartaPDF/Resources/Localization/de.lproj/Localizable.strings": "344d3eb6d5d3f412b79448c5680200a12d3365fb782ec1c6eb5bb7b8e8e0febb",
+    "Sources/CartaPDF/Resources/Localization/en.lproj/AppShortcuts.strings": "4fed4a0bebcfa90f9a62315dc658aa2c63c20680656c8c52f0acb88e737eb254",
+    "Sources/CartaPDF/Resources/Localization/en.lproj/InfoPlist.strings": "5cdca4442cb2553dc694faf62876c106620dec6cecaf5737af468cc758229afe",
+    "Sources/CartaPDF/Resources/Localization/en.lproj/Localizable.strings": "5e329b4ab8b2942a6fea096c6dd08ff1a8eafd82f187ef6523386a8d8e14bc7a",
+    "Sources/CartaPDF/Resources/Localization/es.lproj/AppShortcuts.strings": "95f3ed0ef5d3bfb761b523f587245da5ad3ad7d0ae46eb09d7e4448dd33d6af2",
+    "Sources/CartaPDF/Resources/Localization/es.lproj/InfoPlist.strings": "1188a720f6b3074b5514795bb03fcbf168d6344adc65a3031bb733f8162ce1ba",
+    "Sources/CartaPDF/Resources/Localization/es.lproj/Localizable.strings": "6bd793da4859636ede868ff0638a3d1f8eaea924b6aa7ec1814a4d4eb3a282c8",
+    "Sources/CartaPDF/Resources/Localization/fr.lproj/AppShortcuts.strings": "9a1c193429d08d54f83c479652b22fdb6b889b40cbf9cbf3a16fe7fbd13988eb",
+    "Sources/CartaPDF/Resources/Localization/fr.lproj/InfoPlist.strings": "9e67f6d9b4742318449130d4bda3133dfa22d80268c9ce49e2b0d6a8b12135c9",
+    "Sources/CartaPDF/Resources/Localization/fr.lproj/Localizable.strings": "c9290701903e1991b1defdd989f8e745ac9c1a3e07e37363164865cc1f1c3a5b",
+    "Sources/CartaPDF/Resources/Localization/it.lproj/AppShortcuts.strings": "ffa2716310d586cc4a39b442b8f90b35df0a1ad36485abd43f3e5d9b60851955",
+    "Sources/CartaPDF/Resources/Localization/it.lproj/InfoPlist.strings": "1188a720f6b3074b5514795bb03fcbf168d6344adc65a3031bb733f8162ce1ba",
+    "Sources/CartaPDF/Resources/Localization/it.lproj/Localizable.strings": "fe829464ae0ce219fe4124659c4981b9ccf7b36f388dd0868ada09cc4205304b",
+    "Sources/CartaPDF/Resources/Localization/ja.lproj/AppShortcuts.strings": "508b5e647f8fb6ae994b37ba69955aefbce3d9c6486a5256b35a784dabc6c21a",
+    "Sources/CartaPDF/Resources/Localization/ja.lproj/InfoPlist.strings": "56c9f9799769e4b8c31b53cece04a714b398d3c8b4638f1251cad3d42a8c38c4",
+    "Sources/CartaPDF/Resources/Localization/ja.lproj/Localizable.strings": "1d5f515df3cdb5bdb6b2bf8ca8e508d6bb2c822a115b316cf0a7c4de37190e55",
+    "Sources/CartaPDF/Resources/Localization/zh-Hans.lproj/AppShortcuts.strings": "547b3623e6fe63d556071f5c5837569aea64e7c4e409dfe4acb8f84347a2bf88",
+    "Sources/CartaPDF/Resources/Localization/zh-Hans.lproj/InfoPlist.strings": "ade903f3332f551065759cad7cb6296ce3ad60ddbe5484f2ba42814885809b21",
+    "Sources/CartaPDF/Resources/Localization/zh-Hans.lproj/Localizable.strings": "6a06cb39a12db117aa8ebea0d54d62f501db3a32241574421983ef7a0663b562",
+    "Sources/CartaPDF/Resources/Localization/zh-Hant.lproj/AppShortcuts.strings": "d0f829b1e1d355cc53ca8e76dc8f686267dc40f43c4eea84fc37f3fcfc783369",
+    "Sources/CartaPDF/Resources/Localization/zh-Hant.lproj/InfoPlist.strings": "96cc4886dfd18f2dff457b57880952eeade4a7748c524feaa75edd4caca84de1",
+    "Sources/CartaPDF/Resources/Localization/zh-Hant.lproj/Localizable.strings": "1f3be831a73f40fd7c39493cf759bb340251eea70b94acd2a223ae46d9261ee5"
+  },
+  "manual_UI_smoke": {
+    "language": "it",
+    "checks": [
+      "Main toolbar, status and menu labels",
+      "Tools catalogue and localized merge search"
+    ],
+    "user_documents_used": false,
+    "test_app_closed": true,
+    "VoiceOver_activated": false
+  },
+  "limitations": {
+    "complete_ISO_PDFA_validation_proven": false,
+    "complete_manual_VoiceOver_audit_proven": false,
+    "complete_linguistic_or_all_languages_layout_audit_proven": false,
+    "historical_release_manifests_relabeled": false
+  },
+  "raw_logs_not_tracked": true,
+  "github_ci": "Consult the workflow for the resulting commit; this record reports local verification only."
+}

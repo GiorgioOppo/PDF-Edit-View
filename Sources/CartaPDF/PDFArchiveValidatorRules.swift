@@ -48,7 +48,7 @@ final class PDFArchiveRuleContext {
         self.profile = profile; reader = try PDFStructureDocument(data: data)
         root = try reader.dictionary(.reference(reader.rootID))
         finalTrailer = try Self.lastTrailer(reader)
-        if reader.encrypted { diagnostics.append("Cifratura rilevata: viene controllato il divieto Encrypt, il contenuto non viene decifrato."); return }
+        if reader.encrypted { diagnostics.append(L10n.tr("Cifratura rilevata: viene controllato il divieto Encrypt, il contenuto non viene decifrato.")); return }
         for id in reader.allObjectIDs() {
             try Task.checkCancellation()
             let object = try reader.object(id); indexedObjects[id] = object
@@ -69,7 +69,7 @@ final class PDFArchiveRuleContext {
                     if let structureError = error as? PDFStructureError, case .malformed = structureError { malformedXMP = true }
                 }
             }
-            if case .failure(let error) = result { diagnostics.append("Metadata \(metadata.syntax) non analizzabile: " + error.localizedDescription) }
+            if case .failure(let error) = result { diagnostics.append(L10n.tr("Metadata \(metadata.syntax) non analizzabile: ") + error.localizedDescription) }
         }
     }
     private static func lastTrailer(_ reader: PDFStructureDocument) throws -> [String: PDFSyntaxValue] {
@@ -82,7 +82,7 @@ final class PDFArchiveRuleContext {
             }
         }
         lexer = PDFSyntaxLexer(reader.source, offset: reader.lastXref)
-        _ = try lexer.word(); _ = try lexer.word(); guard try lexer.word() == "obj" else { throw PDFStructureError.malformed("ultimo trailer") }
+        _ = try lexer.word(); _ = try lexer.word(); guard try lexer.word() == "obj" else { throw PDFStructureError.malformed(L10n.tr("ultimo trailer")) }
         return try lexer.value().dictionary ?? [:]
     }
     private func index(_ value: PDFSyntaxValue, location: String, role: String = "", stream: Data? = nil, depth: Int) throws {
@@ -135,32 +135,32 @@ final class PDFArchiveRuleContext {
         if rule.clause == "6.1.2" && rule.testNumber == "1" {
             let firstLine = String(decoding: bytes.prefix { $0 != 10 && $0 != 13 }, as: UTF8.self)
             let pattern = profile.part == 4 ? "^%PDF-2\\.[0-9]$" : (profile.part == 1 ? "^%PDF-[0-9]\\.[0-9]$" : "^%PDF-1\\.[0-7]$")
-            return .check(firstLine.range(of: pattern, options: .regularExpression) != nil && bytes.count > firstLine.utf8.count, "Intestazione a byte zero: \(firstLine).", locations: ["byte 0"])
+            return .check(firstLine.range(of: pattern, options: .regularExpression) != nil && bytes.count > firstLine.utf8.count, L10n.tr("Intestazione a byte zero: \(firstLine)."), locations: ["byte 0"])
         }
         if rule.clause == "6.1.2" && rule.testNumber == "2" {
             var cursor = bytes.firstIndex { $0 == 10 || $0 == 13 } ?? bytes.count
             if cursor < bytes.count { let eol = bytes[cursor]; cursor += 1; if eol == 13, cursor < bytes.count, bytes[cursor] == 10 { cursor += 1 } }
             let valid = cursor + 5 <= bytes.count && bytes[cursor] == 37 && bytes[(cursor + 1)...(cursor + 4)].allSatisfy { $0 > 127 }
-            return .check(valid, "Commento binario immediatamente dopo l’intestazione: quattro byte >127.", locations: ["byte \(cursor)"])
+            return .check(valid, L10n.tr("Commento binario immediatamente dopo l’intestazione: quattro byte >127."), locations: ["byte \(cursor)"])
         }
         if rule.clause == "6.1.3" && rule.testNumber == "3" {
-            guard let range = data.range(of: Data("%%EOF".utf8), options: .backwards) else { return .unknown("Marcatore EOF non trovato.") }
+            guard let range = data.range(of: Data("%%EOF".utf8), options: .backwards) else { return .unknown(L10n.tr("Marcatore EOF non trovato.")) }
             let tail = data.subdata(in: range.upperBound..<data.count)
-            return .check([Data(), Data([10]), Data([13]), Data([13,10])].contains(tail), "Dopo l’ultimo %%EOF: \(tail.count) byte; ammesso solo un EOL opzionale.", locations: ["byte \(range.upperBound)"])
+            return .check([Data(), Data([10]), Data([13]), Data([13,10])].contains(tail), L10n.tr("Dopo l’ultimo %%EOF: \(tail.count) byte; ammesso solo un EOL opzionale."), locations: ["byte \(range.upperBound)"])
         }
         return nil
     }
     private func checks(_ candidates: [Node], _ summary: String, _ predicate: (Node) throws -> Bool) rethrows -> PDFArchiveRuleEvaluation {
-        if candidates.isEmpty { return .absent("Nessun oggetto applicabile indicizzato: " + summary) }
+        if candidates.isEmpty { return .absent(L10n.tr("Nessun oggetto applicabile indicizzato: ") + summary) }
         var failures: [String] = []
         for candidate in candidates { if try !predicate(candidate) { failures.append(candidate.location) } }
-        return .check(failures.isEmpty, "\(candidates.count) oggetti controllati: \(summary)", locations: failures.isEmpty ? candidates.prefix(8).map(\.location) : Array(failures.prefix(64)))
+        return .check(failures.isEmpty, L10n.tr("\(candidates.count) oggetti controllati: \(summary)"), locations: failures.isEmpty ? candidates.prefix(8).map(\.location) : Array(failures.prefix(64)))
     }
     private func values(_ candidates: [(PDFSyntaxValue, String)], _ summary: String, _ predicate: (PDFSyntaxValue) -> Bool) -> PDFArchiveRuleEvaluation {
         let failures = candidates.filter { !predicate($0.0) }.map(\.1)
-        if failures.isEmpty, primitiveInventory?.complete == false { return .unknown("Inventario lessicale dei contenuti incompleto: " + summary) }
-        if candidates.isEmpty { return .absent("Nessun valore applicabile: " + summary) }
-        return .check(failures.isEmpty, "\(candidates.count) valori controllati: \(summary)", locations: Array(failures.prefix(64)))
+        if failures.isEmpty, primitiveInventory?.complete == false { return .unknown(L10n.tr("Inventario lessicale dei contenuti incompleto: ") + summary) }
+        if candidates.isEmpty { return .absent(L10n.tr("Nessun valore applicabile: ") + summary) }
+        return .check(failures.isEmpty, L10n.tr("\(candidates.count) valori controllati: \(summary)"), locations: Array(failures.prefix(64)))
     }
     private func allPrimitiveValues() throws -> [(PDFSyntaxValue,String)] {
         if let primitiveInventory { return primitiveInventory.values }
@@ -189,8 +189,8 @@ final class PDFArchiveRuleContext {
     func evaluate(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         if let result = Self.fileEvaluation(rule, data: reader.source, profile: profile) { return result }
         let object = rule.objectType, expression = rule.expression
-        if object == "CosTrailer", expression == "isEncrypted != true" { return .check(!reader.encrypted, "Presenza Encrypt nel trailer: \(reader.encrypted).", locations: ["trailer"]) }
-        if reader.encrypted { return .unknown("Contenuto cifrato; controllo non eseguito.") }
+        if object == "CosTrailer", expression == "isEncrypted != true" { return .check(!reader.encrypted, L10n.tr("Presenza Encrypt nel trailer: \(reader.encrypted)."), locations: ["trailer"]) }
+        if reader.encrypted { return .unknown(L10n.tr("Contenuto cifrato; controllo non eseguito.")) }
         if let result = try syntaxChecks.evaluate(rule) { return result }
         if let result = try metadataChecks.evaluate(rule) { return result }
         if let result = try fontChecks.evaluate(rule) { return result }
@@ -216,49 +216,49 @@ final class PDFArchiveRuleContext {
                     if !(3...14400).contains(width) || !(3...14400).contains(height) { failures.append("pagina \(index + 1)/\(name): \(width) × \(height)") }
                 }
             }
-            return .check(failures.isEmpty,"Dimensioni di tutti i confini pagina effettivi: eredità MediaBox/CropBox e valori di default per Bleed/Trim/Art.",locations:Array(failures.prefix(64)))
+            return .check(failures.isEmpty,L10n.tr("Dimensioni di tutti i confini pagina effettivi: eredità MediaBox/CropBox e valori di default per Bleed/Trim/Art."),locations:Array(failures.prefix(64)))
         }
         if object == "CosDocument" {
             if expression == "lastID != null && lastID.length() > 0" {
                 let id = try reader.resolve(finalTrailer["ID"])?.array
-                return .check(id?.count == 2 && id!.allSatisfy { !($0.data?.isEmpty ?? true) }, "ID nell’ultimo trailer: due stringhe non vuote.", locations: ["ultimo trailer/ID"])
+                return .check(id?.count == 2 && id!.allSatisfy { !($0.data?.isEmpty ?? true) }, L10n.tr("ID nell’ultimo trailer: due stringhe non vuote."), locations: ["ultimo trailer/ID"])
             }
             if expression == "containsPieceInfo == true || containsInfo == false" {
-                return .check(finalTrailer["Info"] == nil || root["PieceInfo"] != nil, "PDF/A-4: Info ammesso solo con PieceInfo nel catalogo.")
+                return .check(finalTrailer["Info"] == nil || root["PieceInfo"] != nil, L10n.tr("PDF/A-4: Info ammesso solo con PieceInfo nel catalogo."))
             }
             if expression == "containsEmbeddedFiles == false" {
                 let names = try reader.dictionary(root["Names"])
-                return .check(names["EmbeddedFiles"] == nil && !nodes.contains { $0.dictionary["EF"] != nil || $0.dictionary["Type"]?.name == "EmbeddedFile" }, "PDF/A-1 vieta file incorporati.")
+                return .check(names["EmbeddedFiles"] == nil && !nodes.contains { $0.dictionary["EF"] != nil || $0.dictionary["Type"]?.name == "EmbeddedFile" }, L10n.tr("PDF/A-1 vieta file incorporati."))
             }
             if expression == "containsEmbeddedFiles == true" {
                 let names = try reader.dictionary(root["Names"])
-                return .check(names["EmbeddedFiles"] != nil, "PDF/A-4f richiede Names/EmbeddedFiles; AF/EF da soli non soddisfano questa condizione.")
+                return .check(names["EmbeddedFiles"] != nil, L10n.tr("PDF/A-4f richiede Names/EmbeddedFiles; AF/EF da soli non soddisfano questa condizione."))
             }
-            if expression == "Requirements == null" { return .check(root["Requirements"] == nil, "Requirements nel catalogo.") }
-            if expression == "NeedsRendering == false" { return .check(try resolvedBool(root["NeedsRendering"]) != true, "NeedsRendering nel catalogo.") }
-            if expression.contains("nrIndirects <=") { return .check(reader.allObjectIDs().count <= 8_388_607, "Numero di oggetti attivi indicizzati: \(reader.allObjectIDs().count).") }
+            if expression == "Requirements == null" { return .check(root["Requirements"] == nil, L10n.tr("Requirements nel catalogo.")) }
+            if expression == "NeedsRendering == false" { return .check(try resolvedBool(root["NeedsRendering"]) != true, L10n.tr("NeedsRendering nel catalogo.")) }
+            if expression.contains("nrIndirects <=") { return .check(reader.allObjectIDs().count <= 8_388_607, L10n.tr("Numero di oggetti attivi indicizzati: \(reader.allObjectIDs().count).")) }
             if expression == "isOptionalContentPresent == false" {
-                if root["OCProperties"] != nil || nodes.contains(where: { $0.dictionary["OC"] != nil || $0.dictionary["Type"]?.name == "OCG" }) { return .check(false, "Contenuto opzionale presente, vietato in PDF/A-1.") }
-                return .unknown("Assenza catalogo OCG rilevata; presenza di OC negli stream non verificata integralmente.")
+                if root["OCProperties"] != nil || nodes.contains(where: { $0.dictionary["OC"] != nil || $0.dictionary["Type"]?.name == "OCG" }) { return .check(false, L10n.tr("Contenuto opzionale presente, vietato in PDF/A-1.")) }
+                return .unknown(L10n.tr("Assenza catalogo OCG rilevata; presenza di OC negli stream non verificata integralmente."))
             }
         }
         if object == "CosInfo", expression == "size == 1 && ModDate != null" {
-            guard let info = finalTrailer["Info"] else { return .absent("Info assente.") }
+            guard let info = finalTrailer["Info"] else { return .absent(L10n.tr("Info assente.")) }
             let dictionary = try reader.dictionary(info)
-            return .check(dictionary.count == 1 && dictionary["ModDate"] != nil, "PDF/A-4: Info contiene solo ModDate.")
+            return .check(dictionary.count == 1 && dictionary["ModDate"] != nil, L10n.tr("PDF/A-4: Info contiene solo ModDate."))
         }
         if object == "PDDocument" {
-            if expression == "containsMetadata == true" { return .check(root["Metadata"] != nil, "Stream Metadata referenziato dal catalogo.", locations: ["Catalog/Metadata"]) }
-            if expression == "containsStructTreeRoot == true" { return .check(root["StructTreeRoot"] != nil, "Profilo A: StructTreeRoot obbligatorio; la semantica completa resta non verificata.") }
-            if expression == "containsAA == false" { return .check(root["AA"] == nil, "Azioni aggiuntive nel catalogo.") }
+            if expression == "containsMetadata == true" { return .check(root["Metadata"] != nil, L10n.tr("Stream Metadata referenziato dal catalogo."), locations: ["Catalog/Metadata"]) }
+            if expression == "containsStructTreeRoot == true" { return .check(root["StructTreeRoot"] != nil, L10n.tr("Profilo A: StructTreeRoot obbligatorio; la semantica completa resta non verificata.")) }
+            if expression == "containsAA == false" { return .check(root["AA"] == nil, L10n.tr("Azioni aggiuntive nel catalogo.")) }
             if expression == "containsAlternatePresentations == false" {
                 let names = try reader.dictionary(root["Names"])
                 return .check(names["AlternatePresentations"] == nil, "Names/AlternatePresentations.")
             }
-            if expression == "containsXRefStream == false" { return .check(!reader.revisions.contains { $0.dictionary["Type"]?.name == "XRef" }, "PDF/A-1 vieta xref stream, anche non autoindicizzati.") }
+            if expression == "containsXRefStream == false" { return .check(!reader.revisions.contains { $0.dictionary["Type"]?.name == "XRef" }, L10n.tr("PDF/A-1 vieta xref stream, anche non autoindicizzati.")) }
             if expression.contains("Version == null") {
                 let version = try resolvedName(root["Version"])
-                return .check(version == nil || version!.range(of: "^2\\.[0-9]$", options: .regularExpression) != nil, "PDF/A-4: Version del catalogo \(version ?? "assente").")
+                return .check(version == nil || version!.range(of: "^2\\.[0-9]$", options: .regularExpression) != nil, L10n.tr("PDF/A-4: Version del catalogo \(version ?? "assente")."))
             }
         }
         if object == "PDPage" {
@@ -275,7 +275,7 @@ final class PDFArchiveRuleContext {
         if object == "CosReal" {
             let candidates = try allPrimitiveValues().filter { if case .number(let token) = $0.0 { return token.contains(".") }; return false }
             if expression.contains("32767.0") { return values(candidates, "reali PDF/A-1 ±32767") { $0.real.map { $0.isFinite && abs($0) <= 32767 } ?? false } }
-            if expression.contains("3.403e+38") { return values(candidates, "reali nel limite Single") { $0.real.map { $0.isFinite && abs($0) <= 3.403e38 } ?? false } }
+            if expression.contains("3.403e+38") { return values(candidates, L10n.tr("reali nel limite Single")) { $0.real.map { $0.isFinite && abs($0) <= 3.403e38 } ?? false } }
             if expression.contains("1.175e-38") { return values(candidates, "reali zero o fuori dall’intervallo di underflow") {
                 guard case .number(let token) = $0,let number = $0.real else { return false }
                 let exactZero = token.utf8.allSatisfy { [43,45,46,48].contains($0) }
@@ -292,14 +292,14 @@ final class PDFArchiveRuleContext {
         if object == "CosArray", expression == "size <= 8191" { return values(try allPrimitiveValues().filter { $0.0.array != nil }, "array ≤8191 elementi") { ($0.array?.count ?? 8192) <= 8191 } }
         if object == "CosDict", expression == "size <= 4095" { return values(try allPrimitiveValues().filter { $0.0.dictionary != nil }, "dizionari ≤4095 chiavi") { ($0.dictionary?.count ?? 4096) <= 4095 } }
         if object == "CosStream", expression == "F == null && FFilter == null && FDecodeParms == null" {
-            return checks(nodes.filter { $0.stream != nil }, "nessun file/filtro esterno negli stream") { $0.dictionary["F"] == nil && $0.dictionary["FFilter"] == nil && $0.dictionary["FDecodeParms"] == nil }
+            return checks(nodes.filter { $0.stream != nil }, L10n.tr("nessun file/filtro esterno negli stream")) { $0.dictionary["F"] == nil && $0.dictionary["FFilter"] == nil && $0.dictionary["FDecodeParms"] == nil }
         }
         if object == "CosFilter" { return try filterEvaluation(rule) }
         if object == "CosFileSpecification" {
             let files = nodes.filter { $0.dictionary["Type"]?.name == "Filespec" || $0.dictionary["EF"] != nil }
             if expression == "containsEF == false" { return checks(files, "EF assente in PDF/A-1") { $0.dictionary["EF"] == nil } }
-            if expression == "containsEF == false || (F != null && UF != null)" { return checks(files, "allegati con F e UF") { $0.dictionary["EF"] == nil || ($0.dictionary["F"] != nil && $0.dictionary["UF"] != nil) } }
-            if expression == "AFRelationship != null" || expression == "containsEF == false || AFRelationship != null" { return checks(files, "AFRelationship obbligatorio per file incorporati") { $0.dictionary["EF"] == nil || $0.dictionary["AFRelationship"] != nil } }
+            if expression == "containsEF == false || (F != null && UF != null)" { return checks(files, L10n.tr("allegati con F e UF")) { $0.dictionary["EF"] == nil || ($0.dictionary["F"] != nil && $0.dictionary["UF"] != nil) } }
+            if expression == "AFRelationship != null" || expression == "containsEF == false || AFRelationship != null" { return checks(files, L10n.tr("AFRelationship obbligatorio per file incorporati")) { $0.dictionary["EF"] == nil || $0.dictionary["AFRelationship"] != nil } }
         }
         if object == "EmbeddedFile" {
             let files = nodes.filter { $0.dictionary["Type"]?.name == "EmbeddedFile" }
@@ -310,14 +310,14 @@ final class PDFArchiveRuleContext {
                 }
             }
             if expression.contains("isValidPDFA") {
-                if files.isEmpty { return .absent("Nessun stream EmbeddedFile.") }
-                return .unknown("Allegati presenti: ogni PDF incorporato richiede validazione ricorsiva completa del profilo ammesso. Nessun allegato viene presunto conforme.")
+                if files.isEmpty { return .absent(L10n.tr("Nessun stream EmbeddedFile.")) }
+                return .unknown(L10n.tr("Allegati presenti: ogni PDF incorporato richiede validazione ricorsiva completa del profilo ammesso. Nessun allegato viene presunto conforme."))
             }
         }
         if object == "PDPerms" {
-            guard let perms = root["Perms"] else { return .absent("Perms assente.") }
+            guard let perms = root["Perms"] else { return .absent(L10n.tr("Perms assente.")) }
             let dictionary = try reader.dictionary(perms), allowed = profile.part == 4 ? Set(["DocMDP"]) : Set(["DocMDP", "UR3"])
-            return .check(Set(dictionary.keys).isSubset(of: allowed), "Chiavi Perms ammesse: \(allowed.sorted().joined(separator: ", ")).")
+            return .check(Set(dictionary.keys).isSubset(of: allowed), L10n.tr("Chiavi Perms ammesse: \(allowed.sorted().joined(separator: ", "))."))
         }
         if object == "PDAction" || object == "PDNamedAction" {
             let actions = nodes.filter { $0.role == "Action" || $0.dictionary["Type"]?.name == "Action" }
@@ -333,7 +333,7 @@ final class PDFArchiveRuleContext {
         if object == "PDFont" { return try fontDictionaryEvaluation(rule) }
         if object == "Op_Undefined", expression == "false" {
             let evidence = try interpretedContent()
-            return .check(evidence.undefinedOperators.isEmpty, "Operatori sconosciuti, inclusi quelli dentro BX/EX.", locations: evidence.undefinedOperators)
+            return .check(evidence.undefinedOperators.isEmpty, L10n.tr("Operatori sconosciuti, inclusi quelli dentro BX/EX."), locations: evidence.undefinedOperators)
         }
         if object == "ICCOutputProfile" || object == "OutputIntents" || object == "PDOutputIntent" { return try outputIntentEvaluation(rule) }
         if object == "PDOCConfig" {
@@ -344,7 +344,7 @@ final class PDFArchiveRuleContext {
             if expression.hasPrefix("Name != null") { return checks(configs, "nome configurazione livelli") { if expression.contains("length()") { return !($0.dictionary["Name"]?.text?.isEmpty ?? true) }; return $0.dictionary["Name"] != nil } }
             if expression == "AS == null" { return checks(configs, "AS assente") { $0.dictionary["AS"] == nil } }
         }
-        return .unknown("Proprietà/modello \(object) non implementato integralmente per questa regola; nessuna presunzione di conformità.")
+        return .unknown(L10n.tr("Proprietà/modello \(object) non implementato integralmente per questa regola; nessuna presunzione di conformità."))
     }
     private func filterEvaluation(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         let streams = nodes.filter { $0.stream != nil }
@@ -379,7 +379,7 @@ final class PDFArchiveRuleContext {
         }
         let absentKeys: [String: String] = ["containsAlternates == false":"Alternates", "containsOPI == false":"OPI", "containsRef == false":"Ref", "containsTR == false":"TR", "containsHTP == false":"HTP", "containsHTO == false":"HTO", "HalftoneName == null":"HalftoneName"]
         if let key = absentKeys[expression] { return checks(candidates, "\(key) assente") { $0.dictionary[key] == nil } }
-        if expression == "Interpolate == false" { return try checks(candidates, "Interpolate non true") { try resolvedBool($0.dictionary["Interpolate"]) != true } }
+        if expression == "Interpolate == false" { return try checks(candidates, L10n.tr("Interpolate non true")) { try resolvedBool($0.dictionary["Interpolate"]) != true } }
         if expression.contains("BitsPerComponent") {
             return try checks(candidates, "BitsPerComponent ammesso dal profilo") { node in
                 if object == "PDXImage", try resolvedBool(node.dictionary["ImageMask"]) == true { return true }
@@ -394,19 +394,19 @@ final class PDFArchiveRuleContext {
             return try resolvedName(node.dictionary["TR2"]) == "Default"
         } }
         if expression == "Subtype != \"PS\"" { return checks(candidates, "PostScript XObject vietato") { $0.dictionary["Subtype"]?.name != "PS" } }
-        if expression.contains("Subtype2") { return checks(candidates, "Form senza PS, Subtype2 PS o OPI") { $0.dictionary["Subtype2"]?.name != "PS" && $0.dictionary["PS"] == nil && (!expression.contains("containsOPI") || $0.dictionary["OPI"] == nil) } }
+        if expression.contains("Subtype2") { return checks(candidates, L10n.tr("Form senza PS, Subtype2 PS o OPI")) { $0.dictionary["Subtype2"]?.name != "PS" && $0.dictionary["PS"] == nil && (!expression.contains("containsOPI") || $0.dictionary["OPI"] == nil) } }
         if expression == "S != \"Transparency\"" { return checks(candidates, "gruppo Transparency vietato in PDF/A-1") { $0.dictionary["S"]?.name != "Transparency" } }
         if expression == "containsSMask == false" || expression == "containsSMask == false || SMaskNameValue == \"None\"" { return checks(candidates, "SMask vietata in PDF/A-1 salvo None in ExtGState") { $0.dictionary["SMask"] == nil || (object == "PDExtGState" && $0.dictionary["SMask"]?.name == "None") } }
         if expression.hasPrefix("CA == null") || expression.hasPrefix("ca == null") {
             let key = expression.hasPrefix("CA") ? "CA" : "ca"
-            return checks(candidates, "opacità \(key) pari a 1") { $0.dictionary[key] == nil || abs(($0.dictionary[key]?.real ?? -1) - 1) < 0.000001 }
+            return checks(candidates, L10n.tr("opacità \(key) pari a 1")) { $0.dictionary[key] == nil || abs(($0.dictionary[key]?.real ?? -1) - 1) < 0.000001 }
         }
         if expression.hasPrefix("containsBM") { return try checks(candidates, "blend mode PDF/A-1") { node in
             if node.dictionary["BM"] == nil { return true }
             return quotedValues(expression).contains(try resolvedName(node.dictionary["BM"]) ?? "")
         } }
         if expression.hasPrefix("HalftoneType != null") { return try checks(candidates, "HalftoneType 1 o 5") { [1,5].contains(try resolvedInt($0.dictionary["HalftoneType"]) ?? -1) } }
-        return .unknown("Analisi grafica contestuale non completa per \(object).")
+        return .unknown(L10n.tr("Analisi grafica contestuale non completa per \(object)."))
     }
     private func fontDictionaryEvaluation(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         let fonts = nodes.filter { $0.role == "Font" }
@@ -415,7 +415,7 @@ final class PDFArchiveRuleContext {
         if rule.expression == "Subtype == \"Type3\" || fontName != null" { return checks(fonts, "BaseFont obbligatorio salvo Type3") { $0.dictionary["Subtype"]?.name == "Type3" || $0.dictionary["BaseFont"]?.name != nil } }
         if rule.expression.contains("renderingMode == 3") && rule.expression.contains("containsFontFile") {
             let evidence = try interpretedContent()
-            if evidence.fonts.isEmpty { return .absent("Nessun testo dipinto negli stream interpretati.") }
+            if evidence.fonts.isEmpty { return .absent(L10n.tr("Nessun testo dipinto negli stream interpretati.")) }
             var failures: [String] = []
             for use in evidence.fonts where use.visible {
                 var actualFonts = [use.dictionary]
@@ -424,15 +424,15 @@ final class PDFArchiveRuleContext {
                     let descriptor = try reader.dictionary(font["FontDescriptor"])
                     let files = ["FontFile", "FontFile2", "FontFile3"].compactMap { descriptor[$0]?.reference }
                     let present = try files.contains { id in let object = try reader.object(id); return !(object.stream?.isEmpty ?? true) }
-                    if !present { failures.append(use.location + ": " + (font["BaseFont"]?.name ?? "font senza nome")) }
+                    if !present { failures.append(use.location + ": " + (font["BaseFont"]?.name ?? L10n.tr("font senza nome"))) }
                 }
             }
-            return .check(failures.isEmpty, "Embedding dei font effettivamente usati; testo esclusivamente Tr=3 esente. Validità programmi/glifi/mapping resta separata.", locations: failures)
+            return .check(failures.isEmpty, L10n.tr("Embedding dei font effettivamente usati; testo esclusivamente Tr=3 esente. Validità programmi/glifi/mapping resta separata."), locations: failures)
         }
         // A missing FontFile alone is not a failure: Tr=3 can exempt embedding.
         // Render state, glyph use, embedded program and Unicode mappings must all
         // be modeled before this rule can be conclusively evaluated.
-        return .unknown("Controllo font richiede uso effettivo, rendering mode (inclusa esenzione Tr=3), programmi/glifi/CMap. Presenza FontFile o ToUnicode non assunta sufficiente.")
+        return .unknown(L10n.tr("Controllo font richiede uso effettivo, rendering mode (inclusa esenzione Tr=3), programmi/glifi/CMap. Presenza FontFile o ToUnicode non assunta sufficiente."))
     }
     private func interpretedContent() throws -> PDFArchiveContentEvidence {
         if contentEvidence == nil { contentEvidence = Result { try PDFArchiveContentScanner(reader: reader).scan() } }
@@ -445,19 +445,19 @@ final class PDFArchiveRuleContext {
             return checks(candidates, "profili output esterni vietati nei casi specificati") { rule.expression.hasPrefix("S !=") && $0.dictionary["S"]?.name != "GTS_PDFX" || $0.dictionary["DestOutputProfileRef"] == nil }
         }
         if rule.objectType == "OutputIntents", rule.expression == "numberOfPDFAOutputIntents <= 1" {
-            return .check(candidates.filter { $0.dictionary["S"]?.name == "GTS_PDFA1" }.count <= 1, "PDF/A-4: al massimo un OutputIntent PDF/A nel catalogo.")
+            return .check(candidates.filter { $0.dictionary["S"]?.name == "GTS_PDFA1" }.count <= 1, L10n.tr("PDF/A-4: al massimo un OutputIntent PDF/A nel catalogo."))
         }
         if rule.objectType == "OutputIntents", rule.expression == "sameOutputProfileIndirect == true" {
             if candidates.contains(where: { $0.dictionary["DestOutputProfile"] != nil && $0.dictionary["DestOutputProfile"]?.reference == nil }) {
-                return .unknown("DestOutputProfile non indiretto: identità dei profili non verificabile nel modello supportato.")
+                return .unknown(L10n.tr("DestOutputProfile non indiretto: identità dei profili non verificabile nel modello supportato."))
             }
             let profiles = candidates.compactMap { $0.dictionary["DestOutputProfile"]?.reference }
-            if profiles.isEmpty { return .absent("Nessun DestOutputProfile; ammissibilità dei colori resta da verificare contestualmente.") }
-            return .check(Set(profiles).count == 1, "Tutti gli OutputIntent con profilo incorporato usano lo stesso oggetto indiretto.")
+            if profiles.isEmpty { return .absent(L10n.tr("Nessun DestOutputProfile; ammissibilità dei colori resta da verificare contestualmente.")) }
+            return .check(Set(profiles).count == 1, L10n.tr("Tutti gli OutputIntent con profilo incorporato usano lo stesso oggetto indiretto."))
         }
         if rule.objectType == "ICCOutputProfile" {
-            if candidates.isEmpty { return .absent("Nessun OutputIntent; assenza non è automaticamente violazione senza analizzare i colori usati.") }
-            return try checks(candidates.filter { $0.dictionary["DestOutputProfile"] != nil }, "classe, spazio e versione del profilo ICC di output") { node in
+            if candidates.isEmpty { return .absent(L10n.tr("Nessun OutputIntent; assenza non è automaticamente violazione senza analizzare i colori usati.")) }
+            return try checks(candidates.filter { $0.dictionary["DestOutputProfile"] != nil }, L10n.tr("classe, spazio e versione del profilo ICC di output")) { node in
                 guard let id = node.dictionary["DestOutputProfile"]?.reference else { return false }
                 let bytes = Array(try reader.decodedStream(id))
                 guard bytes.count >= 128 else { return false }
@@ -465,11 +465,11 @@ final class PDFArchiveRuleContext {
                 return ["prtr","mntr"].contains(deviceClass) && ["RGB ","CMYK","GRAY"].contains(space) && Int(bytes[8]) < (profile.part == 1 ? 3 : 5)
             }
         }
-        return .unknown("Intenti di pagina/trasparenza e profili ICC contestuali non analizzati integralmente.")
+        return .unknown(L10n.tr("Intenti di pagina/trasparenza e profili ICC contestuali non analizzati integralmente."))
     }
     private func metadataEvaluation(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation {
         if rule.objectType == "XMPPackage" {
-            guard !metadataPackages.isEmpty else { return .absent("Nessun pacchetto Metadata indicizzato; obbligo del catalogo verificato separatamente.") }
+            guard !metadataPackages.isEmpty else { return .absent(L10n.tr("Nessun pacchetto Metadata indicizzato; obbligo del catalogo verificato separatamente.")) }
             var failures: [String] = [], unknown: [String] = []
             for package in metadataPackages {
                 switch package.result {
@@ -484,49 +484,49 @@ final class PDFArchiveRuleContext {
                     else if !["bytes == null", "encoding == null", "actualEncoding == \"UTF-8\""].contains(rule.expression) { unknown.append(package.location) }
                 }
             }
-            if !failures.isEmpty { return .check(false,"Violazione in uno o più pacchetti XMP, inclusi quelli fuori dal catalogo.",locations:failures) }
-            if !unknown.isEmpty { return .unknown("Pacchetti XMP non decodificabili o serializzazione RDF completa non verificata: " + unknown.joined(separator:", ")) }
-            return .check(true,"Condizione verificata su tutti i \(metadataPackages.count) pacchetti Metadata indicizzati.")
+            if !failures.isEmpty { return .check(false,L10n.tr("Violazione in uno o più pacchetti XMP, inclusi quelli fuori dal catalogo."),locations:failures) }
+            if !unknown.isEmpty { return .unknown(L10n.tr("Pacchetti XMP non decodificabili o serializzazione RDF completa non verificata: ") + unknown.joined(separator:", ")) }
+            return .check(true,L10n.tr("Condizione verificata su tutti i \(metadataPackages.count) pacchetti Metadata indicizzati."))
         }
-        guard root["Metadata"] != nil else { return .unknown("XMP catalogo assente: regola identificativa non verificabile (assenza segnalata separatamente).") }
+        guard root["Metadata"] != nil else { return .unknown(L10n.tr("XMP catalogo assente: regola identificativa non verificabile (assenza segnalata separatamente).")) }
         if rule.objectType == "XMPPackage", rule.expression == "isSerializationValid", malformedXMP {
-            return .check(false, "Metadati decodificati ma XML non ben formato: la serializzazione XMP è invalida.")
+            return .check(false, L10n.tr("Metadati decodificati ma XML non ben formato: la serializzazione XMP è invalida."))
         }
-        guard let xmp else { return .unknown("XMP non decodificabile/XML non analizzabile integralmente.") }
+        guard let xmp else { return .unknown(L10n.tr("XMP non decodificabile/XML non analizzabile integralmente.")) }
         let expression = rule.expression
-        if rule.objectType == "MainXMPPackage", expression == "containsPDFAIdentification == true" { return .check(xmp.hasIdentification, "Schema di identificazione http://www.aiim.org/pdfa/ns/id/ nel modello RDF riconosciuto.") }
+        if rule.objectType == "MainXMPPackage", expression == "containsPDFAIdentification == true" { return .check(xmp.hasIdentification, L10n.tr("Schema di identificazione http://www.aiim.org/pdfa/ns/id/ nel modello RDF riconosciuto.")) }
         if rule.objectType == "PDFAIdentification" {
             for name in ["part", "conformance", "rev"] {
                 if expression.hasPrefix(name + " ==") {
                     let values = xmp.values(name)
-                    if expression == name + " == null" { return .check(values.isEmpty, "\(profile.title): \(name) deve essere assente.") }
-                    if name == "part" { return .check(values.count == 1 && Int(values[0]) == profile.part, "part intero=\(values.joined(separator: ", ")); valore ammesso \(profile.part).") }
+                    if expression == name + " == null" { return .check(values.isEmpty, L10n.tr("\(profile.title): \(name) deve essere assente.")) }
+                    if name == "part" { return .check(values.count == 1 && Int(values[0]) == profile.part, L10n.tr("part intero=\(values.joined(separator: ", ")); valore ammesso \(profile.part).")) }
                     let allowed = name == "part" ? [String(profile.part)] : quotedValues(expression)
-                    return .check(values.count == 1 && allowed.contains(values.first ?? ""), "\(name)=\(values.joined(separator: ", ")); valori ammessi \(allowed.joined(separator: ", ")).")
+                    return .check(values.count == 1 && allowed.contains(values.first ?? ""), L10n.tr("\(name)=\(values.joined(separator: ", ")); valori ammessi \(allowed.joined(separator: ", "))."))
                 }
                 if expression.hasPrefix(name + "Prefix") {
                     let prefixes = xmp.prefixes(name)
-                    return .check(prefixes.allSatisfy { $0 == "pdfaid" }, "Prefisso identificativo \(name): pdfaid.")
+                    return .check(prefixes.allSatisfy { $0 == "pdfaid" }, L10n.tr("Prefisso identificativo \(name): pdfaid."))
                 }
             }
             if expression.hasPrefix("amdPrefix") || expression.hasPrefix("corrPrefix") {
                 let name = expression.hasPrefix("amd") ? "amd" : "corr"
-                return .check(xmp.prefixes(name).allSatisfy { $0 == "pdfaid" }, "Prefisso identificativo \(name): pdfaid.")
+                return .check(xmp.prefixes(name).allSatisfy { $0 == "pdfaid" }, L10n.tr("Prefisso identificativo \(name): pdfaid."))
             }
         }
         if rule.objectType == "XMPPackage" {
             if expression == "bytes == null" || expression == "encoding == null" {
                 let name = expression.hasPrefix("bytes") ? "bytes" : "encoding"
-                return .check(!xmp.packetAttributes.contains(name), "Attributo xpacket \(name) assente.")
+                return .check(!xmp.packetAttributes.contains(name), L10n.tr("Attributo xpacket \(name) assente."))
             }
-            if expression == "actualEncoding == \"UTF-8\"" { return .check(xmp.utf8, "Codifica effettiva dei byte XMP UTF-8.") }
-            if expression == "isSerializationValid" { return .unknown("XML ben formato verificato; serializzazione XMP/RDF completa ISO16684 non ancora verificata.") }
+            if expression == "actualEncoding == \"UTF-8\"" { return .check(xmp.utf8, L10n.tr("Codifica effettiva dei byte XMP UTF-8.")) }
+            if expression == "isSerializationValid" { return .unknown(L10n.tr("XML ben formato verificato; serializzazione XMP/RDF completa ISO16684 non ancora verificata.")) }
         }
         if rule.objectType == "PDMetadata", expression.contains("Filter == null") {
             let dictionary = try reader.dictionary(root["Metadata"])
-            return .check(dictionary["Filter"] == nil, "PDF/A-1: metadati del catalogo non filtrati.")
+            return .check(dictionary["Filter"] == nil, L10n.tr("PDF/A-1: metadati del catalogo non filtrati."))
         }
-        return .unknown("Semantica XMP/RDF/extension schema non completamente verificata.")
+        return .unknown(L10n.tr("Semantica XMP/RDF/extension schema non completamente verificata."))
     }
 }
 
@@ -543,10 +543,10 @@ final class PDFArchiveXMP: NSObject, XMLParserDelegate {
         guard data.count <= 8 * 1024 * 1024 else { throw PDFStructureError.limit }
         utf8 = String(data: data, encoding: .utf8) != nil && !data.contains(0) && !data.starts(with: Data([0xFF,0xFE])) && !data.starts(with: Data([0xFE,0xFF]))
         super.init()
-        if String(data: data, encoding: .utf8)?.range(of: "<!DOCTYPE", options: .caseInsensitive) != nil { throw PDFStructureError.unsupported("DOCTYPE nei metadati") }
+        if String(data: data, encoding: .utf8)?.range(of: "<!DOCTYPE", options: .caseInsensitive) != nil { throw PDFStructureError.unsupported(L10n.tr("DOCTYPE nei metadati")) }
         let parser = XMLParser(data: data); parser.shouldProcessNamespaces = true; parser.shouldReportNamespacePrefixes = true
         parser.shouldResolveExternalEntities = false; parser.delegate = self
-        guard parser.parse() else { throw PDFStructureError.malformed("XML XMP: \(parser.parserError?.localizedDescription ?? "errore")") }
+        guard parser.parse() else { throw PDFStructureError.malformed(L10n.tr("XML XMP: \(parser.parserError?.localizedDescription ?? L10n.tr("errore"))")) }
     }
     func values(_ property: String) -> [String] { properties[property] ?? [] }
     func prefixes(_ property: String) -> [String] { propertyPrefixes[property] ?? [] }

@@ -1,49 +1,62 @@
-# Architettura
+# Architecture
 
-CartaPDF è un eseguibile Swift Package Manager con un target di test XCTest. L'interfaccia usa SwiftUI e AppKit; il documento e il rendering ordinario usano PDFKit. Non ci sono pacchetti Swift di terze parti, server applicativi o motori PDF esterni.
+CartaPDF is a Swift Package Manager executable with an XCTest target. Its interface uses SwiftUI and AppKit; ordinary document handling and rendering use PDFKit. There are no third-party Swift packages, application servers, or external PDF engines.
 
-## Componenti
+## Components
 
-| Area | Sorgenti principali | Responsabilità |
+| Area | Main sources | Responsibility |
 | --- | --- | --- |
-| Avvio e finestre | `CartaPDFApp`, `PDFWorkspaceDocument`, `ContentView` | Ciclo di vita NSDocument, apertura, salvataggio e composizione dei pannelli. |
-| Stato editor | `PDFEditorModel`, `PDFCanvas`, `DocumentNavigationView` | Documento attivo, selezione, rendering, navigazione, modifiche e undo. |
-| Strumenti | `ToolBrowserView`, `PDFPageTools`, `PDFTextTools`, `PDFRedactionTools` | Catalogo ricercabile e operazioni sulle pagine o sul contenuto. |
-| Flussi batch | `PDFWorkflowTools`, `PDFWorkflowViews` | Unione, divisione, preset e procedure locali. |
-| Acquisizione ed export | `PDFScanExport*`, `PDFConversionTools` | Vision OCR, Image Capture, ScreenCaptureKit, WebKit statico e conversioni. |
-| Struttura PDF | `PDFStructureEngine`, `PDFStructureTools`, `PDFStructureViews`, `PDFStreamFilters` | Lettore COS/xref, stream, modifiche strutturali supportate e firme. |
-| Servizi locali | `CartaWorkspaceServices`, `CartaFileIO`, `CartaRenderingServices`, `PDFLocalLibrary` | Preferenze, versioni, recupero, scritture, cache e indice locale. |
-| Automazione | `CartaAutomation` | CLI, App Intent e comando AppleScript. |
-| Validazione | `PDFArchiveValidator*`, `PDFArchive*Checks`, `ICCModel` | Rapporti PDF/A, controlli del modello e lacune esplicite. |
+| Startup and windows | `CartaPDFApp`, `PDFWorkspaceDocument`, `ContentView` | NSDocument lifecycle, opening, saving, and panel composition. |
+| Editor state | `PDFEditorModel`, `PDFCanvas`, `DocumentNavigationView` | Active document, selection, rendering, navigation, editing, and undo. |
+| Tools | `ToolBrowserView`, `PDFPageTools`, `PDFTextTools`, `PDFRedactionTools` | Searchable tool catalogue and page or content operations. |
+| Batch workflows | `PDFWorkflowTools`, `PDFWorkflowViews` | Merging, splitting, presets, and local workflows. |
+| Capture and export | `PDFScanExport*`, `PDFConversionTools` | Vision OCR, Image Capture, ScreenCaptureKit, static WebKit content, and conversions. |
+| PDF structure | `PDFStructureEngine`, `PDFStructureTools`, `PDFStructureViews`, `PDFStreamFilters` | COS/xref reader, streams, supported structural changes, and signatures. |
+| Local services | `CartaWorkspaceServices`, `CartaFileIO`, `CartaRenderingServices`, `PDFLocalLibrary` | Preferences, versions, recovery, writes, caches, and local index. |
+| Localization | `CartaLocalization`, `Resources/Localization/*.lproj` | Ordered macOS language selection, bundled translations, English fallback, and safe message interpolation. |
+| Automation | `CartaAutomation` | CLI, App Intent, and AppleScript command. |
+| Validation | `PDFArchiveValidator*`, `PDFArchive*Checks`, `ICCModel` | PDF/A reports, model checks, and explicit coverage gaps. |
 
-I nomi abbreviati nella tabella corrispondono ai file sotto [Sources/CartaPDF](../Sources/CartaPDF/).
+The abbreviated names in the table refer to files under [Sources/CartaPDF](../Sources/CartaPDF/).
 
-## Documenti e scritture
+## Localization and message boundaries
 
-`PDFWorkspaceDocument` collega NSDocument al modello dell'editor. Le modifiche reversibili registrano gruppi undo espliciti; il salvataggio serializza il documento supportato. Gli strumenti che cambiano la struttura o rasterizzano preparano una copia. `CartaFileIO` centralizza le scritture atomiche e alcuni controlli su destinazioni e spazio disponibile.
+`L10n` resolves the app language at launch from `Locale.preferredLanguages`, including macOS per-app preferences. It scans the ordered list for Italian, Spanish, English, German, French, Chinese, or Japanese, skips unsupported entries, and uses English when no entry matches. Chinese has Simplified and Traditional resource variants: an explicit script takes precedence over the region. The selected locale is supplied to SwiftUI roots and formatting; the app does not write language preferences.
 
-Il lettore strutturale opera sui byte del PDF, separatamente dal rendering di PDFKit. Segue le revisioni xref modellate, risolve gli alias indiretti con limiti e distingue oggetti fisici da identità terminali. I filtri implementati sono codice Swift originale, con Compression Apple per le operazioni supportate. I casi non modellati restano espliciti.
+`L10n.tr` receives a `CartaLocalizedMessage` whose literal text forms a translation key. Swift interpolation records values separately as numbered `{0}`, `{1}`, and subsequent placeholders. A single substitution pass allows translated argument order while preventing user text containing braces or percent signs from becoming formatting instructions. `L10n.string` is reserved for explicit internal display keys such as enum titles. Document contents, filenames supplied by users, PDF/COS keys, stored identifiers, and parser commands are not translated as keys.
 
-## Percorso della validazione PDF/A
+The eight local resource directories provide `Localizable.strings`, `AppShortcuts.strings`, and `InfoPlist.strings`. Runtime lookup supports main app resources and SwiftPM's flat or `Contents/Resources` bundle layouts; XCTest may use its product resource bundle. Missing localized entries fall back to the English table. No translation service or download is involved. App Intent metadata keeps native compile-time localized resources rather than runtime strings.
 
-1. Il validatore riceve una fotografia immutabile dei byte e il profilo scelto.
-2. Carica il catalogo XML locale fissato per quel profilo e ne verifica l'integrità.
-3. Il parser e gli inventari semantici raccolgono i fatti supportati: oggetti, stream, font, metadati, colori, struttura, allegati e firme.
-4. I controlli producono risultati per le voci del catalogo e risultati separati per il modello PDF.
-5. Il rapporto include SHA-256 dei byte, dettagli diagnostici, limiti e `scopeGaps`.
+The [static checker](../scripts/check-localization.py) checks explicit source coverage, matching catalogues, placeholder and format integrity, and native metadata. The [packaged checker](../scripts/check-built-app.py) independently reads the assembled app and launches twenty process-local preference scenarios, comparing selected languages and labels with those resources. These checks verify resource and selection behavior; they do not replace layout review or a complete VoiceOver audit. See [localization maintenance](LOCALIZATION.md).
 
-Una violazione dimostrata produce `nonconforming`. Senza violazioni, una lacuna, una risorsa non disponibile o un limite produce `indeterminate`. La conformità globale resta disabilitata in 3.6.0. Il rendering riuscito non è una prova di conformità e non viene usato per cancellare controlli incompleti.
+## Documents and writes
 
-I controlli hanno limiti di input, stream decodificati, profondità e conteggi. Il validatore non esegue JavaScript PDF, programmi font, allegati o payload 3D. Il raggiungimento di un budget non viene trasformato in prova di validità. Vedi [ambito tecnico](../Development/PDFA-ValidatorScope.md).
+`PDFWorkspaceDocument` connects NSDocument to the editor model. Reversible changes register explicit undo groups; saving serializes the supported document. Tools that change structure or rasterize content prepare a copy. `CartaFileIO` centralizes atomic writes and some destination and available-space checks.
 
-## Concorrenza e limiti
+Links created by the app receive a UUID identifier in the `/NM` and `/CartaPDFLinkID` entries. The second preserves identity on macOS 15, where PDFKit omits `/NM` when saving. A malformed or inconsistent private marker prevents editing; earlier links with only `/NM` remain recognized. These markers prevent accidental changes to imported links; they are not signatures or proof of authenticity. PDFKit continues to handle saving, including encrypted documents.
 
-I job di conversione e validazione usano worker, limiti e cancellazione. Alcune preparazioni strutturali, preflight, firme e ridisegni CoreGraphics sono ancora eseguiti sul main actor; su file grandi possono bloccare temporaneamente il relativo pannello. Questo limite è tracciato nel rapporto funzionale.
+The structural reader operates on PDF bytes separately from PDFKit rendering. It follows modeled xref revisions, resolves indirect aliases within limits, and distinguishes physical objects from terminal identities. Implemented filters are original Swift code, using Apple's Compression framework for supported operations. Unmodeled cases remain explicit.
 
-## Dati incorporati
+## PDF/A validation path
 
-I cataloghi PDF/A XML e i dati CMap/AGL/PDF-to-Unicode sono dati originali locali, versionati con manifest e SHA-256. Le copie sotto `Resources` e `Sources/CartaPDF/Resources` devono coincidere. La loro presenza rende disponibile il riferimento, non implementa automaticamente tutti gli obblighi normativi. Le [licenze](../THIRD_PARTY_NOTICES.md) restano distinte da MIT.
+1. The validator receives an immutable byte snapshot and the selected profile.
+2. It loads the pinned local XML catalogue for that profile and verifies its integrity.
+3. The parser and semantic inventories collect supported facts: objects, streams, fonts, metadata, colors, structure, attachments, and signatures.
+4. Checks produce results for catalogue entries and separate results for the PDF model.
+5. The report includes the bytes' SHA-256 hash, diagnostic details, limits, and `scopeGaps`.
 
-## Verifica
+A demonstrated violation produces `nonconforming`. Without a violation, a coverage gap, unavailable resource, or limit produces `indeterminate`. Overall conformity remains disabled in 3.6.0. Successful rendering is not evidence of conformity and does not clear incomplete checks.
 
-I test costruiscono documenti sintetici e verificano contenuti riaperti, byte, pixel, errori, cancellazione e differenze di profilo. Il corpus di sviluppo è acquisito separatamente. Per aggiungere controlli, usa una fonte primaria e casi positivi/negativi che isolino la condizione: non trasformare un nome storico del corpus in un'affermazione normativa. Vedi [CONTRIBUTING](../CONTRIBUTING.md).
+Checks have limits on input size, decoded streams, depth, and counts. The validator does not execute PDF JavaScript, font programs, attachments, or 3D payloads. Reaching a budget does not become proof of validity. See the [technical scope](../Development/PDFA-ValidatorScope.md).
+
+## Concurrency and limits
+
+Conversion and validation jobs use workers, limits, and cancellation. Some structural preparation, preflight, signing, and CoreGraphics redraw operations still run on the main actor; large files may temporarily block the relevant panel. This limit is tracked in the feature report.
+
+## Embedded data
+
+PDF/A XML catalogues and CMap/AGL/PDF-to-Unicode data are original upstream data stored locally, versioned with manifests and SHA-256 hashes. Copies under `Resources` and `Sources/CartaPDF/Resources` must match. Their presence supplies reference data; it does not automatically implement every normative obligation. Their [licenses](../THIRD_PARTY_NOTICES.md) remain separate from MIT.
+
+## Verification
+
+Tests construct synthetic documents and check reopened content, bytes, pixels, errors, cancellation, and profile differences. The development corpus is acquired separately. When adding checks, use a primary source and positive and negative cases that isolate the condition; do not turn a historical corpus name into a normative assertion. See [CONTRIBUTING](../CONTRIBUTING.md).

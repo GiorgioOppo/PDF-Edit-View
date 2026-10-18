@@ -24,14 +24,14 @@ final class PDFArchiveFunctionChecks {
         if rows.count >= 1024 {
             if !reportLimited {
                 reportLimited = true
-                rows.append(.init(id:"CartaPDF:Function:report-limit",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:"Inventario delle funzioni nel budget disponibile.",status:.notVerified,detail:"Limite applicativo del numero di risultati raggiunto; inventario incompleto.",locations:[]))
+                rows.append(.init(id:"CartaPDF:Function:report-limit",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:L10n.tr("Inventario delle funzioni nel budget disponibile."),status:.notVerified,detail:L10n.tr("Limite applicativo del numero di risultati raggiunto; inventario incompleto."),locations:[]))
             }
             if status == .failed,!limitedFailureRecorded {
                 limitedFailureRecorded = true
-                rows.append(.init(id:"CartaPDF:Function:limited-failure",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:"Le violazioni dimostrate restano visibili anche oltre il budget del rapporto.",status:.failed,detail:detail,locations:[location]))
+                rows.append(.init(id:"CartaPDF:Function:limited-failure",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:L10n.tr("Le violazioni dimostrate restano visibili anche oltre il budget del rapporto."),status:.failed,detail:detail,locations:[location]))
             };return
         }
-        rows.append(.init(id:"CartaPDF:Function:\(rows.count)",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:"Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",status:status,detail:detail,locations:[location]))
+        rows.append(.init(id:"CartaPDF:Function:\(rows.count)",specification:"ISO 32000-1/2",clause:"7.10",testNumber:"native-function",objectType:"FunctionModel",requirement:L10n.tr("Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico."),status:status,detail:detail,locations:[location]))
     }
     private func dictionary(_ value:PDFSyntaxValue?) throws -> [String:PDFSyntaxValue] {
         var result = try reader.dictionary(value)
@@ -94,7 +94,7 @@ final class PDFArchiveFunctionChecks {
                 if array.count != 4 { append(.failed,"L’array di funzioni transfer richiede quattro funzioni.",location+"/"+key) }
                 for (index,item) in array.enumerated() {
                     if let name = try reader.resolve(item)?.name {
-                        if name != "Identity" { append(.notVerified,"Nome transfer non risolto come funzione: "+name,location+"/"+key+"[\(index)]") }
+                        if name != "Identity" { append(.notVerified,L10n.tr("Nome transfer non risolto come funzione: ")+name,location+"/"+key+"[\(index)]") }
                     } else { _ = analyze(item,inputs:1,outputs:1,location:location+"/"+key+"[\(index)]") }
                 }
             } else { _ = analyze(value,inputs:1,outputs:1,location:location+"/"+key) }
@@ -122,7 +122,7 @@ final class PDFArchiveFunctionChecks {
         guard let function = d["Function"] else { return }
         let inputs = d["ShadingType"]?.int == 1 ? 2:1
         if let array = try reader.resolve(function)?.array {
-            if array.isEmpty || (outputs != nil && array.count != outputs) { append(.failed,"Numero di funzioni shading incompatibile con le componenti colore.",location+"/Function") }
+            if array.isEmpty || (outputs != nil && array.count != outputs) { append(.failed,L10n.tr("Numero di funzioni shading incompatibile con le componenti colore."),location+"/Function") }
             for (index,value) in array.enumerated() { _ = analyze(value,inputs:inputs,outputs:1,location:location+"/Function[\(index)]") }
         } else { _ = analyze(function,inputs:inputs,outputs:outputs,location:location+"/Function") }
     }
@@ -161,7 +161,7 @@ final class PDFArchiveFunctionChecks {
             guard visits <= 10_000,depth < 48 else { throw PDFStructureError.limit }
             var nested = active
             if let id = try reader.resolvedObjectID(value) {
-                guard nested.insert(id).inserted else { throw PDFStructureError.malformed("riferimento ricorsivo fra funzioni") }
+                guard nested.insert(id).inserted else { throw PDFStructureError.malformed(L10n.tr("riferimento ricorsivo fra funzioni")) }
             }
             let d = try dictionary(value)
             let type = try integer(d["FunctionType"],field:"FunctionType")
@@ -171,94 +171,94 @@ final class PDFArchiveFunctionChecks {
             let range = d["Range"] == nil ? nil:try numbers(d["Range"],field:"Range")
             if let range { try pairs(range,field:"Range") }
             var n = range.map{$0.count/2}
-            if let inputs,inputs != m { issues.append("Domain richiede \(m) ingressi; il contesto ne richiede \(inputs).") }
+            if let inputs,inputs != m { issues.append(L10n.tr("Domain richiede \(m) ingressi; il contesto ne richiede \(inputs).")) }
             switch type {
             case 0:
-                guard let range else { throw PDFStructureError.malformed("Range obbligatoria nella funzione campionata") }
+                guard let range else { throw PDFStructureError.malformed(L10n.tr("Range obbligatoria nella funzione campionata")) }
                 let sizeValues = try reader.resolve(d["Size"])?.array ?? []
-                guard sizeValues.count == m else { throw PDFStructureError.malformed("Size incompatibile con Domain") }
+                guard sizeValues.count == m else { throw PDFStructureError.malformed(L10n.tr("Size incompatibile con Domain")) }
                 var sizes:[Int] = []
-                for value in sizeValues { let size = try integer(value,field:"Size");guard size > 0 else { throw PDFStructureError.malformed("Size non positivo") };sizes.append(size) }
+                for value in sizeValues { let size = try integer(value,field:"Size");guard size > 0 else { throw PDFStructureError.malformed(L10n.tr("Size non positivo")) };sizes.append(size) }
                 let bits = try integer(d["BitsPerSample"],field:"BitsPerSample")
-                guard [1,2,4,8,12,16,24,32].contains(bits) else { throw PDFStructureError.malformed("BitsPerSample non definito") }
+                guard [1,2,4,8,12,16,24,32].contains(bits) else { throw PDFStructureError.malformed(L10n.tr("BitsPerSample non definito")) }
                 let order = d["Order"] == nil ? 1:try integer(d["Order"],field:"Order")
-                guard [1,3].contains(order) else { throw PDFStructureError.malformed("Order non definito") }
-                if let encode = d["Encode"],try numbers(encode,field:"Encode").count != 2*m { throw PDFStructureError.malformed("Encode incompatibile con Domain") }
-                if let decode = d["Decode"],try numbers(decode,field:"Decode").count != range.count { throw PDFStructureError.malformed("Decode incompatibile con Range") }
-                guard let id = try reader.resolvedObjectID(value),try reader.object(id).stream != nil else { throw PDFStructureError.malformed("funzione campionata priva di stream") }
+                guard [1,3].contains(order) else { throw PDFStructureError.malformed(L10n.tr("Order non definito")) }
+                if let encode = d["Encode"],try numbers(encode,field:"Encode").count != 2*m { throw PDFStructureError.malformed(L10n.tr("Encode incompatibile con Domain")) }
+                if let decode = d["Decode"],try numbers(decode,field:"Decode").count != range.count { throw PDFStructureError.malformed(L10n.tr("Decode incompatibile con Range")) }
+                guard let id = try reader.resolvedObjectID(value),try reader.object(id).stream != nil else { throw PDFStructureError.malformed(L10n.tr("funzione campionata priva di stream")) }
                 let data = try reader.decodedStream(id)
                 var requiredBits = range.count/2*bits
                 for size in sizes {
                     // Compare against the actual byte capacity without overflow.
-                    guard requiredBits <= data.count*8/size else { throw PDFStructureError.malformed("stream troppo corto per Size/Range/BitsPerSample") }
+                    guard requiredBits <= data.count*8/size else { throw PDFStructureError.malformed(L10n.tr("stream troppo corto per Size/Range/BitsPerSample")) }
                     requiredBits *= size
                 }
                 // Extra sample bytes are permitted: §7.10.2 requires at least
                 // the complete table, not equality with the decoded byte count.
             case 2:
-                guard m == 1 else { throw PDFStructureError.malformed("funzione esponenziale non a un ingresso") }
+                guard m == 1 else { throw PDFStructureError.malformed(L10n.tr("funzione esponenziale non a un ingresso")) }
                 let c0 = d["C0"] == nil ? [PDFExactFunctionNumber("0")!]:try numbers(d["C0"],field:"C0")
                 let c1 = d["C1"] == nil ? [PDFExactFunctionNumber("1")!]:try numbers(d["C1"],field:"C1")
-                guard !c0.isEmpty,c0.count == c1.count else { throw PDFStructureError.malformed("C0/C1 hanno dimensioni differenti o nulle") }
-                if let n,n != c0.count { issues.append("C0/C1 incompatibili con Range.") };n = c0.count
+                guard !c0.isEmpty,c0.count == c1.count else { throw PDFStructureError.malformed(L10n.tr("C0/C1 hanno dimensioni differenti o nulle")) }
+                if let n,n != c0.count { issues.append(L10n.tr("C0/C1 incompatibili con Range.")) };n = c0.count
                 let exponent = try number(d["N"],field:"N")
-                if !exponent.isInteger,domain[0].sign < 0 { issues.append("N non intero con Domain contenente valori negativi.") }
-                if exponent.sign < 0,domain[0].sign <= 0,domain[1].sign >= 0 { issues.append("N negativo con zero incluso nel Domain.") }
+                if !exponent.isInteger,domain[0].sign < 0 { issues.append(L10n.tr("N non intero con Domain contenente valori negativi.")) }
+                if exponent.sign < 0,domain[0].sign <= 0,domain[1].sign >= 0 { issues.append(L10n.tr("N negativo con zero incluso nel Domain.")) }
             case 3:
-                guard m == 1 else { throw PDFStructureError.malformed("funzione stitching non a un ingresso") }
-                guard let functions = try reader.resolve(d["Functions"])?.array,!functions.isEmpty else { throw PDFStructureError.malformed("Functions assente/vuoto") }
+                guard m == 1 else { throw PDFStructureError.malformed(L10n.tr("funzione stitching non a un ingresso")) }
+                guard let functions = try reader.resolve(d["Functions"])?.array,!functions.isEmpty else { throw PDFStructureError.malformed(L10n.tr("Functions assente/vuoto")) }
                 let bounds = try numbers(d["Bounds"],field:"Bounds",allowEmpty:true)
-                guard bounds.count == functions.count-1 else { throw PDFStructureError.malformed("Bounds incompatibile con Functions") }
-                if functions.count > 1,domain[0] >= domain[1] { issues.append("Domain stitching degenere con più sottofunzioni.") }
+                guard bounds.count == functions.count-1 else { throw PDFStructureError.malformed(L10n.tr("Bounds incompatibile con Functions")) }
+                if functions.count > 1,domain[0] >= domain[1] { issues.append(L10n.tr("Domain stitching degenere con più sottofunzioni.")) }
                 for (index,bound) in bounds.enumerated() {
-                    if bound <= domain[0] || bound > domain[1] || (index > 0 && bound <= bounds[index-1]) { issues.append("Bounds fuori dominio o non crescenti.") }
+                    if bound <= domain[0] || bound > domain[1] || (index > 0 && bound <= bounds[index-1]) { issues.append(L10n.tr("Bounds fuori dominio o non crescenti.")) }
                 }
-                guard try numbers(d["Encode"],field:"Encode").count == 2*functions.count else { throw PDFStructureError.malformed("Encode stitching incompatibile con Functions") }
+                guard try numbers(d["Encode"],field:"Encode").count == 2*functions.count else { throw PDFStructureError.malformed(L10n.tr("Encode stitching incompatibile con Functions")) }
                 for (index,function) in functions.enumerated() {
                     if let child = analyze(function,inputs:1,outputs:n,location:location+"/Functions[\(index)]",active:nested,depth:depth+1) {
                         if let childN = child.outputs {
-                            if let n,n != childN { issues.append("Sottofunzioni stitching con dimensionalità di uscita diversa.") }
+                            if let n,n != childN { issues.append(L10n.tr("Sottofunzioni stitching con dimensionalità di uscita diversa.")) }
                             else { n = childN }
-                        } else { gaps.append("Dimensionalità della sottofunzione non risolta.") }
-                    } else { gaps.append("Sottofunzione stitching non verificata integralmente.") }
+                        } else { gaps.append(L10n.tr("Dimensionalità della sottofunzione non risolta.")) }
+                    } else { gaps.append(L10n.tr("Sottofunzione stitching non verificata integralmente.")) }
                 }
             case 4:
-                guard let range else { throw PDFStructureError.malformed("Range obbligatoria nella funzione calculator") }
-                guard let id = try reader.resolvedObjectID(value),try reader.object(id).stream != nil else { throw PDFStructureError.malformed("funzione calculator priva di stream") }
+                guard let range else { throw PDFStructureError.malformed(L10n.tr("Range obbligatoria nella funzione calculator")) }
+                guard let id = try reader.resolvedObjectID(value),try reader.object(id).stream != nil else { throw PDFStructureError.malformed(L10n.tr("funzione calculator priva di stream")) }
                 var syntax = try PDFCalculatorSyntax(data:reader.decodedStream(id))
                 let program = try syntax.parse()
                 var audit = PDFCalculatorStaticAudit(inputs:m,outputs:range.count/2)
                 audit.check(program)
                 issues += audit.issues;gaps += audit.gaps
-                gaps.append("Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.")
-            default:throw PDFStructureError.malformed("FunctionType non definito: \(type)")
+                gaps.append(L10n.tr("Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico."))
+            default:throw PDFStructureError.malformed(L10n.tr("FunctionType non definito: \(type)"))
             }
-            if let expected = outputs,let n,expected != n { issues.append("La funzione produce \(n) valori; il contesto ne richiede \(expected).") }
-            if outputs == nil,n == nil { gaps.append("Dimensionalità di uscita non risolta.") }
+            if let expected = outputs,let n,expected != n { issues.append(L10n.tr("La funzione produce \(n) valori; il contesto ne richiede \(expected).")) }
+            if outputs == nil,n == nil { gaps.append(L10n.tr("Dimensionalità di uscita non risolta.")) }
             shape = Shape(inputs:m,outputs:n)
         } catch {
             if let error = error as? PDFStructureError,case .malformed = error { issues.append(error.localizedDescription) }
             else { gaps.append(error.localizedDescription) }
         }
-        append(!issues.isEmpty ? .failed:gaps.isEmpty ? .passed:.notVerified,(issues+gaps).isEmpty ? "Parametri, dimensioni e campioni della funzione verificati.":(issues+gaps).joined(separator:"; "),location)
+        append(!issues.isEmpty ? .failed:gaps.isEmpty ? .passed:.notVerified,(issues+gaps).isEmpty ? L10n.tr("Parametri, dimensioni e campioni della funzione verificati."):(issues+gaps).joined(separator:"; "),location)
         return shape
     }
     private func number(_ value:PDFSyntaxValue?,field:String) throws -> PDFExactFunctionNumber {
-        guard case .number(let token)? = try reader.resolve(value),let number = PDFExactFunctionNumber(token) else { throw PDFStructureError.malformed(field+" non numerico") };return number
+        guard case .number(let token)? = try reader.resolve(value),let number = PDFExactFunctionNumber(token) else { throw PDFStructureError.malformed(field+L10n.tr(" non numerico")) };return number
     }
     private func integer(_ value:PDFSyntaxValue?,field:String) throws -> Int {
-        guard case .number(let token)? = try reader.resolve(value),!token.contains("."),let number = PDFExactFunctionNumber(token) else { throw PDFStructureError.malformed(field+" non integer PDF") }
-        guard let value = Int(token) else { if number.sign < 0 { throw PDFStructureError.malformed(field+" negativo fuori intervallo") };throw PDFStructureError.limit };return value
+        guard case .number(let token)? = try reader.resolve(value),!token.contains("."),let number = PDFExactFunctionNumber(token) else { throw PDFStructureError.malformed(field+L10n.tr(" non integer PDF")) }
+        guard let value = Int(token) else { if number.sign < 0 { throw PDFStructureError.malformed(field+L10n.tr(" negativo fuori intervallo")) };throw PDFStructureError.limit };return value
     }
     private func numbers(_ value:PDFSyntaxValue?,field:String,allowEmpty:Bool = false) throws -> [PDFExactFunctionNumber] {
-        guard let values = try reader.resolve(value)?.array,allowEmpty || !values.isEmpty else { throw PDFStructureError.malformed(field+" non è un array numerico") }
+        guard let values = try reader.resolve(value)?.array,allowEmpty || !values.isEmpty else { throw PDFStructureError.malformed(field+L10n.tr(" non è un array numerico")) }
         guard values.count <= 100_000 else { throw PDFStructureError.limit }
         var result:[PDFExactFunctionNumber] = []
         for (index,value) in values.enumerated() { if index%256 == 0 { try Task.checkCancellation() };result.append(try number(value,field:field)) };return result
     }
     private func pairs(_ numbers:[PDFExactFunctionNumber],field:String) throws {
-        guard !numbers.isEmpty,numbers.count%2 == 0 else { throw PDFStructureError.malformed(field+" non contiene coppie complete") }
-        for index in stride(from:0,to:numbers.count,by:2) { if index%256 == 0 { try Task.checkCancellation() };if numbers[index] > numbers[index+1] { throw PDFStructureError.malformed(field+" con estremi invertiti") } }
+        guard !numbers.isEmpty,numbers.count%2 == 0 else { throw PDFStructureError.malformed(field+L10n.tr(" non contiene coppie complete")) }
+        for index in stride(from:0,to:numbers.count,by:2) { if index%256 == 0 { try Task.checkCancellation() };if numbers[index] > numbers[index+1] { throw PDFStructureError.malformed(field+L10n.tr(" con estremi invertiti")) } }
     }
 }
 
@@ -303,33 +303,33 @@ private struct PDFCalculatorSyntax {
     private mutating func word() throws -> String {
         skip();let start = cursor
         while cursor<bytes.count,!PDFSyntaxLexer.space(bytes[cursor]),![37,123,125].contains(bytes[cursor]) { cursor += 1 }
-        guard cursor > start else { throw PDFStructureError.malformed("token calculator assente") }
+        guard cursor > start else { throw PDFStructureError.malformed(L10n.tr("token calculator assente")) }
         return String(decoding:bytes[start..<cursor],as:UTF8.self)
     }
     mutating func parse() throws -> [PDFCalculatorInstruction] {
         let code = try block(depth:0);skip()
-        guard cursor == bytes.count else { throw PDFStructureError.malformed("token esterni alle parentesi calculator") };return code
+        guard cursor == bytes.count else { throw PDFStructureError.malformed(L10n.tr("token esterni alle parentesi calculator")) };return code
     }
     private mutating func block(depth:Int) throws -> [PDFCalculatorInstruction] {
         guard depth < 64 else { throw PDFStructureError.limit };skip()
-        guard cursor<bytes.count,bytes[cursor] == 123 else { throw PDFStructureError.malformed("calculator non racchiuso fra parentesi graffe") };cursor += 1
+        guard cursor<bytes.count,bytes[cursor] == 123 else { throw PDFStructureError.malformed(L10n.tr("calculator non racchiuso fra parentesi graffe")) };cursor += 1
         var code:[PDFCalculatorInstruction] = []
         while true {
             skip();try Task.checkCancellation();count += 1;guard count <= 100_000 else { throw PDFStructureError.limit }
-            guard cursor<bytes.count else { throw PDFStructureError.malformed("parentesi calculator non bilanciate") }
+            guard cursor<bytes.count else { throw PDFStructureError.malformed(L10n.tr("parentesi calculator non bilanciate")) }
             if bytes[cursor] == 125 { cursor += 1;return code }
             if bytes[cursor] == 123 {
                 let first = try block(depth:depth+1);skip()
                 if cursor<bytes.count,bytes[cursor] == 123 {
                     let second = try block(depth:depth+1)
-                    guard try word() == "ifelse" else { throw PDFStructureError.malformed("due blocchi calculator non seguiti da ifelse") }
+                    guard try word() == "ifelse" else { throw PDFStructureError.malformed(L10n.tr("due blocchi calculator non seguiti da ifelse")) }
                     code.append(.conditional(first,second))
                 } else {
-                    guard try word() == "if" else { throw PDFStructureError.malformed("blocco calculator non seguito da if") };code.append(.conditional(first,nil))
+                    guard try word() == "if" else { throw PDFStructureError.malformed(L10n.tr("blocco calculator non seguito da if")) };code.append(.conditional(first,nil))
                 }
             } else {
                 let token = try word()
-                guard PDFExactFunctionNumber(token) != nil || PDFCalculatorStaticAudit.operators.contains(token),!["if","ifelse"].contains(token) else { throw PDFStructureError.malformed("operatore/operando calculator non permesso: "+token) }
+                guard PDFExactFunctionNumber(token) != nil || PDFCalculatorStaticAudit.operators.contains(token),!["if","ifelse"].contains(token) else { throw PDFStructureError.malformed(L10n.tr("operatore/operando calculator non permesso: ")+token) }
                 code.append(.token(token))
             }
         }
@@ -348,21 +348,21 @@ private struct PDFCalculatorStaticAudit {
     mutating func check(_ code:[PDFCalculatorInstruction]) {
         do {
             try execute(code)
-            guard stack.count == outputs else { throw PDFStructureError.malformed("numero di risultati calculator incompatibile con Range") }
-            for value in stack { if case .boolean = value { throw PDFStructureError.malformed("risultato calculator booleano, richiesto numero") } }
+            guard stack.count == outputs else { throw PDFStructureError.malformed(L10n.tr("numero di risultati calculator incompatibile con Range")) }
+            for value in stack { if case .boolean = value { throw PDFStructureError.malformed(L10n.tr("risultato calculator booleano, richiesto numero")) } }
         } catch PDFStructureError.malformed(let message) { issues.append(message) }
         catch { gaps.append(error.localizedDescription) }
     }
-    private mutating func pop() throws -> Value { guard let value = stack.popLast() else { throw PDFStructureError.malformed("stack underflow calculator") };return value }
-    private mutating func num() throws -> Int? { guard case .number(let n) = try pop() else { throw PDFStructureError.malformed("tipo calculator: richiesto numero") };return n }
-    private mutating func bool() throws -> Bool? { guard case .boolean(let n) = try pop() else { throw PDFStructureError.malformed("tipo calculator: richiesto booleano") };return n }
-    private mutating func exactIndex() throws -> Int { guard let n = try num() else { throw PDFStructureError.unsupported("indice stack dipendente dall’ingresso o da numeri non esatti") };return n }
+    private mutating func pop() throws -> Value { guard let value = stack.popLast() else { throw PDFStructureError.malformed(L10n.tr("stack underflow calculator")) };return value }
+    private mutating func num() throws -> Int? { guard case .number(let n) = try pop() else { throw PDFStructureError.malformed(L10n.tr("tipo calculator: richiesto numero")) };return n }
+    private mutating func bool() throws -> Bool? { guard case .boolean(let n) = try pop() else { throw PDFStructureError.malformed(L10n.tr("tipo calculator: richiesto booleano")) };return n }
+    private mutating func exactIndex() throws -> Int { guard let n = try num() else { throw PDFStructureError.unsupported(L10n.tr("indice stack dipendente dall’ingresso o da numeri non esatti")) };return n }
     private mutating func execute(_ code:[PDFCalculatorInstruction]) throws {
         for instruction in code {
             try Task.checkCancellation();guard stack.count <= 4096 else { throw PDFStructureError.limit }
             switch instruction {
             case .conditional(let yes,let no):
-                guard let test = try bool() else { throw PDFStructureError.unsupported("rami calculator dipendenti dai valori d’ingresso") }
+                guard let test = try bool() else { throw PDFStructureError.unsupported(L10n.tr("rami calculator dipendenti dai valori d’ingresso")) }
                 if test { try execute(yes) } else if let no { try execute(no) }
             case .token(let token):
                 if let number = PDFExactFunctionNumber(token) {
@@ -374,10 +374,10 @@ private struct PDFCalculatorStaticAudit {
                 case "dup":let value = try pop();stack += [value,value]
                 case "exch":let b = try pop(),a = try pop();stack += [b,a]
                 case "pop":_ = try pop()
-                case "copy":let n = try exactIndex();guard n >= 0,n <= stack.count else { throw PDFStructureError.malformed("copy calculator fuori intervallo") };stack += stack.suffix(n)
-                case "index":let n = try exactIndex();guard n >= 0,n < stack.count else { throw PDFStructureError.malformed("index calculator fuori intervallo") };stack.append(stack[stack.count-1-n])
+                case "copy":let n = try exactIndex();guard n >= 0,n <= stack.count else { throw PDFStructureError.malformed(L10n.tr("copy calculator fuori intervallo")) };stack += stack.suffix(n)
+                case "index":let n = try exactIndex();guard n >= 0,n < stack.count else { throw PDFStructureError.malformed(L10n.tr("index calculator fuori intervallo")) };stack.append(stack[stack.count-1-n])
                 case "roll":
-                    let j = try exactIndex(),n = try exactIndex();guard n >= 0,n <= stack.count else { throw PDFStructureError.malformed("roll calculator fuori intervallo") }
+                    let j = try exactIndex(),n = try exactIndex();guard n >= 0,n <= stack.count else { throw PDFStructureError.malformed(L10n.tr("roll calculator fuori intervallo")) }
                     if n > 0 { let shift = (j%n+n)%n,tail = Array(stack.suffix(n));stack.removeLast(n);stack += tail.suffix(shift)+tail.prefix(n-shift) }
                 case "eq","ne":
                     let b = try pop(),a = try pop();var equal:Bool?
@@ -388,27 +388,27 @@ private struct PDFCalculatorStaticAudit {
                     let b = try pop(),a = try pop()
                     switch (a,b) {
                     case (.boolean(let a),.boolean(let b)):stack.append(.boolean(a.flatMap{x in b.map{token == "and" ? x && $0:token == "or" ? x || $0:x != $0}}))
-                    case (.number(let a),.number(let b)):guard let a,let b else { throw PDFStructureError.unsupported("tipo integer/real bitwise non risolto") };stack.append(.number(token == "and" ? a & b:token == "or" ? a | b:a ^ b))
-                    default:throw PDFStructureError.malformed("operandi bitwise/booleani di tipi diversi")
+                    case (.number(let a),.number(let b)):guard let a,let b else { throw PDFStructureError.unsupported(L10n.tr("tipo integer/real bitwise non risolto")) };stack.append(.number(token == "and" ? a & b:token == "or" ? a | b:a ^ b))
+                    default:throw PDFStructureError.malformed(L10n.tr("operandi bitwise/booleani di tipi diversi"))
                     }
-                case "not":switch try pop() { case .boolean(let n):stack.append(.boolean(n.map{!$0}));case .number(let n):guard let n else { throw PDFStructureError.unsupported("tipo integer/real di not non risolto") };stack.append(.number(~n)) }
+                case "not":switch try pop() { case .boolean(let n):stack.append(.boolean(n.map{!$0}));case .number(let n):guard let n else { throw PDFStructureError.unsupported(L10n.tr("tipo integer/real di not non risolto")) };stack.append(.number(~n)) }
                 case "add","sub","mul":
                     let b = try num(),a = try num();var result:Int?
                     if let a,let b { let pair = token == "add" ? a.addingReportingOverflow(b):token == "sub" ? a.subtractingReportingOverflow(b):a.multipliedReportingOverflow(by:b);if !pair.overflow,Int32(exactly:pair.partialValue) != nil { result = pair.partialValue } }
                     stack.append(.number(result))
                 case "idiv","mod","bitshift":
-                    let b = try num(),a = try num();guard let a,let b else { throw PDFStructureError.unsupported("operandi integer calculator non risolti") }
-                    if token == "bitshift" { throw PDFStructureError.unsupported("semantica bitshift e larghezza integer non dimostrate") }
-                    guard b != 0 else { throw PDFStructureError.malformed("divisione integer calculator per zero") }
+                    let b = try num(),a = try num();guard let a,let b else { throw PDFStructureError.unsupported(L10n.tr("operandi integer calculator non risolti")) }
+                    if token == "bitshift" { throw PDFStructureError.unsupported(L10n.tr("semantica bitshift e larghezza integer non dimostrate")) }
+                    guard b != 0 else { throw PDFStructureError.malformed(L10n.tr("divisione integer calculator per zero")) }
                     if a == Int.min,b == -1 { stack.append(.number(nil)) } else { stack.append(.number(token == "idiv" ? a/b:a%b)) }
-                case "div":let b = try num();_ = try num();if b == 0 { throw PDFStructureError.malformed("divisione calculator per zero costante") };stack.append(.number(nil))
+                case "div":let b = try num();_ = try num();if b == 0 { throw PDFStructureError.malformed(L10n.tr("divisione calculator per zero costante")) };stack.append(.number(nil))
                 case "exp","atan":_ = try num();_ = try num();stack.append(.number(nil))
                 case "abs","neg":let n = try num();if let n,n != Int.min { let result = token == "abs" ? Swift.abs(n):-n;stack.append(.number(Int32(exactly:result).map{Int($0)})) } else { stack.append(.number(nil)) }
-                case "sqrt","ln","log":let n = try num();if let n,(token == "sqrt" ? n < 0:n <= 0) { throw PDFStructureError.malformed("dominio calculator non valido per "+token) };stack.append(.number(nil))
+                case "sqrt","ln","log":let n = try num();if let n,(token == "sqrt" ? n < 0:n <= 0) { throw PDFStructureError.malformed(L10n.tr("dominio calculator non valido per ")+token) };stack.append(.number(nil))
                 case "ceiling","floor","round","truncate","cvi":let n = try num();stack.append(.number(n))
                 case "cvr":_ = try num();stack.append(.number(nil))
                 case "sin","cos":_ = try num();stack.append(.number(nil))
-                default:throw PDFStructureError.unsupported("semantica calculator non modellata: "+token)
+                default:throw PDFStructureError.unsupported(L10n.tr("semantica calculator non modellata: ")+token)
                 }
             }
         }

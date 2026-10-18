@@ -1,23 +1,23 @@
-name: Proposta di funzionalità
-description: Un nuovo strumento o un miglioramento concreto.
-title: "[Funzionalità] "
+name: Feature request
+description: A new tool or a concrete improvement.
+title: "[Feature] "
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Attività da semplificare
-      description: Descrivi cosa vuoi ottenere e il limite incontrato.
+      label: Task to simplify
+      description: Describe what you want to achieve and the limitation you encountered.
     validations:
       required: true
   - type: textarea
     id: behavior
     attributes:
-      label: Comportamento proposto
-      description: Aggiungi un esempio di input, operazione e risultato.
+      label: Proposed behavior
+      description: Give an example of input, operation and result. Use synthetic examples without personal information.
     validations:
       required: true
   - type: textarea
     id: constraints
     attributes:
-      label: Vincoli e alternative
-      description: CartaPDF deve restare gratuita, locale e basata soltanto su framework Apple. Indica eventuali limiti di compatibilità o alternative già provate.
+      label: Constraints and alternatives
+      description: CartaPDF must remain free, local and based only on Apple frameworks. Include relevant compatibility constraints and alternatives you have tried.

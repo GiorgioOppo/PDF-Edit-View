@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "record_type": "public_source_release_preparation",
+  "date_utc": "2026-10-18T09:52:54.986315+00:00",
+  "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
+  "base_commit": "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+  "status": "prepared_for_owner_review_private_repository",
+  "scope": "Source-publication preparation at the stated base commit plus this documentation, tooling and CI change. GitHub visibility and settings were read only. This report does not certify complete security, ISO conformance, accessibility or interactive localization coverage.",
+  "visibility_verified": "private",
+  "visibility_changed": false,
+  "GitHub_settings_changed": false,
+  "runtime_constraints": {
+    "free": true,
+    "fully_local": true,
+    "Apple_frameworks_only": true,
+    "external_Swift_packages": 0,
+    "application_source_resources_tests_or_Package_swift_changed_in_preparation": false,
+    "Python_and_Git_used_for_development_only": true
+  },
+  "history_review_before_preparation_commit": {
+    "result": "passed_selected_checks",
+    "scope": "Explicit publication refs and their reachable Git blobs, commit messages, annotated tags, filenames and commit/tagger email identities. No network or repository mutation.",
+    "references": [
+      "refs/heads/main",
+      "refs/remotes/origin/main",
+      "refs/remotes/origin/dependabot/github_actions/actions/checkout-7.0.1",
+      "refs/remotes/origin/publication-pr-1-merge"
+    ],
+    "resolved_commit_targets": [
+      "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+      "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+      "880d82e79b81e2b662c9307e7dae4efa4c3819eb",
+      "55ae7a7568c4d04ecfcf0b073a790dda7b14dfd3"
+    ],
+    "blob_checks": {
+      "unique_blobs": 584,
+      "UTF8_blobs_checked": 584,
+      "non_UTF8_blobs_not_signature_checked": 0,
+      "blobs_at_or_above_size_limit_not_read": 0,
+      "blob_size_limit_bytes": 99614720,
+      "signature_findings_by_category": {}
+    },
+    "metadata_checks": {
+      "reachable_commits": 12,
+      "commit_message_signature_findings_by_category": {},
+      "unique_historical_file_paths_checked": 650,
+      "historical_filename_findings_by_category": {},
+      "unique_commit_email_identities_checked": 3,
+      "non_GitHub_noreply_commit_email_identities_requiring_review": 0,
+      "email_scope": "Commit author and committer addresses only; upstream attribution addresses in file content are not classified as private identities."
+    },
+    "annotated_tag_checks": {
+      "reachable_annotated_tag_objects": 0,
+      "tag_signature_findings_by_category": {},
+      "tag_objects_at_or_above_size_limit_not_read": 0,
+      "unique_tagger_email_identities_checked": 0,
+      "non_GitHub_noreply_tagger_email_identities_requiring_review": 0
+    },
+    "complete_security_audit": false,
+    "outside_scope": "Unselected refs, non-UTF8 content signatures, working-tree files, GitHub Actions logs/artifacts, issues, pull requests, external systems and arbitrary credential formats."
+  },
+  "history_scope_inventory": {
+    "advertised_remote_branch_count": 2,
+    "advertised_remote_tag_count": 0,
+    "open_pull_requests": [
+      1
+    ],
+    "PR_1_head_included_via_dependabot_branch": true,
+    "PR_1_merge_ref_included": true,
+    "local_task_snapshot_refs_excluded_and_not_pushed": true,
+    "post_commit_requirement": "Run the same explicit-ref scan after committing and before pushing main; the report above intentionally identifies the earlier commit targets."
+  },
+  "hosted_Actions_logs_before_preparation_commit": {
+    "repository": "GiorgioOppo/PDF-Edit-View",
+    "runs_reviewed": 13,
+    "logs_available_and_retrieved": true,
+    "selected_secret_signature_findings": 0,
+    "other_host_path_findings_requiring_review": 0,
+    "classification_note": "Expected hosted runner home paths and ephemeral runner job directories are counted separately. This is a selected-signature/path review, not a complete content or security audit.",
+    "results": [
+      {
+        "id": 39115227995,
+        "head_sha": "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 294094,
+        "log_sha256": "09fd7b6dec0b34f08f2474076bb82e57e4a0d17ee2542e1569be5591bb65b9ea",
+        "file": "39115227995.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 32,
+          "hosted_job_temporary_path": 3
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39110992462,
+        "head_sha": "301d7a5d2b4956a16f893ae3b2ed38a78191b56a",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 284828,
+        "log_sha256": "7728eb24904730b44b8beccb1eb9171256503c71c125103eb30ede5975bbb86a",
+        "file": "39110992462.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 31,
+          "hosted_job_temporary_path": 3
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39109020185,
+        "head_sha": "cd00ebeb128e4f1c87a17a342af7ff750b7dd989",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 272821,
+        "log_sha256": "965521f03712d20e0818bc16b492f28509ca8d34058431f532f66485b1ee7900",
+        "file": "39109020185.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 31,
+          "hosted_job_temporary_path": 3
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39108436451,
+        "head_sha": "95384622836dc1d062f18f072cab7138dfc48688",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 279763,
+        "log_sha256": "443a75e79483dc9dcf17a937c803817ea9bc70d875001bca26a4187fb7c561e7",
+        "file": "39108436451.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 31,
+          "hosted_job_temporary_path": 3
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39108140153,
+        "head_sha": "5d253e05baeb917ed477ea41433ec15ed817ac8f",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 279490,
+        "log_sha256": "13985c87df48639cf02aea623752192bf931aad9f221bc17ec3c7a188d47b4ee",
+        "file": "39108140153.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 33,
+          "hosted_job_temporary_path": 3
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39107956874,
+        "head_sha": "8a37d4b450d1b336a14fccd5be1790a3cc5f7c6d",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 253728,
+        "log_sha256": "fd68a0da93f780d4193a3e5a324d66eb10ef82239f8f76f73963cf7be61be465",
+        "file": "39107956874.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {},
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39107546172,
+        "head_sha": "0b54ee6729b739dd80f88883101bed93a782f2b3",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 275867,
+        "log_sha256": "ddfbde4a8fb7ca09cc43d4e7db39b937b3a51fe8cfeade854ecb466c8ab1e4f5",
+        "file": "39107546172.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 38,
+          "hosted_job_temporary_path": 1
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39107044209,
+        "head_sha": "b365c2076c1aa750390d2dbde871196640cedb73",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 573570,
+        "log_sha256": "09a6e75122fcc5d5cccb86fa0e0ec06f36eea4a542a4768c3e226df9d71dda50",
+        "file": "39107044209.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 832,
+          "hosted_job_temporary_path": 1
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39106764274,
+        "head_sha": "d5ff4e02c744c0ad9e2795dac452a50d9c03e3ec",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 82784,
+        "log_sha256": "54089615f15f6b9fe2c826a772b5be867ab8b0b4c4f62e5a12201b694e5d0b6a",
+        "file": "39106764274.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 62,
+          "hosted_job_temporary_path": 1
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39106625377,
+        "head_sha": "880d82e79b81e2b662c9307e7dae4efa4c3819eb",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 47227,
+        "log_sha256": "02add2f1e15c59a798cae30290ef64359c20bebe9953b3675b374e125b4373a5",
+        "file": "39106625377.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 35,
+          "hosted_job_temporary_path": 1
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39106600852,
+        "head_sha": "11d856d1b7984d16d2b88904d91a05446ff35a85",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 44975,
+        "log_sha256": "c912bdaca08f2c5b3bc369aa280a2a6b333e63a76b2849ed7714ec017ff52384",
+        "file": "39106600852.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "official_dependabot_job_path": 2
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39106598147,
+        "head_sha": "11d856d1b7984d16d2b88904d91a05446ff35a85",
+        "status": "completed",
+        "conclusion": "failure",
+        "download_exit_code": 0,
+        "log_bytes": 49604,
+        "log_sha256": "c23bcedb24f4ee964dadab5e93289ef7660556631c6c60d57944539d8f8cb6c9",
+        "file": "39106598147.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "hosted_runner_path": 37,
+          "hosted_job_temporary_path": 1
+        },
+        "raw_log_not_committed": true
+      },
+      {
+        "id": 39106597503,
+        "head_sha": "11d856d1b7984d16d2b88904d91a05446ff35a85",
+        "status": "completed",
+        "conclusion": "success",
+        "download_exit_code": 0,
+        "log_bytes": 44866,
+        "log_sha256": "305dd78f94062e42eb8ffab65be44ec06dbc96a747d80bb95d1a50e7045a8f63",
+        "file": "39106597503.log",
+        "selected_secret_signature_counts": {},
+        "host_path_classification": {
+          "official_dependabot_job_path": 2
+        },
+        "raw_log_not_committed": true
+      }
+    ],
+    "dependabot_path_review": "Four initial matches were confirmed as the official hosted Dependabot updater workspace, not a personal machine path."
+  },
+  "hosted_content_before_preparation_commit": {
+    "surfaces_retrieved": 8,
+    "selected_secret_findings": 0,
+    "personal_host_path_findings": 0,
+    "results": [
+      {
+        "surface": "repository",
+        "bytes": 6125,
+        "sha256": "279a345cf89388ccdbad2220a524739435a5b508b87b25288a1f845c442723c8",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "pull_request_1",
+        "bytes": 31481,
+        "sha256": "c69df8a3325628e76243a4997a519e54f9a294803b063d15456303a587832359",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "pull_request_1_issue_comments",
+        "bytes": 2,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "pull_request_1_review_comments",
+        "bytes": 2,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "pull_request_1_reviews",
+        "bytes": 2,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "issues",
+        "bytes": 17249,
+        "sha256": "e3ef8934a0dd57017070d097d27ed0a1887140e66092481e3d37ca750838a606",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "releases",
+        "bytes": 2,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      },
+      {
+        "surface": "artifacts",
+        "bytes": 32,
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+        "selected_secret_signature_counts": {},
+        "personal_host_path_matches": 0,
+        "raw_response_not_committed": true
+      }
+    ],
+    "scope": "Selected credentials and personal-path signatures plus repository content inventory; not an exhaustive content/security audit."
+  },
+  "GitHub_inventory": {
+    "default_branch": "main",
+    "license_recognized": "MIT",
+    "topics": [
+      "macos",
+      "offline",
+      "pdf",
+      "pdf-editor",
+      "pdfkit",
+      "swift"
+    ],
+    "collaborators": [
+      {
+        "login": "GiorgioOppo",
+        "role": "admin"
+      }
+    ],
+    "issues_enabled": true,
+    "issues_excluding_pull_requests": 0,
+    "wiki_enabled": false,
+    "discussions_enabled": false,
+    "Pages_enabled": false,
+    "releases": 0,
+    "release_assets": 0,
+    "Actions_artifacts": 0,
+    "community_profile_health_percent": 100,
+    "English_issue_forms_and_PR_template_present": true,
+    "open_maintenance_PR": {
+      "number": 1,
+      "title": "build(deps): bump actions/checkout from 6.1.0 to 7.0.1",
+      "head_commit": "880d82e79b81e2b662c9307e7dae4efa4c3819eb",
+      "existing_run_conclusion": "failure",
+      "merged_updated_or_closed_in_preparation": false,
+      "note": "Existing dependency maintenance remains separate. Current main CI is green and checkout stays pinned to its reviewed full SHA."
+    }
+  },
+  "GitHub_settings": {
+    "Actions_enabled": true,
+    "allowed_actions": "all",
+    "repository_SHA_pinning_required": false,
+    "default_workflow_permissions": "read",
+    "Actions_may_approve_pull_requests": false,
+    "workflow_remote_actions_pinned_to_full_SHA": true,
+    "workflow_contents_permission": "read",
+    "workflow_persist_credentials": false,
+    "main_protected": false,
+    "rules_API": {
+      "HTTP_status": 403,
+      "result": "Requires eligible paid plan or public visibility on this account."
+    },
+    "fork_PR_approval_API": {
+      "HTTP_status": 422,
+      "result": "Unavailable for this private repository; not verified as enabled."
+    },
+    "private_vulnerability_reporting_API": {
+      "HTTP_status": 404,
+      "result": "Unavailable or unverified; not evidence that the feature is enabled."
+    },
+    "prepared_main_protection": {
+      "file": ".github/main-protection.json",
+      "applied": false,
+      "required_check": "Apple Silicon · Xcode 26.3",
+      "up_to_date_branch": true,
+      "pull_request_required": true,
+      "required_approving_reviews": 0,
+      "administrator_bypass": true,
+      "resolved_conversations": true,
+      "force_pushes_allowed": false,
+      "branch_deletion_allowed": false
+    }
+  },
+  "current_preparation_checks": {
+    "history_checker_regressions": {
+      "command": "python3 Development/verify-publication-history.py",
+      "tests": 11,
+      "failures": 0,
+      "seconds": 3.607,
+      "log_sha256": "88c169cb0bcd326c0cb8cbf5d5d7dfe9f8219b8238cd512e24105fd64652b1a1",
+      "raw_log_not_committed": true,
+      "scope": "Disposable local Git fixtures covering historical data, filenames, raw identities, nested tags, shallow history, oversized blobs and ref/mutation boundaries."
+    },
+    "repository_localization_syntax_and_diff_checks": {
+      "repository": {
+        "result": "passed",
+        "tracked_source_files": 655,
+        "PDF_A_catalogues": 11,
+        "catalogue_entries": 1489,
+        "font_data_resources": 215,
+        "scope": "Tracked working-tree files, selected patterns, relative links, Apple import policy, mirrored licensed resources and CI permissions."
+      },
+      "localization": {
+        "result": "passed",
+        "variants": [
+          "en",
+          "it",
+          "es",
+          "de",
+          "fr",
+          "zh-Hans",
+          "zh-Hant",
+          "ja"
+        ],
+        "keys_per_variant": 3040,
+        "explicit_source_keys": 2908,
+        "English_fallback": "en"
+      },
+      "Python_AST": "passed",
+      "bash_syntax": "passed",
+      "staged_diff_whitespace": "passed"
+    },
+    "new_commit_CI": "Must pass for the exact pushed preparation commit. This pre-commit report does not invent its future SHA or run ID."
+  },
+  "identified_historical_native_evidence": {
+    "application_source_unchanged_since_base_commit": true,
+    "record": "Development/UILocalizationVerification.json",
+    "local_native_suite": {
+      "Italian": 527,
+      "English": 527,
+      "failures_each": 0,
+      "optional_snapshot_skips_each": 1
+    },
+    "Release_build_and_arm64_signature_checks": "passed_in_identified_prior_run",
+    "language_selection_cases": 20,
+    "locale_PDF_A_profile_comparisons": 88,
+    "native_tests_or_app_build_rerun_locally_for_this_documentation_change": false,
+    "base_commit_CI": {
+      "head_commit": "c8aeceea378f9906a3f9b2d6670d09168e6cf1ce",
+      "url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39115227995",
+      "conclusion": "success"
+    },
+    "note": "The new CI workflow repeats native tests, Release build and packaged checks for the pushed commit; earlier evidence stays historical."
+  },
+  "separate_incomplete_audits": {
+    "interactive_localization": {
+      "record": "Development/InteractiveUILocalizationAudit.json",
+      "status": "blocked_on_native_automation_service",
+      "English": "partial",
+      "completed_locale_count": 0,
+      "alternative_UI_automation_not_used_without_explicit_authorization": true
+    },
+    "complete_ISO_PDF_A_validation": false,
+    "PDF_A_profiles_distinguished": 11,
+    "conforming_verdict_emitted": false,
+    "complete_VoiceOver_audit": false,
+    "VoiceOver_activated_in_preparation": false
+  },
+  "binary_distribution": {
+    "published_or_created_release": false,
+    "current_source_build_signature": "ad_hoc",
+    "Developer_ID_signed_and_notarized_installer_provided": false
+  },
+  "remaining_owner_decisions_and_checks": [
+    "Review the final pushed source and successful workflow for that exact commit before explicitly changing visibility.",
+    "After an authorized visibility change, apply or adjust the prepared main protection and verify its actual settings/check name.",
+    "Verify public-repository contributor workflow approval, secret scanning/push protection and private vulnerability reporting; availability is not enablement.",
+    "Review any new hosted content or logs added after this dated inventory.",
+    "Handle open dependency PR 1 as separate maintenance.",
+    "Keep ISO, VoiceOver and interactive-UI limitations explicit; source publication does not complete those audits."
+  ],
+  "complete_security_audit": false
+}

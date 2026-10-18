@@ -140,11 +140,11 @@ final class PDFStructureEngineTests: XCTestCase {
     func testPreflightReportsRealUnembeddedFontAndImagePlacementDPI() throws {
         let reader = try PDFStructureDocument(data: fixture())
         let items = try reader.preflight()
-        XCTAssertTrue(items.contains { $0.title.contains("Helvetica") && $0.detail.contains("non incorporato") })
+        XCTAssertTrue(items.contains { $0.title.contains("Helvetica") && diagnosticContains($0.detail, "non incorporato") })
         let placements = try reader.imagePlacements(on: XCTUnwrap(reader.pageIDs().first))
         XCTAssertEqual(try XCTUnwrap(placements.first).dpi, 2, accuracy: 0.01)
-        XCTAssertTrue(items.contains { $0.title.contains("Immagine") && $0.severity == "avviso" })
-        XCTAssertTrue(items.contains { $0.title == "Limite della validazione" && $0.detail.contains("Non è un validatore completo") })
+        XCTAssertTrue(items.contains { diagnosticContains($0.title, "Immagine") && $0.severity == "avviso" })
+        XCTAssertTrue(items.contains { $0.title == L10n.tr("Limite della validazione") && diagnosticContains($0.detail, "Non è un validatore completo") })
     }
 
     @MainActor
@@ -157,7 +157,7 @@ final class PDFStructureEngineTests: XCTestCase {
         XCTAssertTrue(xmp.contains("pdfaid:"))
         XCTAssertFalse((try reader.resolve(root["OutputIntents"])?.array ?? []).isEmpty)
         XCTAssertEqual(PDFDocument(data: result)?.pageCount, 1)
-        XCTAssertTrue(try reader.archivalChecks().contains { $0.title == "Dichiarazione PDF/A in XMP" })
+        XCTAssertTrue(try reader.archivalChecks().contains { $0.title == L10n.tr("Dichiarazione PDF/A in XMP") })
     }
 
     @MainActor

@@ -57,7 +57,7 @@ final class PDFArchiveStructureAttributeChecks {
             if userPropertiesApplied {
                 let catalog = try dictionary(.reference(reader.rootID)), mark = try dictionary(catalog["MarkInfo"])
                 if try resolve(mark["UserProperties"])?.bool != true {
-                    result.issues.append("MarkInfo/UserProperties deve essere true quando sono applicate proprietà utente")
+                    result.issues.append(L10n.tr("MarkInfo/UserProperties deve essere true quando sono applicate proprietà utente"))
                 }
             }
         } catch is CancellationError { result.gaps.append("Audit attributi strutturali annullato") }
@@ -73,7 +73,7 @@ final class PDFArchiveStructureAttributeChecks {
     }
     private func dictionary(_ value: PDFSyntaxValue?) throws -> [String: PDFSyntaxValue] {
         guard let value = try resolve(value) else { return [:] }
-        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed("dizionario attributi strutturali") }
+        guard let dictionary = value.dictionary else { throw PDFStructureError.malformed(L10n.tr("dizionario attributi strutturali")) }
         return dictionary
     }
     private func attributes(_ raw: PDFSyntaxValue?, revisionPairs: Bool, location: String) throws -> [Attribute] {
@@ -207,7 +207,7 @@ final class PDFArchiveStructureAttributeChecks {
         default:
             for (key, value) in attribute.value where key != "O" && key != "NS" {
                 if try resolve(value) != nil {
-                    result.gaps.append(attribute.location + ": schema proprietario " + owner + " non modellato"); break
+                    result.gaps.append(attribute.location + ": schema proprietario " + owner + L10n.tr(" non modellato")); break
                 }
             }
             return
@@ -215,8 +215,8 @@ final class PDFArchiveStructureAttributeChecks {
         for (key, raw) in attribute.value where key != "O" {
             do {
                 guard try resolve(raw) != nil else { continue }
-                guard let shape = schema[key] else { result.gaps.append(attribute.location + "/" + key + ": schema/versione attributo non modellato"); continue }
-                if try !valid(raw, shape) { result.issues.append(attribute.location + "/" + key + ": valore non conforme al tipo/intervallo dell’owner " + owner) }
+                guard let shape = schema[key] else { result.gaps.append(attribute.location + "/" + key + L10n.tr(": schema/versione attributo non modellato")); continue }
+                if try !valid(raw, shape) { result.issues.append(attribute.location + "/" + key + L10n.tr(": valore non conforme al tipo/intervallo dell’owner ") + owner) }
             } catch PDFStructureError.unsupported(let detail) {
                 result.gaps.append(attribute.location + "/" + key + ": " + detail)
             }
@@ -224,15 +224,15 @@ final class PDFArchiveStructureAttributeChecks {
     }
     private func userProperties(_ attribute: Attribute) throws {
         guard let values = try resolve(attribute.value["P"])?.array else {
-            result.issues.append(attribute.location + ": UserProperties/P array richiesto"); return
+            result.issues.append(attribute.location + L10n.tr(": UserProperties/P array richiesto")); return
         }
         for value in values {
-            guard let p = try resolve(value)?.dictionary else { result.issues.append(attribute.location + "/P: proprietà non dizionario"); continue }
+            guard let p = try resolve(value)?.dictionary else { result.issues.append(attribute.location + L10n.tr("/P: proprietà non dizionario")); continue }
             if try resolve(p["N"])?.data == nil { result.issues.append(attribute.location + "/P/N: text string richiesto") }
             if p["V"] == nil { result.issues.append(attribute.location + "/P/V: valore richiesto") }
-            else if try resolve(p["V"]) == nil { result.gaps.append(attribute.location + "/P/V: valore null richiesto non attestato") }
-            if let f = try resolve(p["F"]), f.data == nil { result.issues.append(attribute.location + "/P/F non text string") }
-            if let h = try resolve(p["H"]), h.bool == nil { result.issues.append(attribute.location + "/P/H non boolean") }
+            else if try resolve(p["V"]) == nil { result.gaps.append(attribute.location + L10n.tr("/P/V: valore null richiesto non attestato")) }
+            if let f = try resolve(p["F"]), f.data == nil { result.issues.append(attribute.location + L10n.tr("/P/F non text string")) }
+            if let h = try resolve(p["H"]), h.bool == nil { result.issues.append(attribute.location + L10n.tr("/P/H non boolean")) }
             // V may be any PDF type. The recommendation for simple displayable
             // types is not a prohibition on dictionaries or arrays.
         }
@@ -258,22 +258,22 @@ final class PDFArchiveStructureAttributeChecks {
         let keys = profile.part == 1 ? ["RowSpan","ColSpan"] : ["RowSpan","ColSpan","Headers","Scope","Summary","Short"]
         for key in keys {
             guard let (value, current) = attributes[key] else { continue }
-            guard current else { result.gaps.append(element.location + "/" + key + ": revisione attributo non corrente"); continue }
-            guard let tag = try role(element) else { result.gaps.append(element.location + "/" + key + ": namespace/RoleMap non risolto per il contesto"); continue }
+            guard current else { result.gaps.append(element.location + "/" + key + L10n.tr(": revisione attributo non corrente")); continue }
+            guard let tag = try role(element) else { result.gaps.append(element.location + "/" + key + L10n.tr(": namespace/RoleMap non risolto per il contesto")); continue }
             let allowed: Set<String> = key == "Summary" ? ["Table"] : key == "Scope" || key == "Short" ? ["TH"] : ["TH","TD"]
             guard allowed.contains(tag) else {
                 // PDF2 table entries have no effect on unrelated elements;
                 // the older schema explicitly restricts where they are used.
-                if profile.part != 4 { result.issues.append(element.location + "/" + key + ": attributo Table non ammesso sul tipo " + tag) }
+                if profile.part != 4 { result.issues.append(element.location + "/" + key + L10n.tr(": attributo Table non ammesso sul tipo ") + tag) }
                 continue
             }
             if key == "Headers", let headers = try resolve(value)?.array {
                 for header in headers {
                     guard let id = try resolve(header)?.data else { continue }
-                    guard let target = identifiers[id] else { result.issues.append(element.location + "/Headers: ID non presente nella gerarchia"); continue }
+                    guard let target = identifiers[id] else { result.issues.append(element.location + L10n.tr("/Headers: ID non presente nella gerarchia")); continue }
                     if let targetRole = try role(target) {
                         if targetRole != "TH" { result.issues.append(element.location + "/Headers: ID riferisce un elemento diverso da TH") }
-                    } else { result.gaps.append(element.location + "/Headers: ruolo namespace del target non provato") }
+                    } else { result.gaps.append(element.location + L10n.tr("/Headers: ruolo namespace del target non provato")) }
                 }
             }
         }

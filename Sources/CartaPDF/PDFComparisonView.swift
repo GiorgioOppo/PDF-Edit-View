@@ -58,31 +58,33 @@ private struct PDFComparisonView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Label("Confronto del testo", systemImage: "doc.on.doc")
+                Label(L10n.tr("Confronto del testo"), systemImage: "doc.on.doc")
                     .font(.headline)
                 Spacer()
                 Button { state.go(to: state.pageIndex - 1) } label: { Image(systemName: "chevron.left") }
-                    .disabled(state.pageIndex == 0).help("Pagina precedente")
-                    .accessibilityLabel("Pagina precedente nel confronto")
-                Text("Pagina \(state.pageIndex + 1) di \(state.pageCount)").monospacedDigit()
+                    .disabled(state.pageIndex == 0).help(L10n.tr("Pagina precedente"))
+                    .accessibilityLabel(L10n.tr("Pagina precedente nel confronto"))
+                Text(L10n.tr("Pagina \(state.pageIndex + 1) di \(state.pageCount)")).monospacedDigit()
                 Button { state.go(to: state.pageIndex + 1) } label: { Image(systemName: "chevron.right") }
-                    .disabled(state.pageIndex + 1 >= state.pageCount).help("Pagina successiva")
-                    .accessibilityLabel("Pagina successiva nel confronto")
+                    .disabled(state.pageIndex + 1 >= state.pageCount).help(L10n.tr("Pagina successiva"))
+                    .accessibilityLabel(L10n.tr("Pagina successiva nel confronto"))
             }.padding(16)
             HStack {
-                Text("\(state.comparison.changedPages.count) pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate.")
+                Text(L10n.tr("\(state.comparison.changedPages.count) pagine con testo diverso o mancanti. Immagini e impaginazione non analizzate."))
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 if !state.comparison.changedPages.isEmpty {
-                    Menu("Pagine diverse") {
+                    Menu(L10n.tr("Pagine diverse")) {
                         ForEach(state.comparison.changedPages, id: \.self) { index in
-                            Button("Pagina \(index + 1)") { state.go(to: index) }
+                            Button(L10n.tr("Pagina \(index + 1)")) { state.go(to: index) }
                         }
                     }
+                    .fixedSize()
                 }
             }.font(.callout).foregroundStyle(.secondary).padding(.horizontal, 16).padding(.bottom, 12)
             if state.comparison.pagesWithoutExtractableText > 0 {
-                Text("\(state.comparison.pagesWithoutExtractableText) posizioni contengono pagine mancanti o senza testo estraibile. Esegui OCR sui PDF scansionati prima del confronto.")
-                    .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                Text(L10n.tr("\(state.comparison.pagesWithoutExtractableText) posizioni contengono pagine mancanti o senza testo estraibile. Esegui OCR sui PDF scansionati prima del confronto."))
+                    .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16).padding(.bottom, 12)
             }
             Divider()
@@ -96,12 +98,12 @@ private struct PDFComparisonView: View {
 
     private func column(document: PDFDocument, name: String) -> some View {
         VStack(spacing: 0) {
-            Text(name).font(.headline).lineLimit(1).padding(12)
+            Text(name).font(.headline).lineLimit(1).truncationMode(.middle).help(name).padding(12)
             Divider()
             if state.pageIndex < document.pageCount {
                 ComparisonPDFCanvas(document: document, name: name, state: state)
             } else {
-                ContentUnavailableView("Pagina assente", systemImage: "doc", description: Text("Questo PDF non contiene la pagina \(state.pageIndex + 1)."))
+                ContentUnavailableView(L10n.tr("Pagina assente"), systemImage: "doc", description: Text(L10n.tr("Questo PDF non contiene la pagina \(state.pageIndex + 1).")))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }.frame(minWidth: 350)
@@ -126,7 +128,7 @@ private struct ComparisonPDFCanvas: NSViewRepresentable {
         return view
     }
     func updateNSView(_ view: EditablePDFView, context: Context) {
-        view.setAccessibilityLabel("Confronto, \(name), pagina \(state.pageIndex + 1)")
+        view.setAccessibilityLabel(L10n.tr("Confronto, \(name), pagina \(state.pageIndex + 1)"))
         context.coordinator.updating = true
         defer { context.coordinator.updating = false }
         if view.document !== document { view.document = document }
@@ -159,9 +161,9 @@ private struct ComparisonPDFCanvas: NSViewRepresentable {
 private final class PDFComparisonController: NSWindowController, NSWindowDelegate {
     private static var sessions: [PDFComparisonController] = []
     init(state: PDFComparisonState) {
-        let window = NSWindow(contentViewController: NSHostingController(rootView: PDFComparisonView(state: state)))
+        let window = NSWindow(contentViewController: NSHostingController(rootView: PDFComparisonView(state: state).environment(\.locale, L10n.currentLocale)))
         window.setContentSize(NSSize(width: 1180, height: 820))
-        window.title = "Confronto PDF"
+        window.title = L10n.tr("Confronto PDF")
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
         window.isReleasedWhenClosed = false
         window.center()
@@ -178,20 +180,20 @@ extension PDFEditorModel {
     func comparePDF() {
         guard !isProcessing else { return }
         guard document.allowsCopying else {
-            errorMessage = "Il PDF non consente l’estrazione del testo necessaria per il confronto."
+            errorMessage = L10n.tr("Il PDF non consente l’estrazione del testo necessaria per il confronto.")
             return
         }
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.pdf]
         panel.allowsMultipleSelection = false
-        panel.message = "Scegli il secondo PDF da confrontare con il documento corrente."
+        panel.message = L10n.tr("Scegli il secondo PDF da confrontare con il documento corrente.")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             guard let other = PDFDocument(url: url) else { throw PDFWorkspaceError.invalidPDF }
             try PDFWorkspaceDocument.unlockIfNeeded(other, name: url.lastPathComponent)
             guard other.pageCount > 0 else { throw PDFWorkspaceError.invalidPDF }
             guard other.allowsCopying else {
-                errorMessage = "Il secondo PDF non consente l’estrazione del testo."
+                errorMessage = L10n.tr("Il secondo PDF non consente l’estrazione del testo.")
                 return
             }
             let left = try comparisonSnapshot(document)

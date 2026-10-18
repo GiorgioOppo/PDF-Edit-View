@@ -222,7 +222,7 @@ final class CartaWorkspaceServicesTests: XCTestCase {
         state.compare()
         await state.task?.value
         XCTAssertNotNil(state.image)
-        XCTAssertTrue(state.message.contains("Pixel diversi:"), state.message)
+        XCTAssertTrue(diagnosticContains(state.message, "Pixel diversi:"), state.message)
         let image = try XCTUnwrap(state.image?.cgImage(forProposedRect: nil, context: nil, hints: nil))
         let pixels = try CartaVisualEngine.pixels(image, width: 700, height: 900)
         XCTAssertGreaterThan(pixels.enumerated().filter { $0.offset % 4 == 0 && $0.element > 220 && pixels[$0.offset + 1] < 80 }.count, 50)
@@ -246,6 +246,6 @@ final class CartaWorkspaceServicesTests: XCTestCase {
         XCTAssertLessThanOrEqual(raster.image.width * raster.image.height, 24_000_000)
         model.selectAnnotation(nil, on: nil)
         model.addTextAnnotation(text: String(repeating: "Testo molto lungo. ", count: 500), at: CGPoint(x: 20, y: 800), on: try XCTUnwrap(model.currentPage))
-        XCTAssertTrue((model.statusMessage ?? "").contains("supera il riquadro"))
+        XCTAssertTrue(diagnosticContains(model.statusMessage ?? "", "supera il riquadro"))
     }
 }

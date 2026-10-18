@@ -1,34 +1,89 @@
-# Preparazione alla pubblicazione pubblica
+# Preparing for public release
 
-Il repository [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) nasce privato. Questa documentazione prepara una futura apertura dei sorgenti; **non autorizza né esegue il cambio di visibilità e non pubblica automaticamente binari**. Il nome del progetto è PDF-Edit&View, con slug GitHub PDF-Edit-View, mentre l'app resta CartaPDF 3.6.0.
+The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository was created as private. This documentation prepares a future source release; **it neither authorizes nor changes visibility, and it does not automatically publish binaries**. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app remains CartaPDF 3.6.0.
 
-## Contenuti del repository
+## Repository contents
 
-Il repository sorgente deve comprendere codice, test, risorse e relative licenze, script, guide e prove tecniche selezionate. Cartelle di build, bundle, archivi di distribuzione, corpus acquisiti, documenti personali, password, chiavi private e credenziali devono restare fuori da Git. Verifica sia i file tracciati sia la storia dei commit prima di rendere il repository pubblico: aggiungere una regola a `.gitignore` non rimuove dati già registrati.
+The source repository should include code, tests, resources and their licenses, scripts, guides, and selected technical evidence. Build directories, bundles, distribution archives, acquired corpora, personal documents, passwords, private keys, and credentials must stay out of Git. Check both tracked files and commit history before making the repository public: adding a `.gitignore` rule does not remove previously committed data.
 
-I rapporti storici in Development descrivono la release indicata e possono contenere percorsi o nomi di fixture. Conserva la validità dell'evidenza, ma pubblica solo dati che puoi condividere. Non aggiornare un hash o un esito a mano per far apparire recente una verifica.
+Historical reports in Development describe the stated release and may contain paths or fixture names. Preserve the validity of the evidence, but publish only data you can share. Do not edit a hash or result by hand to make verification appear recent.
 
-## Prima di cambiare visibilità
+## Before changing visibility
 
-1. Riesamina diff e storia per credenziali, documenti personali, percorsi identificativi, contenuti riservati e materiale non redistribuibile.
-2. Verifica che licenze MIT, CC BY 4.0 e BSD siano presenti, con attribuzioni e manifest nelle due copie delle risorse.
-3. Controlla link relativi, istruzioni di build, versione, limiti PDF/A e stato dell'audit VoiceOver.
-4. Esegui i controlli di repository e la suite nativa appropriata; documenta separatamente l'ultima esecuzione reale e i limiti dell'ambiente.
-5. Verifica le impostazioni GitHub: branch predefinito, permessi collaboratori, Actions, protezioni disponibili, canali di segnalazione e private vulnerability reporting se desiderato e disponibile.
-6. Il proprietario decide esplicitamente il passaggio da privato a pubblico, dopo aver verificato i contenuti effettivamente inviati.
+1. Review the diff and the history reachable from every advertised remote branch and tag that will be exposed for credentials, personal documents, identifying paths, confidential content, and material that cannot be redistributed. Also inspect repository issues, pull requests, release assets, historical Actions logs/artifacts and any wiki; a source-file check does not inspect these surfaces.
+2. Check that MIT, CC BY 4.0, and BSD licenses are present, with attributions and manifests in both resource copies.
+3. Check relative links, build instructions, version, PDF/A limitations, VoiceOver audit status and the distinction between native snapshots and completed interactive UI observations.
+4. Run repository checks and the appropriate native suite; document the latest actual execution and environment limits separately. Confirm that the GitHub workflow passed for the exact pushed commit being considered for publication.
+5. Check GitHub settings: default branch, collaborator permissions, Actions, available protections, reporting channels, and private vulnerability reporting if desired and available.
+6. The owner explicitly decides to change visibility from private to public after checking the content actually pushed.
 
-Non è richiesta una pubblicazione App Store per distribuire i sorgenti MIT. Una distribuzione binaria verificata ha requisiti operativi diversi dalla sola apertura del codice.
+An App Store release is not required to distribute the MIT sources. Verified binary distribution has different operational requirements from opening the source code.
 
-## Prima di distribuire un binario
+## Reproducible source checks
 
-- Compila da un commit identificato e verifica l'app realmente estratta dall'archivio finale.
-- Registra versione, architettura, toolchain, SHA-256 e risultati delle prove pertinenti.
-- Controlla le risorse fuori dal workspace e la firma sul bundle estratto.
-- Se desideri una distribuzione firmata per il pubblico, prepara firma Developer ID e notarizzazione con un account e credenziali autorizzati; la firma ad hoc attuale non le sostituisce.
-- Allega licenze, istruzioni, limiti e changelog. Pubblica artefatti solo dopo averne verificato provenienza e contenuto.
+Run these checks on the proposed publication tree:
 
-Nessuna release deve chiamare CartaPDF “validatore ISO PDF/A completo”, “certificato PDF/UA”, “PAdES completo” o equivalente finché la relativa copertura non è dimostrata. Il corpus, i cataloghi e i test sono evidenze limitate al loro ambito.
+```sh
+python3 scripts/check-repository.py
+python3 scripts/check-localization.py
+./scripts/test.sh
+./scripts/build-app.sh
+python3 scripts/check-built-app.py dist/CartaPDF.app
+```
 
-## Priorità tecniche aperte
+The repository checker inspects tracked working-tree files, relative Markdown links, resource licenses and hashes, permitted imports, selected credential patterns and CI permissions. Add intended new source files to the index before relying on it. It does not inspect past commits, untracked files, hosted GitHub content or every possible secret. Review those separately and record the branches, tags and commit range actually checked. Do not publish local task snapshots or mirror all local refs as part of an ordinary source push.
 
-Le lacune concrete sono documentate in [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md) e [FeatureVerification](../Development/FeatureVerification.json). Tra le verifiche aperte figurano semantiche normative integrali, audit VoiceOver completo, scanner/cattura/audio reali e dispatch AppleScript. Non vengono assegnate date o promesse di completamento non verificate.
+Keep raw logs, screenshots, generated app copies and fixtures outside the published tree unless they have been explicitly reviewed for redistribution. Dated evidence should identify the source commit, command, result, hashes and any skips or unavailable checks. A previous successful run remains historical evidence rather than a result for later changes.
+
+For a complete local history, the read-only history checker takes explicit refs. Include every advertised branch and tag and acquire any PR merge refs being reviewed separately:
+
+```sh
+python3 scripts/check-publication-history.py \
+  --ref refs/heads/main \
+  --ref refs/remotes/origin/main
+python3 Development/verify-publication-history.py
+```
+
+The first command checks only the refs supplied and refuses a shallow history. Add the actual additional refs from the repository inventory; the example is not an assertion that `main` is the only exposed branch. The fixture verifier exercises historical removal, renamed sensitive filenames, commit/tag identities and scope boundaries in disposable local Git repositories. CI runs these regression fixtures without changing repository visibility.
+
+GitHub also makes historical Actions logs visible when a repository becomes public. Review their contents before changing visibility, including earlier failed runs; successful current tests do not sanitize older hosted data. See [GitHub's visibility consequences](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility).
+
+## Prepared GitHub settings
+
+The optional [main protection payload](../.github/main-protection.json) is ready for owner review. It requires the observed `Apple Silicon · Xcode 26.3` check on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. Zero mandatory approving reviews supports a solo maintainer; administrators retain a bypass. Change those choices before applying it if a stricter review policy is desired.
+
+The current private repository's rules API requires an eligible paid plan or public visibility. The payload has not been applied. After an explicitly authorized visibility change, the owner can apply it with:
+
+```sh
+gh api --method PUT repos/GiorgioOppo/PDF-Edit-View/branches/main/protection \
+  --input .github/main-protection.json
+```
+
+Then verify the returned protection settings and the exact required check name. Check approval policy for workflows from outside contributors, secret scanning/push protection and private vulnerability reporting in the public repository. Their availability is not evidence that they are enabled. [GitHub documents private vulnerability reporting separately](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
+
+## What is ready and what remains separate
+
+The repository contains English setup, usage, contribution, support and security guides, issue forms, a pull-request template, the MIT license and bundled-data notices. The [verification records](../Development/README.md) describe the checks actually performed; [PublicationReadiness](../Development/PublicationReadiness.json) separates publication-preparation findings from settings or checks still pending. These files establish documentation and evidence coverage; GitHub settings and publication decisions must still be verified separately.
+
+The following statements must remain visible in the public README and guides:
+
+- All seven interface languages are bundled, with eight resource variants and English fallback. Native component snapshots and partial interactive observations have different scopes; neither establishes a complete VoiceOver or independent linguistic audit.
+- All eleven PDF/A profiles are distinguished, but complete ISO validation remains unfinished and this version never emits `conforming`.
+- Hardware workflows, complete accessibility testing and AppleScript dispatch retain their documented manual-check status.
+- Source builds use an ad hoc signature. No notarized installer, legal signature qualification or binary release is implied by source publication.
+
+These technical limitations do not need to be hidden or relabeled to publish the source. Keep them accurate and link the relevant evidence instead of claiming unperformed validation.
+
+## Before distributing a binary
+
+- Build from an identified commit and verify the app actually extracted from the final archive.
+- Record the version, architecture, toolchain, SHA-256 hashes, and relevant test results.
+- Check resources outside the workspace and the signature on the extracted bundle.
+- For signed public distribution, prepare Developer ID signing and notarization with an authorized account and credentials; the current ad hoc signature does not replace them.
+- Include licenses, instructions, limitations, and a changelog. Publish artifacts only after verifying their provenance and contents.
+
+No release should describe CartaPDF as a “complete ISO PDF/A validator,” “PDF/UA certified,” “complete PAdES,” or equivalent until the corresponding coverage is demonstrated. The corpus, catalogues, and tests provide evidence within their stated scope.
+
+## Open technical priorities
+
+Specific gaps are documented in [PDFA-ValidatorScope](../Development/PDFA-ValidatorScope.md) and [FeatureVerification](../Development/FeatureVerification.json). Outstanding checks include complete normative semantics, a full VoiceOver audit, real scanner/capture/audio workflows, and AppleScript dispatch. No unverified completion dates or promises are assigned.

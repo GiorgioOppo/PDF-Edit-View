@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 APPLE_MODULES = {
     "AVFoundation", "AppIntents", "AppKit", "Combine", "Compression",
     "CoreGraphics", "CoreImage", "CoreText", "CryptoKit", "Darwin",
-    "Foundation", "ImageCaptureCore", "ImageIO", "PDFKit", "Quartz",
+    "Foundation", "ImageCaptureCore", "ImageIO", "PDFKit", "Quartz", "QuartzCore",
     "ScreenCaptureKit", "Security", "SwiftUI", "UniformTypeIdentifiers",
     "Vision", "WebKit", "XCTest", "CartaPDF", "PackageDescription",
 }
@@ -45,7 +45,7 @@ PERSONAL_PATH = re.compile(
     "/" + r"(?:private/)?var/folders/[A-Za-z0-9_/.-]+"
 )
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^)\n]+)\)")
-FORBIDDEN_PARTS = {".git", ".swiftpm", ".agents", ".codex", ".aws", "dist", "__pycache__"}
+FORBIDDEN_PARTS = {".git", ".swiftpm", ".agents", ".codex", ".aws", ".ui-audit", "dist", "__pycache__"}
 FORBIDDEN_SUFFIXES = {".pyc", ".p12", ".pfx", ".key", ".pem", ".mobileprovision"}
 ERRORS: list[str] = []
 

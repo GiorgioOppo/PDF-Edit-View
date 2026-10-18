@@ -17,7 +17,7 @@ extension PDFEditorModel {
         let pages = orderedPages()
         var duplicated = pages
         duplicated.insert(copy, at: currentPageIndex + 1)
-        reorderPages(duplicated, actionName: "Duplica pagina")
+        reorderPages(duplicated, actionName: L10n.tr("Duplica pagina"))
         goToPage(currentPageIndex + 1)
     }
 
@@ -28,14 +28,14 @@ extension PDFEditorModel {
         var pages = orderedPages()
         let page = pages.remove(at: currentPageIndex)
         pages.insert(page, at: target)
-        reorderPages(pages, actionName: "Sposta pagina")
+        reorderPages(pages, actionName: L10n.tr("Sposta pagina"))
         goToPage(target)
     }
 
     func reversePages() {
         guard requireAdvancedPermission(canEditPages), pageCount > 1 else { return }
         let nextIndex = pageCount - 1 - currentPageIndex
-        reorderPages(Array(orderedPages().reversed()), actionName: "Inverti pagine")
+        reorderPages(Array(orderedPages().reversed()), actionName: L10n.tr("Inverti pagine"))
         goToPage(nextIndex)
     }
 
@@ -53,13 +53,13 @@ extension PDFEditorModel {
     func extractPages() {
         guard requireAdvancedPermission(!document.isLocked && document.allowsCopying) else { return }
         let alert = NSAlert()
-        alert.messageText = "Estrai pagine"
-        alert.informativeText = "Indica le pagine, ad esempio 1-3, 5. L’originale rimane invariato."
+        alert.messageText = L10n.tr("Estrai pagine")
+        alert.informativeText = L10n.tr("Indica le pagine, ad esempio 1-3, 5. L’originale rimane invariato.")
         let field = NSTextField(string: "\(currentPageIndex + 1)")
         field.frame = NSRect(x: 0, y: 0, width: 310, height: 26)
         alert.accessoryView = field
-        alert.addButton(withTitle: "Estrai")
-        alert.addButton(withTitle: "Annulla")
+        alert.addButton(withTitle: L10n.tr("Estrai"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         alert.window.initialFirstResponder = field
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         do {
@@ -67,12 +67,12 @@ extension PDFEditorModel {
             let extracted = try extractedDocument(pageIndexes: indices)
             let panel = NSSavePanel()
             panel.allowedContentTypes = [.pdf]
-            panel.nameFieldStringValue = "Pagine estratte.pdf"
+            panel.nameFieldStringValue = L10n.tr("Pagine estratte.pdf")
             guard panel.runModal() == .OK, let url = panel.url else { return }
             try ensureCopyDestination(url)
             guard let data = extracted.dataRepresentation() else { throw PDFWorkspaceError.cannotSave }
             try data.write(to: url, options: .atomic)
-            statusMessage = "Estratte \(indices.count) pagine."
+            statusMessage = L10n.tr("Estratte \(indices.count) pagine.")
         } catch { errorMessage = error.localizedDescription }
     }
 
@@ -82,12 +82,12 @@ extension PDFEditorModel {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.canCreateDirectories = true
-        panel.prompt = "Dividi qui"
-        panel.message = "Crea un PDF per ogni pagina. I file esistenti non verranno sovrascritti."
+        panel.prompt = L10n.tr("Dividi qui")
+        panel.message = L10n.tr("Crea un PDF per ogni pagina. I file esistenti non verranno sovrascritti.")
         guard panel.runModal() == .OK, let directory = panel.url else { return }
         do {
             let files = try splitPDF(to: directory)
-            statusMessage = "Creati \(files.count) PDF nella cartella scelta."
+            statusMessage = L10n.tr("Creati \(files.count) PDF nella cartella scelta.")
         } catch { errorMessage = error.localizedDescription }
     }
 
@@ -102,7 +102,7 @@ extension PDFEditorModel {
             return directory.appendingPathComponent("\(base)-\(padded).pdf")
         }
         guard destinations.allSatisfy({ !manager.fileExists(atPath: $0.path) }) else {
-            throw PDFAdvancedToolError("La cartella contiene già uno dei PDF da creare. Scegli una cartella diversa.")
+            throw PDFAdvancedToolError(L10n.tr("La cartella contiene già uno dei PDF da creare. Scegli una cartella diversa."))
         }
         let staging = directory.appendingPathComponent(".CartaPDF-\(UUID().uuidString)", isDirectory: true)
         try manager.createDirectory(at: staging, withIntermediateDirectories: false)
@@ -128,7 +128,7 @@ extension PDFEditorModel {
     func extractedDocument(pageIndexes: [Int]) throws -> PDFDocument {
         guard !document.isLocked, document.allowsCopying else { throw PDFWorkspaceError.copyingNotAllowed }
         guard !pageIndexes.isEmpty, pageIndexes.allSatisfy({ (0..<pageCount).contains($0) }) else {
-            throw PDFAdvancedToolError("L’intervallo contiene pagine non valide.")
+            throw PDFAdvancedToolError(L10n.tr("L’intervallo contiene pagine non valide."))
         }
         let result = PDFDocument()
         result.documentAttributes = document.documentAttributes
@@ -145,36 +145,36 @@ extension PDFEditorModel {
             let ends = item.trimmingCharacters(in: .whitespaces).split(separator: "-", omittingEmptySubsequences: false)
             guard (1...2).contains(ends.count),
                   let first = Int(ends[0].trimmingCharacters(in: .whitespaces)), first > 0, first <= pageCount else {
-                throw PDFAdvancedToolError("Intervallo non valido. Usa ad esempio 1-3, 5.")
+                throw PDFAdvancedToolError(L10n.tr("Intervallo non valido. Usa ad esempio 1-3, 5."))
             }
             let last: Int
             if ends.count == 2 {
                 guard let value = Int(ends[1].trimmingCharacters(in: .whitespaces)), value >= first, value <= pageCount else {
-                    throw PDFAdvancedToolError("L’intervallo supera le pagine del documento o è invertito.")
+                    throw PDFAdvancedToolError(L10n.tr("L’intervallo supera le pagine del documento o è invertito."))
                 }
                 last = value
             } else { last = first }
             for number in first...last where !result.contains(number - 1) { result.append(number - 1) }
         }
-        guard !result.isEmpty else { throw PDFAdvancedToolError("Seleziona almeno una pagina.") }
+        guard !result.isEmpty else { throw PDFAdvancedToolError(L10n.tr("Seleziona almeno una pagina.")) }
         return result
     }
 
     func cropCurrentPage() {
         guard requireAdvancedPermission(canEditDocument), currentPage != nil else { return }
         let alert = NSAlert()
-        alert.messageText = "Ritaglia pagina"
-        alert.informativeText = "Margini da rimuovere in punti PDF (72 pt = 1 pollice). Il contenuto fuori dal ritaglio viene nascosto, non cancellato."
-        let labels = ["Superiore", "Sinistro", "Inferiore", "Destro"]
+        alert.messageText = L10n.tr("Ritaglia pagina")
+        alert.informativeText = L10n.tr("Margini da rimuovere in punti PDF (72 pt = 1 pollice). Il contenuto fuori dal ritaglio viene nascosto, non cancellato.")
+        let labels = [L10n.tr("Superiore"), L10n.tr("Sinistro"), L10n.tr("Inferiore"), L10n.tr("Destro")]
         let fields = labels.map { _ in NSTextField(string: "18") }
         alert.accessoryView = Self.formAccessory(labels: labels, fields: fields)
-        alert.addButton(withTitle: "Ritaglia")
-        alert.addButton(withTitle: "Annulla")
+        alert.addButton(withTitle: L10n.tr("Ritaglia"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         do {
             let numbers = try fields.map { field -> CGFloat in
                 guard let value = Double(field.stringValue.replacingOccurrences(of: ",", with: ".")), value.isFinite else {
-                    throw PDFAdvancedToolError("Inserisci margini numerici validi.")
+                    throw PDFAdvancedToolError(L10n.tr("Inserisci margini numerici validi."))
                 }
                 return CGFloat(value)
             }
@@ -185,12 +185,12 @@ extension PDFEditorModel {
     func cropCurrentPage(margins: NSEdgeInsets) throws {
         guard canEditDocument, let page = currentPage else { throw PDFWorkspaceError.editingNotAllowed }
         let values = [margins.top, margins.left, margins.bottom, margins.right]
-        guard values.allSatisfy({ $0.isFinite && $0 >= 0 }) else { throw PDFAdvancedToolError("I margini devono essere positivi.") }
+        guard values.allSatisfy({ $0.isFinite && $0 >= 0 }) else { throw PDFAdvancedToolError(L10n.tr("I margini devono essere positivi.")) }
         let old = page.bounds(for: .cropBox)
         let width = old.width - margins.left - margins.right
         let height = old.height - margins.top - margins.bottom
         guard width.isFinite, height.isFinite, width >= 18, height >= 18 else {
-            throw PDFAdvancedToolError("Il ritaglio deve lasciare almeno 18 punti di larghezza e altezza.")
+            throw PDFAdvancedToolError(L10n.tr("Il ritaglio deve lasciare almeno 18 punti di larghezza e altezza."))
         }
         let bounds = CGRect(x: old.minX + margins.left, y: old.minY + margins.bottom,
                             width: width, height: height)
@@ -199,7 +199,7 @@ extension PDFEditorModel {
 
     private func setCropBounds(_ bounds: CGRect, of page: PDFPage) {
         let previous = page.bounds(for: .cropBox)
-        performChange(named: "Ritaglia pagina", mutation: { page.setBounds(bounds, for: .cropBox) }, inverse: { model in
+        performChange(named: L10n.tr("Ritaglia pagina"), mutation: { page.setBounds(bounds, for: .cropBox) }, inverse: { model in
             model.setCropBounds(previous, of: page)
         })
     }
@@ -207,13 +207,13 @@ extension PDFEditorModel {
     func addWatermark() {
         guard requireAdvancedPermission(canEditAnnotations) else { return }
         let alert = NSAlert()
-        alert.messageText = "Aggiungi filigrana"
-        alert.informativeText = "Il testo verrà sovrapposto al centro di tutte le pagine."
-        let field = NSTextField(string: "BOZZA")
+        alert.messageText = L10n.tr("Aggiungi filigrana")
+        alert.informativeText = L10n.tr("Il testo verrà sovrapposto al centro di tutte le pagine.")
+        let field = NSTextField(string: L10n.tr("BOZZA"))
         field.frame = NSRect(x: 0, y: 0, width: 320, height: 26)
         alert.accessoryView = field
-        alert.addButton(withTitle: "Aggiungi")
-        alert.addButton(withTitle: "Annulla")
+        alert.addButton(withTitle: L10n.tr("Aggiungi"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         addWatermark(text: field.stringValue)
     }
@@ -235,7 +235,7 @@ extension PDFEditorModel {
             let border = PDFBorder(); border.lineWidth = 0; annotation.border = border
             return (page, annotation)
         }
-        addBatchAnnotations(annotations, actionName: "Aggiungi filigrana")
+        addBatchAnnotations(annotations, actionName: L10n.tr("Aggiungi filigrana"))
     }
 
     func addPageNumbers() {
@@ -251,23 +251,23 @@ extension PDFEditorModel {
             let border = PDFBorder(); border.lineWidth = 0; annotation.border = border
             return (page, annotation)
         }
-        addBatchAnnotations(annotations, actionName: "Numera pagine")
+        addBatchAnnotations(annotations, actionName: L10n.tr("Numera pagine"))
     }
 
     func addBatesNumbers() {
         guard requireAdvancedPermission(canEditAnnotations) else { return }
         let alert = NSAlert()
-        alert.messageText = "Numerazione Bates"
-        alert.informativeText = "Aggiunge un identificatore progressivo al piè di pagina di ogni pagina."
+        alert.messageText = L10n.tr("Numerazione Bates")
+        alert.informativeText = L10n.tr("Aggiunge un identificatore progressivo al piè di pagina di ogni pagina.")
         let prefix = NSTextField(string: "DOC-")
         let start = NSTextField(string: "1")
         let padding = NSTextField(string: "6")
-        alert.accessoryView = Self.formAccessory(labels: ["Prefisso", "Primo numero", "Cifre minime"], fields: [prefix, start, padding])
-        alert.addButton(withTitle: "Numera")
-        alert.addButton(withTitle: "Annulla")
+        alert.accessoryView = Self.formAccessory(labels: [L10n.tr("Prefisso"), L10n.tr("Primo numero"), L10n.tr("Cifre minime")], fields: [prefix, start, padding])
+        alert.addButton(withTitle: L10n.tr("Numera"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         guard let startValue = Int(start.stringValue), let paddingValue = Int(padding.stringValue) else {
-            errorMessage = "Numero iniziale e cifre minime devono essere numeri interi."
+            errorMessage = L10n.tr("Numero iniziale e cifre minime devono essere numeri interi.")
             return
         }
         do { try addBatesNumbers(prefix: prefix.stringValue, start: startValue, padding: paddingValue) }
@@ -277,7 +277,7 @@ extension PDFEditorModel {
     func addBatesNumbers(prefix: String, start: Int, padding: Int) throws {
         guard canEditAnnotations else { throw PDFWorkspaceError.editingNotAllowed }
         guard start >= 0, (1...20).contains(padding), start <= Int.max - pageCount else {
-            throw PDFAdvancedToolError("Usa un numero iniziale positivo e da 1 a 20 cifre minime.")
+            throw PDFAdvancedToolError(L10n.tr("Usa un numero iniziale positivo e da 1 a 20 cifre minime."))
         }
         let annotations = orderedPages().enumerated().map { index, page -> (PDFPage, PDFAnnotation) in
             let value = String(start + index)
@@ -292,7 +292,7 @@ extension PDFEditorModel {
             let border = PDFBorder(); border.lineWidth = 0; annotation.border = border
             return (page, annotation)
         }
-        addBatchAnnotations(annotations, actionName: "Numerazione Bates")
+        addBatchAnnotations(annotations, actionName: L10n.tr("Numerazione Bates"))
     }
 
     func addBatchAnnotations(_ annotations: [(PDFPage, PDFAnnotation)], actionName: String) {
@@ -321,10 +321,10 @@ extension PDFEditorModel {
             return NSTextField(string: attributes[key] as? String ?? "")
         }
         let alert = NSAlert()
-        alert.messageText = "Proprietà del documento"
-        alert.accessoryView = Self.formAccessory(labels: ["Titolo", "Autore", "Oggetto", "Parole chiave"], fields: fields)
-        alert.addButton(withTitle: "Salva proprietà")
-        alert.addButton(withTitle: "Annulla")
+        alert.messageText = L10n.tr("Proprietà del documento")
+        alert.accessoryView = Self.formAccessory(labels: [L10n.tr("Titolo"), L10n.tr("Autore"), L10n.tr("Oggetto"), L10n.tr("Parole chiave")], fields: fields)
+        alert.addButton(withTitle: L10n.tr("Salva proprietà"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         var changed = attributes
         for (index, key) in keys.enumerated() {
@@ -337,22 +337,22 @@ extension PDFEditorModel {
     func setMetadata(_ attributes: [AnyHashable: Any]?) {
         guard requireAdvancedPermission(canEditDocument) else { return }
         let previous = document.documentAttributes
-        performChange(named: "Modifica proprietà", mutation: { document.documentAttributes = attributes }, inverse: { model in model.setMetadata(previous) })
+        performChange(named: L10n.tr("Modifica proprietà"), mutation: { document.documentAttributes = attributes }, inverse: { model in model.setMetadata(previous) })
     }
 
     func protectPDFCopy() {
         guard requireAdvancedPermission(canEditDocument) else { return }
         let alert = NSAlert()
-        alert.messageText = "Proteggi una copia con password"
-        alert.informativeText = "La copia richiederà una password all’apertura. Dopo lo sblocco stampa, copia e modifica saranno consentite. Nessuna password viene memorizzata dall’app."
+        alert.messageText = L10n.tr("Proteggi una copia con password")
+        alert.informativeText = L10n.tr("La copia richiederà una password all’apertura. Dopo lo sblocco stampa, copia e modifica saranno consentite. Nessuna password viene memorizzata dall’app.")
         let password = NSSecureTextField(string: "")
         let confirmation = NSSecureTextField(string: "")
-        alert.accessoryView = Self.formAccessory(labels: ["Password", "Conferma"], fields: [password, confirmation])
-        alert.addButton(withTitle: "Salva copia")
-        alert.addButton(withTitle: "Annulla")
+        alert.accessoryView = Self.formAccessory(labels: [L10n.tr("Password"), L10n.tr("Conferma")], fields: [password, confirmation])
+        alert.addButton(withTitle: L10n.tr("Salva copia"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         guard !password.stringValue.isEmpty, password.stringValue == confirmation.stringValue else {
-            errorMessage = "Inserisci la stessa password, non vuota, in entrambi i campi."
+            errorMessage = L10n.tr("Inserisci la stessa password, non vuota, in entrambi i campi.")
             return
         }
         do {
@@ -360,27 +360,27 @@ extension PDFEditorModel {
             password.stringValue = ""; confirmation.stringValue = ""
             let panel = NSSavePanel()
             panel.allowedContentTypes = [.pdf]
-            panel.nameFieldStringValue = "\((fileName as NSString).deletingPathExtension) protetto.pdf"
+            panel.nameFieldStringValue = L10n.tr("\((fileName as NSString).deletingPathExtension) protetto.pdf")
             guard panel.runModal() == .OK, let url = panel.url else { return }
             try ensureCopyDestination(url)
             try CartaFileIO.atomicWrite(data, to: url)
-            statusMessage = "Copia protetta salvata: cifratura e password di apertura verificate."
+            statusMessage = L10n.tr("Copia protetta salvata: cifratura e password di apertura verificate.")
         } catch { errorMessage = error.localizedDescription }
     }
 
     private func ensureCopyDestination(_ url: URL) throws {
         if let source = documentOwner?.fileURL, source.resolvingSymlinksInPath().standardizedFileURL == url.resolvingSymlinksInPath().standardizedFileURL {
-            throw PDFAdvancedToolError("Scegli un file diverso dall’originale per salvare la copia.")
+            throw PDFAdvancedToolError(L10n.tr("Scegli un file diverso dall’originale per salvare la copia."))
         }
     }
 
     func protectedCopyData(password: String) throws -> Data {
         guard canEditDocument else { throw PDFWorkspaceError.editingNotAllowed }
-        guard !password.isEmpty else { throw PDFAdvancedToolError("La password non può essere vuota.") }
+        guard !password.isEmpty else { throw PDFAdvancedToolError(L10n.tr("La password non può essere vuota.")) }
         let data = try serializedData(options: [PDFDocumentWriteOption.ownerPasswordOption: password, PDFDocumentWriteOption.userPasswordOption: password])
         guard let verification = PDFDocument(data: data), verification.isEncrypted, verification.isLocked,
               verification.unlock(withPassword: password), verification.pageCount == pageCount else {
-            throw PDFAdvancedToolError("La copia non supera la verifica di cifratura e apertura. Nessun file è stato salvato.")
+            throw PDFAdvancedToolError(L10n.tr("La copia non supera la verifica di cifratura e apertura. Nessun file è stato salvato."))
         }
         return data
     }

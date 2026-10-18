@@ -134,7 +134,7 @@ enum PDFConversionEngine {
                 }
                 result.insert(page, at: result.pageCount)
             }
-            progress(Double(index + 1) / Double(urls.count), "Importazione immagine \(index + 1) di \(urls.count)…")
+            progress(Double(index + 1) / Double(urls.count), L10n.tr("Importazione immagine \(index + 1) di \(urls.count)…"))
         }
         result.documentAttributes = [PDFDocumentAttribute.creatorAttribute: "CartaPDF"]
         guard let data = result.dataRepresentation() else { throw PDFConversionError.cannotRender }
@@ -148,7 +148,7 @@ enum PDFConversionEngine {
     static func rtfData(from document: PDFDocument) throws -> Data {
         let result = NSMutableAttributedString(string: "")
         for index in 0..<document.pageCount {
-            let heading = "Pagina \(index + 1)\n"
+            let heading = L10n.tr("Pagina \(index + 1)\n")
             result.append(NSAttributedString(string: heading, attributes: [.font: NSFont.boldSystemFont(ofSize: 14)]))
             result.append(NSAttributedString(string: (document.page(at: index)?.string ?? "") + "\n\n",
                                              attributes: [.font: NSFont.systemFont(ofSize: 12)]))
@@ -181,7 +181,7 @@ enum PDFConversionEngine {
                     context.draw(image, in: bounds)
                     context.endPDFPage()
                 }
-                progress(Double(index + 1) / Double(document.pageCount), "Conversione pagina \(index + 1) di \(document.pageCount)…")
+                progress(Double(index + 1) / Double(document.pageCount), L10n.tr("Conversione pagina \(index + 1) di \(document.pageCount)…"))
             }
         }
     }
@@ -266,7 +266,7 @@ enum PDFConversionEngine {
                     recognizedPages += 1
                 }
             }
-            progress(Double(index + 1) / Double(source.pageCount), "OCR pagina \(index + 1) di \(source.pageCount)…")
+            progress(Double(index + 1) / Double(source.pageCount), L10n.tr("OCR pagina \(index + 1) di \(source.pageCount)…"))
         }
         result.documentAttributes = source.documentAttributes
         guard let data = result.dataRepresentation() else { throw PDFConversionError.cannotRender }
@@ -304,13 +304,13 @@ enum PDFConversionError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidPage: return "Una pagina non ha dimensioni valide o il documento non contiene pagine."
-        case .cannotRender: return "Non è stato possibile convertire la pagina o generare il file."
-        case .invalidImage(let name): return "Non è stato possibile leggere l’immagine “\(name)”."
-        case .noText: return "Il PDF non contiene testo estraibile. Prova prima OCR su una copia."
-        case .copyingNotAllowed: return "Questo PDF non consente di copiare o esportare il contenuto."
-        case .printingNotAllowed: return "Questo PDF non consente la stampa necessaria alla conversione delle pagine."
-        case .outputIsOriginal: return "Scegli un file diverso dall’originale per salvare la copia convertita."
+        case .invalidPage: return L10n.tr("Una pagina non ha dimensioni valide o il documento non contiene pagine.")
+        case .cannotRender: return L10n.tr("Non è stato possibile convertire la pagina o generare il file.")
+        case .invalidImage(let name): return L10n.tr("Non è stato possibile leggere l’immagine “\(name)”.")
+        case .noText: return L10n.tr("Il PDF non contiene testo estraibile. Prova prima OCR su una copia.")
+        case .copyingNotAllowed: return L10n.tr("Questo PDF non consente di copiare o esportare il contenuto.")
+        case .printingNotAllowed: return L10n.tr("Questo PDF non consente la stampa necessaria alla conversione delle pagine.")
+        case .outputIsOriginal: return L10n.tr("Scegli un file diverso dall’originale per salvare la copia convertita.")
         }
     }
 }
@@ -332,15 +332,15 @@ extension PDFEditorModel {
         panel.allowedContentTypes = [.image]
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
-        panel.prompt = "Crea PDF"
-        panel.message = "Una pagina A4 per ogni immagine, con orientamento e proporzioni conservati."
+        panel.prompt = L10n.tr("Crea PDF")
+        panel.message = L10n.tr("Una pagina A4 per ogni immagine, con orientamento e proporzioni conservati.")
         guard panel.runModal() == .OK else { return }
         let urls = panel.urls
-        performConversion(message: "Creazione PDF dalle immagini…", snapshot: Data(), operation: { _, progress in
-            .document(try PDFConversionEngine.makeImagePDFData(urls: urls, progress: progress), "PDF creato dalle immagini.")
+        performConversion(message: L10n.tr("Creazione PDF dalle immagini…"), snapshot: Data(), operation: { _, progress in
+            .document(try PDFConversionEngine.makeImagePDFData(urls: urls, progress: progress), L10n.tr("PDF creato dalle immagini."))
         }, completion: { [weak self] product in
             guard case .document(let data, _) = product, let pdf = PDFDocument(data: data) else { return }
-            self?.openGeneratedDocument(pdf, name: "Immagini.pdf")
+            self?.openGeneratedDocument(pdf, name: L10n.tr("Immagini.pdf"))
         })
     }
 
@@ -357,15 +357,15 @@ extension PDFEditorModel {
         do {
             let snapshot = try conversionSnapshot(requirePrinting: false)
             let type: UTType = asRTF ? .rtf : .plainText
-            guard let output = conversionSaveURL(type: type, suffix: "", message: "Il testo segue l’ordine di estrazione del PDF; l’impaginazione originale non viene ricostruita.") else { return }
-            performConversion(message: "Estrazione testo…", snapshot: snapshot, operation: { data, _ in
+            guard let output = conversionSaveURL(type: type, suffix: "", message: L10n.tr("Il testo segue l’ordine di estrazione del PDF; l’impaginazione originale non viene ricostruita.")) else { return }
+            performConversion(message: L10n.tr("Estrazione testo…"), snapshot: snapshot, operation: { data, _ in
                 let pdf = try PDFConversionEngine.loadSnapshot(data)
                 let text = PDFConversionEngine.extractedText(from: pdf)
                 guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw PDFConversionError.noText }
                 let result = asRTF ? try PDFConversionEngine.rtfData(from: pdf) : Data(text.utf8)
                 try Task.checkCancellation()
                 try CartaFileIO.atomicWrite(result, to: output)
-                return .saved(output, "Testo esportato in \(output.lastPathComponent).")
+                return .saved(output, L10n.tr("Testo esportato in \(output.lastPathComponent)."))
             })
         } catch { errorMessage = error.localizedDescription }
     }
@@ -378,13 +378,13 @@ extension PDFEditorModel {
             panel.canChooseDirectories = true
             panel.canChooseFiles = false
             panel.canCreateDirectories = true
-            panel.prompt = "Esporta PNG"
-            panel.message = "Esporta tutte le pagine a 200 dpi. Le pagine molto grandi vengono limitate a 24 milioni di pixel."
+            panel.prompt = L10n.tr("Esporta PNG")
+            panel.message = L10n.tr("Esporta tutte le pagine a 200 dpi. Le pagine molto grandi vengono limitate a 24 milioni di pixel.")
             guard panel.runModal() == .OK, let folder = panel.url else { return }
-            let names = (0..<pageCount).map { "\(conversionBaseName)-pagina-\(String(format: "%03d", $0 + 1)).png" }
+            let names = (0..<pageCount).map { L10n.tr("\(conversionBaseName)-pagina-\(String(format: "%03d", $0 + 1)).png") }
             let existing = Set(names.filter { FileManager.default.fileExists(atPath: folder.appendingPathComponent($0).path) })
             guard existing.isEmpty || confirmImageReplacement(existing.count) else { return }
-            performConversion(message: "Esportazione pagine PNG…", snapshot: snapshot, operation: { data, progress in
+            performConversion(message: L10n.tr("Esportazione pagine PNG…"), snapshot: snapshot, operation: { data, progress in
                 let pdf = try PDFConversionEngine.loadSnapshot(data)
                 let staging = FileManager.default.temporaryDirectory.appendingPathComponent("CartaPDF-PNG-\(UUID().uuidString)", isDirectory: true)
                 try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
@@ -399,7 +399,7 @@ extension PDFEditorModel {
                         let imageData = try PDFConversionEngine.pngData(for: raster.image, dpi: actualDPI)
                         try CartaFileIO.atomicWrite(imageData, to: staging.appendingPathComponent(names[index]), replaceExisting: false)
                     }
-                    progress(Double(index + 1) / Double(pdf.pageCount), "Esportazione pagina \(index + 1) di \(pdf.pageCount)…")
+                    progress(Double(index + 1) / Double(pdf.pageCount), L10n.tr("Esportazione pagina \(index + 1) di \(pdf.pageCount)…"))
                 }
                 success = true
                 return .pageImages(directory: staging, names: names)
@@ -408,7 +408,7 @@ extension PDFEditorModel {
                 // Recheck conflicts because files may have appeared while the background conversion ran.
                 let newConflicts = names.filter { !existing.contains($0) && FileManager.default.fileExists(atPath: folder.appendingPathComponent($0).path) }
                 guard newConflicts.isEmpty || self.confirmImageReplacement(newConflicts.count) else {
-                    self.statusMessage = "Esportazione annullata; nessuna immagine sostituita."
+                    self.statusMessage = L10n.tr("Esportazione annullata; nessuna immagine sostituita.")
                     return
                 }
                 let identifier = self.processingIdentifier
@@ -424,11 +424,11 @@ extension PDFEditorModel {
                 do {
                     try await withTaskCancellationHandler(operation: { try await writer.value }, onCancel: { writer.cancel() })
                     guard self.processingIdentifier == identifier else { return }
-                    self.statusMessage = "\(names.count) pagine PNG esportate in \(folder.lastPathComponent)."
+                    self.statusMessage = L10n.tr("\(names.count) pagine PNG esportate in \(folder.lastPathComponent).")
                 } catch {
                     guard self.processingIdentifier == identifier else { return }
-                    if error is CancellationError { self.statusMessage = "Esportazione annullata; alcune immagini potrebbero essere già state salvate." }
-                    else { self.errorMessage = "Esportazione interrotta: alcune immagini potrebbero essere già state salvate. \(error.localizedDescription)" }
+                    if error is CancellationError { self.statusMessage = L10n.tr("Esportazione annullata; alcune immagini potrebbero essere già state salvate.") }
+                    else { self.errorMessage = L10n.tr("Esportazione interrotta: alcune immagini potrebbero essere già state salvate. \(error.localizedDescription)") }
                 }
             })
         } catch { errorMessage = error.localizedDescription }
@@ -439,17 +439,17 @@ extension PDFEditorModel {
         do {
             let snapshot = try conversionSnapshot(requirePrinting: true)
             let hasScannedPage = (0..<pageCount).contains { (document.page(at: $0)?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-            guard hasScannedPage else { statusMessage = "Tutte le pagine contengono già testo selezionabile. Nessuna pagina da riconoscere."; return }
+            guard hasScannedPage else { statusMessage = L10n.tr("Tutte le pagine contengono già testo selezionabile. Nessuna pagina da riconoscere."); return }
             let alert = NSAlert()
-            alert.messageText = "Crea una copia PDF ricercabile"
-            alert.informativeText = "Vision riconosce il testo localmente, senza inviare il documento. Le sole pagine senza testo vengono convertite in immagini a 220 dpi con testo invisibile ricercabile; le loro annotazioni e i moduli vengono appiattiti. Le altre pagine vengono conservate. Il risultato OCR può contenere errori. La nuova copia non conserva password o firme digitali; l’originale rimane invariato."
-            alert.addButton(withTitle: "Crea copia OCR")
-            alert.addButton(withTitle: "Annulla")
+            alert.messageText = L10n.tr("Crea una copia PDF ricercabile")
+            alert.informativeText = L10n.tr("Vision riconosce il testo localmente, senza inviare il documento. Le sole pagine senza testo vengono convertite in immagini a 220 dpi con testo invisibile ricercabile; le loro annotazioni e i moduli vengono appiattiti. Le altre pagine vengono conservate. Il risultato OCR può contenere errori. La nuova copia non conserva password o firme digitali; l’originale rimane invariato.")
+            alert.addButton(withTitle: L10n.tr("Crea copia OCR"))
+            alert.addButton(withTitle: L10n.tr("Annulla"))
             guard alert.runModal() == .alertFirstButtonReturn else { return }
             let name = conversionBaseName + "-OCR.pdf"
-            performConversion(message: "Riconoscimento testo sul dispositivo…", snapshot: snapshot, operation: { data, progress in
+            performConversion(message: L10n.tr("Riconoscimento testo sul dispositivo…"), snapshot: snapshot, operation: { data, progress in
                 let result = try PDFConversionEngine.ocrPDFData(snapshot: data, progress: progress)
-                let message = "OCR: \(result.recognizedPages) pagine riconosciute, \(result.skippedTextPages) già con testo, \(result.pagesWithoutRecognition) senza testo rilevato."
+                let message = L10n.tr("OCR: \(result.recognizedPages) pagine riconosciute, \(result.skippedTextPages) già con testo, \(result.pagesWithoutRecognition) senza testo rilevato.")
                 return .document(result.data, message)
             }, completion: { [weak self] product in
                 guard let self, case .document(let data, let message) = product, let pdf = PDFDocument(data: data) else { return }
@@ -472,20 +472,20 @@ extension PDFEditorModel {
         do {
             let snapshot = try conversionSnapshot(requirePrinting: true)
             let alert = NSAlert()
-            alert.messageText = compressed ? "Crea una copia raster ottimizzata" : "Appiattisci una copia del PDF"
-            alert.informativeText = "Ogni pagina diventa un’immagine: si perdono testo selezionabile, vettori, collegamenti, moduli interattivi, livelli, password e firme digitali. L’originale rimane invariato. " + (compressed ? "Il JPEG può degradare testo e dettagli; il file risultante potrebbe essere più grande." : "La copia usa immagini a 200 dpi e conserva l’aspetto visibile delle annotazioni.")
+            alert.messageText = compressed ? L10n.tr("Crea una copia raster ottimizzata") : L10n.tr("Appiattisci una copia del PDF")
+            alert.informativeText = L10n.tr("Ogni pagina diventa un’immagine: si perdono testo selezionabile, vettori, collegamenti, moduli interattivi, livelli, password e firme digitali. L’originale rimane invariato. ") + (compressed ? L10n.tr("Il JPEG può degradare testo e dettagli; il file risultante potrebbe essere più grande.") : L10n.tr("La copia usa immagini a 200 dpi e conserva l’aspetto visibile delle annotazioni."))
             let quality = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 360, height: 28))
-            quality.addItems(withTitles: ["Compatta · 100 dpi · JPEG 65%", "Bilanciata · 150 dpi · JPEG 75%", "Dettagliata · 200 dpi · JPEG 85%"])
+            quality.addItems(withTitles: [L10n.tr("Compatta · 100 dpi · JPEG 65%"), L10n.tr("Bilanciata · 150 dpi · JPEG 75%"), L10n.tr("Dettagliata · 200 dpi · JPEG 85%")])
             quality.selectItem(at: 1)
             if compressed { alert.accessoryView = quality }
-            alert.addButton(withTitle: "Crea copia")
-            alert.addButton(withTitle: "Annulla")
+            alert.addButton(withTitle: L10n.tr("Crea copia"))
+            alert.addButton(withTitle: L10n.tr("Annulla"))
             guard alert.runModal() == .alertFirstButtonReturn else { return }
             let selected = min(max(quality.indexOfSelectedItem, 0), 2)
             let dpi = compressed ? [100.0, 150.0, 200.0][selected] : 200
             let jpegQuality: Double? = compressed ? [0.65, 0.75, 0.85][selected] : nil
-            guard let output = conversionSaveURL(type: .pdf, suffix: compressed ? "-ottimizzato" : "-appiattito", message: "Salva la copia raster in un file diverso dall’originale.") else { return }
-            performConversion(message: "Creazione copia raster…", snapshot: snapshot, operation: { data, progress in
+            guard let output = conversionSaveURL(type: .pdf, suffix: compressed ? L10n.tr("-ottimizzato") : L10n.tr("-appiattito"), message: L10n.tr("Salva la copia raster in un file diverso dall’originale.")) else { return }
+            performConversion(message: L10n.tr("Creazione copia raster…"), snapshot: snapshot, operation: { data, progress in
                 let result = try PDFConversionEngine.rasterPDFData(snapshot: data, dpi: dpi, jpegQuality: jpegQuality, progress: progress)
                 try Task.checkCancellation()
                 guard let verified = PDFDocument(data: result), verified.pageCount == PDFDocument(data: data)?.pageCount else {
@@ -494,8 +494,8 @@ extension PDFEditorModel {
                 try CartaFileIO.atomicWrite(result, to: output)
                 let originalSize = ByteCountFormatter.string(fromByteCount: Int64(data.count), countStyle: .file)
                 let resultSize = ByteCountFormatter.string(fromByteCount: Int64(result.count), countStyle: .file)
-                let comparison = result.count < data.count ? "più piccola" : "di dimensioni uguali o maggiori"
-                return .saved(output, "Copia salvata: \(resultSize), \(comparison) rispetto alla copia sorgente di \(originalSize).")
+                let comparison = result.count < data.count ? L10n.tr("più piccola") : L10n.tr("di dimensioni uguali o maggiori")
+                return .saved(output, L10n.tr("Copia salvata: \(resultSize), \(comparison) rispetto alla copia sorgente di \(originalSize)."))
             })
         } catch { errorMessage = error.localizedDescription }
     }
@@ -508,7 +508,7 @@ extension PDFEditorModel {
         isProcessing = false
         processingProgress = 0
         processingMessage = nil
-        statusMessage = "Operazione annullata."
+        statusMessage = L10n.tr("Operazione annullata.")
     }
 
     func openGeneratedDocument(_ pdf: PDFDocument, name: String) {
@@ -524,11 +524,11 @@ extension PDFEditorModel {
     private var conversionBaseName: String {
         let base = (fileName as NSString).deletingPathExtension
         let sanitized = base.components(separatedBy: CharacterSet(charactersIn: "/:\0")).joined(separator: "_")
-        return sanitized.isEmpty ? "Documento" : sanitized
+        return sanitized.isEmpty ? L10n.tr("Documento") : sanitized
     }
 
     private func canStartConversion() -> Bool {
-        guard !isProcessing else { statusMessage = "Attendi la fine dell’operazione corrente o annullala."; return false }
+        guard !isProcessing else { statusMessage = L10n.tr("Attendi la fine dell’operazione corrente o annullala."); return false }
         return true
     }
 
@@ -567,10 +567,10 @@ extension PDFEditorModel {
 
     private func confirmImageReplacement(_ count: Int) -> Bool {
         let alert = NSAlert()
-        alert.messageText = "Sostituire \(count) immagini esistenti?"
-        alert.informativeText = "La cartella contiene file PNG con gli stessi nomi delle pagine da esportare."
-        alert.addButton(withTitle: "Sostituisci")
-        alert.addButton(withTitle: "Annulla")
+        alert.messageText = L10n.tr("Sostituire \(count) immagini esistenti?")
+        alert.informativeText = L10n.tr("La cartella contiene file PNG con gli stessi nomi delle pagine da esportare.")
+        alert.addButton(withTitle: L10n.tr("Sostituisci"))
+        alert.addButton(withTitle: L10n.tr("Annulla"))
         return alert.runModal() == .alertFirstButtonReturn
     }
 
@@ -606,7 +606,7 @@ extension PDFEditorModel {
                 self.endConversion(identifier: identifier)
             } catch {
                 guard let self, self.processingIdentifier == identifier else { return }
-                if error is CancellationError { self.statusMessage = "Operazione annullata." }
+                if error is CancellationError { self.statusMessage = L10n.tr("Operazione annullata.") }
                 else { self.errorMessage = error.localizedDescription }
                 self.endConversion(identifier: identifier)
             }

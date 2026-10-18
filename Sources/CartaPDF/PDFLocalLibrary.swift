@@ -28,7 +28,7 @@ struct LibrarySearchHit: Identifiable {
 
 enum LibraryEngine {
     static func indexedEntry(url: URL) throws -> LibraryEntry {
-        guard let pdf = PDFDocument(url: url), !pdf.isLocked, pdf.allowsCopying else { throw ScanToolError.message("\(url.lastPathComponent): PDF protetto o contenuto non copiabile.") }
+        guard let pdf = PDFDocument(url: url), !pdf.isLocked, pdf.allowsCopying else { throw ScanToolError.message(L10n.tr("\(url.lastPathComponent): PDF protetto o contenuto non copiabile.")) }
         let texts = (0..<pdf.pageCount).map { pdf.page(at: $0)?.string ?? "" }
         let date = try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
         let bookmark = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
@@ -58,7 +58,7 @@ enum LibraryEngine {
         let replacement = expression.replacementString(for: match, in: text, offset: 0, template: template)
         let components = replacement.components(separatedBy: CharacterSet(charactersIn: "/:\0\n\r"))
         let sanitized = components.joined(separator: "_").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !sanitized.isEmpty, sanitized != ".", sanitized != "..", sanitized.utf8.count < 220 else { throw ScanToolError.message("Il nome ricavato non è valido o è troppo lungo.") }
+        guard !sanitized.isEmpty, sanitized != ".", sanitized != "..", sanitized.utf8.count < 220 else { throw ScanToolError.message(L10n.tr("Il nome ricavato non è valido o è troppo lungo.")) }
         return sanitized.lowercased().hasSuffix(".pdf") ? sanitized : sanitized + ".pdf"
     }
 }
@@ -68,7 +68,7 @@ final class LocalPDFLibrary: ObservableObject {
     static let shared = LocalPDFLibrary()
     @Published var entries: [LibraryEntry] = []
     @Published var hits: [LibrarySearchHit] = []
-    @Published var message = "La biblioteca conserva collegamenti ai file e un indice testuale sul Mac."
+    @Published var message = L10n.tr("La biblioteca conserva collegamenti ai file e un indice testuale sul Mac.")
     @Published var busy = false
     let storageURL: URL
     private var work: Task<Void, Never>?
@@ -80,7 +80,7 @@ final class LocalPDFLibrary: ObservableObject {
             if FileManager.default.fileExists(atPath: self.storageURL.path) {
                 entries = try JSONDecoder().decode([LibraryEntry].self, from: Data(contentsOf: self.storageURL))
             }
-        } catch { message = "Indice non leggibile: \(error.localizedDescription). Il file è stato conservato." }
+        } catch { message = L10n.tr("Indice non leggibile: \(error.localizedDescription). Il file è stato conservato.") }
     }
 
     func save() throws {
@@ -110,7 +110,7 @@ final class LocalPDFLibrary: ObservableObject {
                     self.entries[index] = updated
                 } else { self.entries.append(incoming) }
             }
-            do { try self.save(); self.message = "Indicizzati \(result.0.count) documenti." + (result.1.isEmpty ? "" : "\n" + result.1.joined(separator: "\n")) }
+            do { try self.save(); self.message = L10n.tr("Indicizzati \(result.0.count) documenti.") + (result.1.isEmpty ? "" : "\n" + result.1.joined(separator: "\n")) }
             catch { self.message = error.localizedDescription }
             self.busy = false; self.work = nil
         }
@@ -134,19 +134,19 @@ final class LocalPDFLibrary: ObservableObject {
         guard let index = entries.firstIndex(where: { $0.id == id }) else { return }
         entries[index].tags = Array(Set(tags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty })).sorted()
         entries[index].category = category.trimmingCharacters(in: .whitespaces)
-        do { try save(); message = "Etichette salvate localmente." } catch { message = error.localizedDescription }
+        do { try save(); message = L10n.tr("Etichette salvate localmente.") } catch { message = error.localizedDescription }
     }
 
     func remove(id: UUID) {
         entries.removeAll { $0.id == id }
-        do { try save(); message = "Collegamento rimosso dalla biblioteca. Il PDF è stato conservato." } catch { message = error.localizedDescription }
+        do { try save(); message = L10n.tr("Collegamento rimosso dalla biblioteca. Il PDF è stato conservato.") } catch { message = error.localizedDescription }
     }
 
     func rename(id: UUID, filename: String) throws {
         guard let index = entries.firstIndex(where: { $0.id == id }) else { return }
         let original = resolve(entries[index]), destination = original.deletingLastPathComponent().appendingPathComponent(filename)
         guard original != destination else { return }
-        guard !FileManager.default.fileExists(atPath: destination.path) else { throw ScanToolError.message("Esiste già \(filename). Nessun file sovrascritto.") }
+        guard !FileManager.default.fileExists(atPath: destination.path) else { throw ScanToolError.message(L10n.tr("Esiste già \(filename). Nessun file sovrascritto.")) }
         try FileManager.default.moveItem(at: original, to: destination)
         NSDocumentController.shared.document(for: original)?.fileURL = destination
         entries[index].path = destination.path
@@ -186,7 +186,7 @@ final class LibraryFolderWatcher: ObservableObject {
         try cancellation.check()
         guard let pdf = PDFDocument(url: url), !pdf.isLocked, pdf.allowsCopying,
               action == .text || pdf.allowsPrinting, let snapshot = pdf.dataRepresentation() else {
-            throw ScanToolError.message("PDF protetto o non esportabile")
+            throw ScanToolError.message(L10n.tr("PDF protetto o non esportabile"))
         }
         switch action {
         case .text:
@@ -201,18 +201,18 @@ final class LibraryFolderWatcher: ObservableObject {
     func start() {
         guard let input, let output,
               input.resolvingSymlinksInPath().standardizedFileURL != output.resolvingSymlinksInPath().standardizedFileURL else {
-            logs.append("Scegli due cartelle diverse, anche quando usi un collegamento simbolico."); return
+            logs.append(L10n.tr("Scegli due cartelle diverse, anche quando usi un collegamento simbolico.")); return
         }
         stop()
         let descriptor = open(input.path, O_EVTONLY)
-        guard descriptor >= 0 else { logs.append("La cartella non è accessibile."); return }
+        guard descriptor >= 0 else { logs.append(L10n.tr("La cartella non è accessibile.")); return }
         cancellation = ScanCancellation()
         let id = generation
         let monitor = DispatchSource.makeFileSystemObjectSource(fileDescriptor: descriptor, eventMask: [.write, .rename, .delete], queue: .main)
         monitor.setEventHandler { [weak self] in guard self?.generation == id else { return }; self?.scheduleScan() }
         monitor.setCancelHandler { close(descriptor) }
         source = monitor; active = true; monitor.resume()
-        logs.append("Monitoraggio attivo mentre CartaPDF è aperto; i file esistenti vengono elaborati una volta.")
+        logs.append(L10n.tr("Monitoraggio attivo mentre CartaPDF è aperto; i file esistenti vengono elaborati una volta."))
         scheduleScan()
     }
 
@@ -265,7 +265,7 @@ final class LibraryFolderWatcher: ObservableObject {
                             var target = output.appendingPathComponent(base + product.suffix), version = 2
                             while FileManager.default.fileExists(atPath: target.path) { target = output.appendingPathComponent(base + "-\(version)" + product.suffix); version += 1 }
                             try CartaFileIO.atomicWrite(product.data, to: target, replaceExisting: false)
-                            let message = "Creato \(target.lastPathComponent)"
+                            let message = L10n.tr("Creato \(target.lastPathComponent)")
                             await MainActor.run { receiver.value?.record(url: url, fingerprint: fingerprint, message: message, succeeded: true, generation: id) }
                         } catch {
                             if error is CancellationError { break }
@@ -305,24 +305,24 @@ private final class LibraryWeakReference<T: AnyObject>: @unchecked Sendable {
 final class LibrarySpeechController: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     @Published var speaking = false
     @Published var paused = false
-    @Published var message = "Usa esclusivamente le voci già installate sul Mac."
+    @Published var message = L10n.tr("Usa esclusivamente le voci già installate sul Mac.")
     @Published var voiceIdentifier = ""
     @Published var rate: Float = AVSpeechUtteranceDefaultSpeechRate
     let voices = AVSpeechSynthesisVoice.speechVoices().sorted { $0.name < $1.name }
     private let synthesizer = AVSpeechSynthesizer()
-    override init() { super.init(); synthesizer.delegate = self; voiceIdentifier = voices.first(where: { $0.language.hasPrefix("it") })?.identifier ?? voices.first?.identifier ?? "" }
+    override init() { super.init(); synthesizer.delegate = self; voiceIdentifier = voices.first(where: { $0.language.lowercased() == L10n.language.lowercased() })?.identifier ?? voices.first(where: { $0.language.split(separator: "-").first == L10n.language.split(separator: "-").first })?.identifier ?? voices.first?.identifier ?? "" }
     func read(_ text: String) {
         stop()
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { message = "Nessun testo selezionabile. Esegui prima l’OCR."; return }
-        guard let voice = voices.first(where: { $0.identifier == voiceIdentifier }) else { message = "Nessuna voce installata disponibile."; return }
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { message = L10n.tr("Nessun testo selezionabile. Esegui prima l’OCR."); return }
+        guard let voice = voices.first(where: { $0.identifier == voiceIdentifier }) else { message = L10n.tr("Nessuna voce installata disponibile."); return }
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = voice; utterance.rate = rate
-        speaking = true; paused = false; message = "Lettura locale con \(voice.name)."
+        speaking = true; paused = false; message = L10n.tr("Lettura locale con \(voice.name).")
         synthesizer.speak(utterance)
     }
     func togglePause() { if paused { synthesizer.continueSpeaking() } else { synthesizer.pauseSpeaking(at: .word) }; paused.toggle() }
     func stop() { synthesizer.stopSpeaking(at: .immediate); speaking = false; paused = false }
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor [weak self] in self?.speaking = false; self?.paused = false; self?.message = "Lettura terminata." }
+        Task { @MainActor [weak self] in self?.speaking = false; self?.paused = false; self?.message = L10n.tr("Lettura terminata.") }
     }
 }
