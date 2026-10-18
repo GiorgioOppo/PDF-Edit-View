@@ -273,7 +273,9 @@ final class PDFArchiveICCModelTests:XCTestCase {
         XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))
     }
     func testPseqV4MlucUsesItsOwnOffsetsAndPermitsSharedStrings() throws {
-        let shared = tag("mluc",u32(2)+u32(12)+Data("enUS".utf8)+u32(2)+u32(40)+Data("enGB".utf8)+u32(2)+u32(40)+u16(65))
+        var sharedPayload = Data()
+        for part in [u32(2),u32(12),Data("enUS".utf8),u32(2),u32(40),Data("enGB".utf8),u32(2),u32(40),u16(65)] { sharedPayload.append(part) }
+        let shared = tag("mluc",sharedPayload)
         let result = try audit(profile(["pseq":sequence(shared,mluc(),records:2,pad:true)]))
         XCTAssertTrue(result.issues.isEmpty,result.issues.joined(separator:"; "))
         XCTAssertTrue(result.gaps.isEmpty,result.gaps.joined(separator:"; "))

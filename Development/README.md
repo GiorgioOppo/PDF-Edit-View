@@ -17,7 +17,7 @@ Questa directory contiene il catalogo dei 150 requisiti, rapporti datati di test
 
 ## Riprodurre le verifiche locali
 
-Dalla radice del repository, con macOS14+ e Xcode completo:
+Dalla radice del repository, con Xcode completo e un sistema compatibile con la toolchain scelta ([requisiti](../docs/BUILDING.md)); macOS14 resta il target minimo dell’app:
 
 ```sh
 python3 scripts/check-repository.py

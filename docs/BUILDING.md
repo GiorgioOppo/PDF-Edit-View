@@ -2,8 +2,9 @@
 
 ## Requisiti
 
-- macOS 14 o successivo.
-- Xcode completo con SDK macOS compatibile; il manifest Swift Package Manager richiede Swift tools 5.9 o successivo.
+- **Esecuzione dell’app:** macOS14 o successivo.
+- **Compilazione e test:** una versione di macOS compatibile con Xcode. Per Xcode26.3 Apple indica Sequoia15.6–Tahoe26.x; consulta i [requisiti ufficiali](https://developer.apple.com/xcode/system-requirements) per la toolchain scelta.
+- Xcode completo con SDK macOS recente; la CI usa Xcode26.3. Il manifest Swift Package Manager usa il formato Swift tools5.9, che non indica la disponibilità di tutte le API nei vecchi SDK. Le fixture crittografiche usano SecIdentityCreate, esposto dagli SDK recenti, senza scrivere nel Portachiavi.
 - Strumenti Apple disponibili tramite `xcrun`.
 - Python 3 solo per gli script di sviluppo e i rapporti; non è una dipendenza dell'app.
 
@@ -52,7 +53,7 @@ I log grezzi `*.log` sono esclusi da Git per evitare la pubblicazione involontar
 
 ## Integrazione continua
 
-Il workflow [macOS checks](../.github/workflows/ci.yml) usa il runner GitHub `macos-15` Apple Silicon e seleziona esplicitamente Xcode16.4. Esegue `python3 scripts/check-repository.py`, controlli di sintassi, la suite nativa, la build Release e una verifica di firma/architettura/CLI. L’azione checkout ufficiale è fissata a un commit SHA; i permessi sono di sola lettura e le credenziali non vengono persistite nel checkout. Dependabot propone aggiornamenti delle Actions.
+Il workflow [macOS checks](../.github/workflows/ci.yml) usa il runner GitHub `macos-15` Apple Silicon e seleziona esplicitamente Xcode26.3. Esegue `python3 scripts/check-repository.py`, controlli di sintassi, la suite nativa, la build Release e una verifica di firma/architettura/CLI. L’azione checkout ufficiale è fissata a un commit SHA; i permessi sono di sola lettura e le credenziali non vengono persistite nel checkout. Dependabot propone aggiornamenti delle Actions.
 
 La CI non acquisisce il corpus, non attiva VoiceOver, non pubblica release e non modifica la visibilità del repository. Il risultato locale non sostituisce l’esito del workflow relativo al commit. Se l’immagine GitHub rimuove la toolchain scelta, aggiorna la selezione in una modifica verificata anziché cambiare SDK silenziosamente.
 

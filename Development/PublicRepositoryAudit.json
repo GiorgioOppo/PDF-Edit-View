@@ -11,9 +11,9 @@
   "local_native_tests": {
     "tests": 512,
     "failures": 0,
-    "seconds": 17.718,
+    "seconds": 17.474,
     "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
-    "log_sha256": "580fea86616d6be4ca676f623e523a55380dec4b2d01234b6e63f323a1a1be10",
+    "log_sha256": "95206255ca468289cedf8e0762fd5d96691129f03a99254764a9948b5eea31a4",
     "raw_log_not_tracked": true
   },
   "repository_checks": {
@@ -31,11 +31,13 @@
   },
   "github_ci": {
     "runner": "macos-15 Apple Silicon",
-    "xcode": "16.4",
+    "xcode": "26.3",
     "contents_permissions": "read",
     "persist_credentials": false,
     "automatic_release_or_publication": false,
-    "result": "Consult GitHub Actions for the current commit; local verification does not assert a hosted-run result."
+    "result": "Consult GitHub Actions for the current commit; local verification does not assert a hosted-run result.",
+    "swift": "6.2.3",
+    "runner_source": "https://raw.githubusercontent.com/actions/runner-images/main/images/macos/macos-15-arm64-Readme.md"
   },
   "historical_release_evidence": "Existing3.6 manifests describe their original artifacts and are not re-attributed to the documentation preparation commit.",
   "remaining_release_steps": "Owner may explicitly change visibility later and configure protections/security reporting available for the account. Source publication does not publish/notarize a binary.",
@@ -57,5 +59,22 @@
     "source_sha256": "75cb605ac17ab5d7b93722d0156975ac534cb7668300587740cafacad25672cf",
     "historical_release_manifests_unchanged": true,
     "application_version_changed": false
+  },
+  "previous_local_native_tests_before_fixture_simplification": {
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.718,
+    "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
+    "log_sha256": "580fea86616d6be4ca676f623e523a55380dec4b2d01234b6e63f323a1a1be10",
+    "raw_log_not_tracked": true
+  },
+  "fixture_compiler_compatibility": {
+    "reason": "Older compiler timed out on overloaded Data concatenations; replace with linear append preserving byte sequence. Recent SDK needed to expose SecIdentityCreate used only in memory-only cryptographic fixtures.",
+    "production_deployment_target": "macOS14.0 unchanged",
+    "files": {
+      "Tests/CartaPDFTests/PDFArchiveFontChecksTests.swift": "dbc11e18aa3e969ff009ddf08ed4d9e75f4d1db9f89165f67d4e497725824f8c",
+      "Tests/CartaPDFTests/PDFArchiveICCModelTests.swift": "97d0d4e3b5e69e0af5d503ea0ab86e9bcb9eec5545a8a5b5acddee94eee942ae"
+    },
+    "historical_release_manifests_unchanged": true
   }
 }

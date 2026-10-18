@@ -370,7 +370,10 @@ final class PDFArchiveFontChecksTests:XCTestCase {
         if !localSubrs.isEmpty { privateData += number(privateDictionary.count+6)+Data([19]) }
         var top = Data([UInt8(charset+139),15,UInt8(encoding+139),16])+number(offset)+Data([17])
         if hasPrivate { top += number(privateData.count)+number(offset+charData.count)+Data([18]) }
-        return header+name+index([top])+Data([0,0])+globals+charData+privateData+(localSubrs.isEmpty ? Data():index(localSubrs))
+        var result = header
+        for part in [name,index([top]),Data([0,0]),globals,charData,privateData] { result.append(part) }
+        if !localSubrs.isEmpty { result.append(index(localSubrs)) }
+        return result
     }
     func testSfntStructureIsCheckedIndependentlyOfNativeAcceptance() throws {
         let bytes = try nativeTrueType(),original = try PDFArchiveFontProgram(data:bytes),audit = original.structuralAudit()

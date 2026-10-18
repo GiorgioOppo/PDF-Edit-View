@@ -53,7 +53,7 @@ Novità della versione 3.6: schema degli spazi colore calibrati, Indexed, Separa
 
 ## Compilazione e verifica
 
-Richiede **macOS 14+** e Xcode completo compatibile. Il build locale su Apple Silicon genera un bundle arm64 in `dist/`, escluso da Git. Il repository contiene i sorgenti; non viene pubblicato automaticamente un installer. Firma ad hoc locale, senza notarizzazione Developer ID.
+L’app richiede **macOS14+**. Per compilare e verificare i sorgenti serve Xcode completo con SDK recente su un sistema compatibile: vedi [requisiti di build](docs/BUILDING.md). Il build locale su Apple Silicon genera un bundle arm64 in `dist/`, escluso da Git. Il repository contiene i sorgenti; non viene pubblicato automaticamente un installer. Firma ad hoc locale, senza notarizzazione Developer ID.
 
 ```sh
 ./scripts/test.sh
