@@ -1,6 +1,6 @@
 # Preparing for public release
 
-The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository was created as private. This documentation prepares a future source release; **it neither authorizes nor changes visibility, and it does not automatically publish binaries**. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app remains CartaPDF 3.6.0.
+The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository was created as private. This guide describes source-publication checks and settings; **the document itself neither authorizes nor changes visibility, and it does not automatically publish binaries**. GitHub displays the current repository visibility. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app remains CartaPDF 3.6.0.
 
 ## Repository contents
 
@@ -52,9 +52,9 @@ GitHub also makes historical Actions logs visible when a repository becomes publ
 
 Dependabot alerts were enabled and verified with HTTP 204 from the repository's vulnerability-alerts endpoint; that operation also enables the dependency graph. The [maintenance record](../Development/RepositoryMaintenanceVerification.json) dates this configuration and the observed alert inventory. The repository remained private. GitHub's alerts for Actions support semantic-version references, not SHA references; the pinned checkout action is maintained through the separate Dependabot version-update configuration. Enabled alerts and an empty alert inventory do not establish complete security coverage. See [GitHub's documented alert limitations](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations).
 
-The optional [main protection payload](../.github/main-protection.json) requires both configured checks, `Apple Silicon · Xcode 26.3` and `Apple Silicon · Xcode 26.6`, on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. Verify successful executions and the exact rendered names before applying it. Zero mandatory approving reviews supports a solo maintainer; administrators retain a bypass. Change those choices before applying it if a stricter review policy is desired.
+The [main protection payload](../.github/main-protection.json) requires both configured checks, `Apple Silicon · Xcode 26.3` and `Apple Silicon · Xcode 26.6`, on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. It applies the requirements to administrators too. Verify successful executions and the exact rendered names before applying it. Zero mandatory approving reviews supports a solo maintainer while retaining the pull-request and CI requirements.
 
-Applying the payload to the current private repository returned HTTP 403 requiring GitHub Pro or public visibility. No protection was applied, no paid plan was activated, and visibility was preserved. On a plan that supports private branch protection, or after a separately authorized visibility change, the owner can apply it with:
+The earlier private-repository attempt documented in the maintenance record returned HTTP 403 requiring GitHub Pro or public visibility. That attempt applied no protection, activated no paid plan and preserved visibility. On a plan that supports private branch protection, or after an explicitly authorized visibility change, the owner can apply the current payload with:
 
 ```sh
 gh api --method PUT repos/GiorgioOppo/PDF-Edit-View/branches/main/protection \

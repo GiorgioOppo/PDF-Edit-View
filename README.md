@@ -85,9 +85,9 @@ The subsequent interface review corrected translations and constrained layouts a
 
 The [CI workflow](.github/workflows/ci.yml) checks repository contents, script syntax, native tests, the Release build and packaged resources/CLI. Hardware checks and the complete manual VoiceOver audit remain separate. Raw logs stay local and are excluded from Git. A successful smoke test does not demonstrate complete ISO conformance.
 
-The subsequent [publication-preparation record](Development/PublicationReadiness.json) documents the advertised Git history, hosted content and historical Actions logs reviewed, the new history-checker regression fixtures and the GitHub settings still pending. The repository remains private until an explicit owner decision. The separate [interactive attempt](Development/InteractiveUILocalizationAudit.json) records partial English observations and an automation-service blocker; the full interactive checklist across all languages remains incomplete.
+The dated [publication-preparation record](Development/PublicationReadiness.json) documents the advertised Git history, hosted content and historical Actions logs reviewed, the new history-checker regression fixtures and the GitHub settings observed at that time. Current visibility and branch protections are GitHub repository settings; historical reports retain the state they actually verified. The separate [interactive attempt](Development/InteractiveUILocalizationAudit.json) records partial English observations and an automation-service blocker; the full interactive checklist across all languages remains incomplete.
 
-The [repository maintenance record](Development/RepositoryMaintenanceVerification.json) adds the passing `92408f4bd0a7cce213772656444321ec52537d1e` baseline and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030), the configured macOS 26/Xcode 26.6 CI job, and verified Dependabot alerts. Branch protection could not be applied to the private repository under the current plan; the prepared settings remain available for a later owner decision. Historical reports retain their original scope and results.
+The [repository maintenance record](Development/RepositoryMaintenanceVerification.json) adds the passing `92408f4bd0a7cce213772656444321ec52537d1e` baseline and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030), the configured macOS 26/Xcode 26.6 CI job, and verified Dependabot alerts. It records the private-plan restriction that prevented branch protection during that maintenance run. The [protection payload](.github/main-protection.json) requires both CI checks, including for administrators. Historical reports retain their original scope and results.
 
 The separate [CI compatibility record](Development/CICompatibilityVerification.json) documents Xcode 26.6 compiler failures and the CIDSet/long-decimal parsing follow-ups. Successful checks for any later commit are recorded by its GitHub workflow; this does not increase the validator's declared ISO coverage.
 
@@ -134,7 +134,7 @@ The original veraPDF XML catalogues are **CC BY 4.0** data. Adobe CMap/AGL and P
 
 Read [SUPPORT.md](SUPPORT.md) for questions and bug reports, [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes, and [SECURITY.md](SECURITY.md) for vulnerability reporting. Use the English issue and pull-request templates. Prefer synthetic or redacted reproductions; never include private PDFs, passwords, keys or confidential raw logs.
 
-The repository is prepared for a future public source release. Visibility changes, branch protections and binary distribution are separate owner decisions described in [PUBLIC_RELEASE.md](docs/PUBLIC_RELEASE.md).
+Source publication, branch protections and binary distribution are separate owner decisions described in [PUBLIC_RELEASE.md](docs/PUBLIC_RELEASE.md). Current repository visibility does not change the app's documented scope or imply a notarized binary release.
 
 ## License
 
