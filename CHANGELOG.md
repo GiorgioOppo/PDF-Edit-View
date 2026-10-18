@@ -7,6 +7,8 @@ Le voci descrivono implementazioni ed evidenze disponibili. Un test superato non
 - Preparazione del repository GitHub privato per una futura pubblicazione dei sorgenti.
 - Guide d'uso, compilazione, CLI, architettura, privacy, PDF/A e accessibilità.
 - Policy per contributi, supporto, sicurezza, condotta e attribuzione dei dati.
+- Risorse SwiftPM trovate nei layout flat/Contents e accanto ai prodotti XCTest, con percorso di test esplicito e verifica CLI del bundle su undici profili.
+- Identificatore /NM dei link impostato alla creazione, con prove di salvataggio, riapertura, rimozione e undo; valori export dei moduli verificati nei byte PDF invece di getter variabili tra macOS.
 - CI Xcode26.3 con SDK che espone SecIdentityCreate; composizione delle fixture binarie con append lineari per evitare timeout del type checker.
 - Compatibilità del percorso firme: il percorso di errore della firma conserva il CFError nativo o restituisce separatamente un errore Security interno, senza conversioni forzate tra i due tipi.
 - Nessuna nuova versione dell'app o nuova certificazione implicita nelle modifiche di documentazione.

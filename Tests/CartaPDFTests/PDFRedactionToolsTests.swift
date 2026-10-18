@@ -112,11 +112,25 @@ final class PDFRedactionToolsTests: XCTestCase {
         let url = try XCTUnwrap(URL(string: "https://example.com/documento"))
         model.addWebLink(url, in: CGRect(x: 40, y: 50, width: 100, height: 35), on: page)
         let link = try XCTUnwrap(page.annotations.first)
+        let name = try XCTUnwrap(link.value(forAnnotationKey: .name) as? String)
         XCTAssertEqual((link.action as? PDFActionURL)?.url, url)
-        let reopened = try XCTUnwrap(PDFDocument(data: model.serializedData()))
+        let serialized = try model.serializedData()
+        let reopened = try XCTUnwrap(PDFDocument(data: serialized))
         let saved = try XCTUnwrap(reopened.page(at: 0)?.annotations.first)
         XCTAssertEqual((saved.action as? PDFActionURL)?.url, url)
         XCTAssertTrue((saved.value(forAnnotationKey: .name) as? String)?.hasPrefix("CartaPDF-Link-") == true)
+        XCTAssertEqual(saved.value(forAnnotationKey: .name) as? String, name)
+        try assertSerializedLinkName(serialized, equals: name)
+
+        let reopenedModel = PDFEditorModel()
+        reopenedModel.replaceDocument(reopened, fileName: "Link.pdf")
+        let reopenedPage = try XCTUnwrap(reopenedModel.currentPage)
+        reopenedModel.removeWebLink(saved, from: reopenedPage)
+        XCTAssertTrue(reopenedPage.annotations.isEmpty)
+        reopenedModel.undo()
+        XCTAssertEqual(reopenedPage.annotations.count, 1)
+        XCTAssertEqual(reopenedPage.annotations.first?.value(forAnnotationKey: .name) as? String, name)
+
         model.removeWebLink(link, from: page)
         XCTAssertTrue(page.annotations.isEmpty)
         model.undo()
@@ -125,6 +139,38 @@ final class PDFRedactionToolsTests: XCTestCase {
         page.addAnnotation(sourceLink)
         model.removeWebLink(sourceLink, from: page)
         XCTAssertEqual(page.annotations.count, 2)
+    }
+
+    @MainActor
+    func testKeyboardLinkOwnershipPersistsInTheStandardNMEntry() throws {
+        let model = PDFEditorModel()
+        let annotation = try model.createKeyboardAnnotation(kind: .link, pageIndex: 0,
+            content: "https://example.com/tastiera", bounds: CGRect(x: 40, y: 50, width: 100, height: 35))
+        let name = try XCTUnwrap(annotation.value(forAnnotationKey: .name) as? String)
+        let serialized = try model.serializedData()
+        try assertSerializedLinkName(serialized, equals: name)
+        let reopened = try XCTUnwrap(PDFDocument(data: serialized))
+        let reopenedModel = PDFEditorModel()
+        reopenedModel.replaceDocument(reopened, fileName: "Tastiera.pdf")
+        let entry = try XCTUnwrap(reopenedModel.keyboardAnnotationEntries.first)
+        XCTAssertEqual(entry.annotation.value(forAnnotationKey: .name) as? String, name)
+        XCTAssertTrue(reopenedModel.keyboardCanEdit(entry))
+        try reopenedModel.deleteKeyboardAnnotation(entry)
+        XCTAssertTrue(entry.page.annotations.isEmpty)
+        reopenedModel.undo()
+        XCTAssertEqual(entry.page.annotations.count, 1)
+    }
+
+    private func assertSerializedLinkName(_ data: Data, equals expected: String) throws {
+        let reader = try PDFStructureDocument(data: data)
+        let pageID = try XCTUnwrap(reader.pageIDs().first)
+        let page = try reader.dictionary(.reference(pageID))
+        let annotations = try XCTUnwrap(reader.resolve(page["Annots"])?.array)
+        let link = try XCTUnwrap(annotations.first)
+        let dictionary = try reader.dictionary(link)
+        XCTAssertEqual(dictionary["Subtype"]?.name, "Link")
+        XCTAssertEqual(dictionary["NM"]?.text, expected)
+        XCTAssertNil(dictionary["Name"], "The ownership identifier is /NM, not an annotation icon name.")
     }
 
     @MainActor

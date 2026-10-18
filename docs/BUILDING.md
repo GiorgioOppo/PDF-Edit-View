@@ -38,7 +38,7 @@ La firma ad hoc non identifica un editore e non sostituisce firma Developer ID e
 ./scripts/test.sh --filter PDFArchiveColorSpaceChecksTests
 ```
 
-Il runner usa `swift test` e una cartella temporanea separata dalla build Release. Non accetta le opzioni di selezione test di `xcodebuild`. I test esercitano PDFKit, Vision, WebKit e altre API native; un ambiente senza sessione grafica o con restrizioni del sistema può produrre risultati diversi. Distingui tali problemi dai difetti del codice e documenta ambiente e messaggio effettivo.
+Il runner usa `swift test` e una cartella temporanea separata dalla build Release. Espone al solo processo di test il percorso del bundle di risorse prodotto da SwiftPM, distinto dal checkout, per supportare layout flat e Contents/Resources e prodotti XCTest su versioni diverse. Non accetta le opzioni di selezione test di `xcodebuild`. I test esercitano PDFKit, Vision, WebKit e altre API native; un ambiente senza sessione grafica o con restrizioni del sistema può produrre risultati diversi. Distingui tali problemi dai difetti del codice e documenta ambiente e messaggio effettivo.
 
 Per conservare un nuovo risultato e rigenerare il rapporto funzionale:
 
@@ -53,7 +53,7 @@ I log grezzi `*.log` sono esclusi da Git per evitare la pubblicazione involontar
 
 ## Integrazione continua
 
-Il workflow [macOS checks](../.github/workflows/ci.yml) usa il runner GitHub `macos-15` Apple Silicon e seleziona esplicitamente Xcode26.3. Esegue `python3 scripts/check-repository.py`, controlli di sintassi, la suite nativa, la build Release e una verifica di firma/architettura/CLI. L’azione checkout ufficiale è fissata a un commit SHA; i permessi sono di sola lettura e le credenziali non vengono persistite nel checkout. Dependabot propone aggiornamenti delle Actions.
+Il workflow [macOS checks](../.github/workflows/ci.yml) usa il runner GitHub `macos-15` Apple Silicon e seleziona esplicitamente Xcode26.3. Esegue `python3 scripts/check-repository.py`, controlli di sintassi, la suite nativa, la build Release e una verifica di firma/architettura e della CLI realmente contenuta nel bundle su tutti gli undici profili. Lo smoke test usa un PDF sintetico senza XMP: richiede cataloghi completi ed esito non conforme, non una falsa conformità. L’azione checkout ufficiale è fissata a un commit SHA; i permessi sono di sola lettura e le credenziali non vengono persistite nel checkout. Dependabot propone aggiornamenti delle Actions.
 
 La CI non acquisisce il corpus, non attiva VoiceOver, non pubblica release e non modifica la visibilità del repository. Il risultato locale non sostituisce l’esito del workflow relativo al commit. Se l’immagine GitHub rimuove la toolchain scelta, aggiorna la selezione in una modifica verificata anziché cambiare SDK silenziosamente.
 

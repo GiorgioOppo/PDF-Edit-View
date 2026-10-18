@@ -54,6 +54,5 @@ jobs:
         run: ./scripts/build-app.sh
       - name: Verify application and CLI
         run: |
-          codesign --verify --strict dist/CartaPDF.app
-          lipo -verify_arch arm64 dist/CartaPDF.app/Contents/MacOS/CartaPDF
+          python3 scripts/check-built-app.py dist/CartaPDF.app
           dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help

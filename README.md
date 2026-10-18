@@ -69,6 +69,8 @@ Evidenza della versione 3.6 del 18 ottobre 2026: **512 test superati, zero error
 
 La CI esegue controlli del repository, test nativi, compilazione Release, firma e CLI su macOS. Le prove con hardware e l’audit manuale completo VoiceOver restano separati. I log grezzi sono locali ed esclusi da Git.
 
+Le verifiche locali della preparazione del repository includono **515 test superati, zero errori**, con regressioni sui layout delle risorse e sulla persistenza dei link. Sono separate dalle prove storiche del bundle3.6: vedi [PublicRepositoryAudit](Development/PublicRepositoryAudit.json).
+
 Per verificare i contenuti del repository e rigenerare il rapporto dopo i test:
 
 ```sh

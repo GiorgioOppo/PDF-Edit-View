@@ -170,19 +170,33 @@ enum PDFArchiveValidator {
     /// Unlike SwiftPM's generated Bundle.module accessor this lookup never
     /// terminates the app when an installation lacks its resource bundle.
     static func resourceDirectory(searchRoots: [URL]? = nil) -> URL? {
-        var roots = searchRoots ?? [Bundle.main.resourceURL, Bundle(for: PDFArchiveBundleLocator.self).resourceURL, Bundle.main.bundleURL].compactMap { $0 }
+        let locator = Bundle(for: PDFArchiveBundleLocator.self)
+        var roots = searchRoots ?? resourceSearchRoots(
+            bundleURLs: [Bundle.main.bundleURL,locator.bundleURL],
+            resourceURLs: [Bundle.main.resourceURL,locator.resourceURL].compactMap { $0 })
         #if DEBUG
         if searchRoots == nil, let path = ProcessInfo.processInfo.environment["PACKAGE_RESOURCE_BUNDLE_PATH"] ?? ProcessInfo.processInfo.environment["PACKAGE_RESOURCE_BUNDLE_URL"] {
             roots.insert(URL(fileURLWithPath:path),at:0)
         }
         #endif
         for root in roots {
-            let direct = root.appendingPathComponent("PDFAProfiles",isDirectory:true)
-            if FileManager.default.fileExists(atPath:direct.appendingPathComponent("MANIFEST.json").path) { return direct }
-            if let bundle = Bundle(url:root.appendingPathComponent("CartaPDF_CartaPDF.bundle",isDirectory:true)),
-               let directory = bundle.url(forResource:"PDFAProfiles",withExtension:nil) { return directory }
+            // SwiftPM versions use both flat and macOS Contents/Resources
+            // bundles. Do not depend on CFBundle recognizing a flat bundle.
+            let package = root.appendingPathComponent("CartaPDF_CartaPDF.bundle",isDirectory:true)
+            for base in [root,root.appendingPathComponent("Contents/Resources",isDirectory:true),
+                         package,package.appendingPathComponent("Contents/Resources",isDirectory:true)] {
+                let directory = base.appendingPathComponent("PDFAProfiles",isDirectory:true)
+                if FileManager.default.fileExists(atPath:directory.appendingPathComponent("MANIFEST.json").path) { return directory }
+            }
         }
         return nil
+    }
+    /// XCTest products keep the resource bundle beside the .xctest product.
+    /// Installed apps never search siblings or the current working directory.
+    static func resourceSearchRoots(bundleURLs:[URL],resourceURLs:[URL]) -> [URL] {
+        let products = bundleURLs.filter{$0.pathExtension == "xctest"}.map{$0.deletingLastPathComponent()}
+        var seen = Set<URL>()
+        return (resourceURLs+bundleURLs+products).filter{seen.insert($0.standardizedFileURL).inserted}
     }
     private struct Manifest: Decodable {
         struct Entry: Decodable { let file: String, sha256: String, rule_count: Int }

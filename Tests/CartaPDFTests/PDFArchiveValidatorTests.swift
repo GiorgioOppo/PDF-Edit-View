@@ -16,6 +16,34 @@ final class PDFArchiveValidatorTests: XCTestCase {
         }
         XCTAssertEqual(total, 1489)
     }
+    func testResourceDiscoverySupportsFlatAndContentsBundlesWithAuthenticatedCatalogues() throws {
+        let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
+        try FileManager.default.createDirectory(at:temporary,withIntermediateDirectories:true)
+        defer { try? FileManager.default.removeItem(at:temporary) }
+        let project = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let source = project.appendingPathComponent("Resources/PDFAProfiles",isDirectory:true)
+        for (index,relative) in ["PDFAProfiles","Contents/Resources/PDFAProfiles","CartaPDF_CartaPDF.bundle/PDFAProfiles","CartaPDF_CartaPDF.bundle/Contents/Resources/PDFAProfiles"].enumerated() {
+            let root = temporary.appendingPathComponent("layout\(index)",isDirectory:true),directory = root.appendingPathComponent(relative,isDirectory:true)
+            try FileManager.default.createDirectory(at:directory.deletingLastPathComponent(),withIntermediateDirectories:true)
+            try FileManager.default.copyItem(at:source,to:directory)
+            XCTAssertEqual(PDFArchiveValidator.resourceDirectory(searchRoots:[root]),directory)
+            XCTAssertEqual(try PDFArchiveValidator.catalogue(profile:.pdfa4f,directory:directory).count,111)
+        }
+    }
+    func testXCTestProductsAreSearchableWithoutEscapingAnInstalledApp() throws {
+        let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString,isDirectory:true)
+        try FileManager.default.createDirectory(at:temporary,withIntermediateDirectories:true)
+        defer { try? FileManager.default.removeItem(at:temporary) }
+        let directory = temporary.appendingPathComponent("CartaPDF_CartaPDF.bundle/PDFAProfiles",isDirectory:true)
+        try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+        try Data("{}".utf8).write(to:directory.appendingPathComponent("MANIFEST.json"))
+        let test = temporary.appendingPathComponent("CartaPDFPackageTests.xctest",isDirectory:true),app = temporary.appendingPathComponent("CartaPDF.app",isDirectory:true)
+        let testRoots = PDFArchiveValidator.resourceSearchRoots(bundleURLs:[test],resourceURLs:[])
+        XCTAssertTrue(testRoots.contains(temporary));XCTAssertEqual(PDFArchiveValidator.resourceDirectory(searchRoots:testRoots),directory)
+        let appRoots = PDFArchiveValidator.resourceSearchRoots(bundleURLs:[app],resourceURLs:[])
+        XCTAssertFalse(appRoots.contains(temporary));XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:appRoots))
+        XCTAssertNil(PDFArchiveValidator.resourceDirectory(searchRoots:[temporary.appendingPathComponent("missing")]))
+    }
     func testProfileAwareHeaderAndIdentificationDoNotTreatFourAsTwo() throws {
         let two = PDFArchiveValidator.validate(data: fixture(version: "1.0", part: 2, conformance: "U"), profile: .pdfa2u)
         XCTAssertEqual(try result(two, clause: "6.1.2", number: "1").status, .passed)

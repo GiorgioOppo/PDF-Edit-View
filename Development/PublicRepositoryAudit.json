@@ -9,11 +9,11 @@
   "initial_source_commit": "578b5cc13d5f85b16fbe4c0781b4ce16db4cce79",
   "documentation_scope": "README, user/build/CLI/architecture/privacy/accessibility/PDF-A guides, changelog, contribution/security/support/code-of-conduct/data attribution, publication process, CI and issue/PR templates.",
   "local_native_tests": {
-    "tests": 512,
+    "tests": 515,
     "failures": 0,
-    "seconds": 17.474,
+    "seconds": 22.576,
     "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
-    "log_sha256": "95206255ca468289cedf8e0762fd5d96691129f03a99254764a9948b5eea31a4",
+    "log_sha256": "25e59c1edec4d905ceda1eaaff050d74345190ed6dc889bda8c358931854f455",
     "raw_log_not_tracked": true
   },
   "repository_checks": {
@@ -76,5 +76,20 @@
       "Tests/CartaPDFTests/PDFArchiveICCModelTests.swift": "97d0d4e3b5e69e0af5d503ea0ab86e9bcb9eec5545a8a5b5acddee94eee942ae"
     },
     "historical_release_manifests_unchanged": true
+  },
+  "previous_local_native_tests_before_portability_fixes": {
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.474,
+    "toolchain": "Apple Swift6.4; macOS27 SDK; arm64",
+    "log_sha256": "95206255ca468289cedf8e0762fd5d96691129f03a99254764a9948b5eea31a4",
+    "raw_log_not_tracked": true
+  },
+  "cross_macos_portability": {
+    "resource_discovery": "Flat and Contents/Resources bundle layouts, XCTest sibling product directories; test runner supplies exact SwiftPM product bundle. Missing installations never call fatal Bundle.module or search cwd/app siblings.",
+    "link_ownership": "Standard /NM assigned when creating link annotations, including keyboard creation, with saved COS, reopen/remove/undo assertions.",
+    "choice_fields": "Verify saved /V and /Opt using independent CoreGraphics reads; preserve exact export values, labels and immutable input, rather than OS-dependent PDFKit convenience getter.",
+    "regressions_added": 3,
+    "packaged_release_smoke": "scripts/check-built-app.py validates real packaged resource hashes and CLI output for all11profiles; synthetic document without XMP must be nonconforming, never certified."
   }
 }

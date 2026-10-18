@@ -96,14 +96,22 @@ final class PDFScanExportToolsTests: XCTestCase {
         let first = try XCTUnwrap(PDFDocument(data: copies[0])), second = try XCTUnwrap(PDFDocument(data: copies[1]))
         let firstFields = try XCTUnwrap(first.page(at: 0)).annotations
         let secondFields = try XCTUnwrap(second.page(at: 0)).annotations
-        XCTAssertEqual(firstFields.first(where: { $0.fieldName == "Lingua" })?.widgetStringValue, "en-GB")
+        // PDFKit's convenience getter returns the display label on some macOS releases.
+        // Read the saved field dictionary independently: /V must retain the export value.
+        let firstChoice = try serializedChoice(in: copies[0], named: "Lingua")
+        let secondChoice = try serializedChoice(in: copies[1], named: "Lingua")
+        XCTAssertEqual(firstChoice.value, "en-GB")
+        XCTAssertEqual(firstChoice.options, [["it-IT", "Italiano"], ["en-GB", "English"]])
         XCTAssertEqual(firstFields.first(where: { $0.fieldName == "Accetto" })?.buttonWidgetState, .onState)
-        XCTAssertEqual(secondFields.first(where: { $0.fieldName == "Lingua" })?.widgetStringValue, "it-IT")
+        XCTAssertEqual(secondChoice.value, "it-IT")
+        XCTAssertEqual(secondChoice.options, firstChoice.options)
         XCTAssertEqual(secondFields.first(where: { $0.fieldName == "Accetto" })?.buttonWidgetState, .offState)
+        XCTAssertThrowsError(try ScanCSV.filledDocuments(snapshot: snapshot, rows: [["Lingua"], ["Español"]]))
         XCTAssertThrowsError(try ScanCSV.filledDocuments(snapshot: snapshot, rows: [["Accetto"], ["tru"]])) {
             XCTAssertTrue($0.localizedDescription.contains("true/false"))
         }
         XCTAssertEqual(choice.widgetStringValue, "it-IT")
+        XCTAssertEqual(try serializedChoice(in: snapshot, named: "Lingua").value, "it-IT")
         XCTAssertEqual(checkbox.buttonWidgetState, .offState)
     }
 
@@ -254,6 +262,45 @@ final class PDFScanExportToolsTests: XCTestCase {
         XCTAssertEqual(renderer.message, invalidMessage)
         do { _ = try await renderer.pdf(); XCTFail("Un caricamento HTML fallito non deve esportare il documento precedente.") }
         catch { XCTAssertTrue(error.localizedDescription.contains("caricamento HTML")) }
+    }
+
+    private func serializedChoice(in data: Data, named name: String) throws -> (value: String, options: [[String]]) {
+        let provider = try XCTUnwrap(CGDataProvider(data: data as CFData))
+        let document = try XCTUnwrap(CGPDFDocument(provider))
+        for pageNumber in 1...document.numberOfPages {
+            let page = try XCTUnwrap(document.page(at: pageNumber))
+            let dictionary = try XCTUnwrap(page.dictionary)
+            var annotations: CGPDFArrayRef?
+            guard CGPDFDictionaryGetArray(dictionary, "Annots", &annotations), let annotations else { continue }
+            for index in 0..<CGPDFArrayGetCount(annotations) {
+                var field: CGPDFDictionaryRef?, fieldName: CGPDFStringRef?
+                guard CGPDFArrayGetDictionary(annotations, index, &field), let field,
+                      CGPDFDictionaryGetString(field, "T", &fieldName), let fieldName,
+                      (CGPDFStringCopyTextString(fieldName) as String?) == name else { continue }
+                var value: CGPDFStringRef?, optionArray: CGPDFArrayRef?
+                XCTAssertTrue(CGPDFDictionaryGetString(field, "V", &value))
+                let exportValue = try XCTUnwrap(CGPDFStringCopyTextString(XCTUnwrap(value)) as String?)
+                XCTAssertTrue(CGPDFDictionaryGetArray(field, "Opt", &optionArray))
+                let options = try XCTUnwrap(optionArray)
+                var pairs: [[String]] = []
+                for optionIndex in 0..<CGPDFArrayGetCount(options) {
+                    var pair: CGPDFArrayRef?
+                    XCTAssertTrue(CGPDFArrayGetArray(options, optionIndex, &pair))
+                    let strings = try XCTUnwrap(pair)
+                    XCTAssertEqual(CGPDFArrayGetCount(strings), 2)
+                    var values: [String] = []
+                    for stringIndex in 0..<2 {
+                        var string: CGPDFStringRef?
+                        XCTAssertTrue(CGPDFArrayGetString(strings, stringIndex, &string))
+                        values.append(try XCTUnwrap(CGPDFStringCopyTextString(XCTUnwrap(string)) as String?))
+                    }
+                    pairs.append(values)
+                }
+                return (exportValue, pairs)
+            }
+        }
+        XCTFail("Campo choice assente dal PDF salvato: \(name)")
+        throw ScanToolError.message("Campo choice assente dal PDF salvato.")
     }
 
     private func zipEntries(_ data: Data) throws -> [(String, Data)] {

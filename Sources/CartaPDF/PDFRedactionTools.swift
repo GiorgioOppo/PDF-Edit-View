@@ -8,6 +8,17 @@ struct PDFRedactionRegion {
     let bounds: CGRect
 }
 
+enum CartaOwnedLink {
+    static func annotation(bounds: CGRect) -> PDFAnnotation {
+        // Give PDFKit the standard /NM text string at initialization. Some
+        // macOS releases retain a later setValue only in memory for links and
+        // omit it when serializing, making the saved link lose its ownership.
+        PDFAnnotation(bounds: bounds, forType: .link, withProperties: [
+            PDFAnnotationKey.name.rawValue: "CartaPDF-Link-" + UUID().uuidString
+        ])
+    }
+}
+
 enum PDFRasterSanitizerError: LocalizedError {
     case invalidRegion, invalidPage, oversizedPage, renderingFailed
     var errorDescription: String? {
@@ -186,14 +197,13 @@ extension PDFEditorModel {
               let host = url.host, !host.isEmpty else { return }
         let bounds = rectangle.standardized.intersection(page.bounds(for: .cropBox))
         guard !bounds.isNull, bounds.width >= 3, bounds.height >= 3 else { return }
-        let annotation = PDFAnnotation(bounds: bounds, forType: .link, withProperties: nil)
+        let annotation = CartaOwnedLink.annotation(bounds: bounds)
         annotation.action = PDFActionURL(url: url)
         annotation.color = .systemBlue
         let border = PDFBorder()
         border.lineWidth = 1
         annotation.border = border
         annotation.contents = url.absoluteString
-        annotation.setValue("CartaPDF-Link-" + UUID().uuidString, forAnnotationKey: .name)
         addMarkup(annotation, on: page, actionName: "Aggiungi collegamento")
     }
 

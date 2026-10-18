@@ -96,7 +96,8 @@ extension PDFEditorModel {
         case .ellipse: type = .circle
         case .link: type = .link
         }
-        let annotation = PDFAnnotation(bounds: validBounds, forType: type, withProperties: nil)
+        let annotation = kind == .link ? CartaOwnedLink.annotation(bounds: validBounds)
+            : PDFAnnotation(bounds: validBounds, forType: type, withProperties: nil)
         annotation.contents = text
         annotation.userName = CartaPreferences.shared.annotationAuthor
         annotation.modificationDate = Date()
@@ -127,7 +128,6 @@ extension PDFEditorModel {
             annotation.contents = url.absoluteString
             annotation.color = .systemBlue
             border.lineWidth = 1
-            annotation.setValue("CartaPDF-Link-" + UUID().uuidString, forAnnotationKey: .name)
         }
         addBatchAnnotations([(page, annotation)], actionName: "Aggiungi \(kind.rawValue.lowercased())")
         goToPage(pageIndex)
