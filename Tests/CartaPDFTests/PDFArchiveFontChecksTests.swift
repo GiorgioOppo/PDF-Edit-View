@@ -233,6 +233,30 @@ final class PDFArchiveFontChecksTests:XCTestCase {
             XCTAssertEqual(try evaluate(pdf,profile:.pdfa2b,object:"PDCIDFont",matching:"CIDSet").status,.failed)
         }
     }
+    func testCidSetStreamMappingPreservesCoverageAndMalformedResults() throws {
+        let font = "<< /Type /Font /Subtype /Type0 /BaseFont /ABCDEF+Metric /Encoding /Identity-H /DescendantFonts [5 0 R] >>"
+        let child = Data("<< /Type /Font /Subtype /CIDFontType2 /BaseFont /ABCDEF+Metric /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /FontDescriptor 6 0 R /CIDToGIDMap 9 0 R >>".utf8)
+        var laterCID = Data(repeating:0,count:20)
+        laterCID[18] = 1
+        // Isolate CIDSet membership; the high-byte GID does not attest full font validity.
+        let cases:[(String,Data,Data,PDFArchiveRuleStatus)] = [
+            ("empty map",Data(),Data(),.passed),
+            ("zero GIDs",Data([0,0,0,0]),Data(),.passed),
+            ("CID0 excluded and high-byte GID covered",Data([0,1,0,0,1,0]),Data([0x20]),.passed),
+            ("mapped CID missing",Data([0,1,0,0,1,0]),Data([0]),.failed),
+            ("later CID covered",laterCID,Data([0,0x40]),.passed),
+            ("CIDSet ends before mapped CID",laterCID,Data([0]),.failed),
+            ("odd mapping length",Data([0]),Data([0]),.notVerified)
+        ]
+        for (name,map,bits,expected) in cases {
+            let pdf = fixture(font:font,content:Data("BT /F1 12 Tf ET".utf8),extras:[
+                5:child,6:Data("<< /Flags 4 /FontFile2 7 0 R /CIDSet 8 0 R >>".utf8),
+                7:stream("",metricFont()),8:stream("",bits),9:stream("",map)
+            ])
+            let result = try evaluate(pdf,profile:.pdfa2b,object:"PDCIDFont",matching:"CIDSet")
+            XCTAssertEqual(result.status,expected,"\(name): \(result.detail)")
+        }
+    }
     private func metricFont()->Data {
         func word(_ value:Int)->Data { Data([UInt8((value>>8)&255),UInt8(value&255)]) }
         func dword(_ value:Int)->Data { Data([UInt8((value>>24)&255),UInt8((value>>16)&255),UInt8((value>>8)&255),UInt8(value&255)]) }

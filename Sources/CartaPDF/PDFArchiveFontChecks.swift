@@ -511,7 +511,15 @@ final class PDFArchiveFontChecks {
         } else if let cff = program.cff,!cff.cidByGlyph.isEmpty { cids = Set(cff.cidByGlyph.values) }
         else if dictionary["CIDToGIDMap"]?.name == "Identity" { cids = Set(0..<program.glyphCount) }
         else if let map = dictionary["CIDToGIDMap"]?.reference {
-            let data = Array(try reader.decodedStream(map));guard data.count%2 == 0 else { throw PDFStructureError.malformed(L10n.tr("CIDToGIDMap dispari")) };cids = Set(stride(from:0,to:data.count-1,by:2).compactMap { p in (Int(data[p])<<8|Int(data[p+1])) == 0 ? nil:p/2 })
+            let data:[UInt8] = Array(try reader.decodedStream(map))
+            guard data.count%2 == 0 else { throw PDFStructureError.malformed(L10n.tr("CIDToGIDMap dispari")) }
+            cids = []
+            for offset in stride(from:0,to:data.count,by:2) {
+                let highByte:Int = Int(data[offset])
+                let lowByte:Int = Int(data[offset+1])
+                let glyphID:Int = (highByte<<8)|lowByte
+                if glyphID != 0 { cids.insert(offset/2) }
+            }
         } else { return .unknown(L10n.tr("Tutti i CID incorporati non enumerabili dal programma/mappa.")) }
         cids.remove(0);let bits = Array(try reader.decodedStream(id))
         let missing = cids.filter { cid in cid/8>=bits.count || bits[cid/8]&(0x80>>UInt8(cid%8)) == 0 }

@@ -59,6 +59,8 @@ The [macOS checks](../.github/workflows/ci.yml) workflow is configured with two 
 
 The [maintenance verification record](../Development/RepositoryMaintenanceVerification.json) identifies the passing baseline at commit `92408f4bd0a7cce213772656444321ec52537d1e` and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030). That execution used macOS 15 and Xcode 26.3. The additional macOS 26/Xcode 26.6 job is configured in this change; its result must be checked on the pushed commit before treating that environment as verified. The record also covers enabled Dependabot alerts and the private repository's unavailable branch-protection setting, while preserving historical evidence.
 
+The first Xcode 26.6 execution exposed a compiler type-checking timeout in CIDToGIDMap enumeration. The [compatibility follow-up](../Development/CICompatibilityVerification.json) records the failure, the equivalent explicit parsing steps and focused CIDSet regression results separately from the earlier configuration record. The correction does not expand ISO PDF/A coverage or relabel the baseline as a run on another SDK.
+
 CI does not acquire the corpus, enable VoiceOver, publish releases, or change repository visibility. A local result does not replace the workflow result for a particular commit. If the GitHub image removes the selected toolchain, update the selection in a verified change instead of silently changing SDKs.
 
 ## Resources and manifests

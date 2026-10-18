@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "record_type": "CI_compiler_compatibility_follow_up",
+  "client_date": "2026-10-18",
+  "created_utc": "2026-10-18T18:07:37.304888+00:00",
+  "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
+  "configuration_commit": "a2f74b42326f1d84a344f39bb823cf712516cde3",
+  "previous_evidence_preserved": "Development/RepositoryMaintenanceVerification.json",
+  "scope": "Compiler portability of CIDToGIDMap enumeration and isolated CIDSet regression checks. This follow-up does not expand ISO PDF/A coverage or claim a completed audit.",
+  "initial_matrix_execution": {
+    "run_id": 39152325778,
+    "url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39152325778",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "name": "Apple Silicon · Xcode 26.6",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Apple Silicon · Xcode 26.3",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "failed_step": "Run native tests",
+    "failure_phase": "Swift compilation before test execution",
+    "diagnostic_file": "Sources/CartaPDF/PDFArchiveFontChecks.swift",
+    "diagnostic": "The compiler is unable to type-check this expression in reasonable time.",
+    "failed_job_log_sha256": "79c0f21d8e59785190305442a14e53594df1a00392cca68f9bc0bb04ababae4a",
+    "raw_log_not_committed": true
+  },
+  "correction": {
+    "source_file": "Sources/CartaPDF/PDFArchiveFontChecks.swift",
+    "change": "Replace the nested stride/compactMap/set expression with explicit UInt8 input, typed Int byte/GID values and a loop collecting nonzero GID entries.",
+    "preserved_behavior": [
+      "An odd byte count still produces the same malformed-map error.",
+      "An empty even map has no entries.",
+      "Each pair uses its big-endian GID value and CID index offset/2.",
+      "Zero GIDs do not contribute CIDs; CID0 is excluded as before.",
+      "CIDSet bits and missing coverage retain their existing result classification."
+    ],
+    "localization_keys_or_catalogue_data_changed": false
+  },
+  "regression_fixture": {
+    "file": "Tests/CartaPDFTests/PDFArchiveFontChecksTests.swift",
+    "test": "testCidSetStreamMappingPreservesCoverageAndMalformedResults",
+    "cases": 7,
+    "coverage": [
+      "empty map",
+      "zero GIDs",
+      "CID0 exclusion and nonzero high byte",
+      "missing CID bit",
+      "CID in second bitmap byte",
+      "CIDSet too short",
+      "odd mapping length"
+    ],
+    "scope": "Isolated PDCIDFont CIDSet predicate for PDF/A-2b with an embedded deterministic font. The high-byte GID is not evidence of complete font-program validity or overall PDF/A conformance."
+  },
+  "actual_local_execution": {
+    "command": "./scripts/test.sh --filter PDFArchiveFontChecksTests",
+    "Xcode": "27.1",
+    "Xcode_build": "27A9275",
+    "tests": 57,
+    "failures": 0,
+    "seconds": 2.075,
+    "log_sha256": "75a5d95ac445a92e85a15037c4c3b0b2a35ab09c52e276f68585b4cda12cea87",
+    "raw_log_not_committed": true,
+    "global_xcode_select_setting_changed": false
+  },
+  "pre_commit_checks": {
+    "repository": "passed",
+    "tracked_source_files": 657,
+    "localization": "passed",
+    "actionlint": "passed",
+    "staged_diff_whitespace": "passed"
+  },
+  "new_matrix_execution": "The corrected pushed commit must pass both configured GitHub jobs. This record is created before that run and does not invent its future SHA, run ID or result.",
+  "workflow_runs_url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/workflows/ci.yml",
+  "runtime_constraints": {
+    "free": true,
+    "fully_local": true,
+    "Apple_frameworks_only": true,
+    "external_Swift_packages": 0
+  },
+  "repository_visibility": "private",
+  "complete_ISO_PDF_A_validation_proven": false,
+  "complete_VoiceOver_or_interactive_localization_audit_proven": false,
+  "complete_security_audit": false
+}
