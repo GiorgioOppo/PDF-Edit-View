@@ -85,6 +85,8 @@ The subsequent interface review corrected translations and constrained layouts a
 
 The [CI workflow](.github/workflows/ci.yml) checks repository contents, script syntax, native tests, the Release build and packaged resources/CLI. Hardware checks and the complete manual VoiceOver audit remain separate. Raw logs stay local and are excluded from Git. A successful smoke test does not demonstrate complete ISO conformance.
 
+The subsequent [publication-preparation record](Development/PublicationReadiness.json) documents the advertised Git history, hosted content and historical Actions logs reviewed, the new history-checker regression fixtures and the GitHub settings still pending. The repository remains private until an explicit owner decision. The separate [interactive attempt](Development/InteractiveUILocalizationAudit.json) records partial English observations and an automation-service blocker; the full interactive checklist across all languages remains incomplete.
+
 To check the repository and regenerate the feature report after a real test run:
 
 ```sh

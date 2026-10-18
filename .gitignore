@@ -3,6 +3,7 @@
 .build-*/
 dist/
 DerivedData/
+.ui-audit/
 *.xcresult/
 .swiftpm/
 *.xcodeproj/xcuserdata/

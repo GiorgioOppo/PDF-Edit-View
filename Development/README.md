@@ -15,6 +15,7 @@ This directory contains the catalog of 150 requirements, dated test/audit report
 - Historical log hashes are preserved. The original logs may contain machine diagnostics and remain local. Copies used in a report must be reviewed and anonymized.
 - `VoiceOverAudit.json` and `AccessibilityPanelAudit.json` describe work that was actually observed. They do not attest completion of a manual VoiceOver audit.
 - `LocalizationVerification.json` records the initial localization checks. `UILocalizationVerification.json` records the subsequent translation/layout corrections and reviewed native component images; its interactive coverage is listed separately. See the [interface review workflow](../docs/UI_LOCALIZATION_AUDIT.md) to reproduce the synthetic fixture and snapshots.
+- [InteractiveUILocalizationAudit.json](InteractiveUILocalizationAudit.json) records the separate, incomplete interactive attempt and its automation-service blocker. [PublicationReadiness.json](PublicationReadiness.json) records source-publication preparation, advertised-ref/history and hosted-content checks, and GitHub settings still to apply or verify.
 
 Historical machine-readable reports and detailed development records retain their original language and content. Translating public documentation does not alter or rerun the recorded checks.
 

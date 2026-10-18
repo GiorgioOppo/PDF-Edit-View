@@ -23,6 +23,8 @@ The manifest records hashes of the base executable and localization tables, the 
 
 The isolated directories keep app preferences and local app data separate. Host services, hardware and macOS permissions remain subject to the real system's configuration. Use synthetic documents and avoid granting unrelated permissions during this review.
 
+Temporary directories may disappear between sessions. For a longer review, use a new output folder inside the ignored `.ui-audit/` directory, for example `--output .ui-audit/apps-round-1`. This directory is excluded by Git and rejected by the repository checker if accidentally staged. Recheck artifact availability and hashes before resuming an old session.
+
 ## Native component snapshots
 
 The opt-in `CartaUISnapshotTests` test renders the app's own SwiftUI/AppKit components through Apple's `NSHostingController`/`NSHostingView`, `NSWindow`, PDFKit and native bitmap APIs. Generate the deterministic three-page fixture, then run the companion driver with a new output directory:
@@ -63,6 +65,8 @@ Interactive CUA inspection has covered six German-language surfaces: the editor 
 
 This limited interactive coverage does not establish interactive review of the other language variants or every panel. Native component snapshots are a separate source of layout evidence, with the scope described above. Completed image reviews and their manifests must be recorded separately before reporting results across all eight variants.
 
+A subsequent attempt opened the synthetic PDF in the English app and inspected its real editor and thumbnails. The next search interaction timed out, and reconnection and inventory requests failed to start the native automation service. The separate [interactive audit record](../Development/InteractiveUILocalizationAudit.json) therefore remains blocked: English is partial and no locale has completed the planned interactive checklist. It does not turn the earlier component review into a complete interactive audit.
+
 The first component review inspected all 184 PNGs through Codex's image-viewing tool. It found count wording, a source-language typo and contextual translation issues, which were corrected before regenerating the images. The [verification record](../Development/UILocalizationVerification.json) distinguishes this initial review from the subsequent checks of affected components.
 
 The offscreen renderer has observed limits: PDF previews/thumbnails and some symbols can be omitted, steppers can show only their minus glyph, and the structure section selector can appear black. These images do not establish the appearance of those controls. Content below the initial scroll position also requires a separate interaction. The deliberately constrained 620-point forms image is below the supported 700-point minimum and is diagnostic only. No screenshot count or nonuniform-pixel check overrides these limits.
@@ -73,7 +77,7 @@ Run this checklist for all eight variants. Mark an item as pending, reviewed, co
 
 | Surface | Review actions |
 | --- | --- |
-| Main window and menus | Inspect empty and open-document states; expand app, File, Edit, View, Window and Help menus; distinguish Undo/Redo from Cancel/Reset. |
+| Main window and menus | Inspect empty and open-document states; expand app, File, Edit, View, Document, Window and Help menus; distinguish Undo/Redo from Cancel/Reset. |
 | Sidebar and navigation | Switch pages, contents, annotations and search; inspect page counts, search controls, segmented/menu fallback and long bookmark titles. |
 | Tools | Open every tool category; search for tools; check wrapped titles, descriptions, badges and disabled states. |
 | Preferences | Inspect author, stroke, cache, recovery and shortcut settings; check full labels and scroll to the last setting. |

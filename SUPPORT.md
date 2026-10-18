@@ -13,6 +13,7 @@ Use the repository's [issue forms](https://github.com/GiorgioOppo/PDF-Edit-View/
 For a reproducible problem, include:
 
 - CartaPDF version or commit, macOS version, architecture and Xcode version when relevant;
+- the selected interface language for translation, text clipping or keyboard-navigation problems, plus the approximate window size;
 - the operation and minimal steps needed to reproduce it;
 - expected and observed results, including the error message;
 - a synthetic fixture or public source with a redistributable license;

@@ -45,7 +45,7 @@ PERSONAL_PATH = re.compile(
     "/" + r"(?:private/)?var/folders/[A-Za-z0-9_/.-]+"
 )
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^)\n]+)\)")
-FORBIDDEN_PARTS = {".git", ".swiftpm", ".agents", ".codex", ".aws", "dist", "__pycache__"}
+FORBIDDEN_PARTS = {".git", ".swiftpm", ".agents", ".codex", ".aws", ".ui-audit", "dist", "__pycache__"}
 FORBIDDEN_SUFFIXES = {".pyc", ".p12", ".pfx", ".key", ".pem", ".mobileprovision"}
 ERRORS: list[str] = []
 

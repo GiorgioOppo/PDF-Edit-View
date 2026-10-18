@@ -4,6 +4,7 @@ Entries describe implementations and available evidence. Passing a test does not
 
 ## Unreleased
 
+- Added a read-only publication-history checker with synthetic regressions in CI, reviewed hosted workflow history separately from source files, and prepared an optional `main` protection payload. Recorded the interactive localization audit's concrete automation-service blocker without claiming completion.
 - Corrected Undo/Redo translations, tool terminology and Traditional Chinese interface vocabulary. Longer labels now wrap or use adaptive controls across the editor, forms, workflow, export, structure and PDF/A panels. OCR has a scrolling options form and a content minimum that preserves all five report columns.
 - Added a deterministic synthetic PDF generator and opt-in native interface snapshots for all eight language variants, with separate manifests for rendered components and interactive observations. See the [interface review workflow](docs/UI_LOCALIZATION_AUDIT.md).
 - Automatic interface localization for Italian, Spanish, English, German, French, Simplified/Traditional Chinese and Japanese, following ordered macOS preferences with English fallback. Localized menus, tools, messages, accessibility labels and native resources are bundled without translation downloads or language preference writes.
