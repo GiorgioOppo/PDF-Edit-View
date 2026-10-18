@@ -1,7 +1,7 @@
 {
   "required_status_checks": {
     "strict": true,
-    "contexts": ["Apple Silicon · Xcode 26.3"]
+    "contexts": ["Apple Silicon · Xcode 26.3", "Apple Silicon · Xcode 26.6"]
   },
   "enforce_admins": false,
   "required_pull_request_reviews": {

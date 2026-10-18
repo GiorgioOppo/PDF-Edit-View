@@ -16,6 +16,7 @@ All document processing happens locally. PDF/A inspection covers eleven profiles
 | [Localization interface review](UI_LOCALIZATION_AUDIT.md) | Isolated app copies, native component snapshots, interactive review and evidence limits. |
 | [Preparing a public release](PUBLIC_RELEASE.md) | Repository checks and steps for a future public distribution. |
 | [Publication preparation evidence](../Development/PublicationReadiness.json) | Scoped history and hosted-content checks, current private status and prepared GitHub settings. |
+| [Repository maintenance evidence](../Development/RepositoryMaintenanceVerification.json) | Verified merge baseline, Dependabot alert configuration, two CI environments and the private-plan protection limit. |
 
 For contributors, see [CONTRIBUTING](../CONTRIBUTING.md), the [code of conduct](../CODE_OF_CONDUCT.md), [support](../SUPPORT.md), and [security](../SECURITY.md). [Release notes](../CHANGELOG.md) and [data licenses](../THIRD_PARTY_NOTICES.md) are documented separately.
 

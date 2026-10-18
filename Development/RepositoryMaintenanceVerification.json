@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "record_type": "repository_maintenance_verification",
+  "client_date": "2026-10-18",
+  "created_utc": "2026-10-18T18:01:39.697271+00:00",
+  "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
+  "baseline_commit": "92408f4bd0a7cce213772656444321ec52537d1e",
+  "scope": "Verified merged main baseline, enabled free GitHub dependency alerts, prepared branch protection and added CI configuration. Created before pushing the workflow change; later workflow executions must be read from GitHub for their exact head commit.",
+  "visibility_verified": "private",
+  "visibility_changed": false,
+  "paid_plan_or_security_products_activated": false,
+  "runtime_constraints": {
+    "free_application": true,
+    "fully_local_document_processing": true,
+    "Apple_frameworks_only": true,
+    "external_Swift_packages": 0,
+    "app_source_tests_resources_or_Package_swift_changed": false,
+    "new_GitHub_settings_and_CI_do_not_add_app_network_dependencies": true
+  },
+  "baseline_workflow": {
+    "run_id": 39151458030,
+    "url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030",
+    "head_commit": "92408f4bd0a7cce213772656444321ec52537d1e",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Apple Silicon · Xcode 26.3",
+        "conclusion": "success",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check out sources",
+            "conclusion": "success"
+          },
+          {
+            "name": "Confirm Apple toolchain",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check repository and licensed data",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check localization resources and source coverage",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test publication history checker",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check development script syntax",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run native tests",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build Release application",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify application and CLI",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Check out sources",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ],
+    "log_review": {
+      "log_bytes": 298449,
+      "log_sha256": "2d3ff026c35e7328b8da5753989f543aed71a5e978c2ef19a4baa75fbc0bf29d",
+      "selected_secret_signature_counts": {},
+      "host_path_classification": {
+        "hosted_runner_path": 30,
+        "hosted_job_temporary_path": 3
+      },
+      "native_suite_summary": {
+        "tests": 527,
+        "skipped": 2,
+        "failures": 0
+      },
+      "raw_log_not_committed": true,
+      "complete_security_audit": false
+    },
+    "note": "This successful run used macOS 15 and Xcode 26.3. It does not verify the newly configured macOS 26/Xcode 26.6 job."
+  },
+  "GitHub_security_configuration": {
+    "Dependabot_alerts": {
+      "enabled": true,
+      "enable_method": "PUT /repos/{owner}/{repo}/vulnerability-alerts",
+      "enable_HTTP_status": 204,
+      "verification_method": "GET /repos/{owner}/{repo}/vulnerability-alerts",
+      "verification_HTTP_status": 204,
+      "dependency_graph_enabled_by_same_operation": true,
+      "open_alerts_observed": 0,
+      "complete_vulnerability_coverage_claimed": false,
+      "GitHub_Actions_alert_limit": "GitHub supports semantic-version references for Actions alerts, not SHA references. The pinned checkout action must not be described as covered by these alerts.",
+      "pin_maintenance": "The existing monthly GitHub Actions Dependabot version-update configuration remains in place.",
+      "sources": [
+        "https://docs.github.com/en/rest/repos/repos#enable-vulnerability-alerts",
+        "https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations",
+        "https://docs.github.com/en/code-security/getting-started/github-security-features#available-for-all-github-plans"
+      ]
+    },
+    "main_protection": {
+      "status": "unavailable_on_current_private_plan",
+      "enabled": false,
+      "GET_HTTP_status": 403,
+      "PUT_HTTP_status": 403,
+      "server_reason": "Upgrade to GitHub Pro or make this repository public to enable this feature.",
+      "payload_file": ".github/main-protection.json",
+      "payload_sha256": "61b137ea2373165278954fecaafa64b7ee29a4b5c47b0438ff3322a077e27d67",
+      "required_status_checks": [
+        "Apple Silicon · Xcode 26.3",
+        "Apple Silicon · Xcode 26.6"
+      ],
+      "up_to_date_branch": true,
+      "pull_request_required": true,
+      "required_approving_review_count": 0,
+      "administrator_bypass": true,
+      "resolved_conversations": true,
+      "force_pushes_allowed": false,
+      "branch_deletion_allowed": false,
+      "settings_applied": false,
+      "constraint": "Repository visibility remains private. No plan upgrade or substitute client-only enforcement was used.",
+      "sources": [
+        "https://docs.github.com/en/rest/branches/branch-protection"
+      ]
+    }
+  },
+  "CI_configuration_added_with_this_record": {
+    "workflow": ".github/workflows/ci.yml",
+    "workflow_sha256": "293d31332db3cfd70e9b46c9c5b5d0cd0db877cfd2c606a729648e19d575264b",
+    "environments": [
+      {
+        "runner": "macos-15",
+        "Xcode": "26.3",
+        "check_name": "Apple Silicon · Xcode 26.3",
+        "verified_by_recorded_baseline": true
+      },
+      {
+        "runner": "macos-26",
+        "Xcode": "26.6",
+        "check_name": "Apple Silicon · Xcode 26.6",
+        "verified_by_recorded_baseline": false
+      }
+    ],
+    "fail_fast": false,
+    "same_checks_in_both_jobs": true,
+    "checkout_release": "7.0.1",
+    "checkout_SHA": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "contents_permission": "read",
+    "persist_credentials": false,
+    "actual_new_execution": "Read the workflow run for the pushed change. This pre-commit record contains no fabricated future commit, run ID or environment result.",
+    "workflow_runs_url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/workflows/ci.yml",
+    "runner_source": "https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md"
+  },
+  "baseline_history_review": {
+    "result": "passed_selected_checks",
+    "scope": "Explicit publication refs and their reachable Git blobs, commit messages, annotated tags, filenames and commit/tagger email identities. No network or repository mutation.",
+    "references": [
+      "refs/heads/main",
+      "refs/remotes/origin/main"
+    ],
+    "resolved_commit_targets": [
+      "92408f4bd0a7cce213772656444321ec52537d1e",
+      "92408f4bd0a7cce213772656444321ec52537d1e"
+    ],
+    "blob_checks": {
+      "unique_blobs": 600,
+      "UTF8_blobs_checked": 600,
+      "non_UTF8_blobs_not_signature_checked": 0,
+      "blobs_at_or_above_size_limit_not_read": 0,
+      "blob_size_limit_bytes": 99614720,
+      "signature_findings_by_category": {}
+    },
+    "metadata_checks": {
+      "reachable_commits": 14,
+      "commit_message_signature_findings_by_category": {},
+      "unique_historical_file_paths_checked": 655,
+      "historical_filename_findings_by_category": {},
+      "unique_commit_email_identities_checked": 3,
+      "non_GitHub_noreply_commit_email_identities_requiring_review": 0,
+      "email_scope": "Commit author and committer addresses only; upstream attribution addresses in file content are not classified as private identities."
+    },
+    "annotated_tag_checks": {
+      "reachable_annotated_tag_objects": 0,
+      "tag_signature_findings_by_category": {},
+      "tag_objects_at_or_above_size_limit_not_read": 0,
+      "unique_tagger_email_identities_checked": 0,
+      "non_GitHub_noreply_tagger_email_identities_requiring_review": 0
+    },
+    "complete_security_audit": false,
+    "outside_scope": "Unselected refs, non-UTF8 content signatures, working-tree files, GitHub Actions logs/artifacts, issues, pull requests, external systems and arbitrary credential formats."
+  },
+  "advertised_remote_refs_at_record_creation": [
+    {
+      "ref": "refs/heads/main",
+      "commit_or_object": "92408f4bd0a7cce213772656444321ec52537d1e"
+    }
+  ],
+  "local_checks_on_preparation_tree": {
+    "repository": {
+      "result": "passed",
+      "tracked_source_files": 656,
+      "PDF_A_catalogues": 11,
+      "catalogue_entries": 1489,
+      "font_data_resources": 215
+    },
+    "localization": {
+      "result": "passed",
+      "variants": 8,
+      "keys_per_variant": 3040,
+      "explicit_source_keys": 2908
+    },
+    "actionlint": {
+      "command": "actionlint .github/workflows/ci.yml",
+      "result": "passed"
+    },
+    "Python_AST": "passed",
+    "bash_syntax": "passed",
+    "staged_diff_whitespace": "passed",
+    "protection_contexts_match_configured_matrix": true,
+    "native_app_files_and_historical_reports_unchanged": true,
+    "local_native_suite_or_app_build_rerun_for_this_configuration_change": false,
+    "note": "Both matrix jobs run the native suite and Release/package checks after push. The baseline workflow above records the previously completed execution."
+  },
+  "historical_evidence_preserved": [
+    "Development/PublicRepositoryAudit.json",
+    "Development/PublicationReadiness.json",
+    "Development/LocalizationVerification.json",
+    "Development/UILocalizationVerification.json",
+    "Development/InteractiveUILocalizationAudit.json"
+  ],
+  "separate_remaining_work": {
+    "complete_ISO_PDF_A_validation": false,
+    "complete_VoiceOver_audit": false,
+    "interactive_localization_audit": "blocked_on_native_automation_service",
+    "new_runtime_or_binary_release_published": false
+  },
+  "complete_security_audit": false
+}

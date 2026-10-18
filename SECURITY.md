@@ -12,6 +12,8 @@ A useful report includes the app and macOS versions, affected component, observe
 
 ## Scope
 
+The dated [repository maintenance record](Development/RepositoryMaintenanceVerification.json) records verified Dependabot alert enablement and the branch-protection limitation on the current private plan. The workflow pins its official action to a full SHA and uses read-only permissions without persisting checkout credentials. Dependabot version updates maintain that pin. GitHub's alerts for Actions cover semantic-version references, not SHA references, so alert enablement must not be presented as vulnerability coverage of the pinned action. See [GitHub's alert limitations](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations).
+
 Relevant issues include data exposure, unexpected writes, unreported loss of encryption, unsafe handling of malformed files or PDFs, bypassed limits and dangerous interpretation of external content. A documented gap in the PDF/A validator is normally a correctness issue; it may have security implications if it causes a false attestation or exploitable behavior.
 
 The app processes data locally, but local files and untrusted PDFs can still exercise native parsers and frameworks. Resource budgets and cancellation reduce some risks; they are not a sandbox or a formal proof of security.

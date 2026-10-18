@@ -2,6 +2,8 @@
 
 [PublicRepositoryAudit.json](PublicRepositoryAudit.json) records repository preparation checks, separately from historical bundle evidence.
 
+[RepositoryMaintenanceVerification.json](RepositoryMaintenanceVerification.json) adds the verified `92408f4` merge baseline, enabled Dependabot alerts, the two configured CI environments and the current private-plan branch-protection limit. It preserves the earlier reports rather than rewriting their results.
+
 This directory contains the catalog of 150 requirements, dated test/audit reports, coverage catalogs, and the original Python development tools. It does not constitute ISO certification or a complete security or accessibility audit.
 
 ## Read the results

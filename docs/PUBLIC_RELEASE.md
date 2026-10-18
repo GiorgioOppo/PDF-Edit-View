@@ -48,11 +48,13 @@ The first command checks only the refs supplied and refuses a shallow history. A
 
 GitHub also makes historical Actions logs visible when a repository becomes public. Review their contents before changing visibility, including earlier failed runs; successful current tests do not sanitize older hosted data. See [GitHub's visibility consequences](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility).
 
-## Prepared GitHub settings
+## GitHub security settings
 
-The optional [main protection payload](../.github/main-protection.json) is ready for owner review. It requires the observed `Apple Silicon · Xcode 26.3` check on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. Zero mandatory approving reviews supports a solo maintainer; administrators retain a bypass. Change those choices before applying it if a stricter review policy is desired.
+Dependabot alerts were enabled and verified with HTTP 204 from the repository's vulnerability-alerts endpoint; that operation also enables the dependency graph. The [maintenance record](../Development/RepositoryMaintenanceVerification.json) dates this configuration and the observed alert inventory. The repository remained private. GitHub's alerts for Actions support semantic-version references, not SHA references; the pinned checkout action is maintained through the separate Dependabot version-update configuration. Enabled alerts and an empty alert inventory do not establish complete security coverage. See [GitHub's documented alert limitations](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations).
 
-The current private repository's rules API requires an eligible paid plan or public visibility. The payload has not been applied. After an explicitly authorized visibility change, the owner can apply it with:
+The optional [main protection payload](../.github/main-protection.json) requires both configured checks, `Apple Silicon · Xcode 26.3` and `Apple Silicon · Xcode 26.6`, on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. Verify successful executions and the exact rendered names before applying it. Zero mandatory approving reviews supports a solo maintainer; administrators retain a bypass. Change those choices before applying it if a stricter review policy is desired.
+
+Applying the payload to the current private repository returned HTTP 403 requiring GitHub Pro or public visibility. No protection was applied, no paid plan was activated, and visibility was preserved. On a plan that supports private branch protection, or after a separately authorized visibility change, the owner can apply it with:
 
 ```sh
 gh api --method PUT repos/GiorgioOppo/PDF-Edit-View/branches/main/protection \

@@ -12,7 +12,7 @@ Project guides and GitHub support templates are in English. The app supports **I
 
 ## Getting started
 
-The application targets **macOS 14 or later**. Building requires full Xcode with a recent macOS SDK on a compatible host; see the [build requirements](docs/BUILDING.md). The verified CI environment is Apple Silicon, macOS 15 and Xcode 26.3.
+The application targets **macOS 14 or later**. Building requires full Xcode with a recent macOS SDK on a compatible host; see the [build requirements](docs/BUILDING.md). CI is configured for Apple Silicon on macOS 15/Xcode 26.3 and macOS 26/Xcode 26.6. The [maintenance record](Development/RepositoryMaintenanceVerification.json) identifies the passing baseline; check the workflow result for the exact commit when assessing either environment.
 
 From a checkout of this repository:
 
@@ -86,6 +86,8 @@ The subsequent interface review corrected translations and constrained layouts a
 The [CI workflow](.github/workflows/ci.yml) checks repository contents, script syntax, native tests, the Release build and packaged resources/CLI. Hardware checks and the complete manual VoiceOver audit remain separate. Raw logs stay local and are excluded from Git. A successful smoke test does not demonstrate complete ISO conformance.
 
 The subsequent [publication-preparation record](Development/PublicationReadiness.json) documents the advertised Git history, hosted content and historical Actions logs reviewed, the new history-checker regression fixtures and the GitHub settings still pending. The repository remains private until an explicit owner decision. The separate [interactive attempt](Development/InteractiveUILocalizationAudit.json) records partial English observations and an automation-service blocker; the full interactive checklist across all languages remains incomplete.
+
+The [repository maintenance record](Development/RepositoryMaintenanceVerification.json) adds the passing `92408f4bd0a7cce213772656444321ec52537d1e` baseline and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030), the configured macOS 26/Xcode 26.6 CI job, and verified Dependabot alerts. Branch protection could not be applied to the private repository under the current plan; the prepared settings remain available for a later owner decision. Historical reports retain their original scope and results.
 
 To check the repository and regenerate the feature report after a real test run:
 

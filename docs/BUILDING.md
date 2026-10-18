@@ -4,7 +4,7 @@
 
 - **Running the app:** macOS 14 or later.
 - **Building and testing:** a macOS version supported by the selected Xcode release. Apple lists Sequoia 15.6–Tahoe 26.x for Xcode 26.3; consult the [official requirements](https://developer.apple.com/xcode/system-requirements) for your toolchain.
-- A full Xcode installation with a recent macOS SDK; CI uses Xcode 26.3. The Swift Package Manager manifest uses Swift tools 5.9 format, which does not imply that every API is available in older SDKs. Cryptographic fixtures use `SecIdentityCreate`, exposed by recent SDKs, without writing to Keychain.
+- A full Xcode installation with a recent macOS SDK. CI is configured for Xcode 26.3 on macOS 15 and Xcode 26.6 on macOS 26; the recorded passing baseline uses Xcode 26.3. The Swift Package Manager manifest uses Swift tools 5.9 format, which does not imply that every API is available in older SDKs. Cryptographic fixtures use `SecIdentityCreate`, exposed by recent SDKs, without writing to Keychain.
 - Apple tools available through `xcrun`.
 - Python 3 for development scripts and reports only; it is not an app dependency.
 
@@ -55,7 +55,9 @@ Raw `*.log` files are excluded from Git to avoid unintentionally publishing loca
 
 ## Continuous integration
 
-The [macOS checks](../.github/workflows/ci.yml) workflow uses GitHub's Apple Silicon `macos-15` runner and explicitly selects Xcode 26.3. It runs `python3 scripts/check-repository.py`, `python3 scripts/check-localization.py`, syntax checks, the native suite, a Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The packaged localization checks also exercise twenty language-selection scenarios described below. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
+The [macOS checks](../.github/workflows/ci.yml) workflow is configured with two Apple Silicon jobs: `macos-15` with Xcode 26.3 and `macos-26` with Xcode 26.6. Each job selects its Xcode installation explicitly and runs the same repository, localization, publication-history regression and syntax checks, native suite, Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. Matrix failures do not cancel the other job. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The packaged localization checks also exercise twenty language-selection scenarios described below. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
+
+The [maintenance verification record](../Development/RepositoryMaintenanceVerification.json) identifies the passing baseline at commit `92408f4bd0a7cce213772656444321ec52537d1e` and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030). That execution used macOS 15 and Xcode 26.3. The additional macOS 26/Xcode 26.6 job is configured in this change; its result must be checked on the pushed commit before treating that environment as verified. The record also covers enabled Dependabot alerts and the private repository's unavailable branch-protection setting, while preserving historical evidence.
 
 CI does not acquire the corpus, enable VoiceOver, publish releases, or change repository visibility. A local result does not replace the workflow result for a particular commit. If the GitHub image removes the selected toolchain, update the selection in a verified change instead of silently changing SDKs.
 
