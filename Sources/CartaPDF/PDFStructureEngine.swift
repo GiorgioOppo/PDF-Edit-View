@@ -54,7 +54,13 @@ indirect enum PDFSyntaxValue {
             if significant.isEmpty { return negative ? -0.0:0.0 }
             digits = String(significant.prefix(18));exponent = -(fraction.count-significant.count)-1
         }
-        return Double((negative ? "-":"") + String(digits.prefix(1)) + "." + String(digits.dropFirst()) + "e" + String(exponent))
+        var scientific:String = negative ? "-":""
+        scientific += String(digits.prefix(1))
+        scientific += "."
+        scientific += String(digits.dropFirst())
+        scientific += "e"
+        scientific += String(exponent)
+        return Double(scientific)
     }
     var name: String? { if case .name(let value) = self { return value }; return nil }
     var bool: Bool? { if case .boolean(let value) = self { return value }; return nil }

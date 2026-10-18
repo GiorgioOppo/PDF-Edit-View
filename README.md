@@ -89,7 +89,7 @@ The subsequent [publication-preparation record](Development/PublicationReadiness
 
 The [repository maintenance record](Development/RepositoryMaintenanceVerification.json) adds the passing `92408f4bd0a7cce213772656444321ec52537d1e` baseline and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030), the configured macOS 26/Xcode 26.6 CI job, and verified Dependabot alerts. Branch protection could not be applied to the private repository under the current plan; the prepared settings remain available for a later owner decision. Historical reports retain their original scope and results.
 
-The separate [CI compatibility record](Development/CICompatibilityVerification.json) documents the first Xcode 26.6 compiler failure and the CIDSet parsing/regression follow-up. Successful checks for any later commit are recorded by its GitHub workflow; this does not increase the validator's declared ISO coverage.
+The separate [CI compatibility record](Development/CICompatibilityVerification.json) documents Xcode 26.6 compiler failures and the CIDSet/long-decimal parsing follow-ups. Successful checks for any later commit are recorded by its GitHub workflow; this does not increase the validator's declared ISO coverage.
 
 To check the repository and regenerate the feature report after a real test run:
 

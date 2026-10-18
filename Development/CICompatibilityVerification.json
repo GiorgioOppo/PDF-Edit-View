@@ -6,7 +6,7 @@
   "repository": "https://github.com/GiorgioOppo/PDF-Edit-View",
   "configuration_commit": "a2f74b42326f1d84a344f39bb823cf712516cde3",
   "previous_evidence_preserved": "Development/RepositoryMaintenanceVerification.json",
-  "scope": "Compiler portability of CIDToGIDMap enumeration and isolated CIDSet regression checks. This follow-up does not expand ISO PDF/A coverage or claim a completed audit.",
+  "scope": "Compiler portability of CIDToGIDMap enumeration and long PDF decimal conversion, with existing and added regression checks. These follow-ups do not expand ISO PDF/A coverage or claim a completed audit.",
   "initial_matrix_execution": {
     "run_id": 39152325778,
     "url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39152325778",
@@ -86,5 +86,33 @@
   "repository_visibility": "private",
   "complete_ISO_PDF_A_validation_proven": false,
   "complete_VoiceOver_or_interactive_localization_audit_proven": false,
-  "complete_security_audit": false
+  "complete_security_audit": false,
+  "updated_utc": "2026-10-18T18:11:31.289953+00:00",
+  "additional_compiler_follow_up": {
+    "observed_commit": "ef0d342aaba281e9bcb4c7c16e6bd780d0284491",
+    "run_id": 39152756724,
+    "url": "https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39152756724",
+    "failed_job": {
+      "name": "Apple Silicon · Xcode 26.6",
+      "conclusion": "failure"
+    },
+    "failure_phase": "Swift compilation before test execution",
+    "source_file": "Sources/CartaPDF/PDFStructureEngine.swift",
+    "diagnostic": "The compiler is unable to type-check this expression in reasonable time.",
+    "failed_job_log_sha256": "79ed6e49563f84e349cd06827d986758fd181e044720e18ab4ac9e8cb43057b8",
+    "raw_log_not_committed": true,
+    "correction": "Construct the identical scientific-decimal text with explicit String steps before passing it to Double. Numeric grammar, sign, significant digits, exponent, early zero and overflow/underflow handling are unchanged.",
+    "targeted_existing_suite": "PDFArchiveGraphicsSyntaxTests",
+    "existing_behavior_case": "testLongValidDecimalIsNotConfusedWithMalformedSyntaxOrMachineUnderflow",
+    "actual_local_execution": {
+      "command": "./scripts/test.sh --filter PDFArchiveGraphicsSyntaxTests",
+      "Xcode": "27.1",
+      "Xcode_build": "27A9275",
+      "tests": 28,
+      "failures": 0,
+      "seconds": 0.785,
+      "log_sha256": "5af19a13b6a9582bfa438b7fb5e1ea93a5c610181ed57fc33be61e60c87588a1",
+      "raw_log_not_committed": true
+    }
+  }
 }
