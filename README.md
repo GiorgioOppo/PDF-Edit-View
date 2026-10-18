@@ -1,8 +1,19 @@
-# CartaPDF 3.6
+# PDF-Edit&View — CartaPDF
+
+A free, offline PDF editor for macOS, written in Swift using Apple frameworks only. The app is called **CartaPDF**, version **3.6.0**. PDF/A validation is partial and never reports full conformance while coverage gaps remain.
 
 Editor PDF per macOS scritto in Swift. Gratuito, con sorgenti sotto licenza MIT, completamente locale e basato soltanto su framework Apple. Nessuna dipendenza software di terze parti, account, abbonamento, server, telemetria o servizio AI. OCR, confronto, conversioni, firme e ricerche vengono eseguiti sul Mac. Un collegamento web in un PDF viene aperto solo su azione dell’utente.
 
-Il progetto implementa strumenti ispirati alle attività di Acrobat Pro, con i limiti descritti sotto. Il catalogo delle 100 migliorie e 50 nuove funzioni è in `Development/FeatureRequirements.json`; [il rapporto di verifica](Development/FeatureVerification.json) distingue funzioni implementate, ambiti limitati e verifiche che richiedono hardware o intervento manuale.
+Il nome del repository è [PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View); il nome dell’app e del bundle resta CartaPDF. Il progetto è indipendente e non è affiliato ad Adobe. Il progetto implementa strumenti ispirati alle attività di Acrobat Pro, con i limiti descritti sotto. Il catalogo delle 100 migliorie e 50 nuove funzioni è in `Development/FeatureRequirements.json`; [il rapporto di verifica](Development/FeatureVerification.json) distingue funzioni implementate, ambiti limitati e verifiche che richiedono hardware o intervento manuale.
+
+## Documentazione
+
+- [Indice delle guide](docs/README.md), [uso dell’app](docs/USAGE.md) e [CLI](docs/CLI.md).
+- [Compilazione e test](docs/BUILDING.md), [architettura](docs/ARCHITECTURE.md) e [contributi](CONTRIBUTING.md).
+- [Privacy e permessi](docs/PRIVACY.md), [accessibilità](docs/ACCESSIBILITY.md) e [sicurezza](SECURITY.md).
+- [Stato PDF/A](docs/PDFA.md), [changelog](CHANGELOG.md), [licenze dei dati](THIRD_PARTY_NOTICES.md) e [supporto](SUPPORT.md).
+- [Preparazione della pubblicazione](docs/PUBLIC_RELEASE.md) e [interpretazione delle evidenze](Development/README.md).
+
 
 ## Uso
 
@@ -42,7 +53,7 @@ Novità della versione 3.6: schema degli spazi colore calibrati, Indexed, Separa
 
 ## Compilazione e verifica
 
-Richiede **macOS 14+** e Xcode completo compatibile. Il bundle incluso è per Apple Silicon. Firma ad hoc locale, senza notarizzazione Developer ID.
+Richiede **macOS 14+** e Xcode completo compatibile. Il build locale su Apple Silicon genera un bundle arm64 in `dist/`, escluso da Git. Il repository contiene i sorgenti; non viene pubblicato automaticamente un installer. Firma ad hoc locale, senza notarizzazione Developer ID.
 
 ```sh
 ./scripts/test.sh
@@ -54,11 +65,14 @@ Gli script usano Xcode installato solo per il processo, senza cambiare `xcode-se
 
 I test verificano dati riaperti, contenuti e pixel, non solo la presenza dei pulsanti: undo, form, cifratura, bookmark, flussi testo, immagini, allegati, CMS/alterazioni, OCR Vision, QR, impaginazione, CSV, EPUB/CRC, TIFF, HTML offline, procedure batch, cancellazione e file con mille pagine.
 
-Verifica della versione 3.6: **512 test superati, zero errori**; corpus indipendente documentato in Development/PDFA-CorpusEvidence.json. Il risultato della suite integrata e lo stato dei 150 requisiti sono registrati in `Development/FeatureVerification.json`. La validazione ISO PDF/A completa resta parziale. L’audit manuale completo VoiceOver non è completato; revisione statica e test nativi sono documentati separatamente. Scanner, cattura schermo e audio richiedono anche la verifica con dispositivi e autorizzazioni dell’utente.
+Evidenza della versione 3.6 del 18 ottobre 2026: **512 test superati, zero errori**; corpus indipendente documentato in Development/PDFA-CorpusEvidence.json. Il risultato della suite integrata e lo stato dei 150 requisiti sono registrati in `Development/FeatureVerification.json`. La validazione ISO PDF/A completa resta parziale. L’audit manuale completo VoiceOver non è completato; revisione statica e test nativi sono documentati separatamente. Scanner, cattura schermo e audio richiedono anche la verifica con dispositivi e autorizzazioni dell’utente.
 
-Per rigenerare il rapporto dopo i test:
+La CI esegue controlli del repository, test nativi, compilazione Release, firma e CLI su macOS. Le prove con hardware e l’audit manuale completo VoiceOver restano separati. I log grezzi sono locali ed esclusi da Git.
+
+Per verificare i contenuti del repository e rigenerare il rapporto dopo i test:
 
 ```sh
+python3 scripts/check-repository.py
 ./scripts/test.sh > Development/TestResults.log 2>&1
 python3 Development/verify-features.py
 ```
@@ -90,3 +104,7 @@ Per Comandi Rapidi cerca l’azione **Unisci PDF** di CartaPDF dopo aver aperto 
 `PDFEditorModel`, `PDFWorkspaceDocument` e `PDFCanvas` gestiscono documento, undo e interazione. `PDFWorkflow*` contiene organizzazione e batch; `PDFScanExport*` e `PDFLocalLibrary` gestiscono scansioni, conversioni e biblioteca; `PDFStructure*` contiene lettura/scrittura strutturale e certificati; `CartaWorkspaceServices`, `CartaRenderingServices`, `CartaVisualTools`, `CartaFileIO` e `CartaAutomation` gestiscono preferenze, recupero, memoria, confronto, scritture e automazioni. Il catalogo è in `ToolBrowserView`.
 
 I cataloghi XML PDF/A originali veraPDF sono dati sotto licenza **CC BY 4.0**; i dati Adobe CMap/AGL e PDF-to-Unicode sono sotto **BSD a 3 clausole**. Le licenze dei dati sono distinte dalla licenza MIT del codice. Il bundle e i sorgenti includono attribuzione, licenze e manifest con hash in `Resources/PDFAProfiles` e `Resources/PDFFontData`. Non includono il motore Java, toolkit Adobe o altri framework esterni. Il corpus ufficiale di sviluppo è acquisito separatamente e non è incluso nell’app.
+
+## Licenza
+
+Codice originale sotto [MIT](LICENSE). I dati inclusi mantengono le licenze e attribuzioni descritte in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Le specifiche ISO e il corpus esterno non vengono redistribuiti.

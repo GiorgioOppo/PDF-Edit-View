@@ -1,0 +1,40 @@
+name: Segnalazione di un problema
+description: Un comportamento errato o una regressione riproducibile.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Descrivi il problema con un documento sintetico, se possibile. Rimuovi dati personali, firme, password e contenuti riservati da PDF, immagini e log. Per vulnerabilità segui SECURITY.md: non aprire una segnalazione pubblica con dettagli sfruttabili.
+  - type: input
+    id: version
+    attributes:
+      label: Versione di CartaPDF o commit
+      placeholder: "3.6.0 oppure hash del commit"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: macOS e architettura
+      placeholder: "macOS 15, Apple Silicon"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passaggi per riprodurre
+      description: Indica lo strumento, i parametri e il comportamento osservato.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Risultato atteso
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Esempio minimo e verifiche
+      description: Per PDF/A indica profilo, ID del controllo e posizione, distinguendo violazione da controllo non verificato. Non allegare copie delle norme ISO o documenti privati.

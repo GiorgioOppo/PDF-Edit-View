@@ -1,0 +1,59 @@
+name: macOS checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-build-test:
+    name: Apple Silicon · Xcode 16.4
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      # Official action, pinned to the verified v6.1.0 release commit.
+      - name: Check out sources
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Confirm Apple toolchain
+        run: |
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+          xcrun swift --version
+          xcrun --sdk macosx --show-sdk-version
+      - name: Check repository and licensed data
+        run: python3 scripts/check-repository.py
+      - name: Check development script syntax
+        run: |
+          for script in scripts/test.sh scripts/build-app.sh; do
+            bash -n "$script"
+          done
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          for directory in (Path("scripts"), Path("Development")):
+              for path in directory.glob("*.py"):
+                  ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          PY
+      - name: Run native tests
+        run: ./scripts/test.sh
+      - name: Build Release application
+        run: ./scripts/build-app.sh
+      - name: Verify application and CLI
+        run: |
+          codesign --verify --strict dist/CartaPDF.app
+          lipo -verify_arch arm64 dist/CartaPDF.app/Contents/MacOS/CartaPDF
+          dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help
