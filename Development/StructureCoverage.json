@@ -1,0 +1,202 @@
+{
+  "scope": [
+    "F022",
+    "F023",
+    "F030",
+    "F031",
+    "F042",
+    "F043",
+    "F044",
+    "F045",
+    "F046",
+    "F047",
+    "F048",
+    "F049",
+    "F050"
+  ],
+  "entrypoints": [
+    "showStructureWorkspace()",
+    "showPreflightWorkspace()",
+    "showCertificateWorkspace()",
+    "showOriginalContentWorkspace()",
+    "showArchiveValidationWorkspace()"
+  ],
+  "uiSources": [
+    "Sources/CartaPDF/PDFStructureTools.swift",
+    "Sources/CartaPDF/PDFStructureViews.swift",
+    "Sources/CartaPDF/PDFArchiveValidationViews.swift"
+  ],
+  "testResult": {
+    "suite": "PDFStructureEngineTests",
+    "tests": 16,
+    "failures": 0,
+    "validation": "Sixteen native structure tests passed repeatedly, including 24 independent in-memory ECDSA signatures per stress run. Full native integration suite passed: 98 tests, 0 failures, 8.558 seconds. Root runs final integration again after unrelated final fixes.",
+    "fullNativeSuite": {
+      "tests": 98,
+      "failures": 0,
+      "log": "/private/tmp/cartapdf-structure-full-suite.log"
+    },
+    "repeatStructureLog": "/private/tmp/cartapdf-structure-repeated.log"
+  },
+  "sharedLimits": [
+    "Nessuna dipendenza esterna o rete applicativa.",
+    "Lettore delimitato: file fino a 512 MiB; stream decodificati fino a 256 MiB; xref fino a 1 milione di oggetti; profondità sintattica/alberi limitata.",
+    "xref classiche, xref stream e object stream; xref ibride rifiutate. Decode: Flate, ASCIIHex, ASCII85, RunLength e predittori bitmap supportati; altri filtri dichiarati non supportati.",
+    "Modifiche strutturali incrementali preservano le revisioni originali. Tutte le scritture sono copie e rifiutano la destinazione originale anche tramite symlink.",
+    "Scritture/verifica dei byte e lettura file allegati in task con CartaJobLimiter, cancellazione e CartaFileIO.atomicWrite. PDF verificato con CoreGraphics prima della scrittura e hash riletto dopo il salvataggio.",
+    "Parsing/preflight, preparazione delle trasformazioni, ridisegno CoreGraphics, generazione indice, firma e decodifica estrazioni restano sincroni sul MainActor: documenti molto grandi possono temporaneamente bloccare il pannello."
+  ],
+  "requirements": [
+    {
+      "id": "F022",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "setPageLabels",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPageLabelsUseRealCatalogNumberTreeAndPreserveOriginalRevision",
+      "implemented": "Numerazione logica mediante PageLabels/number tree, stili decimale/romano/alfabetico/prefisso e sezioni conservate.",
+      "limits": "Non aggiunge numeri stampati. Rifiuta PDF cifrati o certificati DocMDP."
+    },
+    {
+      "id": "F023",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "embeddedImages / extractImage",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testOriginalJPEGExtractionPreservesTheEncodedBytesExactly",
+      "implemented": "JPEG/JPX estratti con i byte incorporati; bitmap RGB/grigie compatibili esportate PNG alla risoluzione originale.",
+      "limits": "PNG: solo 8 bit DeviceRGB/DeviceGray senza Decode/Mask/SMask. Filtri non supportati rifiutati; non ricostruisce immagini inline."
+    },
+    {
+      "id": "F030",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "embeddedFiles / addingAttachments / extractAttachment / removingAttachment",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testAttachmentsPreserveExactBytesAndCollectionSurvivesReopening",
+      "implemented": "Filespec e stream EmbeddedFile reali, name tree, elenco/estrazione byte-identica, aggiunta/rimozione in copie.",
+      "limits": "Gestisce EmbeddedFiles nel name tree del catalogo con Filespec indiretti. Allegati solo in annotazioni o altre strutture non sono elencati. Rimozione incrementale non cancella i byte delle revisioni precedenti."
+    },
+    {
+      "id": "F031",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFNativeProfileConverter.portfolioIndex",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPortfolioHasAnActualIndexPageAndEmbeddedOriginalFiles",
+      "implemented": "Portfolio con pagina indice leggibile, Collection/Schema e file originali incorporati.",
+      "limits": "Il supporto della navigazione Collection varia tra lettori; la pagina indice e il pannello Allegati restano disponibili. Nessuna esecuzione automatica degli allegati."
+    },
+    {
+      "id": "F042",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "preflight / imagePlacements",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPreflightReportsRealUnembeddedFontAndImagePlacementDPI",
+      "implemented": "Rapporto effettivo: MediaBox/CropBox, font/FontFile, immagini/DPI delle matrici cm/Do, Form XObjects, ICC, tag, azioni catalogo.",
+      "limits": "Analisi statica limitata; immagini inline e filtri non supportati segnalano incompletezza. Non verifica licenze font, ogni singolo glifo, separazioni colore o tutte le azioni annidate."
+    },
+    {
+      "id": "F043",
+      "status": "partial",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFArchiveValidator.validate / declaredProfile / CartaArchiveValidationView / validate-pdfa",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testNativePDFAGenerationContainsArchivalXMPAndOutputIntent",
+      "implemented": "Undici profili 1a/1b/2a/2b/2u/3a/3b/3u/4/4e/4f, inventario di 1489 regole ufficiali con hash fissati, controlli nativi espliciti, stati per clausola, rapporto JSON/testo, SHA-256 e CLI. Il livello CoreGraphics viene rilevato dai byte, senza presumere 2u.",
+      "limits": "Validazione ISO 19005 completa ancora non implementata. Modello font/grafica/ICC/XMP/struttura e riferimenti normativi incompleti: le condizioni non valutate restano notVerified e l’app non emette conforming finché esistono scopeGaps. Catalogo CC BY 4.0 distinto dal codice MIT. Conversione appiattisce moduli/annotazioni e non trasferisce allegati/livelli/firme.",
+      "sources": [
+        "Sources/CartaPDF/PDFArchiveValidator.swift",
+        "Sources/CartaPDF/PDFArchiveValidatorRules.swift",
+        "Sources/CartaPDF/PDFArchiveValidatorContent.swift",
+        "Sources/CartaPDF/PDFArchiveValidationViews.swift",
+        "Sources/CartaPDF/CartaAutomation.swift"
+      ],
+      "tests": [
+        "PDFArchiveValidatorTests.testAllElevenPinnedCataloguesHaveEveryOfficialRuleAndUniqueIdentifiers",
+        "PDFArchiveValidatorTests.testEveryProfileRemainsIndeterminateWhenNormativeModelIsIncomplete",
+        "CartaArchiveValidationTests.testCLIReportsActualFileHashAndIndeterminateExitCodeWithoutChangingSource",
+        "CartaArchiveValidationTests.testCLIRejectsUnknownProfileAndReportsProvenViolationsWithExitTwo",
+        "CartaArchiveValidationTests.testChangingProfileCancelsValidationAndDoesNotPublishAnObsoleteReport"
+      ]
+    },
+    {
+      "id": "F044",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFNativeProfileConverter.redraw(outputProfile:)",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testICCPrintPreparationEmbedsAnActualCMYKOutputProfile",
+      "implemented": "Preparazione con OutputIntent GTS_PDFX e profilo ICC CMYK reale scelto localmente; verifica del profilo incorporato.",
+      "limits": "NON certifica ISO 15930/PDF-X, non converte ogni colore/separazione e non esegue preflight tipografico completo. Genera una copia ridisegnata."
+    },
+    {
+      "id": "F045",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "tagPages",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testAccessibilityAuthoringCreatesParentTreeMCIDAndActualAlternativeText",
+      "implemented": "Authoring reale StructTreeRoot, StructElem, ParentTree, StructParents, MCID, Alt e Lang; un elemento per pagina in ordine documentale.",
+      "limits": "Nessuna ricostruzione semantica tra blocchi e nessuna certificazione PDF/UA. Strutture preesistenti rifiutate per non danneggiarle. I lettori possono preferire Alt al testo estratto per una pagina marcata Figure."
+    },
+    {
+      "id": "F046",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "optionalLayers / setLayerVisibility",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testLayerVisibilityChangesActualDefaultOCGConfigurationAndRendering",
+      "implemented": "Lettura OCG e modifica reale ON/OFF della configurazione predefinita; verifica anche tramite rendering.",
+      "limits": "Non riordina gli oggetti grafici, non gestisce ogni configurazione/evento opzionale e non elimina il contenuto nascosto."
+    },
+    {
+      "id": "F047",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "originalTextRuns / replaceOriginalText",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testActualTextOperatorIsReplacedAndUnsupportedFontIsRefused",
+      "implemented": "Sostituisce l’operando originale di Tj, apostrofo e virgolette; nessuna annotazione o sovrapposizione.",
+      "limits": "Solo Type1 standard non incorporati con WinAnsiEncoding esplicita, senza ToUnicode. Niente font CID/subset, TJ/kerning, immagini inline, reflow o correzione automatica dei limiti del riquadro. Stream condivisi modificati in tutti gli utilizzi. Le revisioni mantengono il testo precedente: non è oscuramento."
+    },
+    {
+      "id": "F048",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "replaceImage",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testImageExtractionHasOriginalResolutionAndReplacementMutatesXObjectWithoutOverlay",
+      "implemented": "Sostituzione reale dello stream XObject mantenendo riferimenti/posizioni; bitmap RGB a 8 bit, verifica dei pixel renderizzati e assenza di annotazioni aggiunte.",
+      "limits": "La trasparenza viene composta su bianco; oggetti condivisi cambiano in tutti gli utilizzi. Limite 40 megapixel; input strutturalmente cifrati rifiutati."
+    },
+    {
+      "id": "F049",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFLocalCertificateEngine.sign / detachedCMS",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testRealCMSByteRangeSignatureVerifiesAndDetectsByteTamperingWithoutKeychainWrites",
+      "implemented": "Firma PDF CMS SHA-256 reale con ByteRange e certificato locale, inclusa verifica immediata. RSA via CMSEncoder; ECDSA via CMS DER standard con SecKeyCreateSignature e verifica indipendente CMSDecoder.",
+      "limits": "Richiede identità con chiave privata selezionata esplicitamente dall’utente. Nessun timestamp remoto, OCSP/CRL, firma qualificata o dichiarazione PAdES. PDF cifrati/DocMDP rifiutati. Test P256 interamente in memoria, nessuna scrittura nel Portachiavi.",
+      "additionalTests": [
+        "testRepeatedInMemoryECDSASignaturesRemainValidAcrossDistinctKeys"
+      ]
+    },
+    {
+      "id": "F050",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFLocalCertificateEngine.verify",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testRealCMSByteRangeSignatureVerifiesAndDetectsByteTamperingWithoutKeychainWrites",
+      "implemented": "Verifica CMSDecoder, ByteRange canonico esclusivo di Contents, integrità crittografica, SHA-256 dei byte firmati, fiducia locale e byte di revisioni successive.",
+      "limits": "SubFilter supportati adbe.pkcs7.detached/ETSI.CAdES.detached, CMS DER a lunghezza definita. Trust con rete esplicitamente disabilitata. Non attesta revoca aggiornata, timestamp qualificati o intera conformità PAdES; revisioni successive segnalate separatamente.",
+      "additionalTests": [
+        "testRepeatedInMemoryECDSASignaturesRemainValidAcrossDistinctKeys"
+      ]
+    }
+  ],
+  "syntaxReference": "https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf"
+}

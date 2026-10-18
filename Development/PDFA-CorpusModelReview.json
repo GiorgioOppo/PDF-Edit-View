@@ -1,0 +1,253 @@
+{
+  "comparison": "Additional-model failures on historical pass-labelled cases compared with 3.2; labels remain provisional, not a complete ISO oracle.",
+  "binary_sha256": "7172ffceb1721e99539eee678bcfb6f13d003456c66e5191f9d7f3cf9f77439e",
+  "positive_cases_with_new_model_failure": [
+    {
+      "file": "PDF_A-1b/6.2 Graphics/6.2.3.3 Uncalibrated color space/veraPDF test suite 6-2-3-3-t03-pass-e.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 11 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.2 Graphics/6.2.9 Rendering intents/veraPDF test suite 6-2-9-t01-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t01-pass-d.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 11 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.6 Rendering intents/veraPDF test suite 6-2-6-t01-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni.; pagina 1/stream 19 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.8 Images/6.2.8.1 General/veraPDF test suite 6-2-8-1-t02-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 11 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t01-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 11 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.7 Images/6.2.7.1 General/veraPDF test suite 6-2-7-1-t03-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/stream 11 0 R: Struttura PDF non valida: campioni inline: 1062 byte decodificati, attesi 3 dalle righe/dimensioni."
+      ]
+    }
+  ],
+  "count": 7,
+  "complete_ISO_validation_proven": false,
+  "reviewed_inline_sample_cases": {
+    "source": "ISO32000-1 §8.9.7 p216 expressly treats ID..EI bytes as stream data (§7.3.8); §7.3.8.2 p20 requires sample dimensions and decoded extent to agree.",
+    "primary_url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf",
+    "independent_decoder": "Python standard-library zlib used only during development; no engine/code imported into the app",
+    "interpretation": "Flate is the only declared filter. Its decoded JPEG bytes are raw RGB samples under this dictionary, not an implicit DCT stream. 1062 bytes exceed the 3-byte pixel specified. Historical per-clause pass label does not override this independent model violation.",
+    "cases": [
+      {
+        "file": "PDF_A-1b/6.2 Graphics/6.2.3.3 Uncalibrated color space/veraPDF test suite 6-2-3-3-t03-pass-e.pdf",
+        "sha256": "b455191e26fa5bf2d2bdb258b9fe1847a6fdac70e49d8063045d1462d3275181",
+        "facts": [
+          {
+            "content_stream_object": 11,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-1b/6.2 Graphics/6.2.9 Rendering intents/veraPDF test suite 6-2-9-t01-pass-b.pdf",
+        "sha256": "10938cf36b1d0aafc0902acfb39cf5e27237c821a71977a9fea757c8d2af7ea3",
+        "facts": [
+          {
+            "content_stream_object": 19,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /AbsoluteColorimetric\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /RelativeColorimetric\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /Saturation\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /Perceptual\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t01-pass-d.pdf",
+        "sha256": "ad1ef6042812eb91fefc69cbcc131f2f63e907e777f5bdc089f94d031fd4fe33",
+        "facts": [
+          {
+            "content_stream_object": 11,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.6 Rendering intents/veraPDF test suite 6-2-6-t01-pass-b.pdf",
+        "sha256": "5a361e9609b4d9ad6ef8f9d96c6b292efa5a44bc02d5172690f55faa4f2b795c",
+        "facts": [
+          {
+            "content_stream_object": 19,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /AbsoluteColorimetric\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /RelativeColorimetric\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /Saturation\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              },
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/Intent /Perceptual\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.8 Images/6.2.8.1 General/veraPDF test suite 6-2-8-1-t02-pass-b.pdf",
+        "sha256": "6005b53a10cf6991ce03e8997c1796f99651280b464f431879e95dc1f6147a0f",
+        "facts": [
+          {
+            "content_stream_object": 11,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/I false\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t01-pass-b.pdf",
+        "sha256": "454ad2b449c72207d26fe1deb65448dce5789744d304d1ed0fd161972a0a6c3e",
+        "facts": [
+          {
+            "content_stream_object": 11,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.7 Images/6.2.7.1 General/veraPDF test suite 6-2-7-1-t03-pass-b.pdf",
+        "sha256": "1558cdfb1bef7b1fb77d1336ed0d82c64b3c7d38104fcfdab1539c6d7fa0679e",
+        "facts": [
+          {
+            "content_stream_object": 11,
+            "images": [
+              {
+                "dictionary": "/W 1\n/H 1\n/CS /RGB\n/BPC 8\n/I false\n/F /Fl",
+                "independently_decoded_bytes": 1062,
+                "expected_sample_bytes": 3,
+                "decoded_signature_hex": "ffd8ffe000104a46494600010101004800480000",
+                "decoded_payload_sha256": "ff602551799f68f3b0ab8e7b19ddb794cb268f9f49c4b66a2dfde5fab1610089",
+                "encoded_EOD_proven": true,
+                "DCT_filter_declared": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "original_corpus_unchanged": true
+  }
+}

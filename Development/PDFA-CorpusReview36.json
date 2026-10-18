@@ -1,0 +1,1240 @@
+{
+  "createdUTC": "2026-10-18T07:00:24.873325+00:00",
+  "scope": "Independent comparison of the3.6 development preflight against the saved3.5 corpus baseline, including recomputed input PDF hashes. This establishes reproducible observed regression facts, not ISO coverage or validation accuracy.",
+  "completeISOValidationProven": false,
+  "officialConformanceClaim": false,
+  "filenameRuleMappingReviewed": false,
+  "corpus": {
+    "repository": "https://github.com/veraPDF/veraPDF-corpus",
+    "commit": "377728596647e40edf16003d68d620773ce96ec5",
+    "dataLicense": "CC BY 4.0",
+    "files": 2164,
+    "presentProfileCounts": {
+      "1a": 34,
+      "1b": 568,
+      "2a": 27,
+      "2b": 985,
+      "2u": 22,
+      "3b": 12,
+      "4": 486,
+      "4e": 19,
+      "4f": 11
+    },
+    "profilesWithoutCorpusFiles": [
+      "3a",
+      "3u"
+    ]
+  },
+  "inputs": {
+    "baseline": {
+      "path": "/private/tmp/CartaPDF-35-corpus-baseline.json",
+      "sha256": "01ea313961074d7c204c97674ef67545e2fdd9e8d17c766fa1e5ac5302070113",
+      "binarySHA256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+      "finishedAt": "2026-10-18T06:48:01.385426+00:00"
+    },
+    "preflight": {
+      "path": "/private/tmp/CartaPDF-36-preflight-corpus.json",
+      "sha256": "8baa7cbf08f781a2aa2a54b6c42ba25bfe8e07b9a64fef1b8a2c429e09413e7e",
+      "binarySHA256": "8a334d59260e6ee3a0141faa9e1c05723594b1e0ed60855afb6b7711fbd12a3b",
+      "finishedAt": "2026-10-18T06:58:39.746657+00:00"
+    },
+    "rootModelDelta": {
+      "path": "/private/tmp/CartaPDF-36-model-delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "observed": []
+    },
+    "independentReviewScript": {
+      "path": "/private/tmp/CartaPDF-36-independent-review.py",
+      "sha256": "06e60cded070449d16656d5fe89ba14ff14d33481067039b7fd0abc498fcdef3"
+    }
+  },
+  "checks": {
+    "uniqueFilesEachRun": 2164,
+    "sameFileSet": true,
+    "sameCorpusRepositoryAndCommit": true,
+    "sameProfileAndInputIdentities": true,
+    "actualPDFSHA256Verified": 2164,
+    "actualGitBlobSHA1Verified": 2164,
+    "actualHashMismatches": [],
+    "actualGitBlobMismatches": [],
+    "exitVerdictConsistency": true,
+    "unexpectedExitOrErrorRecords": [],
+    "declaredTopLevelCountsMatchRecomputedRows": true,
+    "profileSummariesUnchanged": true,
+    "allVerdictsUnchanged": true,
+    "allExitCodesUnchanged": true,
+    "historicalCandidateClassificationsUnchanged": true,
+    "targetStatusesUnchanged": true,
+    "actualFailedRulesUnchanged": true,
+    "modelFailureIDsUnchanged": true,
+    "modelFailureDetailsUnchanged": true,
+    "newModelFailureDetails": [],
+    "removedModelFailureDetails": [],
+    "newActualFailedRules": [],
+    "removedActualFailedRules": []
+  },
+  "recomputedCounts": {
+    "overallVerdicts": {
+      "nonconforming": 1509,
+      "indeterminate": 655
+    },
+    "exitCodes": {
+      "2": 1509,
+      "3": 655
+    },
+    "historicalCandidates": {
+      "candidate_failure_detected": 516,
+      "candidate_pass_without_failure": 350,
+      "candidate_pass_unverified": 3,
+      "candidate_failure_not_detected": 226,
+      "unmapped": 1068,
+      "candidate_pass_failed": 1
+    },
+    "newOrRemovedModelFailures": 0,
+    "newOrRemovedActualRuleFailures": 0,
+    "executionErrorRecords": 0
+  },
+  "nonfailureStatusChanges": {
+    "changedUnverifiedCountFiles": 14,
+    "unverifiedCountDeltaDistribution": {
+      "0": 2150,
+      "1": 12,
+      "3": 2
+    },
+    "changedUnverifiedFiles": [
+      {
+        "file": "PDF_A-1b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t01-fail-b.pdf",
+        "sha256": "adfb248b48219cd7bea3c3cdc79026d6f8a9cd4dbaaad83a7ea3de335c05617f",
+        "baselineUnverified": 43,
+        "preflightUnverified": 44,
+        "baselineModelCounts": {
+          "failed": 1,
+          "passed": 3,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "failed": 1,
+          "passed": 5,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-2b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t02-fail-a.pdf",
+        "sha256": "d0ad4339811ad7d4f060b1fcdc08314b2ef45e83de49a6d70f4c12fc7bf4401f",
+        "baselineUnverified": 57,
+        "preflightUnverified": 58,
+        "baselineModelCounts": {
+          "failed": 1,
+          "passed": 3,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "failed": 1,
+          "passed": 5,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+        "sha256": "e1a84fc9412c07ea5eae5de509a787f3bdf6e1adf6bc3efe113c827dfed0ed97",
+        "baselineUnverified": 56,
+        "preflightUnverified": 57,
+        "baselineModelCounts": {
+          "passed": 1,
+          "notVerified": 2
+        },
+        "preflightModelCounts": {
+          "passed": 1,
+          "notVerified": 3
+        }
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+        "sha256": "55984dc62d58f592b0a8f94361dbce8867a805a8998a260dd2b257b4b664c625",
+        "baselineUnverified": 56,
+        "preflightUnverified": 57,
+        "baselineModelCounts": {
+          "passed": 1,
+          "notVerified": 2
+        },
+        "preflightModelCounts": {
+          "passed": 1,
+          "notVerified": 3
+        }
+      },
+      {
+        "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+        "sha256": "a5bd28bbb4952540e7e2f6b3ebcb5ecc080cc2ddafeefc0db5830d595530c8df",
+        "baselineUnverified": 5,
+        "preflightUnverified": 8,
+        "baselineModelCounts": {
+          "passed": 2,
+          "notVerified": 5
+        },
+        "preflightModelCounts": {
+          "passed": 14,
+          "notVerified": 8
+        }
+      },
+      {
+        "file": "PDF_A-4/6.1 File structure/6.1.5 String objects/veraPDF test suite 6-1-5-t02-fail-a.pdf",
+        "sha256": "5c7a4faba479c9e40ef83e51343d6bf5f6f6113b1ab14b9d9683de4ff61a1b1b",
+        "baselineUnverified": 66,
+        "preflightUnverified": 67,
+        "baselineModelCounts": {
+          "failed": 1,
+          "passed": 2,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "failed": 1,
+          "passed": 4,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-4/6.1 File structure/6.1.6 Stream objects/6.1.6.2 Filters/veraPDF test suite 6-1-6-2-t01-fail-b.pdf",
+        "sha256": "4455aceed6d8b4c8b23b5240bf1139477465ed5365abcdb34c2f73743384e905",
+        "baselineUnverified": 66,
+        "preflightUnverified": 67,
+        "baselineModelCounts": {
+          "passed": 2,
+          "notVerified": 2
+        },
+        "preflightModelCounts": {
+          "passed": 2,
+          "notVerified": 3
+        }
+      },
+      {
+        "file": "PDF_A-4/6.1 File structure/6.1.9 Inline image dictionaries/veraPDF test suite 6-1-9-t01-fail-c.pdf",
+        "sha256": "4ae93fdeafff85261e7fc390cdb71b52b78b83278aaefa9a60ee73f84424f3a3",
+        "baselineUnverified": 51,
+        "preflightUnverified": 52,
+        "baselineModelCounts": {
+          "passed": 2,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "passed": 2,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.2 Content streams/veraPDF test suite 6-2-2-t02-fail-d.pdf",
+        "sha256": "60fede4c509500365e3b681c5b1c670c849cf9d5a5bdf588fbad278efc34566a",
+        "baselineUnverified": 1,
+        "preflightUnverified": 2,
+        "baselineModelCounts": {
+          "passed": 2
+        },
+        "preflightModelCounts": {
+          "passed": 3,
+          "notVerified": 1
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.2 Content streams/veraPDF test suite 6-2-2-t03-fail-a.pdf",
+        "sha256": "be3b24be7daa8780d0e515c201d023cf4360abd85fbede0c2c9bfee21591fecb",
+        "baselineUnverified": 1,
+        "preflightUnverified": 2,
+        "baselineModelCounts": {
+          "passed": 2
+        },
+        "preflightModelCounts": {
+          "passed": 2,
+          "notVerified": 1
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+        "sha256": "c7fbba88b6def5b40d715489dba7f2909b6a77290835006d4aca61f73846ba6a",
+        "baselineUnverified": 51,
+        "preflightUnverified": 52,
+        "baselineModelCounts": {
+          "passed": 1,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "passed": 1,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+        "sha256": "e33bdc8f433af1661c73a519ee1f661c46fa6dc4f75953f3408e8cccf4fd62b2",
+        "baselineUnverified": 51,
+        "preflightUnverified": 52,
+        "baselineModelCounts": {
+          "passed": 1,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "passed": 1,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t04-fail-q.pdf",
+        "sha256": "dbc4c9d2c18c0f25529e33c216e76a162f1d3b5e9ac9a49430284eb598eaf847",
+        "baselineUnverified": 51,
+        "preflightUnverified": 52,
+        "baselineModelCounts": {
+          "passed": 1,
+          "notVerified": 3
+        },
+        "preflightModelCounts": {
+          "passed": 1,
+          "notVerified": 4
+        }
+      },
+      {
+        "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+        "sha256": "af4ddf31353604393f45e8d2457f41a876da40ba69d971622ea8ee9accd1343f",
+        "baselineUnverified": 5,
+        "preflightUnverified": 8,
+        "baselineModelCounts": {
+          "passed": 2,
+          "notVerified": 5
+        },
+        "preflightModelCounts": {
+          "passed": 14,
+          "notVerified": 8
+        }
+      }
+    ],
+    "changedModelStatusCountFiles": 371,
+    "modelStatusCountDeltaDistribution": [
+      {
+        "deltas": {},
+        "files": 1793
+      },
+      {
+        "deltas": {
+          "notVerified": 1
+        },
+        "files": 8
+      },
+      {
+        "deltas": {
+          "notVerified": 1,
+          "passed": 1
+        },
+        "files": 1
+      },
+      {
+        "deltas": {
+          "notVerified": 1,
+          "passed": 2
+        },
+        "files": 3
+      },
+      {
+        "deltas": {
+          "notVerified": 3,
+          "passed": 12
+        },
+        "files": 2
+      },
+      {
+        "deltas": {
+          "passed": 1
+        },
+        "files": 110
+      },
+      {
+        "deltas": {
+          "passed": 2
+        },
+        "files": 126
+      },
+      {
+        "deltas": {
+          "passed": 3
+        },
+        "files": 56
+      },
+      {
+        "deltas": {
+          "passed": 4
+        },
+        "files": 22
+      },
+      {
+        "deltas": {
+          "passed": 6
+        },
+        "files": 8
+      },
+      {
+        "deltas": {
+          "passed": 8
+        },
+        "files": 2
+      },
+      {
+        "deltas": {
+          "passed": 10
+        },
+        "files": 3
+      },
+      {
+        "deltas": {
+          "passed": 12
+        },
+        "files": 9
+      },
+      {
+        "deltas": {
+          "passed": 13
+        },
+        "files": 1
+      },
+      {
+        "deltas": {
+          "passed": 15
+        },
+        "files": 6
+      },
+      {
+        "deltas": {
+          "passed": 16
+        },
+        "files": 3
+      },
+      {
+        "deltas": {
+          "passed": 18
+        },
+        "files": 1
+      },
+      {
+        "deltas": {
+          "passed": 20
+        },
+        "files": 1
+      },
+      {
+        "deltas": {
+          "passed": 22
+        },
+        "files": 3
+      },
+      {
+        "deltas": {
+          "passed": 24
+        },
+        "files": 4
+      },
+      {
+        "deltas": {
+          "passed": 27
+        },
+        "files": 1
+      },
+      {
+        "deltas": {
+          "passed": 30
+        },
+        "files": 1
+      }
+    ],
+    "independentNativeRerun": {
+      "createdUTC": "2026-10-18T07:01:42.536757+00:00",
+      "scope": "Read-only native CLI JSON comparison of the exact3.5 release and3.6 preflight binaries for all14 files whose unverified count increased. No production source or corpus changed.",
+      "baselineBinarySHA256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+      "preflightBinarySHA256": "8a334d59260e6ee3a0141faa9e1c05723594b1e0ed60855afb6b7711fbd12a3b",
+      "researchScriptSHA256": "35662411d694a457e9af3d80acef1c9f875e3206853296f592e0346e209ae1cd",
+      "filesCompared": 14,
+      "nativeCLIRuns": 28,
+      "additionalNotVerifiedModels": 18,
+      "allAdditionalNotVerifiedObjectTypes": {
+        "ColorSpaceModel": 18
+      },
+      "additionalNotVerifiedReasons": {
+        "incomplete colour-space inventory": 12,
+        "NChannel/Process/MixingHints": 6
+      },
+      "catalogueRuleStatusChanges": [],
+      "catalogueRuleDetailChanges": [
+        {
+          "file": "PDF_A-1b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t01-fail-b.pdf",
+          "id": "ISO_19005_1:6.7.9:2",
+          "before": {
+            "clause": "6.7.9",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2004, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_1:6.7.9:2",
+            "locations": [
+              "Metadata 5 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 5 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 5 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 5 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 5 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 5 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 5 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "Properties specified in XMP form shall use either the predefined schemas defined in XMP Specification, or extension schemas that comply with XMP Specification",
+            "specification": "ISO_19005_1",
+            "status": "passed",
+            "testNumber": "2"
+          },
+          "after": {
+            "clause": "6.7.9",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2004, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_1:6.7.9:2",
+            "locations": [
+              "Metadata 5 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 5 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 5 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 5 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 5 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 5 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 5 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "Properties specified in XMP form shall use either the predefined schemas defined in XMP Specification, or extension schemas that comply with XMP Specification",
+            "specification": "ISO_19005_1",
+            "status": "passed",
+            "testNumber": "2"
+          }
+        },
+        {
+          "file": "PDF_A-1b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t01-fail-b.pdf",
+          "id": "ISO_19005_1:6.7.9:3",
+          "before": {
+            "clause": "6.7.9",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_1:6.7.9:3",
+            "locations": [
+              "Metadata 5 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 5 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 5 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 5 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 5 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 5 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 5 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "Properties specified in XMP form shall use either the predefined schemas defined in XMP Specification, or extension schemas that comply with XMP Specification",
+            "specification": "ISO_19005_1",
+            "status": "passed",
+            "testNumber": "3"
+          },
+          "after": {
+            "clause": "6.7.9",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_1:6.7.9:3",
+            "locations": [
+              "Metadata 5 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 5 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 5 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 5 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 5 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 5 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 5 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "Properties specified in XMP form shall use either the predefined schemas defined in XMP Specification, or extension schemas that comply with XMP Specification",
+            "specification": "ISO_19005_1",
+            "status": "passed",
+            "testNumber": "3"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:1",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:2",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:1",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:2",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 4 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 4 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 4 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 4 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 4 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 4 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 4 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:1",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 2 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 2 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 2 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 2 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 2 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 2 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 2 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Proprietà dell’edizione Adobe 2005, oppure descrizione extension valida nel pacchetto ammesso.",
+            "id": "ISO_19005_2:6.6.2.3.1:1",
+            "locations": [
+              "Metadata 2 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 2 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 2 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 2 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 2 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 2 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 2 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "1"
+          }
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+          "id": "ISO_19005_2:6.6.2.3.1:2",
+          "before": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 2 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 2 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 2 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 2 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 2 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 2 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 2 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          },
+          "after": {
+            "clause": "6.6.2.3.1",
+            "detail": "7 oggetti controllati. Tipo effettivo di proprietà, array, strutture e qualificatori XMP.",
+            "id": "ISO_19005_2:6.6.2.3.1:2",
+            "locations": [
+              "Metadata 2 0 R/creator {http://purl.org/dc/elements/1.1/}creator",
+              "Metadata 2 0 R/ModifyDate {http://ns.adobe.com/xap/1.0/}ModifyDate",
+              "Metadata 2 0 R/CreatorTool {http://ns.adobe.com/xap/1.0/}CreatorTool",
+              "Metadata 2 0 R/CreateDate {http://ns.adobe.com/xap/1.0/}CreateDate",
+              "Metadata 2 0 R/Producer {http://ns.adobe.com/pdf/1.3/}Producer",
+              "Metadata 2 0 R/conformance {http://www.aiim.org/pdfa/ns/id/}conformance",
+              "Metadata 2 0 R/part {http://www.aiim.org/pdfa/ns/id/}part"
+            ],
+            "objectType": "XMPProperty",
+            "requirement": "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2",
+            "specification": "ISO_19005_2",
+            "status": "passed",
+            "testNumber": "2"
+          }
+        }
+      ],
+      "existingModelStatusChanges": [],
+      "removedPreviousNotVerifiedModels": [],
+      "diagnosticsChanges": [],
+      "stderrRecords": [],
+      "findings": "All18 additional notVerified entries are newly added ColorSpaceModel checks. Existing model statuses and catalogue rule statuses remain unchanged; there are no removed previous notVerified models or changed diagnostics. Incomplete colour-space inventories and unresolved NChannel/Process/MixingHints relationships remain explicit unknowns. The8 rule-detail differences affect only the order of metadata locations arrays; their location multisets and all other fields are identical.",
+      "results": [
+        {
+          "file": "PDF_A-1b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t01-fail-b.pdf",
+          "profile": "1b",
+          "sha256": "adfb248b48219cd7bea3c3cdc79026d6f8a9cd4dbaaad83a7ea3de335c05617f",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "4.5.4",
+              "detail": "Inventario colore incompleto: pagina 1/Contents: Struttura PDF non valida: cifra esadecimale.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "PDF Reference 1.4",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 129,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "cd1c5bac3ec58b1fc8164374b110d0d75e142c2bb17c42ae2a17147ecac5a74a",
+          "preflightReportSHA256": "daa471ef5a113930d41274f56d970d14f9335c2a20c792564b5e63413289343a"
+        },
+        {
+          "file": "PDF_A-2b/6.1 File structure/6.1.6 String objects/veraPDF test suite 6-1-6-t02-fail-a.pdf",
+          "profile": "2b",
+          "sha256": "d0ad4339811ad7d4f060b1fcdc08314b2ef45e83de49a6d70f4c12fc7bf4401f",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents: Struttura PDF non valida: cifra esadecimale.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 144,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "78dbebfbbaa99e0da0f00e7e86222d423109e11dd22a4f1f1841947e66666277",
+          "preflightReportSHA256": "26d17ba00d0956cbfc6325a9ff7bf2423cf09c866aa30d13c7204866c14f2420"
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+          "profile": "2b",
+          "sha256": "e1a84fc9412c07ea5eae5de509a787f3bdf6e1adf6bc3efe113c827dfed0ed97",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@2: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 144,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "2cdbff6e1a26a8cb9fa6bf085eb1850058103beff1a1ace7e31acfc859c9d3e6",
+          "preflightReportSHA256": "968f853e05d96990ba66ae3c96ca9394e12a6226f8878045c776623e82ef2ac5"
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+          "profile": "2b",
+          "sha256": "55984dc62d58f592b0a8f94361dbce8867a805a8998a260dd2b257b4b664c625",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@54: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 144,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "bbc6b55d71fd6be47bf7c6318ace2fdb8347669b33f37428cf8ec4421d86b2fb",
+          "preflightReportSHA256": "7a4ba69b5c4d8f390e1cee20cdfb96cb0aaf4291ce58ec970a2b0ef2fa91fe3c"
+        },
+        {
+          "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+          "profile": "2b",
+          "sha256": "a5bd28bbb4952540e7e2f6b3ebcb5ecc080cc2ddafeefc0db5830d595530c8df",
+          "exitCode": 3,
+          "verdict": "indeterminate",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:1",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            },
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:12",
+              "locations": [
+                "pagina 1/Contents/cs@7"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            },
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:23",
+              "locations": [
+                "pagina 1/Contents/cs@549"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-1",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 144,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "b33e7bdbe95cd4ab50f923942e3d558a024cd0752dca82ca79bce2360a0708ac",
+          "preflightReportSHA256": "84b405d77189c02aa46f642ab1b6233f8f9b8b312581ab2b87454d037a21fa4e"
+        },
+        {
+          "file": "PDF_A-4/6.1 File structure/6.1.5 String objects/veraPDF test suite 6-1-5-t02-fail-a.pdf",
+          "profile": "4",
+          "sha256": "5c7a4faba479c9e40ef83e51343d6bf5f6f6113b1ab14b9d9683de4ff61a1b1b",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents: Struttura PDF non valida: cifra esadecimale.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "024cf061e1c21ce6db143acebb6d28ad3227b145115750e94db1d31a35c96bd4",
+          "preflightReportSHA256": "df542d1220eb4bb237b3a20186ccebca04bc8a42bfc22c8d833b2f27c919112b"
+        },
+        {
+          "file": "PDF_A-4/6.1 File structure/6.1.6 Stream objects/6.1.6.2 Filters/veraPDF test suite 6-1-6-2-t01-fail-b.pdf",
+          "profile": "4",
+          "sha256": "4455aceed6d8b4c8b23b5240bf1139477465ed5365abcdb34c2f73743384e905",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents: Operazione non supportata per questo PDF: filtro Flatedecode.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "4f5f024c0bb395133f804b7028b5b50f23854e633b3d14a67a7abb2bf4ed0a74",
+          "preflightReportSHA256": "de370b7bb419fa5a4dd0c202708113cf05cec31c14889b1ce226942d667df574"
+        },
+        {
+          "file": "PDF_A-4/6.1 File structure/6.1.9 Inline image dictionaries/veraPDF test suite 6-1-9-t01-fail-c.pdf",
+          "profile": "4",
+          "sha256": "4ae93fdeafff85261e7fc390cdb71b52b78b83278aaefa9a60ee73f84424f3a3",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@22: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "2d07854b99ad9f8492a1338cfdc17cf303af3452a8f4c3e8b5275a7acb2c203b",
+          "preflightReportSHA256": "4e7ab3c06c294b4c4cc0bde425b5a4e7e6d2f93eb176ae26bd069582aafe9711"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.2 Content streams/veraPDF test suite 6-2-2-t02-fail-d.pdf",
+          "profile": "4",
+          "sha256": "60fede4c509500365e3b681c5b1c670c849cf9d5a5bdf588fbad278efc34566a",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Resources/XObject/X0/cs@7: Operazione non supportata per questo PDF: spazio colore nominato non risolto: CS0.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "9cb8f45f1f9903956263560284ebdc023bd8960f3ccd1dcacda7390dd04094a2",
+          "preflightReportSHA256": "6d9460d29dfb089c22f163e1327b2ceda1a51bd6fa983e98725a5cf4a545ce3f"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.2 Content streams/veraPDF test suite 6-2-2-t03-fail-a.pdf",
+          "profile": "4",
+          "sha256": "be3b24be7daa8780d0e515c201d023cf4360abd85fbede0c2c9bfee21591fecb",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Resources/XObject/X0/cs@7: Operazione non supportata per questo PDF: spazio colore nominato non risolto: CS0.",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "e7c4c0f8f04a0b69157d3c0f617dde0c16c6730ee670dfed87e283b5c0c98ea6",
+          "preflightReportSHA256": "e9150414dd55af19b093d984d7b23741e354ea480b7d65c18a8b565686b3e38c"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t02-fail-f.pdf",
+          "profile": "4",
+          "sha256": "c7fbba88b6def5b40d715489dba7f2909b6a77290835006d4aca61f73846ba6a",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@2: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "d930d9c33dab3b3ad13092f8419880c66044c85d6ec193f31afe38df97e82002",
+          "preflightReportSHA256": "2938c3d02d147d6ac020571596470c01c4dd9d0f956c22107af72250a0a9cb82"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-fail-c.pdf",
+          "profile": "4",
+          "sha256": "e33bdc8f433af1661c73a519ee1f661c46fa6dc4f75953f3408e8cccf4fd62b2",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@54: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "ebde993ee6b1e03eb1963c611cd64217c681b9d29cbb211e58740483f0f907c6",
+          "preflightReportSHA256": "6517cee4cf7a25a95265a17d6af9e5af958ec8dda72a77e3337212759ffa4c86"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t04-fail-q.pdf",
+          "profile": "4",
+          "sha256": "dbc4c9d2c18c0f25529e33c216e76a162f1d3b5e9ac9a49430284eb598eaf847",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Inventario colore incompleto: pagina 1/Contents/BI@2: confine binario non dimostrato",
+              "id": "CartaPDF:ISO32000:colour-space:inventory",
+              "locations": [],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "fad1a5bbb5e1d9e9c2413b0110f62fbe176bfc1ec4129f0ea65f2a772db8e005",
+          "preflightReportSHA256": "1e7838ba8e9b76da37d10b7992177c1eebff107cab7a62336b6400a83bb188d9"
+        },
+        {
+          "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t02-pass-a.pdf",
+          "profile": "4",
+          "sha256": "af4ddf31353604393f45e8d2457f41a876da40ba69d971622ea8ee9accd1343f",
+          "exitCode": 2,
+          "verdict": "nonconforming",
+          "addedNotVerifiedModels": [
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:1",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            },
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:12",
+              "locations": [
+                "pagina 1/Contents/cs@7"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            },
+            {
+              "clause": "8.6.5; 8.6.6",
+              "detail": "Operazione non supportata per questo PDF: Relazioni complete NChannel/Process/MixingHints non ancora modellate.",
+              "id": "CartaPDF:ISO32000:colour-space:23",
+              "locations": [
+                "pagina 1/Contents/cs@549"
+              ],
+              "objectType": "ColorSpaceModel",
+              "requirement": "Parametri strutturali, dimensioni e restrizioni degli spazi colore nel contesto PDF devono essere coerenti.",
+              "specification": "ISO 32000-2",
+              "status": "notVerified",
+              "testNumber": "native-colour-space"
+            }
+          ],
+          "catalogueRuleCount": 111,
+          "catalogueStatusesUnchanged": true,
+          "previousModelStatusesUnchanged": true,
+          "baselineReportSHA256": "9a736da3845a2632a9d72fd9d6699401ffdb09e0ab291a8cda5bce5fa9b09fd8",
+          "preflightReportSHA256": "c9af32add38c1a51edb0881d87104242886d2e31c39fbd8b18f87a5c7844d6f6"
+        }
+      ],
+      "completeISOValidationProven": false,
+      "finalReleaseCompared": false,
+      "catalogueRuleDetailChangeAssessment": {
+        "onlyLocationArrayOrderChanges": 8,
+        "nonOrderingDetailChanges": 0,
+        "method": "Every changed rule has identical fields except locations; locations compare as an identical multiset, preserving duplicate counts. These are presentation-order differences, not changes in status, requirement or observed locations."
+      }
+    }
+  },
+  "limits": [
+    "The compared3.6 preflight uses a development binary. The final release build/corpus result is a separate artifact owned by the release process.",
+    "Historical pass/fail filenames and clause/test numbers are provisional candidate mappings, not normative oracles. An unrelated failure never proves that a named atomic requirement was validated.",
+    "No conforming verdict was emitted. The1509 nonconforming and655 indeterminate outcomes do not constitute a complete ISO validation certificate or an accuracy score.",
+    "There are no corpus files selected as3a or3u in these snapshots. Synthetic cross-profile tests are separate evidence; this corpus comparison does not assert corpus coverage of all11 profiles.",
+    "Unchanged failed-rule/model-failure lists do not prove all failure detection is correct. The previously documented targeted case reviews and normative gaps remain relevant.",
+    "Nonfailure model status counts change when new native models are added. Those counts alone do not prove normative coverage or a reduction of all unknowns.",
+    "No production Swift source or corpus PDF was modified during this independent review; the research script uses original standard-library comparisons and hashing, with no external PDF validation engine."
+  ],
+  "finalRelease": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle.",
+    "all_per_file_results_equal_after_location_order_normalization": true,
+    "location_order_only_file_count": 24,
+    "normalized_mismatches": 0,
+    "complete_ISO_validation_proven": false
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "version": "3.6.0",
+  "date": "2026-10-18",
+  "implementation": "Original Swift; Foundation/CoreGraphics/CryptoKit; Apple frameworks only; no ICC engine imported",
+  "complete_ISO_validation_proven": false,
+  "conforming_verdict_enabled": false,
+  "sources": [
+    {
+      "url": "https://www.color.org/specifications/ICC.1-2001-04.pdf",
+      "edition": "ICC.1:2001-04 v2",
+      "scope": "Header/table/types; required-tag models6.3 Tables21–31 for profile versions2.1–2.4, with AnnexF revision history; binary ncl2/pseq/desc6.5.11/12/17."
+    },
+    {
+      "url": "https://www.color.org/specification/ICC1v43_2010-12.pdf",
+      "edition": "ICC.1:2010-12 v4.3",
+      "scope": "7.2–7.4,8.2–8.9,9.2,10.10–10.11; positionNumber4.4 and embedded mluc/ncl2/pseq/psid10.13/15/17/18. MPE float32 storage4.3 and multiProcessElements10.14.1–10.14.2.5,Tables52–62,pp62–68."
+    },
+    {
+      "url": "https://www.color.org/specifications/ICC.1-2022-05.pdf",
+      "edition": "ICC.1:2022-05 v4.4",
+      "scope": "Version4.4 contiguous layout and explicit D50precision; ncl2/pseq/psid10.17/19/20 corroborate binary structures. MPE float32 storage4.3 and multiProcessElements10.16.1–10.16.2.5,Tables55–65,pp64–69."
+    },
+    {
+      "url": "https://www.color.org/PSD_TechNote.pdf",
+      "edition": "ICC Technical Note: Guidelines on populating the profileSequenceDescTag",
+      "scope": "Publisher guidance, not treated as a new normative prohibition. Embedded MLUC storage may share strings and contain unused space; empty placeholders may use12/16/28bytes. Supports bounded traversal and unknown for ambiguous extents or legacy conversion."
+    },
+    {
+      "url": "https://www.color.org/privatetag2011-07.pdf",
+      "edition": "ICC signature registry, July2011",
+      "scope": "Registered cvst signature63767374h corroborates the ASCII curve-set signature; the printed6D666C74h in the specification curve-set table is inconsistent. mflt is not accepted as an alias."
+    }
+  ],
+  "implemented": [
+    "Header signature/size/class/BCD/reserved/PCS/date/D50; tag bounds/alignment/shared ranges",
+    "Required v4 tags by device class and supported models; matrix/TRC for all defined three-channel spaces",
+    "Standard tag/type compatibility with exact signatures; private A2BX/B2AX not misclassified",
+    "curve/parametric counts, mluc records/UTF16, scalar array sizes and text",
+    "lut8/lut16 dimensions and byte extents; lutAB/BA element combinations/curves/matrix/CLUT",
+    "Transform input/output channel counts versus data space/PCS; supported class separation",
+    "Version4.4 contiguous tag data and padding; older edition gaps not falsely failed",
+    "Malformed payload proven failed; unsupported payload/budget/cancellation notVerified; no ColorSync acceptance shortcut",
+    "Required models for v2.1–2.4 distinguish RGB display matrix requirements from v4 LUT alternatives; v2 inputs may use documented three-component matrices or N-component LUTs; v4 xCLR colorant-table obligations are not imported into v2.",
+    "ncl2 fixed ASCII name fields, optional device coordinate records, count/stride extents and overflow-safe bounds in both major editions; coordinate disagreement/reserved flags/out-of-domain legacy Lab are unknown.",
+    "pseq sequential header records with embedded v2 desc and v4 mluc; explicit counts, Unicode/ScriptCode terminators, shared/out-of-order MLUC strings and relative offsets. Documented placeholder variants and ambiguous storage do not become false malformed proofs.",
+    "psid positionNumber offset/size records, alignment/padding, complete-record sharing and MLUC bounds constrained to each sized record; nested MLUC offsets remain relative to its own beginning.",
+    "Original UTF16BE validation with periodic cancellation, shared-string deduplication and per-tag record/text-work budgets. Exceeded budgets produce notVerified.",
+    "mpet positionNumber records and containing-tag channel chains, including shared processing elements, aligned relative offsets, first stored data and zero padding; D2B0–3/B2D0–3 bind16-bit channel counts to profile spaces.",
+    "matf counted float32 matrices; clut16-byte dimension fields, unused dimensions, minimum grid sizes and bounded product extents; internal16-input-dimensional CLUTs are supported.",
+    "cvst relative curve positions and shared curf records; nondecreasing break-points, parf functions0–2 parameter counts and interior samf counts/float storage. Formula validity over the complete segment remains unverified.",
+    "bACS/eACS prescribed channel-preserving records; stored float32 rejects NaN/infinity/subnormal while permitting signed zero. Undefined elements remain unknown and do not mask later known malformed records.",
+    "MPE record/float-work limits and periodic cancellation preserve notVerified. Binary parsing does not execute transformations or infer ICC correctness from ColorSync."
+  ],
+  "remaining": [
+    "Full ICC mathematical and colourimetric semantics, curve domain constraints, all transforms and their interaction; no global ICC or PDF/A conformance claim.",
+    "Unimplemented public/private payloads including dict and extensions; complete meas/view/chrm enumerations and parametric-curve mathematical validity.",
+    "pseq embedded storage whose extent cannot be established from the supported layouts,12/28byte placeholders and unproven conversion of legacy desc inside v4 remain unknown. Original profile headers/sequence membership are unavailable for cross-checking.",
+    "psid Profile IDs/descriptions cannot be matched to absent original profiles. Language/country registries, semantic name uniqueness and ncl2 colourimetric identity are not attested by binary parsing.",
+    "Required-tag model for profile v2.0 and revisions beyond consulted v2.4 remains unknown. Documented v2.1–2.4 structural models do not prove every historical edition detail.",
+    "Alternative pre-v4.4 D50 quantization and nonzero reserved v2 header fields retain their3.4 unknown policy; no retroactive v4 zero/rounding requirement.",
+    "MPE structural coverage does not prove all mathematical/colorimetric behavior: formula validity over every segment input, matrix results, CLUT interpolation/clipping and interactions remain unverified.",
+    "Undefined MPE elements/curve or formula types, unused extra public-element bytes, zero-channel semantics and mpet in v2 remain unknown; future-element fallback is not executed or presumed invalid."
+  ],
+  "tests": [
+    "testRealAppleMatrixProfileHasNoInventedStructuralViolations",
+    "testHeaderCalendarVersionPCSReservedAndD50AreChecked",
+    "testV2AndV4HaveDifferentTextTypesAndReservedRanges",
+    "testContiguousLayoutRuleIsLimitedToV44",
+    "testCurveAndParametricPayloadsUseCountsRatherThanCgAcceptance",
+    "testMlucBoundsAndMalformedUTF16AreNotRepaired",
+    "testLut8And16DimensionsAndTableExtentsAreChecked",
+    "testLutABEmbeddedCurvesCLUTOffsetsAndChannelsAreChecked",
+    "testUnknownPrivateTagIsUnverifiedRatherThanInventedInvalidity",
+    "testRequiredV4MatrixModelAndTagTypeAreActuallyInspected",
+    "testLutChannelsAgreeWithProfileDataSpaceAndPCS",
+    "testThreeChannelMatrixModelIsNotLimitedToRGB",
+    "testPrivateTagWithSimilarPrefixIsNotAStandardTransform",
+    "testTagSafetyBudgetIsIncompleteRatherThanMalformed",
+    "testLutABOnlyPermitsNormativeElementCombinations",
+    "testV4DeviceClassesRequireTheirOwnModelTags",
+    "testKnownTagTypeMismatchIsDetectedEvenForOpaqueTypes",
+    "testV43PaddingMustBeZeroEvenWhenTagGapsArePermitted",
+    "testD50FourDecimalPrecisionDoesNotInventUniqueFixedPointEncoding",
+    "testV2RequiredModelsDoNotInheritV4DisplayAlternativesOrColorantTables",
+    "testV2RequiredTagsCoverAllDocumentedClasses",
+    "testV2MatrixInputSupportsThreeComponentsAndLabRequiresForwardLUT",
+    "testNamedColorRecordsAcceptOptionalCoordinatesInBothEditions",
+    "testNamedColorBoundsASCIITerminatorsAndCountsAreNotGuessed",
+    "testNamedColorUnprovenFlagsCoordinateAgreementAndLegacyLabStayUnknown",
+    "testPseqV2UsesCompleteCountedDescriptionsEvenWhenUnaligned",
+    "testPseqV4MlucUsesItsOwnOffsetsAndPermitsSharedStrings",
+    "testPseqDocumentedEmptyVariantsAndLegacyConversionAvoidFalseFailure",
+    "testPseqAmbiguousStorageAndUnprovenSourceRelationsStayUnknown",
+    "testPseqKnownTruncationAndMalformedEmbeddedStringsFail",
+    "testPsidSizedRecordsUseNestedOffsetsAndAllowEntireRecordSharing",
+    "testPsidOffsetsSizesPaddingAndEmbeddedMlucCannotEscapeTheirRecord",
+    "testStructuredRecordSafetyBudgetStaysUnknownInsteadOfMalformed",
+    "testMpeMatrixAndClutChainsAreStructuredInBothV4Editions",
+    "testMpeHeaderAndInterelementChannelsMustAgree",
+    "testMpeOffsetsSizesFirstElementAndPaddingAreIndependentOfSharing",
+    "testMpePrivateElementsDoNotHideLaterKnownViolationsOrBecomeInvalid",
+    "testMpeStoredFloatsRejectNonfiniteAndSubnormalButPermitSignedZeroAndNormals",
+    "testMpeClutGridExtentsReservedDimensionsAndSixteenInputs",
+    "testMpeCurveSetNestedPositionsAndSharedCurvesKeepMathematicalDomainUnknown",
+    "testMpeSegmentBreaksAreNondecreasingNotNecessarilyStrict",
+    "testMpeCurvesRejectTruncationIllegalEndSamplesAndReservedFields",
+    "testMpeFutureFormulaCurveAndZeroChannelsAreUnknownRatherThanMalformed",
+    "testMpeAcsPassThroughElementsRequireMatchingChannelCounts",
+    "testMpePublicTransformTagsBindSixteenBitChannelsToProfileSpaces",
+    "testMpeRecordAndFloatWorkBudgetsRemainUnknown",
+    "testIccCancellationIsExplicitlyUnverified"
+  ],
+  "source_sha256": {
+    "Sources/CartaPDF/PDFArchiveICCModel.swift": "96cd5a222912832178139cc28945ba6677d1eb2b5e903cb8a744012c89167936",
+    "Tests/CartaPDFTests/PDFArchiveICCModelTests.swift": "c1b2692d1b3a4b493ed50d7cf3399ecad6908985469329037c45bfa0ecde358e"
+  },
+  "primary_review": {
+    "scope": "Read-only primary-source review of ICC structural deltas; not a complete ICC/PDF-A conformance assertion.",
+    "primary_sources": [
+      {
+        "path": "/private/tmp/CartaPDF-ICC-v24.pdf.txt",
+        "sha256": "8e812cd47c391022bf595e2bead0af2a86ed494c041495f18f6307281242a1ed"
+      },
+      {
+        "path": "/private/tmp/CartaPDF-ICC-v43.pdf.txt",
+        "sha256": "18a3fd4e96f92333d208f006b045c744ce48c953a591cf4efd315cfef1366139"
+      },
+      {
+        "path": "/private/tmp/CartaPDF-ICC-v44.pdf.txt",
+        "sha256": "38c57f31bc23f4a4b9ce96641320c156a1355d1ec4e877206a3d3bc962a3f3dc"
+      }
+    ],
+    "delta_categories": {
+      "D50_files": 10,
+      "v2_header_reserved_files": 2,
+      "ICC_size_files": 5,
+      "previously_reviewed_U3D_files": 4
+    },
+    "D50": {
+      "v2_evidence": "ICC.1:2001-04 Table9 p12 and A.1 p65 require D50 (X0.9642 Y1.0000 Z0.8249); numeric types5.3.3/5.3.10 define fixed signed16fractional bits but no unique hexadecimal D50 encoding or general quantization rule.",
+      "v43_evidence": "ICC.1:2010 7.2.16 p23 gives decimal D50 as XYZNumber, not a unique hex triplet.",
+      "v44_evidence": "ICC.1:2022 7.2.16 p23 explicitly applies rounding to four decimal places.",
+      "v44_integer_predicate": "For nonnegative fixed-point n: (n*10000+32768)/65536 equals9642,10000,8249 respectively.",
+      "v44_allowed_integer_ranges": {
+        "X": [
+          63187,
+          63193
+        ],
+        "Y": [
+          65533,
+          65539
+        ],
+        "Z": [
+          54058,
+          54063
+        ]
+      },
+      "corpus_facts": "All10 D50 deltas involve the same936byte v2.1 profile with XYZ F6D6/10000/D32C; D32C corresponds to0.82489013671875.",
+      "profile_sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+      "conservative_policy": "Exact-triplet mismatch alone is not a proven failure. v4.4 uses the explicit round4 criterion; earlier-edition near-D50 alternatives can remain unknown rather than importing a unique rounding choice."
+    },
+    "v2_reserved": {
+      "evidence": "ICC.1:2001-04 Table9 p12 labels84..127 reserved for future expansion without a zero requirement. Explicit zero requirements elsewhere concern version bytes10/11 and tag-type reserved bytes4..7, not this header field. v4 Table17/7.2.19 expressly requires100..127zero.",
+      "corpus_facts": "The2 files contain v2.1 profiles with84..99nonzero and100..127zero.",
+      "conservative_policy": "v2nonzero reserved header bytes unknown; v4nonzero defined reserved header bytes failed."
+    },
+    "size": {
+      "corpus_facts": "All5 cases have identical ICC3145bytes vs declared3144 and an existing ICCOutputProfile catalogue failure ISO19005-1:6.2.2:1.",
+      "raw_sample": "6-1-12-t02-pass-g object6 unfiltered: Length3145 N3;3144ICCbytes followed by LF then CRLF then endstream. LF counted in Length, CRLF not counted.",
+      "evidence": "ICC.1:2001-04 6.1.1 defines total profile size. ISO32000-1 7.3.8.1/Table5 excludes a separator EOL from Length and logical stream data;7.3.8.2 tolerates an extra physical EOL before endstream.",
+      "limit": "Existing catalogue failure is not an independent normative oracle. Counted extra LF plus uncounted CRLF differs from a sole uncounted separator. Primary wording may warrant unknown if interpreted as ambiguous; no blanket acceptance of extra decoded ICC bytes established."
+    },
+    "inspection_json": "/private/tmp/CartaPDF-34-ICC-inspection.json",
+    "complete_ISO_validation_proven": false
+  },
+  "edition_findings": [
+    "ICC.1:2022§7.2.16 permits D50 values rounded to four decimals; alternative legacy quantization remains unknown, not failed.",
+    "ICC.1:2001-04 Table9 reserves header84..127 without explicit zero condition; nonzero remains unknown. v4 has explicit zero condition.",
+    "Safety budget4096tag is limit/notVerified, not normative malformed proof."
+  ],
+  "previous_integrated_suite": {
+    "version": "3.4.0",
+    "tests": 367,
+    "failures": 0,
+    "seconds": 15.187,
+    "log": "Development/TestResults.log",
+    "log_sha256": "53bc398f61b011344f3fcea75f17f332597bb2278e2ddae3be06bc44c64b02b2"
+  },
+  "previous_test_result": {
+    "tests": 19,
+    "failures": 0,
+    "log": "Development/TestResults.log",
+    "scope": "ICC suite in final full native run"
+  },
+  "test_result": {
+    "tests": 47,
+    "failures": 0,
+    "log": "Development/TestResults.log",
+    "scope": "ICC suite in final integrated native run."
+  },
+  "changes_3_5": {
+    "binary_types": [
+      "pseq",
+      "ncl2",
+      "psid"
+    ],
+    "new_regression_tests": 14,
+    "edition_policy": "v2.1–2.4 required models from2001-04 with AnnexF history; v2.0/future models unknown; v2 display RGB matrix tags are required even if optional LUTs exist. D50/reserved policies preserved.",
+    "bounded_work": {
+      "embedded_mluc_records": 4096,
+      "pseq_records": 4096,
+      "psid_records": 4096,
+      "total_structured_records_per_tag": 65536,
+      "total_validated_text_bytes_per_tag": 16777216,
+      "budget_status": "notVerified; not malformed"
+    },
+    "scope_gaps_preserved": true,
+    "complete_ISO_validation_proven": false
+  },
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "previous_source_sha256_3_5": {
+    "Sources/CartaPDF/PDFArchiveICCModel.swift": "da5c1e179ebbaa966312d69a4a911233d4b2326c2a1707cbac986664d0bbf6a3",
+    "Sources/CartaPDF/PDFArchiveColorData.swift": "0ec721f901395afde2468a27ced2dc867e412e2aa086f3e9a062014e685fcfa2",
+    "Sources/CartaPDF/PDFArchiveGraphicsChecks.swift": "3499d7508f7b081a935d24b8f29e57ed3087f0129e66f6736ab9d5ff375002ad",
+    "Tests/CartaPDFTests/PDFArchiveICCModelTests.swift": "1781b84417b38ce756c3a61f5ba34c1d164aab2ce4830ad6cea8e08040a22745"
+  },
+  "source_sha256_scope": "Current frozen ICC source/tests only; root-owned graphics/color-data context is refreshed by the final integrated release, not by this module evidence.",
+  "previous_test_result_3_5": {
+    "tests": 33,
+    "failures": 0,
+    "seconds": 0.019,
+    "finished_at": "2026-10-18 08:36:15 Europe/Rome",
+    "command": "./scripts/test.sh --filter PDFArchiveICCModelTests",
+    "log": "/private/tmp/CartaPDF-ICC-35-tests.log",
+    "log_sha256": "36a3fc90c313e07c986c2a96d4ff7e960fbd2414e56c5049679b10fbde6d7f39",
+    "scope": "Filtered native ICC suite after3.5 payload/model changes; this is not an integrated-suite result."
+  },
+  "changes_3_6": {
+    "binary_types": [
+      "mpet",
+      "cvst",
+      "curf",
+      "parf",
+      "samf",
+      "matf",
+      "clut",
+      "bACS",
+      "eACS"
+    ],
+    "new_regression_tests": 14,
+    "editions": "Primary v4.3 and v4.4 layouts inspected; no retroactive mpet support claimed for v2.",
+    "signature_policy": "Use registered ASCII cvst/63767374h; conflicting printed6D666C74h is not implemented as an alias.",
+    "bounded_work": {
+      "MPE_positions_per_container": 4096,
+      "segmented_curve_segments": 4096,
+      "total_structured_records_per_tag": 65536,
+      "total_validated_text_and_float_bytes_per_tag": 16777216,
+      "float_cancellation_interval": 4096,
+      "budget_status": "notVerified; not malformed"
+    },
+    "false_failure_regressions": [
+      "Equal successive break-points",
+      "Signed zero float32",
+      "Shared processing elements and curves",
+      "Sixteen internal CLUT dimensions",
+      "Private/future elements and formula functions",
+      "Zero-channel semantics",
+      "Formula validity over the entire segment"
+    ],
+    "scope_gaps_preserved": true,
+    "complete_ICC_validation_proven": false,
+    "complete_ISO_validation_proven": false
+  },
+  "isolated_typecheck_3_6": {
+    "status": "passed",
+    "scope": "Frozen ICC source and all47 test definitions typechecked together with a minimal native dependency stub and the Apple XCTest overlay; not a runtime test substitute.",
+    "log": "/private/tmp/CartaPDF-ICC-36-typecheck.log"
+  },
+  "previous_integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "previous_test_result_35": {
+    "tests": 47,
+    "failures": 0,
+    "seconds": 0.09,
+    "finished_at": "2026-10-18 08:55:42.788 Europe/Rome",
+    "command": "./scripts/test.sh",
+    "log": "/private/tmp/CartaPDF-36-first-tests.log",
+    "log_sha256": "2f4c014a42dd1372795c1a2c4c7851c08e4a49fa91af667f5cbf7eaf1b1256b2",
+    "scope": "ICC suite in the first3.6 joint native run, after frozen ICC changes; final integrated release verification is recorded separately by the parent task."
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  }
+}

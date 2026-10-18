@@ -1,0 +1,101 @@
+{
+  "version": "3.6.0",
+  "date": "2026-10-18",
+  "implementation": "Original Swift/Foundation; Apple frameworks only; no external engine or runtime network",
+  "complete_ISO_validation_proven": false,
+  "conforming_verdict_enabled": false,
+  "sources": [
+    {
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf",
+      "clauses": "7.3.9/10;8.6.5.2–5;8.6.6.2–5; Tables63–66/71/89",
+      "scope": "Required WhitePoint, exact normalization, calibrated vector schemas, Indexed extent/base/hival, alternate restrictions, DeviceN names/None/All, Colorants key matching, ICCBased N/Range/Alternate and tint dimensions."
+    },
+    {
+      "url": "https://pdf-issues.pdfa.org/32000-2-2020/clause08.html",
+      "scope": "Approved PDF2 errata8.6.5.5/8.6.6.5. Later/private ICC tags not considered automatically invalid; DeviceN None/NChannel/All restrictions retained."
+    }
+  ],
+  "implemented": [
+    "Semantic inventory only: resource ColorSpace, image/inline image, shading/Pattern, Group, Form/AP/Type3 contexts; private lookalike dictionaries not classified.",
+    "Exact decimal comparisons independent of Double rounding/underflow for WhitePoint, BlackPoint, Gamma and ranges.",
+    "CalGray/CalRGB/Lab required arrays and parameters; CalGray Gamma positive, Matrix9, Lab range ordering including equal endpoints.",
+    "Indexed hival integer0…255, permitted base families, string/decoded-stream lookup exact extent; bounded base traversal and filter failures stay unknown.",
+    "Separation/DeviceN array dimensions, names/duplicate/All/None restrictions, alternate families and tint input/range/Type2 output dimensions.",
+    "Colorants dictionary key/name Separation matching, with null/undefined/aliased-null entries omitted.",
+    "ICCBased indirect stream, N1/3/4, Range dimensions/order, Alternate component matching; ICC payload audited separately.",
+    "Outside-inline abbreviations remain unknown; explicit inline context supports Table89 abbreviations.",
+    "1024 report rows plus explicit truncation and retained first proven failure beyond cap;100000 visits,48 base depth; cancellation stays unknown."
+  ],
+  "remaining": [
+    "Complete NChannel/Process/MixingHints relationships and nonstandard schemas.",
+    "Nonpositive CalRGB Gamma edition requirement not fully reconciled; unknown rather than invented failure.",
+    "Complete function/ICC mathematical domains, rendering and colorimetry are not proved by this schema audit.",
+    "Complete normative inventory/object-role interpretation and all eleven ISO PDF/A profiles remain incomplete."
+  ],
+  "tests": [
+    "testCalibratedWhiteBlackGammaAndMatrixPositiveDefaults",
+    "testWhitePointRequiredAndExactlyNormalizedWithNoDoubleRounding",
+    "testOptionalNullCalibrationParametersAndAliasedNumbers",
+    "testCalibrationVectorTypesDimensionsAndProvenRestrictions",
+    "testLabRangeOrderingAllowsDegenerateBounds",
+    "testIndexedLookupStringsExactExtentAndHighValueInteger",
+    "testIndexedLookupFilteredStreamAliasesAndNamedBase",
+    "testIndexedForbiddenBasesAndUnresolvedCodecRemainDistinct",
+    "testSeparationAllNoneAndAlternateRestrictions",
+    "testTintInputAndOutputDimensionsMatchColorSpaces",
+    "testDeviceNDistinctNamesAllAndRepeatedNone",
+    "testNChannelForbidsNoneAndKeepsUnmodeledRelationshipsUnknown",
+    "testColorantsRequireMatchingSeparationNames",
+    "testICCBasedStreamCountRangeAndAlternateDimensions",
+    "testPrivateColorLookingDictionariesAreNeverInventoried",
+    "testAllElevenProfilesRetainGlobalScopeGaps",
+    "testAliasCyclesAndUnknownFamiliesRemainIncomplete",
+    "testImageAndInlineColorSpacesAreReachedThroughRoles",
+    "testNullAndUndefinedColorantsDictionaryEntriesAreOmitted",
+    "testReportRowLimitPreservesLateProvenFailureAndUnknownSummary",
+    "testAbbreviationsArePassedOnlyWithinExplicitInlineContext",
+    "testCancellationNeverTurnsIntoProvenColorViolation"
+  ],
+  "test_count": 22,
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "source_sha256": {
+    "Sources/CartaPDF/PDFArchiveColorSpaceChecks.swift": "a3006d3e50b38dfeccc877e6b790ba48033043d9f85170fe008157e3347cebb0",
+    "Sources/CartaPDF/PDFArchiveObjectChecks.swift": "face8e3091b20a742c32fbbc326168112a18b6fc503d437578f0b8d1a059d815",
+    "Sources/CartaPDF/PDFArchiveFunctionChecks.swift": "5d565b8ab1191cbededbee64299c8e83d9297c0546b89c5537ad98c5f884275c",
+    "Tests/CartaPDFTests/PDFArchiveColorSpaceChecksTests.swift": "a730fbee8e0c8c549b6fb93f5e06dfa92bf7af2cb132c57387c8d0168bc6a248"
+  },
+  "independent_review": {
+    "finding": "Colorants dictionary null entries must be omitted, not failed; corrected with direct/null alias/undefined regressions. Abbreviations outside inline context explicitly unknown.",
+    "method": "Separate agent read-only review plus original Swift regressions."
+  },
+  "preflight_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "seconds": 95.243,
+    "model_failure_delta_vs35": 0,
+    "evidence": "Development/PDFA-CorpusReview36.json",
+    "historical_filename_mapping": "provisional; not an ISO accuracy or completeness score"
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  },
+  "native_release_CLI": {
+    "evidence": "Development/ReleaseVerification.json",
+    "positive_schema_cases": 11,
+    "negative_schema_cases": 11,
+    "input_bytes_unchanged": true,
+    "complete_ISO_validation_proven": false
+  }
+}

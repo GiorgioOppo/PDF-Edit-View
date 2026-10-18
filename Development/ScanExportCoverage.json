@@ -1,0 +1,445 @@
+{
+  "owner": "scan-export-library",
+  "constraint": "Solo framework Apple; gratuito; completamente locale; nessuna richiesta di rete dal renderer HTML.",
+  "sources": [
+    "Sources/CartaPDF/PDFScanExportTools.swift",
+    "Sources/CartaPDF/PDFScanExportViews.swift",
+    "Sources/CartaPDF/PDFLocalLibrary.swift"
+  ],
+  "test_suites": [
+    "Tests/CartaPDFTests/PDFScanExportToolsTests.swift",
+    "Tests/CartaPDFTests/PDFLocalLibraryTests.swift"
+  ],
+  "verification": {
+    "date": "2026-10-17",
+    "distinct_owned_automated_tests": 26,
+    "owned_result": "19 prior native tests passed; seven final correctness regressions added and passed; affected existing CSV, HTML and watcher paths also passed",
+    "focused_native_result": "9 tests,0 failures,1.274 seconds; two affected existing HTML/watcher tests,0 failures,1.467 seconds; production/test compilation without warnings",
+    "hardware_permission_checks": "scanner,screen capture,speech actual devices/output not invoked automatically",
+    "execution_note": "Vision/CoreImage/WebKit/native free-capacity checks require tool execution outside the restricted agent sandbox; application runtime is native macOS."
+  },
+  "requirements": [
+    {
+      "id": "M061",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:AdvancedScanEngine.process / PDFScanExportViews.swift:ScanWorkspaceController, ScanWorkspaceView",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "La preparazione iniziale non mostra una percentuale inventata della compilazione del modello."
+      ]
+    },
+    {
+      "id": "M062",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:AdvancedScanEngine.process / PDFScanExportViews.swift:ScanWorkspaceController, ScanWorkspaceView",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry",
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Il riconoscimento rimane probabilistico."
+      ]
+    },
+    {
+      "id": "M063",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:ScanCancellation.cancel/register; ScanWorkspaceController.cancel",
+      "tests": [
+        "testCancellationIsCheckedBeforeVisionOrTIFFWork"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "VNRequest.cancel viene propagato alla richiesta attiva; il framework può terminare internamente operazioni già avviate."
+      ]
+    },
+    {
+      "id": "M064",
+      "status": "implemented",
+      "implementation": "ScanOptions.languages; ScanWorkspaceView lingue; AdvancedScanEngine.recognizedLines",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Sono proposte soltanto le lingue supportate dal Vision installato. Nessun download implementato."
+      ]
+    },
+    {
+      "id": "M065",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.process: quattro orientamenti CoreImage e scelta tramite testo/confidenza",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Scelta euristica fra 0,90,180,270 gradi; controllare pagine prive di testo o con grafica dominante."
+      ]
+    },
+    {
+      "id": "M066",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.process: retry a 300 dpi sotto confidenza media0.75",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Un solo retry; il testo resta da verificare."
+      ]
+    },
+    {
+      "id": "M067",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.searchableNativePage",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Per pagine senza correzioni geometriche/colore viene disegnato il PDF nativo; non si promette identità dei content stream."
+      ]
+    },
+    {
+      "id": "M068",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.readingOrder: gutter e bande con titoli a tutta larghezza",
+      "tests": [
+        "testColumnReadingOrderUsesVerticalGutter"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Algoritmo euristico; layout complessi possono richiedere verifica."
+      ]
+    },
+    {
+      "id": "M069",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.textCoverage: soglia area0.025",
+      "tests": [
+        "testHeaderTextDoesNotSuppressScanOCRCoverage"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "La copertura è euristica e include i riquadri dei caratteri."
+      ]
+    },
+    {
+      "id": "M070",
+      "status": "implemented",
+      "implementation": "ScanPageReport; ScanWorkspaceView.Table; conservazione originale delle pagine non convertibili",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry",
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Le pagine fallite sono conservate e segnalate nel rapporto."
+      ]
+    },
+    {
+      "id": "M071",
+      "status": "implemented",
+      "implementation": "ScanExportController.jpegPreview / ScanExportWorkspaceView anteprima",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Anteprima della prima pagina; serve controllare anche le altre pagine del risultato."
+      ]
+    },
+    {
+      "id": "M072",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: confronto byte e variazione percentuale",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Confronto con lo snapshot corrente del documento, che può differire dal file su disco."
+      ]
+    },
+    {
+      "id": "M073",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.processedImage; ScanExportEngine.tiff/jpegPDF; export PNG",
+      "tests": [
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB",
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Profili raster sRGB e DisplayP3; non sostituisce un preflight CMYK o tinte piatte."
+      ]
+    },
+    {
+      "id": "M074",
+      "status": "implemented",
+      "implementation": "ScanExportController.exportPNG/jpegPreview; TIFF DPI ImageIO",
+      "tests": [
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "PNG: report per pagina; JPEG: anteprima; TIFF: metadati fisici. Il limite pixel può ridurre i DPI richiesti."
+      ]
+    },
+    {
+      "id": "M075",
+      "status": "implemented",
+      "implementation": "ScanExportController.prefix/digits e nomi PNG sanitizzati",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "I nomi restano soggetti ai limiti del filesystem."
+      ]
+    },
+    {
+      "id": "M076",
+      "status": "implemented",
+      "implementation": "ScanExportController.exportPNG: elenco scorrevole e conferma conflitti; ricontrollo prima commit",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Un conflitto apparso durante il rendering interrompe la scrittura senza sostituzione non confermata."
+      ]
+    },
+    {
+      "id": "M077",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.normalizedParagraphs; TXT/EPUB",
+      "tests": [
+        "testParagraphReconstructionKeepsUnicodeBlankLinesAndDehyphenates"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Ricostruzione e de-sillabazione euristiche; non conserva il layout."
+      ]
+    },
+    {
+      "id": "M078",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: NSAttributedString RTF/officeOpenXML con paragrafi",
+      "tests": [
+        "testParagraphReconstructionKeepsUnicodeBlankLinesAndDehyphenates"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Testo e paragrafi; non ricostruisce impaginazione Office, immagini o tabelle."
+      ]
+    },
+    {
+      "id": "M079",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.imagePDF(urls:margin:); slider margini A4",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Margini in punti; ogni immagine viene adattata proporzionalmente ad A4."
+      ]
+    },
+    {
+      "id": "M080",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: Conserva/Scarta prima della scrittura PDF maggiore",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Riguarda le copie raster JPEG; scartare non scrive un file."
+      ]
+    },
+    {
+      "id": "M095",
+      "status": "implemented",
+      "implementation": "ScanOptions.prioritizedPage; process: ordine lavoro prioritario e output riordinato; anteprima pagina corrente",
+      "tests": [
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "automated test passed",
+      "limits": []
+    },
+    {
+      "id": "F014",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.estimatedSkew/projectionSkew/processedImage; ScanWorkspaceView",
+      "tests": [
+        "testAutomaticDeskewFindsTiltedTextBaseline",
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB"
+      ],
+      "verification": "native automated tests passed",
+      "limits": [
+        "La rotazione mantiene le dimensioni e può tagliare bordi; correzione manuale disponibile."
+      ]
+    },
+    {
+      "id": "F015",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.processedImage: CIColorControls e CINoiseReduction",
+      "tests": [
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Copia raster; aumenta contrasto e riduce rumore, senza ricostruire dettagli perduti."
+      ]
+    },
+    {
+      "id": "F016",
+      "status": "implemented",
+      "implementation": "ScanScannerController e ScanNativeScanner: ImageCaptureCore + IKScannerDeviceView",
+      "tests": [],
+      "verification": "production build passed; hardware verification required",
+      "limits": [
+        "Solo scanner locali compatibili con macOS; richiede dispositivo/driver. Acquisizione fisica non eseguita in questa sessione."
+      ]
+    },
+    {
+      "id": "F017",
+      "status": "implemented",
+      "implementation": "ScanCaptureController: ScreenCaptureKit/SCScreenshotManager; ScanCaptureView",
+      "tests": [],
+      "verification": "production build passed; permission/runtime verification required",
+      "limits": [
+        "Serve autorizzazione macOS alla registrazione schermo. Nessuna cattura è stata effettuata automaticamente nei test."
+      ]
+    },
+    {
+      "id": "F024",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.tiff: ImageIO TIFF LZW multipagina",
+      "tests": [
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Esportazione raster con limiti pixel per pagina."
+      ]
+    },
+    {
+      "id": "F025",
+      "status": "implemented",
+      "implementation": "ScanHTMLRenderer: WebKit non persistente, content rules, CSP, script disabilitati, export PDF asincrono A4; generation guard e identità WKNavigation contro caricamenti obsoleti",
+      "tests": [
+        "testOfflineHTMLPrintsStaticTextWithScriptsDisabled",
+        "testHTMLRapidSelectionExportsLatestFileAndInvalidSelectionNeverReusesOldHTML"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "HTML UTF8 locale; risorse remote escluse; CSS/immagini incorporate ammessi. La suddivisione A4 può interrompere righe o tabelle e richiede controllo."
+      ]
+    },
+    {
+      "id": "F026",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.epub; ScanStoredZIP: EPUB3 con mimetype primo non compresso, OPF/nav/XHTML",
+      "tests": [
+        "testEPUBHasStoredFirstMimetypeValidXMLAndCRC"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "EPUB testuale senza riproduzione del layout, immagini o font del PDF."
+      ]
+    },
+    {
+      "id": "F027",
+      "status": "implemented",
+      "implementation": "ScanCSV.table: area normalizzata e separatori manuali; preview CSV modificabile",
+      "tests": [
+        "testManualAndAutomaticTablesPreserveTwoColumnRows",
+        "testCSVQuotedFieldsNewlinesAndDelimiterRoundTrip"
+      ],
+      "verification": "automated tests passed",
+      "limits": [
+        "Necessita testo selezionabile/OCR; coordinate riferite allo spazio PDF."
+      ]
+    },
+    {
+      "id": "F028",
+      "status": "implemented",
+      "implementation": "ScanCSV.table: raggruppamento righe e gap geometrici delle colonne",
+      "tests": [
+        "testManualAndAutomaticTablesPreserveTwoColumnRows"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Riconoscimento euristico di tabelle testuali; anteprima correggibile prima export."
+      ]
+    },
+    {
+      "id": "F029",
+      "status": "implemented",
+      "implementation": "ScanCSV.filledDocuments; ScanCSVFormController: worker cancellabile, una copia per riga, no overwrite e verifica PDF; scelta etichetta→export value, booleani validati, password escluse e massimo caratteri rispettato",
+      "tests": [
+        "testCSVFormFillingCreatesIndependentCopiesAndRejectsMissingFields",
+        "testCSVQuotedFieldsNewlinesAndDelimiterRoundTrip",
+        "testCSVPreservesExplicitEmptyRecordsForClearingForms",
+        "testCSVChoiceLabelsMapToExportValuesAndCheckboxRejectsUnknownValues",
+        "testCSVTextFieldsRejectPasswordsAndMaximumLengthOverflow"
+      ],
+      "verification": "automated engine tests passed",
+      "limits": [
+        "Campi testo, checkbox e scelta; nomi intestazione esatti. Checkbox: sì/no, true/false, 1/0; vuoto deseleziona, altri valori danno errore. Campi password/sola lettura esclusi. Copie non protette; originali conservati. File già completati restano dopo annullamento."
+      ]
+    },
+    {
+      "id": "F032",
+      "status": "implemented",
+      "implementation": "LocalPDFLibrary: JSON locale persistente, bookmark, etichette, categorie e filtri",
+      "tests": [
+        "testLibraryJSONPersistsTagsCategoriesAndRemovalLeavesOriginal"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Conserva collegamenti e indice di testo; PDF protetti/non copiabili esclusi, reindicizzazione disponibile."
+      ]
+    },
+    {
+      "id": "F033",
+      "status": "implemented",
+      "implementation": "LibraryEngine.hits; LibraryWorkspaceView ricerca asincrona multideocumento e apertura pagina",
+      "tests": [
+        "testCrossDocumentSearchFindsAccentInsensitivePageExcerpts"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Ricerca sull’indice locale; usare Reindicizza dopo modifiche esterne."
+      ]
+    },
+    {
+      "id": "F037",
+      "status": "implemented",
+      "implementation": "LibraryFolderWatcher: DispatchSource filesystem, debounce, TXT/OCR/TIFF, output atomico senza overwrite; CartaJobLimiter condiviso; session generation; fingerprint solo output riusciti e riferito alla destinazione; rifiuto stessa cartella anche via symlink",
+      "tests": [
+        "testWatchedFolderProcessesExistingPDFLocallyAndPreservesSource",
+        "testWatcherStopRestartDoesNotAcknowledgeCancelledFilesOrAcceptOldCallbacks",
+        "testWatcherRejectsOutputSymlinkToInputFolder",
+        "testWatcherNewOutputFolderReprocessesSuccessfulSource"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Monitoraggio non ricorsivo mentre la finestra resta aperta; PDF protetti segnalati; nessun daemon di sistema installato. Un errore non annullato viene riprovato dopo modifica sorgente o riavvio del monitoraggio; gli annullati restano sempre rielaborabili."
+      ]
+    },
+    {
+      "id": "F039",
+      "status": "implemented",
+      "implementation": "LibraryEngine.proposedName; LocalPDFLibrary.rename con anteprima regex/catture e gestione conflitti",
+      "tests": [
+        "testRegexRenameUsesCaptureAndSanitizesPathSeparators",
+        "testRenameRefusesConflictsAndUpdatesLinkedFile"
+      ],
+      "verification": "automated tests passed",
+      "limits": [
+        "Rinomina del documento selezionato nella biblioteca; nessuna sovrascrittura di destinazioni esistenti."
+      ]
+    },
+    {
+      "id": "F041",
+      "status": "implemented",
+      "implementation": "LibrarySpeechController: AVSpeechSynthesizer e sole speechVoices installate; pausa/velocità/stop",
+      "tests": [],
+      "verification": "production build passed; user-triggered audio verification required",
+      "limits": [
+        "Richiede una voce installata; nessun download o audio di test riprodotto automaticamente."
+      ]
+    }
+  ]
+}

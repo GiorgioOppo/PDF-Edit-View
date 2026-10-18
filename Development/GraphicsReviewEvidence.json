@@ -1,0 +1,365 @@
+{
+  "title": "Revisione indipendente dei controlli grafici, colore e sintassi PDF/A",
+  "review_mode": "Sola lettura dei sorgenti; correzioni implementate dall’agente root. Questo documento non modifica codice o cataloghi.",
+  "reviewed_files": [
+    "Sources/CartaPDF/PDFArchiveSyntaxChecks.swift",
+    "Sources/CartaPDF/PDFArchiveGraphicsChecks.swift",
+    "Sources/CartaPDF/PDFArchiveColorData.swift",
+    "Sources/CartaPDF/PDFArchiveInlineImage.swift",
+    "Sources/CartaPDF/PDFArchiveValidatorRules.swift",
+    "Sources/CartaPDF/PDFArchiveValidator.swift"
+  ],
+  "related_inventory_file": "Sources/CartaPDF/PDFArchiveValidatorContent.swift",
+  "complete_ISO_validation_proven": false,
+  "runtime_constraints": {
+    "Apple_frameworks_only": true,
+    "free_local_execution": true,
+    "network_at_runtime": false,
+    "external_toolkit_code_imported": false
+  },
+  "primary_sources_consulted": [
+    {
+      "title": "ISO 32000-1:2008, copia ufficiale pubblicata da Adobe",
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf",
+      "local_research_copy": "/private/tmp/CartaPDF-review-ISO32000-2008.pdf",
+      "consulted_sections": [
+        "8.6.5.6 — Default Colour Spaces",
+        "11.6.6 / Table 147 — attributi dei gruppi di trasparenza",
+        "11.7.2 — Colour Spaces for Transparency Groups"
+      ],
+      "specific_evidence": "§11.7.2, pagina stampata 353 / pagina PDF 361: i gruppi non isolati ereditano lo spazio di colore del parent; uno spazio proprio è ammesso per gruppi isolati. La pagina è trattata separatamente.",
+      "local_extracted_notes": [
+        "/private/tmp/CartaPDF-review-transparency.txt",
+        "/private/tmp/CartaPDF-review-default-spaces.txt"
+      ]
+    },
+    {
+      "title": "ICC.1:2022, Profile ID, §7.2.18",
+      "url": "https://www.color.org/specification/ICC.1-2022-05.pdf",
+      "specific_evidence": "Il fingerprint ICC viene calcolato azzerando temporaneamente profile flags 44..<48, rendering intent 64..<68 e Profile ID 84..<100. Un ID dichiarato incoerente non prova identità o differenza."
+    },
+    {
+      "title": "ICC.1:2001-12 / formato versione 4.1, Profile ID §6.1.13",
+      "url": "https://www.color.org/icc1-v41.pdf",
+      "specific_evidence": "Conferma precedente della normalizzazione dei tre campi del fingerprint ICC."
+    },
+    {
+      "title": "Cataloghi ufficiali veraPDF fissati nel repository",
+      "path": "Sources/CartaPDF/Resources/PDFAProfiles",
+      "specific_evidence": "Espressioni e requisiti effettivamente confrontati: PDICCBasedCMYK, PDDevice*, CosStream, PDInlineImage, ICCInput/OutputProfile, JPEG2000. Le famiglie e gli ID storici del corpus non sono sempre allineati ai cataloghi attuali."
+    },
+    {
+      "title": "Corpus ufficiale veraPDF — dati di test",
+      "url": "https://github.com/veraPDF/veraPDF-corpus",
+      "commit": "377728596647e40edf16003d68d620773ce96ec5",
+      "data_license": "CC BY 4.0",
+      "local_path": "/private/tmp/CartaPDF-ISO-corpus/files",
+      "specific_evidence": "Confronto tramite CLI CartaPDF e decodifica dei profili e dei dizionari con CoreGraphics nativo; nessuna libreria Java usata o incorporata."
+    }
+  ],
+  "concrete_findings": [
+    {
+      "id": "GRAPHICS-ICC-IDENTITY",
+      "kind": "Falso passing e rischio di falso errore",
+      "original_behavior": "MD5 grezzo dei byte ICC faceva passare 6-2-4-2-t03-fail-e. Ignorare sempre l’ID dichiarato avrebbe invece fatto fallire t03-pass-d, che contiene ID dichiarati discordanti a parità di contenuto normalizzato.",
+      "official_cases": [
+        "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.2 ICCBased colour spaces/veraPDF test suite 6-2-4-2-t03-fail-e.pdf",
+        "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.2 ICCBased colour spaces/veraPDF test suite 6-2-4-2-t03-pass-d.pdf"
+      ],
+      "original_binary_evidence": {
+        "fail_e_raw_md5": [
+          "3cf346da9c259f83c3cc06b6a6ee9f83",
+          "e3d8676356f2709a7b120036b7ada996"
+        ],
+        "fail_e_normalized_digest": "e3d8676356f2709a7b120036b7ada996",
+        "pass_d_declared_ids": [
+          "757d5ff87d2af4f76322dd6fcb75423b",
+          "757d7ef87d2af4f76322dd6fcb75423b"
+        ]
+      },
+      "resolution": "PDFArchiveICCProfile.fingerprint normalizza i tre campi. verifiedFingerprint restituisce nil per ID nonzero discordante; il confronto tra riferimenti diversi diventa notVerified, senza fidarsi dell’ID alterato. Identico riferimento indiretto continua a provare identità.",
+      "static_fix_verified": true,
+      "tests": [
+        "testICCProfileFingerprintNormalizesAllThreeHeaderFields"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "GRAPHICS-NONISOLATED-BLEND",
+      "kind": "Falsi errori su PDF ufficiali",
+      "original_behavior": "Una Form Group/CS DeviceRGB sovrascriveva il blending ICCBased RGB della pagina anche con Group/I assente o false.",
+      "official_cases": [
+        "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t04-pass-d.pdf",
+        "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t04-pass-f.pdf"
+      ],
+      "resolution": "Le Form non isolate mantengono sempre il blending parent; soltanto Group/I true applica il proprio CS. Il test verifica anche che una Form isolata DeviceRGB non erediti indebitamente la caratterizzazione ICC parent.",
+      "static_fix_verified": true,
+      "tests": [
+        "testDeviceRGBFormGroupRetainsCharacterizationOfEnclosingPageGroup",
+        "testOptionalGroupTypeAndICCBasedPageBlendingAreRecognized"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "SYNTAX-STREAM-END-BOUNDARY",
+      "kind": "Falsi passing EOL e Length",
+      "original_behavior": "word() saltava whitespace/commenti fra EOL e endstream. Per esempio q Q seguito da LF, spazio, TAB, endstream veniva accettato; Length=3 per q Q più spazio prima di LF non rilevava il byte omesso.",
+      "official_cases": [
+        "PDF_A-2b/6.1 File structure/6.1.7.1 General/veraPDF test suite 6-1-7-1-t02-fail-a.pdf"
+      ],
+      "local_reproduction_files": [
+        "/private/tmp/CartaPDF-review-fixtures/endstream-extra-whitespace.pdf",
+        "/private/tmp/CartaPDF-review-fixtures/length-short-ignored-whitespace.pdf"
+      ],
+      "resolution": "Verifica del byte immediatamente precedente endstream e del fatto che skip() non sposti il confine atteso. Le violazioni EOL e Length contribuiscono anche al risultato PhysicalSyntax.",
+      "static_fix_verified": true,
+      "tests": [
+        "testLengthDoesNotSilentlySkipUncountedWhitespaceBeforeEndstream",
+        "testPhysicalStreamsAndStandardObjectSpacingPass"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "GRAPHICS-INITIAL-DEFAULTGRAY",
+      "kind": "Falso errore sul colore implicito",
+      "original_behavior": "Il colore iniziale DeviceGray non passava attraverso DefaultGray; una pagina con DefaultGray CalGray e re f senza g veniva respinta per assenza di output intent.",
+      "local_reproduction_files": [
+        "/private/tmp/CartaPDF-review-fixtures/defaultgray-implicit.pdf"
+      ],
+      "resolution": "Lo stato iniziale della pagina risolve DeviceGray tramite color(...), applicando il DefaultGray del contesto.",
+      "static_fix_verified": true,
+      "tests": [
+        "testInitialDeviceGrayUsesDefaultGrayAndUnsupportedGroupsCannotProveRGB"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "GRAPHICS-GROUP-SUBTYPE",
+      "kind": "Falso passing tramite Group non supportato",
+      "original_behavior": "Group con S Unsupported e CS CalRGB veniva usato per attestare un blending valido.",
+      "local_reproduction_files": [
+        "/private/tmp/CartaPDF-review-fixtures/invalid-group-accepted.pdf"
+      ],
+      "resolution": "Group/CS può attestare il blending soltanto quando S è Transparency; sottotipi non supportati aggiungono un contesto unknown.",
+      "static_fix_verified": true,
+      "tests": [
+        "testInitialDeviceGrayUsesDefaultGrayAndUnsupportedGroupsCannotProveRGB"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "GRAPHICS-TYPE3-PAINT",
+      "kind": "Falsa non applicabilità dei colori nei glifi",
+      "original_behavior": "Un CharProc Type3 colorato eseguito da Tj non era interpretato: RGB nel glyph risultava notApplicable.",
+      "local_reproduction_files": [
+        "/private/tmp/CartaPDF-review-fixtures/type3-colored-glyph.pdf"
+      ],
+      "resolution": "Per Tr=0 vengono interpretati i CharProcs effettivamente mostrati, risolti tramite Encoding, con risorse e controlli di ricorsione; un font inutilizzato non inventa uso di colore. Tr=3 resta invisibile; gli altri modi non modellati diventano unknown.",
+      "static_fix_verified": true,
+      "tests": [
+        "testActualType3GlyphProgramsAreIncludedInPaintedColors"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "INLINE-ALL-CONTAINERS",
+      "kind": "Falsa non applicabilità di immagini inline",
+      "original_behavior": "PDInlineImage considerava soltanto i contesti dipinti. Un Form non invocato poteva contenere un’immagine senza L e risultare notApplicable. Inoltre L poteva essere usato come prova circolare della propria lunghezza.",
+      "resolution": "Inventario lessicale condiviso delle immagini inline in tutti i contenitori, inclusi quelli inutilizzati. Il conteggio indipendente dei campioni non filtrati prova il confine; L può guidare la lettura ma non dimostra da solo la propria correttezza. Confini filtrati non provati restano notVerified.",
+      "static_fix_verified": true,
+      "tests": [
+        "testInlineLengthRequirementIncludesImagesInUnpaintedForms",
+        "testInlinePixelsContainingEIAreSkippedByExactSampleLength",
+        "testLexicalChecksIncludeUnusedContainersWithoutInventingPaintUse"
+      ],
+      "final_integrated_verification": "pending"
+    },
+    {
+      "id": "JP2-LOCAL-BOX-BOUNDS",
+      "kind": "Lettura del box successivo come dati del box corrente",
+      "original_behavior": "colr method=1 con payload di soli 3 byte poteva leggere i quattro byte iniziali del box successivo come colore enumerato.",
+      "resolution": "Guard locale payload colr >=7 per method 1; controllo locale del conteggio cdef e dei 16 byte di XLBox prima delle letture.",
+      "static_fix_verified": true,
+      "tests": [
+        "testJPEG2000BoxFactsAndForbiddenEnumeratedColorSpace"
+      ],
+      "verification_limit": "La regressione presente copre colr troncato e file JP2 troncato; cdef/XLBox sono stati verificati staticamente, senza test dedicato separato attestato da questo revisore.",
+      "final_integrated_verification": "pending"
+    }
+  ],
+  "tests": {
+    "suite": "PDFArchiveGraphicsSyntaxTests",
+    "file": "Tests/CartaPDFTests/PDFArchiveGraphicsSyntaxTests.swift",
+    "count": 23,
+    "names": [
+      "testSpecifiedDeviceColorsAreUsedInPartsOneThroughThreeAndUnusedResourcesAreExempt",
+      "testDefaultRGBAndActualOutputICCResolveTheColorRequirement",
+      "testICCComponentsAndCorruptTagBoundsUseTheEmbeddedBytes",
+      "testResourceResolutionAndQDepthHaveActualNegativeCases",
+      "testTransparencyRequiresOutputOrExplicitPageBlendingSpace",
+      "testInlinePixelsContainingEIAreSkippedByExactSampleLength",
+      "testPaintedPatternsAndSoftMasksContributeActualDeviceColors",
+      "testOptionalGroupTypeAndICCBasedPageBlendingAreRecognized",
+      "testLexicalChecksIncludeUnusedContainersWithoutInventingPaintUse",
+      "testCrossReferenceRowFormatIsCheckedWithoutChangingObjectResolution",
+      "testPageBoundaryLimitsUseInheritanceDefaultsAndIgnorePrivateBBoxKeys",
+      "testDictionaryKeyNamesAreIncludedInLexicalLimits",
+      "testInitialDeviceGrayUsesDefaultGrayAndUnsupportedGroupsCannotProveRGB",
+      "testDeviceRGBFormGroupRetainsCharacterizationOfEnclosingPageGroup",
+      "testICCProfileFingerprintNormalizesAllThreeHeaderFields",
+      "testActualType3GlyphProgramsAreIncludedInPaintedColors",
+      "testLengthDoesNotSilentlySkipUncountedWhitespaceBeforeEndstream",
+      "testInlineLengthRequirementIncludesImagesInUnpaintedForms",
+      "testAmbiguousInlineBoundaryCannotInventOperatorsInsideBinarySamples",
+      "testJPEG2000BoxFactsAndForbiddenEnumeratedColorSpace",
+      "testHexAndObjectSyntaxAreVerifiedBeforeNormalization",
+      "testPhysicalStreamsAndStandardObjectSpacingPass",
+      "testHybridCrossReferenceResolvesCompressedRootAndKeepsBothSections"
+    ],
+    "test_execution_by_independent_reviewer": "Non rieseguita durante la preparazione di questo documento; i nomi e le asserzioni sono stati letti nei sorgenti.",
+    "root_final_integrated_run": {
+      "status": "passed",
+      "tests": 256,
+      "failures": 0,
+      "seconds": 15.41,
+      "log": "Development/TestResults.log"
+    },
+    "root_corpus_rerun_after_fixes": {
+      "status": "completed",
+      "files": 2164,
+      "execution_errors": 0,
+      "report": "Development/PDFA-CorpusEvidence.json",
+      "binary_sha256": "47952109702268310b2e0dbe23351369d788d366d69563e9be13f30857b0269f",
+      "mapping": "provisional historical filenames; not an ISO coverage score"
+    },
+    "pre_fix_reproduction": "CLI Debug /private/tmp/CartaPDF-metadata-next/debug/CartaPDF sul corpus ufficiale e fixture native; output parziale e dump in /private/tmp/CartaPDF-review-dump.log e /private/tmp/CartaPDF-review-CMYK.log."
+  },
+  "integration_review": {
+    "evaluator_order": "File checks; encryption guard; Syntax, Metadata, Fonts, Graphics, Structure, Object; legacy fallback.",
+    "physical_syntax_in_verdict": "context.modelChecks contiene il risultato PhysicalSyntax; un failed contribuisce al verdetto nonconforming.",
+    "conforming_not_claimed": "coverageComplete richiede anche scopeGaps vuoto. I limiti statici correnti impediscono di dichiarare piena conformità soltanto perché i controlli implementati passano."
+  },
+  "residuals": [
+    "Non dimostrata la copertura integrale di ISO 19005 e dei riferimenti normativi; nessuna certificazione ISO.",
+    "Il fingerprint non prova da solo tutta la validità ICC: contenuto completo dei tag, trasformazioni colore e semantiche dei profili non sono verificati integralmente.",
+    "Profile ID ICC incoerente resta notVerified per confronti tra riferimenti diversi. Il corpus t03-pass-d non deve essere trasformato in passed fidandosi di un ID alterato.",
+    "Non acquisita una primaria PDF/A-4 sufficiente per restringere automaticamente il predicato PDICCBasedCMYK t3 alla sola classe prtr. La descrizione parla di destination profile, mentre il predicato del catalogo non espone la classe; eventuale ulteriore restrizione richiede evidenza normativa.",
+    "Type3 Tr diverso da 0 e 3, glifi/Encoding non risolti o ricorsivi non attestano un modello completo.",
+    "Immagini inline filtrate: la sola L o ricerca di EI non prova i confini né la decodifica dei pixel.",
+    "JPEG2000: integrità completa del codestream, palette, trasformazioni e conformità generale JP2 rimangono separate dai fatti di box/SIZ modellati.",
+    "Length indirette in revisioni storiche non risolte, filtri non supportati e parser budgets possono rendere i controlli notVerified.",
+    "I testNumber storici del corpus possono riferirsi a predicati diversi dai cataloghi ufficiali moderni fissati; non si cambia la semantica dei controlli per far coincidere artificialmente gli ID.",
+    "La revisione non ha individuato crash riproducibili nei nuovi lettori, ma non costituisce fuzzing esaustivo o una prova generale di assenza di crash."
+  ],
+  "additional_corpus_applicability_findings": {
+    "q_A1_unreferenced_resource": "Corrected following TechNote0010 A010; current lexical inventory retained for A2/3 implementation limits.",
+    "device_colour_specification_parts_1_to_3": "Specifying a device colour is use, even without a paint operator, under A011/A015."
+  },
+  "binary_inline_boundary_policy": "An unproved EI boundary stops interpretation of that content stream. Following binary samples cannot establish operators or violations.",
+  "version33_supplement": {
+    "complete_ISO_validation_proven": false,
+    "evidence": "Development/StreamValidationEvidence.json",
+    "implemented": [
+      "Shading ExtGState from initial resource-defining state",
+      "Proved general-filter EOD inline boundaries",
+      "Strict lexical content model, long decimal and underflow corrections",
+      "Unreadable ICC output preserves unknown characterization"
+    ],
+    "source_hashes": {
+      "Sources/CartaPDF/PDFArchiveGraphicsChecks.swift": "2e52f79b9fc46afcbaddca7f74cddb08b3c532165257af5dff86f3cb192d58ce",
+      "Sources/CartaPDF/PDFArchiveSyntaxChecks.swift": "78c0d1f73577c207743035c7c42e71539de1e8dcc77a0809c397b2ed5960a855",
+      "Tests/CartaPDFTests/PDFArchiveGraphicsSyntaxTests.swift": "3ec1bdd2c555167aef4b54afd56b39d227c6e9e2780d3ec7cb214d1177cbb96d"
+    },
+    "tests": [
+      "testSpecifiedDeviceColorsAreUsedInPartsOneThroughThreeAndUnusedResourcesAreExempt",
+      "testDefaultRGBAndActualOutputICCResolveTheColorRequirement",
+      "testICCComponentsAndCorruptTagBoundsUseTheEmbeddedBytes",
+      "testResourceResolutionAndQDepthHaveActualNegativeCases",
+      "testTransparencyRequiresOutputOrExplicitPageBlendingSpace",
+      "testShadingPatternExtGStateContributesTransparencyOnlyWhenUsed",
+      "testInlinePixelsContainingEIAreSkippedByExactSampleLength",
+      "testPaintedPatternsAndSoftMasksContributeActualDeviceColors",
+      "testOptionalGroupTypeAndICCBasedPageBlendingAreRecognized",
+      "testLexicalChecksIncludeUnusedContainersWithoutInventingPaintUse",
+      "testCrossReferenceRowFormatIsCheckedWithoutChangingObjectResolution",
+      "testPageBoundaryLimitsUseInheritanceDefaultsAndIgnorePrivateBBoxKeys",
+      "testDictionaryKeyNamesAreIncludedInLexicalLimits",
+      "testInitialDeviceGrayUsesDefaultGrayAndUnsupportedGroupsCannotProveRGB",
+      "testDeviceRGBFormGroupRetainsCharacterizationOfEnclosingPageGroup",
+      "testICCProfileFingerprintNormalizesAllThreeHeaderFields",
+      "testActualType3GlyphProgramsAreIncludedInPaintedColors",
+      "testLengthDoesNotSilentlySkipUncountedWhitespaceBeforeEndstream",
+      "testInlineLengthRequirementIncludesImagesInUnpaintedForms",
+      "testFilteredInlineLengthUsesEncodedEODInsteadOfItsOwnHint",
+      "testMalformedContentAndStreamFiltersProduceSeparateModelViolations",
+      "testLongValidDecimalIsNotConfusedWithMalformedSyntaxOrMachineUnderflow",
+      "testUnreadableOutputProfileDoesNotProveMissingCMYKCharacterization",
+      "testAmbiguousInlineBoundaryCannotInventOperatorsInsideBinarySamples",
+      "testJPEG2000BoxFactsAndForbiddenEnumeratedColorSpace",
+      "testHexAndObjectSyntaxAreVerifiedBeforeNormalization",
+      "testPhysicalStreamsAndStandardObjectSpacingPass",
+      "testHybridCrossReferenceResolvesCompressedRootAndKeepsBothSections"
+    ],
+    "integrated_suite": "Development/TestResults.log",
+    "release_corpus": "Development/PDFA-CorpusEvidence.json"
+  },
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "prior_integrated_suite_33": {
+    "version": "3.3.0",
+    "tests": 303,
+    "failures": 0,
+    "seconds": 14.819,
+    "log": "Development/TestResults.log"
+  },
+  "version34_supplement": {
+    "ICC_evidence": "Development/ICCValidationEvidence.json",
+    "historical_label_review": "Development/PDFA-CorpusReview34.json",
+    "release_corpus": {
+      "files": 2164,
+      "errors": 0,
+      "elapsed_seconds": 19.209,
+      "binary_sha256": "b6508ab697e5374a602143efa78327e6c7f8568100255860e0e2beb09f1d4d1d",
+      "evidence": "Development/PDFA-CorpusEvidence.json",
+      "comparison": "Historical filename mappings provisional; no normative accuracy/completeness score."
+    }
+  },
+  "previous_integrated_suite_34": {
+    "version": "3.4.0",
+    "tests": 367,
+    "failures": 0,
+    "seconds": 15.187,
+    "log": "Development/TestResults.log",
+    "log_sha256": "53bc398f61b011344f3fcea75f17f332597bb2278e2ddae3be06bc44c64b02b2"
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  },
+  "previous_integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "previous_final_release_corpus_35": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.913,
+    "binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "Historical filenames provisional; not an accuracy/completeness oracle."
+  }
+}

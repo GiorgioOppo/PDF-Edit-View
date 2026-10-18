@@ -1,0 +1,218 @@
+{
+  "version": "3.5.0",
+  "complete_ISO_validation_proven": false,
+  "scope": "Three historical pass labels contain a calculator with incorrect output stack count, independent of the labelled clause. Original corpus bytes unchanged.",
+  "primary_source": "ISO32000-1§7.10.5/Table42: initial stack is Domain inputs; final numeric stack count must match Range.",
+  "stack_trace": [
+    [
+      "x"
+    ],
+    [
+      "x",
+      0
+    ],
+    [
+      0,
+      "x"
+    ],
+    [
+      0,
+      "x",
+      0
+    ],
+    [
+      0,
+      0,
+      "x"
+    ],
+    [
+      0,
+      0,
+      "x",
+      0
+    ]
+  ],
+  "required_outputs": 3,
+  "actual_outputs": 4,
+  "original_program": "{0 exch 0 exch 0}",
+  "original_program_sha256": "8df9090228f55c733a8efc03259358550a752adb7a3d6d26549154d212b779cb",
+  "counterfactual_program": "{0 exch 0       }",
+  "counterfactual_policy": "Same17bytes; changes only the pure calculator payload. It leaves3outputs; full arithmetic/global ISO conformity remains unproved.",
+  "cases": [
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-f.pdf",
+      "functions": [
+        {
+          "dictionary": "<<\n/Domain [ 0.0 1.0 ]\n/FunctionType 4\n/Length 17\n/Range [ 0.0 1.0 0.0 1.0 0.0 1.0 ]\n>>",
+          "id": "14 0 R",
+          "program": "{0 exch 0 exch 0}",
+          "sha256": "8df9090228f55c733a8efc03259358550a752adb7a3d6d26549154d212b779cb"
+        }
+      ],
+      "pdf_sha256": "ec5d76083b16183373058cdbfe83dda51e167377a88c7c255d2f856bb2e24109",
+      "counterfactual_sha256": "fd7fa0dda9adb7063cfbead3991f6991beddcfdb93cd1ba160759a0e515d7c9d",
+      "counterfactual_path": "/private/tmp/CartaPDF-calculator35-counterfactuals/case0.pdf",
+      "native_release_counterfactual": [
+        {
+          "sha256": "ec5d76083b16183373058cdbfe83dda51e167377a88c7c255d2f856bb2e24109",
+          "verdict": "nonconforming",
+          "exit_code": 2,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "failed",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        },
+        {
+          "sha256": "fd7fa0dda9adb7063cfbead3991f6991beddcfdb93cd1ba160759a0e515d7c9d",
+          "verdict": "indeterminate",
+          "exit_code": 3,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "notVerified",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-d.pdf",
+      "functions": [
+        {
+          "dictionary": "<<\n/Domain [ 0.0 1.0 ]\n/FunctionType 4\n/Length 17\n/Range [ 0.0 1.0 0.0 1.0 0.0 1.0 ]\n>>",
+          "id": "12 0 R",
+          "program": "{0 exch 0 exch 0}",
+          "sha256": "8df9090228f55c733a8efc03259358550a752adb7a3d6d26549154d212b779cb"
+        }
+      ],
+      "pdf_sha256": "0048b842ee96f8614584346101ceb7f723a1f39234f23b42200e07a65c466999",
+      "counterfactual_sha256": "5707b984dc6c12bce1c3c889b5028b211fdaf4ec6c50ef2ea2bec9fff0d3555e",
+      "counterfactual_path": "/private/tmp/CartaPDF-calculator35-counterfactuals/case1.pdf",
+      "native_release_counterfactual": [
+        {
+          "sha256": "0048b842ee96f8614584346101ceb7f723a1f39234f23b42200e07a65c466999",
+          "verdict": "nonconforming",
+          "exit_code": 2,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "failed",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        },
+        {
+          "sha256": "5707b984dc6c12bce1c3c889b5028b211fdaf4ec6c50ef2ea2bec9fff0d3555e",
+          "verdict": "nonconforming",
+          "exit_code": 2,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "notVerified",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-h.pdf",
+      "functions": [
+        {
+          "dictionary": "<<\n/Domain [ 0.0 1.0 ]\n/FunctionType 4\n/Length 17\n/Range [ 0.0 1.0 0.0 1.0 0.0 1.0 ]\n>>",
+          "id": "11 0 R",
+          "program": "{0 exch 0 exch 0}",
+          "sha256": "8df9090228f55c733a8efc03259358550a752adb7a3d6d26549154d212b779cb"
+        }
+      ],
+      "pdf_sha256": "18e82c5dad6619a66943b317cf26c44ea39daad52f3a51c2b2aa130c8652d1cf",
+      "counterfactual_sha256": "ca4a6cfc44f918f360cd91fddd2f7e41183cfa447f91c1e8139a053ebaaefa6d",
+      "counterfactual_path": "/private/tmp/CartaPDF-calculator35-counterfactuals/case2.pdf",
+      "native_release_counterfactual": [
+        {
+          "sha256": "18e82c5dad6619a66943b317cf26c44ea39daad52f3a51c2b2aa130c8652d1cf",
+          "verdict": "nonconforming",
+          "exit_code": 2,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "failed",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        },
+        {
+          "sha256": "ca4a6cfc44f918f360cd91fddd2f7e41183cfa447f91c1e8139a053ebaaefa6d",
+          "verdict": "nonconforming",
+          "exit_code": 2,
+          "function_checks": [
+            {
+              "clause": "7.10",
+              "detail": "Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+              "id": "CartaPDF:Function:0",
+              "locations": [
+                "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+              ],
+              "objectType": "FunctionModel",
+              "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+              "specification": "ISO 32000-1/2",
+              "status": "notVerified",
+              "testNumber": "native-function"
+            }
+          ],
+          "input_unchanged": true
+        }
+      ]
+    }
+  ],
+  "final_binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8"
+}

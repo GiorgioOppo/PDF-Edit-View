@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>it</string>
+    <key>CFBundleDisplayName</key>
+    <string>CartaPDF</string>
+    <key>CFBundleExecutable</key>
+    <string>CartaPDF</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIdentifier</key>
+    <string>it.cartapdf.editor</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>CartaPDF</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>3.6.0</string>
+    <key>CFBundleVersion</key>
+    <string>9</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSAppleScriptEnabled</key>
+    <true/>
+    <key>OSAScriptingDefinition</key>
+    <string>CartaPDF.sdef</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>CartaPDF</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>Documento PDF</string>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.adobe.pdf</string>
+            </array>
+            <key>NSDocumentClass</key>
+            <string>PDFWorkspaceDocument</string>
+        </dict>
+    </array>
+</dict>
+</plist>

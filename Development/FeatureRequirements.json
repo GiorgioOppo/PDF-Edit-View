@@ -1,0 +1,605 @@
+{
+  "constraint": "Solo framework Apple, app gratuita, completamente locale; nessun servizio o dipendenza esterna.",
+  "requirements": [
+    {
+      "id": "M001",
+      "title": "Anteprima ordine finale unione"
+    },
+    {
+      "id": "M002",
+      "title": "Riordino file unione con trascinamento"
+    },
+    {
+      "id": "M003",
+      "title": "Statistiche documenti da unire"
+    },
+    {
+      "id": "M004",
+      "title": "Rimozione file dalla coda di unione"
+    },
+    {
+      "id": "M005",
+      "title": "Avviso documenti duplicati"
+    },
+    {
+      "id": "M006",
+      "title": "Segnalazione formati pagina diversi"
+    },
+    {
+      "id": "M007",
+      "title": "Conservazione segnalibri in unione"
+    },
+    {
+      "id": "M008",
+      "title": "Progresso dettagliato unione"
+    },
+    {
+      "id": "M009",
+      "title": "Riordino pagine da miniature"
+    },
+    {
+      "id": "M010",
+      "title": "Anteprima duplicazione e spostamento"
+    },
+    {
+      "id": "M011",
+      "title": "Anteprima intervalli estrazione"
+    },
+    {
+      "id": "M012",
+      "title": "Conteggio pagine selezionate"
+    },
+    {
+      "id": "M013",
+      "title": "Errori intervalli evidenziati"
+    },
+    {
+      "id": "M014",
+      "title": "Separatori intervalli uniformi"
+    },
+    {
+      "id": "M015",
+      "title": "Avviso intervalli sovrapposti"
+    },
+    {
+      "id": "M016",
+      "title": "Nomi personalizzati documenti divisi"
+    },
+    {
+      "id": "M017",
+      "title": "Anteprima file della divisione"
+    },
+    {
+      "id": "M018",
+      "title": "Riepilogo conflitti"
+    },
+    {
+      "id": "M019",
+      "title": "Divisione annullabile con progresso"
+    },
+    {
+      "id": "M020",
+      "title": "Mostra output nel Finder"
+    },
+    {
+      "id": "M021",
+      "title": "Ritaglio interattivo"
+    },
+    {
+      "id": "M022",
+      "title": "Unità di misura ritaglio"
+    },
+    {
+      "id": "M023",
+      "title": "Dimensioni dopo ritaglio"
+    },
+    {
+      "id": "M024",
+      "title": "Validazione margini ritaglio"
+    },
+    {
+      "id": "M025",
+      "title": "Filigrana configurabile"
+    },
+    {
+      "id": "M026",
+      "title": "Anteprima numerazione"
+    },
+    {
+      "id": "M027",
+      "title": "Avviso numerazioni sovrapposte"
+    },
+    {
+      "id": "M028",
+      "title": "Anteprima primo e ultimo Bates"
+    },
+    {
+      "id": "M029",
+      "title": "Controllo spazio Bates"
+    },
+    {
+      "id": "M030",
+      "title": "Memoria impostazioni ritaglio e numerazione"
+    },
+    {
+      "id": "M031",
+      "title": "Campi modulo raggruppati per pagina"
+    },
+    {
+      "id": "M032",
+      "title": "Ricerca campi modulo"
+    },
+    {
+      "id": "M033",
+      "title": "Evidenzia campo selezionato"
+    },
+    {
+      "id": "M034",
+      "title": "Contatore caratteri campi"
+    },
+    {
+      "id": "M035",
+      "title": "Stato valori modificati e confermati"
+    },
+    {
+      "id": "M036",
+      "title": "Spiegazione campi non modificabili"
+    },
+    {
+      "id": "M037",
+      "title": "Segnalazione valori condivisi"
+    },
+    {
+      "id": "M038",
+      "title": "Campi obbligatori evidenziati"
+    },
+    {
+      "id": "M039",
+      "title": "Riepilogo protezioni copie"
+    },
+    {
+      "id": "M040",
+      "title": "Verifica password copie"
+    },
+    {
+      "id": "M041",
+      "title": "Posizione e dimensione finestre persistenti"
+    },
+    {
+      "id": "M042",
+      "title": "Ripristino ultima pagina"
+    },
+    {
+      "id": "M043",
+      "title": "Ripristino zoom"
+    },
+    {
+      "id": "M044",
+      "title": "Larghezza sidebar persistente"
+    },
+    {
+      "id": "M045",
+      "title": "Miniatura corrente visibile"
+    },
+    {
+      "id": "M046",
+      "title": "Zoom centrato puntatore"
+    },
+    {
+      "id": "M047",
+      "title": "Scorciatoie personalizzabili"
+    },
+    {
+      "id": "M048",
+      "title": "Toolbar adattiva"
+    },
+    {
+      "id": "M049",
+      "title": "Indicazione strumento attivo compatta"
+    },
+    {
+      "id": "M050",
+      "title": "VoiceOver completo"
+    },
+    {
+      "id": "M051",
+      "title": "Cmd F seleziona ricerca precedente"
+    },
+    {
+      "id": "M052",
+      "title": "Estratti nei risultati ricerca"
+    },
+    {
+      "id": "M053",
+      "title": "Colori accessibili risultati"
+    },
+    {
+      "id": "M054",
+      "title": "Cursore stabile durante ricerca"
+    },
+    {
+      "id": "M055",
+      "title": "Ricerca durante digitazione"
+    },
+    {
+      "id": "M056",
+      "title": "Conteggio ricerca con meno ridisegni"
+    },
+    {
+      "id": "M057",
+      "title": "Risultati precedenti durante aggiornamento"
+    },
+    {
+      "id": "M058",
+      "title": "Zoom invariato nella ricerca"
+    },
+    {
+      "id": "M059",
+      "title": "Navigazione risultati con focus documento"
+    },
+    {
+      "id": "M060",
+      "title": "Suggerimento OCR pagine senza testo"
+    },
+    {
+      "id": "M061",
+      "title": "Stato preparazione motore OCR"
+    },
+    {
+      "id": "M062",
+      "title": "Contatori live OCR"
+    },
+    {
+      "id": "M063",
+      "title": "Annullamento richiesta Vision attiva"
+    },
+    {
+      "id": "M064",
+      "title": "Scelta lingue OCR"
+    },
+    {
+      "id": "M065",
+      "title": "Correzione orientamento OCR"
+    },
+    {
+      "id": "M066",
+      "title": "Retry OCR bassa affidabilità"
+    },
+    {
+      "id": "M067",
+      "title": "Riduzione ricompressioni OCR"
+    },
+    {
+      "id": "M068",
+      "title": "Ordine lettura multicolonna"
+    },
+    {
+      "id": "M069",
+      "title": "OCR scansioni con intestazione testuale"
+    },
+    {
+      "id": "M070",
+      "title": "Rapporto OCR per pagina"
+    },
+    {
+      "id": "M071",
+      "title": "Anteprima JPEG"
+    },
+    {
+      "id": "M072",
+      "title": "Variazione percentuale dimensione"
+    },
+    {
+      "id": "M073",
+      "title": "Profili colore conversione"
+    },
+    {
+      "id": "M074",
+      "title": "DPI effettivi output"
+    },
+    {
+      "id": "M075",
+      "title": "Nomi PNG personalizzabili"
+    },
+    {
+      "id": "M076",
+      "title": "Elenco conflitti PNG"
+    },
+    {
+      "id": "M077",
+      "title": "Ricostruzione a capo export"
+    },
+    {
+      "id": "M078",
+      "title": "Paragrafi RTF DOCX"
+    },
+    {
+      "id": "M079",
+      "title": "Margini immagini configurabili"
+    },
+    {
+      "id": "M080",
+      "title": "Conservazione opzionale copia più grande"
+    },
+    {
+      "id": "M081",
+      "title": "Autore annotazioni configurabile"
+    },
+    {
+      "id": "M082",
+      "title": "Selezione annotazione sincronizzata"
+    },
+    {
+      "id": "M083",
+      "title": "Selezione annotazioni sovrapposte"
+    },
+    {
+      "id": "M084",
+      "title": "Anteprima annotazione testo"
+    },
+    {
+      "id": "M085",
+      "title": "Conferma Cmd Invio"
+    },
+    {
+      "id": "M086",
+      "title": "Spessore tratto"
+    },
+    {
+      "id": "M087",
+      "title": "Regolarizzazione disegno"
+    },
+    {
+      "id": "M088",
+      "title": "Palette accessibile da tastiera"
+    },
+    {
+      "id": "M089",
+      "title": "Posizionamento pagine ruotate"
+    },
+    {
+      "id": "M090",
+      "title": "Avviso testo oltre riquadro"
+    },
+    {
+      "id": "M091",
+      "title": "Limite globale elaborazioni"
+    },
+    {
+      "id": "M092",
+      "title": "Miniature prioritarie visibili"
+    },
+    {
+      "id": "M093",
+      "title": "Limite memoria cache"
+    },
+    {
+      "id": "M094",
+      "title": "Ridisegni annotazioni ridotti"
+    },
+    {
+      "id": "M095",
+      "title": "Priorità pagina visibile"
+    },
+    {
+      "id": "M096",
+      "title": "Scritture file annullabili"
+    },
+    {
+      "id": "M097",
+      "title": "Spazio libero prima esportazione"
+    },
+    {
+      "id": "M098",
+      "title": "Verifica output leggibile"
+    },
+    {
+      "id": "M099",
+      "title": "Compatibilità Anteprima"
+    },
+    {
+      "id": "M100",
+      "title": "Test PDF danneggiati e grandi"
+    },
+    {
+      "id": "F001",
+      "title": "Unione alternata fronte retro"
+    },
+    {
+      "id": "F002",
+      "title": "Unione automatica per gruppi nome"
+    },
+    {
+      "id": "F003",
+      "title": "Sovrapposizione PDF trasparente"
+    },
+    {
+      "id": "F004",
+      "title": "Divisione per segnalibri"
+    },
+    {
+      "id": "F005",
+      "title": "Divisione ogni N pagine"
+    },
+    {
+      "id": "F006",
+      "title": "Divisione dimensione massima"
+    },
+    {
+      "id": "F007",
+      "title": "Divisione per testo"
+    },
+    {
+      "id": "F008",
+      "title": "Divisione QR codici a barre"
+    },
+    {
+      "id": "F009",
+      "title": "Divisione pagine bianche"
+    },
+    {
+      "id": "F010",
+      "title": "Libretti fronte retro"
+    },
+    {
+      "id": "F011",
+      "title": "N pagine per foglio"
+    },
+    {
+      "id": "F012",
+      "title": "Stampa poster"
+    },
+    {
+      "id": "F013",
+      "title": "Separazione scansioni libro"
+    },
+    {
+      "id": "F014",
+      "title": "Raddrizzamento scansioni"
+    },
+    {
+      "id": "F015",
+      "title": "Pulizia scansioni"
+    },
+    {
+      "id": "F016",
+      "title": "Acquisizione scanner"
+    },
+    {
+      "id": "F017",
+      "title": "Cattura schermate finestre"
+    },
+    {
+      "id": "F018",
+      "title": "Pagine duplicate visive"
+    },
+    {
+      "id": "F019",
+      "title": "Intestazioni piè pagina dinamici"
+    },
+    {
+      "id": "F020",
+      "title": "Libreria timbri"
+    },
+    {
+      "id": "F021",
+      "title": "Sommario cliccabile"
+    },
+    {
+      "id": "F022",
+      "title": "Numerazione logica sezioni"
+    },
+    {
+      "id": "F023",
+      "title": "Estrazione immagini originali"
+    },
+    {
+      "id": "F024",
+      "title": "TIFF multipagina"
+    },
+    {
+      "id": "F025",
+      "title": "HTML locale in PDF"
+    },
+    {
+      "id": "F026",
+      "title": "EPUB testo"
+    },
+    {
+      "id": "F027",
+      "title": "CSV tabelle manuali"
+    },
+    {
+      "id": "F028",
+      "title": "CSV tabelle automatiche"
+    },
+    {
+      "id": "F029",
+      "title": "Compilazione moduli CSV"
+    },
+    {
+      "id": "F030",
+      "title": "Allegati PDF"
+    },
+    {
+      "id": "F031",
+      "title": "Portfolio PDF"
+    },
+    {
+      "id": "F032",
+      "title": "Biblioteca locale"
+    },
+    {
+      "id": "F033",
+      "title": "Ricerca più PDF"
+    },
+    {
+      "id": "F034",
+      "title": "Recupero arresti imprevisti"
+    },
+    {
+      "id": "F035",
+      "title": "Cronologia versioni"
+    },
+    {
+      "id": "F036",
+      "title": "Procedure batch"
+    },
+    {
+      "id": "F037",
+      "title": "Cartelle monitorate"
+    },
+    {
+      "id": "F038",
+      "title": "Comandi Rapidi AppleScript"
+    },
+    {
+      "id": "F039",
+      "title": "Ridenominazione da contenuti"
+    },
+    {
+      "id": "F040",
+      "title": "Confronto visivo"
+    },
+    {
+      "id": "F041",
+      "title": "Lettura ad alta voce"
+    },
+    {
+      "id": "F042",
+      "title": "Preflight font immagini formati"
+    },
+    {
+      "id": "F043",
+      "title": "Validazione conversione PDF A"
+    },
+    {
+      "id": "F044",
+      "title": "Preparazione PDF X"
+    },
+    {
+      "id": "F045",
+      "title": "Tag accessibilità"
+    },
+    {
+      "id": "F046",
+      "title": "Gestione livelli PDF"
+    },
+    {
+      "id": "F047",
+      "title": "Modifica testo originale"
+    },
+    {
+      "id": "F048",
+      "title": "Sostituzione immagini originali"
+    },
+    {
+      "id": "F049",
+      "title": "Firma certificato locale"
+    },
+    {
+      "id": "F050",
+      "title": "Verifica firme offline"
+    }
+  ]
+}

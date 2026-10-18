@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "upstream_repository": "https://github.com/veraPDF/veraPDF-validation-profiles",
+  "upstream_commit": "b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc",
+  "retrieved_at": "2026-10-17T16:02:55.211433+00:00",
+  "license": "CC-BY-4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "license_text_source": "https://creativecommons.org/licenses/by/4.0/legalcode.txt",
+  "license_text_sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+  "upstream_readme_source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/README.md",
+  "upstream_readme_sha256": "99902c7713ec72b5ad2c8c29552f938c7647b55bbfbabd37558e62a6006007d4",
+  "profiles": [
+    {
+      "profile": "PDF/A-1a",
+      "file": "PDFA-1A.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-1A.xml",
+      "sha256": "c01d2b36faeb4e7703d96e88b4fa87605e67c39fa431a8adc93a1d50cbe54442",
+      "rule_count": 135,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-1b",
+      "file": "PDFA-1B.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-1B.xml",
+      "sha256": "93a8254a209a298cdf38d2f259906d585dfcdd1cc700650271b86920be9c00e6",
+      "rule_count": 129,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-2a",
+      "file": "PDFA-2A.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-2A.xml",
+      "sha256": "22ef9e98557d1ff714e252d5cf020840b0ec05fddd437c47058eeaa225dc6af5",
+      "rule_count": 153,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-2b",
+      "file": "PDFA-2B.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-2B.xml",
+      "sha256": "bae015161f0c9b4296481f11936c97728dfd12dffb2df48ea744f885794da382",
+      "rule_count": 144,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-2u",
+      "file": "PDFA-2U.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-2U.xml",
+      "sha256": "52bddd46bc6c8bfcfb00cf4589935a7328668f709d92928d2e8841446c05a21d",
+      "rule_count": 146,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-3a",
+      "file": "PDFA-3A.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-3A.xml",
+      "sha256": "4eac441409c0523ded5d29d77e567f63ae3ac285d82505f673d2992286da674a",
+      "rule_count": 155,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-3b",
+      "file": "PDFA-3B.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-3B.xml",
+      "sha256": "fc6f5c9cccc8c52af8584f98505fe62979522e66acd525a67ce391c36d8dbc17",
+      "rule_count": 146,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-3u",
+      "file": "PDFA-3U.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-3U.xml",
+      "sha256": "2ac7b14a789681c4dc9d53ec66e9a28f6efa2cd61a4633487b4c15c111281bf2",
+      "rule_count": 148,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-4",
+      "file": "PDFA-4.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-4.xml",
+      "sha256": "4d5eac9e102b76469119d3492fdd7ea45386701f3f8ef5b3740f676e0cd9e730",
+      "rule_count": 111,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-4e",
+      "file": "PDFA-4E.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-4E.xml",
+      "sha256": "4ef67b1d8c7e34d55457850d9906ec13f5d2c4aa5bafebd5b601b6b1b8dc180a",
+      "rule_count": 111,
+      "modifications": "None; original bytes preserved."
+    },
+    {
+      "profile": "PDF/A-4f",
+      "file": "PDFA-4F.xml",
+      "source": "https://raw.githubusercontent.com/veraPDF/veraPDF-validation-profiles/b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc/PDF_A/PDFA-4F.xml",
+      "sha256": "dbbe4b0327bc76db801951e1ea76d0277847851faad7fe00f060a5c8d841e77e",
+      "rule_count": 111,
+      "modifications": "None; original bytes preserved."
+    }
+  ],
+  "runtime_dependency": "None. XML rule data only."
+}

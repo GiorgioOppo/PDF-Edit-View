@@ -1,0 +1,2 @@
+Adobe CMap and glyph-list reference data. Copyright Adobe and its contributors. Redistributed under the original BSD-3-Clause licenses retained in CMaps/LICENSE.md and AGL/LICENSE.md and in each data file. Original bytes preserved; no Adobe engine/code is included. Sources and exact commits/SHA-256 are recorded in MANIFEST.json. Adobe does not endorse CartaPDF.
+Additional original PDF-to-Unicode mapping resources from adobe-type-tools/mapping-resources-pdf are included under the BSD-3-Clause notices contained in each resource; see MAPPING-README.md and MANIFEST.json.

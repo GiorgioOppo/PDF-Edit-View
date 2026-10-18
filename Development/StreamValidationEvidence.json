@@ -1,0 +1,261 @@
+{
+  "version": "3.6.0",
+  "date": "2026-10-18",
+  "complete_ISO_validation_proven": false,
+  "runtime": {
+    "Apple_frameworks_only": true,
+    "network": false,
+    "external_code_or_engine": false
+  },
+  "implemented": [
+    "General filters ASCIIHex/ASCII85/RunLength/LZW; explicit EOD boundaries independent of inline L",
+    "LZW published ISO example and both EarlyChange code widths9–12",
+    "Original RFC1951 bit/tree/block/distance bounds plus Apple Compression expansion, Adler32 integrity",
+    "TIFF and PNG predictors1/2/4/8/16bit; parameter dictionary/array typing; indirect Filter/DecodeParms resolution",
+    "Undefined/free/generation-mismatched references resolve to null, existing broken indexed objects still throw",
+    "Strict content numeric grammar/direct operands; long valid decimal versus machine conversion and nonzero underflow",
+    "Inline AHx/A85 ID whitespace exception; complete supported filter chains; preserved independent dictionary violations",
+    "Shading pattern temporary ExtGState from the defining stream initial state; unknown inherited origin",
+    "Unknown ICC output distinct from absent output prevents false colour failures",
+    "Decoded inline samples agree with known dimensions/row stride, independently of the encoded EOD and L"
+  ],
+  "primary_sources": [
+    {
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf",
+      "sections": [
+        "7.3.8.2",
+        "7.3.10",
+        "7.4.2–7.4.5",
+        "7.8.2",
+        "8.9.7",
+        "8.7.4/Table77"
+      ]
+    },
+    {
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf",
+      "sections": [
+        "3.2.7",
+        "3.3.1"
+      ]
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc1950"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc1951"
+    }
+  ],
+  "independent_review": {
+    "reviewer": "separate metadata agent, read-only",
+    "findings_fixed": [
+      "Apple Compression read-ahead is not an extent proof",
+      "Empty-output incomplete dynamic Huffman tree was accepted",
+      "AHx/A85 inline ID without whitespace is legal",
+      "Inner filter payload previously unchecked",
+      "EOD output budget edge and cancellation points"
+    ],
+    "review_vector_sha256": "52e867ce30835d9bef084be16d89eb945352062d4326de61048ed8104c3978e0"
+  },
+  "remaining": [
+    "Image codecs JPX/JBIG2/CCITT and complete PDF2 semantics",
+    "All revisions and complete object/content/graphics model",
+    "ASCIIHex missing > at Length-delimited EOF is not claimed valid or invalid without a sufficient normative proof; returns notVerified",
+    "Pattern initial state from inherited-resource origins not fully established",
+    "General filters do not establish full font/ICC/XMP/Engineering validity"
+  ],
+  "sources": [
+    {
+      "path": "Sources/CartaPDF/PDFStreamFilters.swift",
+      "sha256": "5c1aaf465239125920f8f46d64c799ac285d9b6098214411f7c9ebf78c9c9b73"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "sha256": "2a6d6f7118b368e1cbdd14e714bcc0c76e775235306a5da10df13920f8de69ec"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveInlineImage.swift",
+      "sha256": "7af6af6b9b60d164af94b1ddbcc9e7c49039f34a3ff9ba1d9f4b57e94524e3df"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveSyntaxChecks.swift",
+      "sha256": "b968ba10cbaf87fee6a8f82958ce9df77abb6c9fd3a3047cb71cd8e315971b68"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveValidatorContent.swift",
+      "sha256": "bc3de55698c73a0aaa2461f6a0e8ba74f2f7b345e012f5a6eb7a38e84e251ecc"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveGraphicsChecks.swift",
+      "sha256": "087b54d851ab5ee5d56a2979ba2edad5dbd938c089c67f43fe12b5011e522d81"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveValidatorRules.swift",
+      "sha256": "3e4ae0e13f31ab94d82e922721c920f332ff49fec1e3a2029c05aa357b7ea986"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFStreamFilterTests.swift",
+      "sha256": "3412ff9dda81643b3ccfce9a9d18d4a77aaa39bf5a89742d7691aef73f5a491a"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFArchiveGraphicsSyntaxTests.swift",
+      "sha256": "3ec1bdd2c555167aef4b54afd56b39d227c6e9e2780d3ec7cb214d1177cbb96d"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFArchiveRevisionTests.swift",
+      "sha256": "04ecafb5c29a5fa9b77b837c804e69242f1dd48986227315eeb29ed8790d4ae4"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFArchiveObjectStreamSyntaxTests.swift",
+      "sha256": "fcd73f60c0e6060d2605beb53eadbc48991d3892a6343086869c1bdd228929dc"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFArchiveReferenceResolutionTests.swift",
+      "sha256": "6d4238b7eb45c84ec41a745c9f444f05ff1c8c035314b2de68f6920fd0f35b45"
+    }
+  ],
+  "test_suites": {
+    "PDFStreamFilterTests": {
+      "tests": [
+        "testASCIIHexStopsAtEODAndRejectsInvalidOrUnterminatedData",
+        "testASCII85MarkersOverflowAndPartialGroups",
+        "testRunLengthEODIsIndependentOfInlineBinaryEITokens",
+        "testASCIIInlineFiltersDoNotRequireWhitespaceAfterIDAndValidateAllFilters",
+        "testFilteredInlineSamplesMustMatchRowsAfterTheWholeFilterChain",
+        "testFlateVerifiesChecksumAndReportsEncodedBoundary",
+        "testFlateChecksStoredBlocksAndRejectsReservedBlockTypes",
+        "testLZWDecodesPublishedISO32000ExampleAndRejectsInvalidCodes",
+        "testLZWEarlyChangeZeroAndOneAcrossAllCodeWidths",
+        "testTIFFPredictorWorksOnPackedSamplesAndSixteenBitComponents",
+        "testPNGPredictorsUseBytesPerPixelAndRowTagsForAllBitDepths",
+        "testFilterChainsRequireMatchingParameterArrays",
+        "testIndirectFiltersAndParameterValuesAreResolvedAndCyclesRejected",
+        "testUndefinedAndFreeReferencesHaveNullSemanticsWithoutHidingBrokenObjects",
+        "testContentNumbersAndIndirectReferencesAreCheckedBeforeNormalization"
+      ],
+      "count": 15
+    },
+    "PDFArchiveGraphicsSyntaxTests": {
+      "tests": [
+        "testSpecifiedDeviceColorsAreUsedInPartsOneThroughThreeAndUnusedResourcesAreExempt",
+        "testDefaultRGBAndActualOutputICCResolveTheColorRequirement",
+        "testICCComponentsAndCorruptTagBoundsUseTheEmbeddedBytes",
+        "testResourceResolutionAndQDepthHaveActualNegativeCases",
+        "testTransparencyRequiresOutputOrExplicitPageBlendingSpace",
+        "testShadingPatternExtGStateContributesTransparencyOnlyWhenUsed",
+        "testInlinePixelsContainingEIAreSkippedByExactSampleLength",
+        "testPaintedPatternsAndSoftMasksContributeActualDeviceColors",
+        "testOptionalGroupTypeAndICCBasedPageBlendingAreRecognized",
+        "testLexicalChecksIncludeUnusedContainersWithoutInventingPaintUse",
+        "testCrossReferenceRowFormatIsCheckedWithoutChangingObjectResolution",
+        "testPageBoundaryLimitsUseInheritanceDefaultsAndIgnorePrivateBBoxKeys",
+        "testDictionaryKeyNamesAreIncludedInLexicalLimits",
+        "testInitialDeviceGrayUsesDefaultGrayAndUnsupportedGroupsCannotProveRGB",
+        "testDeviceRGBFormGroupRetainsCharacterizationOfEnclosingPageGroup",
+        "testICCProfileFingerprintNormalizesAllThreeHeaderFields",
+        "testActualType3GlyphProgramsAreIncludedInPaintedColors",
+        "testLengthDoesNotSilentlySkipUncountedWhitespaceBeforeEndstream",
+        "testInlineLengthRequirementIncludesImagesInUnpaintedForms",
+        "testFilteredInlineLengthUsesEncodedEODInsteadOfItsOwnHint",
+        "testMalformedContentAndStreamFiltersProduceSeparateModelViolations",
+        "testLongValidDecimalIsNotConfusedWithMalformedSyntaxOrMachineUnderflow",
+        "testUnreadableOutputProfileDoesNotProveMissingCMYKCharacterization",
+        "testAmbiguousInlineBoundaryCannotInventOperatorsInsideBinarySamples",
+        "testJPEG2000BoxFactsAndForbiddenEnumeratedColorSpace",
+        "testHexAndObjectSyntaxAreVerifiedBeforeNormalization",
+        "testPhysicalStreamsAndStandardObjectSpacingPass",
+        "testHybridCrossReferenceResolvesCompressedRootAndKeepsBothSections"
+      ],
+      "count": 28
+    }
+  },
+  "verification": {
+    "final_integrated_suite": {
+      "version": "3.6.0",
+      "tests": 512,
+      "failures": 0,
+      "seconds": 17.651,
+      "log": "Development/TestResults.log",
+      "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+    },
+    "release_corpus": {
+      "files": 2164,
+      "errors": 0,
+      "elapsed_seconds": 18.913,
+      "binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+      "evidence": "Development/PDFA-CorpusEvidence.json",
+      "comparison": "Historical filenames provisional; not an accuracy/completeness oracle."
+    },
+    "prior_integrated_suite_33": {
+      "tests": 303,
+      "failures": 0,
+      "seconds": 14.819,
+      "log": "Development/TestResults.log"
+    },
+    "prior_integrated_suite_34": {
+      "version": "3.4.0",
+      "tests": 367,
+      "failures": 0,
+      "seconds": 15.187,
+      "log": "Development/TestResults.log",
+      "log_sha256": "53bc398f61b011344f3fcea75f17f332597bb2278e2ddae3be06bc44c64b02b2"
+    },
+    "prior_integrated_suite_35": {
+      "version": "3.5.0",
+      "tests": 447,
+      "failures": 0,
+      "seconds": 16.968,
+      "log": "Development/TestResults.log",
+      "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+    }
+  },
+  "release_corpus_model_review": "Development/PDFA-CorpusModelReview.json",
+  "version34_supplement": {
+    "implemented": [
+      "Revision-local xref views resolve historical Length/N/First without using a later replacement/free generation.",
+      "ObjStm header pairs and independent value slices checked for every recorded revision context, with raw hex facts, standalone-reference prohibition, token boundaries and comment boundaries.",
+      "Unsupported filters/budgets/cancellation preserve incomplete lexical inventory."
+    ],
+    "remaining": [
+      "Full ISO32000 semantics for all revisions/object graph/codec contexts not proven."
+    ],
+    "tests": {
+      "PDFArchiveRevisionTests.swift": [
+        "testHistoricalIndirectLengthUsesItsOwnRevisionNotLatestValue",
+        "testHistoricalGenerationIsNotReplacedByTheReusedObjectNumber",
+        "testHistoricalLengthSurvivesLaterFreeEntryWithoutResurrectingItInLatestView",
+        "testInvalidHistoricalLengthCannotBeRepairedByLaterUpdate"
+      ],
+      "PDFArchiveObjectStreamSyntaxTests.swift": [
+        "testConsecutiveBoundedValuesAllowInternalReferencesCommentsAndUnorderedObjectNumbers",
+        "testObjectNumbersMustBePositiveUniqueIntegerTokens",
+        "testOffsetsMustBeIncreasingInBoundsAndCannotSplitAValueOrToken",
+        "testOneValuePerSliceAndStandaloneReferenceProhibitionAreIndependent",
+        "testFirstMustEncloseExactlyTheHeaderAndNotTruncateAnIntegerOrComment",
+        "testIndirectNAndFirstUseTheirHistoricalRevisionInsteadOfLatestDefinitions",
+        "testInvalidHistoricalObjectStreamIsNotRepairedByAnActiveReplacement",
+        "testRepublishedPhysicalOffsetValidatesBothOldAndNewIndirectNInterpretations",
+        "testRepublishedOffsetFirstIsRevisionSpecificButBenignIndirectUpdatesRemainValidAndPhysicalFactsUnique",
+        "testTrailingSliceCommentCannotExposeAnotherValueBeforeItsActualLineEnding",
+        "testHistoricalOddAndInvalidHexFactsSurviveStrictParseFailureAndObjectReplacement",
+        "testUnsupportedFilterAndCountBudgetAreUnknownRatherThanSyntaxViolations",
+        "testCancellationIsNeverReportedAsMalformedObjectStreamSyntax"
+      ]
+    }
+  },
+  "version35_supplement": {
+    "evidence": "Development/ReferenceResolutionEvidence.json",
+    "scope": "Bounded indirect aliases and canonical identities; null page inheritance, aliased Length/Filter and external N/First. Full ISO32000 semantics remain incomplete."
+  },
+  "version36_supplement": {
+    "evidence": "Development/ReferenceResolutionEvidence.json",
+    "scope": "Canonical decoded streams/cache, Contents aliases/null/array member types, Metadata and ICC identities; full parser/consumer audit remains incomplete."
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  }
+}

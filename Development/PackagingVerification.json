@@ -1,0 +1,11 @@
+{
+  "version": "3.6.0",
+  "app_files_byte_identical": true,
+  "app_file_count": 475,
+  "method": "Copy generated bundle to temporary local staging with ditto --norsrc --noextattr before ZIP creation; file-provider FinderInfo automatically attached to the workspace bundle is not included.",
+  "codesign_strict_clean_staging": "passed",
+  "codesign_strict_extracted_zip": "passed",
+  "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+  "app_zip_sha256": "7cb3301a64b84bd8157f9f28d11031fc82505db9be6a396e644b8143a8c4b9fa",
+  "complete_ISO_validation_proven": false
+}

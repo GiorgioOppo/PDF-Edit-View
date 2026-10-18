@@ -1,0 +1,19 @@
+veraPDF validation profiles — attribution and provenance
+
+Copyright © 2015 veraPDF Consortium (https://verapdf.org/).
+Source: https://github.com/veraPDF/veraPDF-validation-profiles
+Pinned upstream commit: b76c28ff0d8809c30c4d0e64dc6c393f3c9019dc
+Upstream license: Creative Commons Attribution 4.0 International (CC BY 4.0).
+License: https://creativecommons.org/licenses/by/4.0/
+Full legal text: LICENSE.txt. Original upstream statement: UPSTREAM-README.md.
+
+The eleven PDFA-*.xml files are validation-profile data, preserved byte-for-byte
+from the upstream repository. No Java validation engine, parser, third-party
+framework or other executable implementation is included by this import.
+These data retain CC BY 4.0 and are not relicensed under CartaPDF’s MIT license.
+Attribution, licensing and provenance notices must accompany redistribution.
+
+A profile inventory is not itself an implementation of its object-model semantics
+and does not certify CartaPDF or any PDF as ISO-conforming. No endorsement by
+veraPDF, the PDF Association, Creative Commons or ISO is claimed. The profiles
+and this import are provided without warranties; see the upstream license.

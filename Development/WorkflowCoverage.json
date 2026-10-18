@@ -1,0 +1,487 @@
+{
+  "constraint": "Solo framework Apple; elaborazione locale gratuita; nessun servizio o dipendenza esterna.",
+  "files": [
+    "Sources/CartaPDF/PDFWorkflowTools.swift",
+    "Sources/CartaPDF/PDFWorkflowViews.swift",
+    "Tests/CartaPDFTests/PDFWorkflowEngineTests.swift"
+  ],
+  "entrypoints": [
+    "showMergeWorkspace",
+    "showSplitWorkspace",
+    "showPageLayoutWorkspace",
+    "showBatchWorkspace",
+    "showWatermarkWorkspace",
+    "showNumberingWorkspace",
+    "showCropWorkspace"
+  ],
+  "test_suite": "PDFWorkflowEngineTests",
+  "verification": "Motori verificati tramite XCTest; tutti i pannelli SwiftUI compilati. Gesti drag e interazione Finder da verificare manualmente.",
+  "requirements": [
+    {
+      "id": "M001",
+      "title": "Anteprima ordine finale unione",
+      "status": "implemented",
+      "implementation": "WorkflowController.buildMerge / WorkflowPDFPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M002",
+      "title": "Riordino file unione con trascinamento",
+      "status": "implemented",
+      "implementation": "WorkflowSourceDrop / WorkflowController.moveSource",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Trascinamento della coda nel pannello nativo; verifica manuale del gesto."
+    },
+    {
+      "id": "M003",
+      "title": "Statistiche documenti da unire",
+      "status": "implemented",
+      "implementation": "WorkflowSource.byteCount/formats / sourceQueue",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines",
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M004",
+      "title": "Rimozione file dalla coda di unione",
+      "status": "implemented",
+      "implementation": "WorkflowController.removeSource / pulsante della coda",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Controllo UI compilato; verifica manuale del pulsante."
+    },
+    {
+      "id": "M005",
+      "title": "Avviso documenti duplicati",
+      "status": "implemented",
+      "implementation": "WorkflowController.duplicateNames / avviso nella coda",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Rilevamento per percorso canonico; per il documento non salvato usa nome e dimensione."
+    },
+    {
+      "id": "M006",
+      "title": "Segnalazione formati pagina diversi",
+      "status": "implemented",
+      "implementation": "WorkflowSource.formats / WorkflowController.pageFormats",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M007",
+      "title": "Conservazione segnalibri in unione",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.appendOutlineChildren / merge",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": "Conserva segnalibri GoTo con destinazioni incluse; omette azioni non navigabili e riferimenti a pagine escluse."
+    },
+    {
+      "id": "M008",
+      "title": "Progresso dettagliato unione",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.merge progress / WorkflowController.report",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M009",
+      "title": "Riordino pagine da miniature",
+      "status": "implemented",
+      "implementation": "WorkflowPageDrop / pageOrganizer / movePage",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": "Organizzazione in anteprima: la conferma apre o salva una copia."
+    },
+    {
+      "id": "M010",
+      "title": "Anteprima duplicazione e spostamento",
+      "status": "implemented",
+      "implementation": "WorkflowController.duplicatePage/movePageBy/previewPageOrder",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M011",
+      "title": "Anteprima intervalli estrazione",
+      "status": "implemented",
+      "implementation": "splitControls / WorkflowThumbnailStrip",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks",
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M012",
+      "title": "Conteggio pagine selezionate",
+      "status": "implemented",
+      "implementation": "WorkflowRangeResult / totalSelectedPages / selectionControls",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens",
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M013",
+      "title": "Errori intervalli evidenziati",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.parseRange / rangeError rosso",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M014",
+      "title": "Separatori intervalli uniformi",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.parseRange normalizzazione separator / alias",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M015",
+      "title": "Avviso intervalli sovrapposti",
+      "status": "implemented",
+      "implementation": "WorkflowRangeResult.repeatedPages / WorkflowController.splitOverlap",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens",
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M016",
+      "title": "Nomi personalizzati documenti divisi",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.outputName / namePattern",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M017",
+      "title": "Anteprima file della divisione",
+      "status": "implemented",
+      "implementation": "preparedOutputList / WorkflowController.finalName",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks",
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M018",
+      "title": "Riepilogo conflitti",
+      "status": "implemented",
+      "implementation": "WorkflowController.conflicts / DisclosureGroup / conflictPolicy",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M019",
+      "title": "Divisione annullabile con progresso",
+      "status": "implemented",
+      "implementation": "WorkflowController.cancel / WorkflowStagedWriter.write rollback",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M020",
+      "title": "Mostra output nel Finder",
+      "status": "implemented",
+      "implementation": "WorkflowController.revealOutputs",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "Azione Finder disponibile dopo salvataggio; verifica manuale del pulsante."
+    },
+    {
+      "id": "M021",
+      "title": "Ritaglio interattivo",
+      "status": "implemented",
+      "implementation": "WorkflowCropCanvas quattro handle / applyCrop",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Anteprima non ruotata per allineare i margini PDF; nasconde il contenuto esterno senza eliminarlo."
+    },
+    {
+      "id": "M022",
+      "title": "Unità di misura ritaglio",
+      "status": "implemented",
+      "implementation": "WorkflowUnit / cropField conversione pt mm cm",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M023",
+      "title": "Dimensioni dopo ritaglio",
+      "status": "implemented",
+      "implementation": "cropControls dimensioni risultanti live",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M024",
+      "title": "Validazione margini ritaglio",
+      "status": "implemented",
+      "implementation": "WorkflowController.cropValidation / ensureLiveSource",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M025",
+      "title": "Filigrana configurabile",
+      "status": "implemented",
+      "implementation": "WorkflowTextSettings / watermarkControls / WorkflowWatermarkAnnotation",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": "Opacità incorporata nell’appearance stream PDF; font, dimensione, colore e nove posizioni configurabili."
+    },
+    {
+      "id": "M026",
+      "title": "Anteprima numerazione",
+      "status": "implemented",
+      "implementation": "WorkflowController.buildNumberingPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M027",
+      "title": "Avviso numerazioni sovrapposte",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.existingNumberingCount / applyNumbering conferma",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Riconosce numerazioni CartaPDF e annotazioni nel formato numero/totale; non interpreta il testo originale del content stream."
+    },
+    {
+      "id": "M028",
+      "title": "Anteprima primo e ultimo Bates",
+      "status": "implemented",
+      "implementation": "WorkflowController.batesPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M029",
+      "title": "Controllo spazio Bates",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.numberingAnnotations controllo larghezza font",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "M030",
+      "title": "Memoria impostazioni ritaglio e numerazione",
+      "status": "implemented",
+      "implementation": "UserDefaults Workflow.crop.* e Workflow.numbers.*",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Preferenze conservate localmente dopo applicazione; nessuna password nei preset."
+    },
+    {
+      "id": "F001",
+      "title": "Unione alternata fronte retro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.merge alternate / reverseBacks",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Due PDF, fronti e retri; conserva in coda eventuali pagine in eccesso."
+    },
+    {
+      "id": "F002",
+      "title": "Unione automatica per gruppi nome",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.filenameGroup/groupedSources / buildMerge groups",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Raggruppa rimuovendo il suffisso numerico preceduto da spazio, trattino o underscore."
+    },
+    {
+      "id": "F003",
+      "title": "Sovrapposizione PDF trasparente",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.overlay",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Copia statica con testo/vettori disegnabili; campi/annotazioni appiattiti."
+    },
+    {
+      "id": "F004",
+      "title": "Divisione per segnalibri",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit bookmarks",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": "Usa segnalibri principali con destinazioni di pagina valide."
+    },
+    {
+      "id": "F005",
+      "title": "Divisione ogni N pagine",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit everyN",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": ""
+    },
+    {
+      "id": "F006",
+      "title": "Divisione dimensione massima",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit maxBytes",
+      "tests": [
+        "PDFWorkflowEngineTests.testMaximumSizeMeasuresActualOutputsAndRejectsOversizedSinglePage"
+      ],
+      "limits": "Misura PDF effettivi; una singola pagina oltre il limite produce errore senza ridurre automaticamente la qualità."
+    },
+    {
+      "id": "F007",
+      "title": "Divisione per testo",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit text",
+      "tests": [
+        "PDFWorkflowEngineTests.testTextAndBlankSeparatorsAreDetectedWithoutChangingSource"
+      ],
+      "limits": "Cerca nel testo selezionabile; per scansioni va prima eseguito OCR."
+    },
+    {
+      "id": "F008",
+      "title": "Divisione QR codici a barre",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit barcode / VNDetectBarcodesRequest",
+      "tests": [
+        "PDFWorkflowEngineTests.testVisionBarcodeSeparatorUsesLocalQRCodePayload"
+      ],
+      "limits": "Usa payload testuali riconosciuti da Vision; controllo visivo delle parti in anteprima."
+    },
+    {
+      "id": "F009",
+      "title": "Divisione pagine bianche",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.blankFraction / planSplit blank",
+      "tests": [
+        "PDFWorkflowEngineTests.testTextAndBlankSeparatorsAreDetectedWithoutChangingSource"
+      ],
+      "limits": "Rilevamento euristico a soglia configurabile; pagine separatrici mantenibili o escludibili."
+    },
+    {
+      "id": "F010",
+      "title": "Libretti fronte retro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.nUp booklet",
+      "tests": [
+        "PDFWorkflowEngineTests.testNUpAndBookletRetainVectorTextAndCorrectGeometry"
+      ],
+      "limits": "Impaginazione fronte/retro con padding a multipli di quattro; il ribaltamento va scelto nel dialogo di stampa."
+    },
+    {
+      "id": "F011",
+      "title": "N pagine per foglio",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.nUp",
+      "tests": [
+        "PDFWorkflowEngineTests.testNUpAndBookletRetainVectorTextAndCorrectGeometry"
+      ],
+      "limits": "Copia statica: conserva testo/vettori disegnabili, appiattisce campi/annotazioni."
+    },
+    {
+      "id": "F012",
+      "title": "Stampa poster",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.poster",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Tasselli con griglia e sovrapposizione configurabili; la copia è statica."
+    },
+    {
+      "id": "F013",
+      "title": "Separazione scansioni libro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.facing",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Separazione centrale in due metà, ordine sinistra/destra configurabile; non esegue dewarping del dorso."
+    },
+    {
+      "id": "F019",
+      "title": "Intestazioni piè pagina dinamici",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.template / numberingAnnotations",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Variabili {page}, {pages}, {name}, {date}, {bates}; annotazioni annullabili."
+    },
+    {
+      "id": "F021",
+      "title": "Sommario cliccabile",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.tableOfContents",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Voci dai segnalibri principali o da tutte le pagine; link interni persistenti nel PDF salvato."
+    },
+    {
+      "id": "F036",
+      "title": "Procedure batch",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.runBatch / WorkflowBatchStep / batchControls",
+      "tests": [
+        "PDFWorkflowEngineTests.testBatchPipelineExecutesOrderedStepsWithoutChangingSourcesOrSavingPasswordPreset",
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "Procedure PDF ordinate con 14 operazioni, preset JSON senza password, progresso, annullamento e salvataggio transazionale."
+    }
+  ]
+}

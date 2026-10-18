@@ -1,0 +1,265 @@
+{
+  "component": "PDFArchiveMetadataChecks",
+  "scope": "Valutatore locale delle famiglie XMP/RDF PDF/A; nessuna attestazione di conformità ISO completa.",
+  "implementation_files": [
+    "Sources/CartaPDF/PDFArchiveMetadataChecks.swift"
+  ],
+  "test_file": "Tests/CartaPDFTests/PDFArchiveMetadataChecksTests.swift",
+  "api": "init(reader: PDFStructureDocument, profile: PDFArchiveProfile); evaluate(_ rule: PDFArchiveCatalogueRule) throws -> PDFArchiveRuleEvaluation?",
+  "runtime_dependencies": [
+    "Foundation.XMLParser",
+    "Foundation Unicode/URI/date primitives",
+    "PDFStructureDocument locale"
+  ],
+  "network_access_at_runtime": false,
+  "imported_toolkit_code": false,
+  "sources": [
+    {
+      "title": "Adobe XMP specifications",
+      "url": "https://developer.adobe.com/xmp/docs/xmp-specifications/"
+    },
+    {
+      "title": "Adobe XMP Specification, January 2004 (publisher specification, APTech standards mirror)",
+      "url": "https://printtechnologies.org/standards/files/xmp-specification-jan04.pdf",
+      "use": "PDF/A-1 serialization, schema/property/value-type tables; no matching rdf:about requirement."
+    },
+    {
+      "title": "Adobe XMP Specification, September 2005 (publisher specification, APTech standards mirror)",
+      "url": "https://www.printtechnologies.org/standards/files/xmp-specification-sep05.pdf",
+      "use": "PDF/A-2/3 predefined properties, all modeled Dynamic Media/EXIF structured types and finite vocabularies; page 23 matching rdf:about."
+    },
+    {
+      "title": "Adobe XMP Specification Part 1, April 2012 / ISO 16684-1:2011",
+      "url": "https://raw.githubusercontent.com/adobe/XMP-Toolkit-SDK/refs/heads/main/docs/XMPSpecificationPart1.pdf",
+      "use": "PDF/A-4 RDF model and restricted RDF syntax; omitted about convention; optional timezone."
+    },
+    {
+      "title": "W3C RDF/XML Syntax Specification (Revised), 2004",
+      "url": "https://www.w3.org/TR/REC-rdf-syntax/",
+      "use": "Expanded namespace identities and RDF productions."
+    },
+    {
+      "title": "RFC 3986",
+      "url": "https://www.rfc-editor.org/rfc/rfc3986.html",
+      "use": "URI and URI-reference lexical distinctions plus local resolution against an explicit inherited absolute XML base. Relative references without a specified absolute base remain unknown."
+    },
+    {
+      "title": "Pinned local veraPDF profile XML catalogues",
+      "path": "Sources/CartaPDF/Resources/PDFAProfiles",
+      "use": "Exact rule expressions; development-only reference data; no Java/toolkit dependency."
+    },
+    {
+      "title": "W3C XML 1.0 Fifth Edition",
+      "url": "https://www.w3.org/TR/xml/",
+      "use": "Sections2.8,4.2 and4.4: bounded local internal plain-text entities. External, parameter, nested and markup-valued declarations remain unresolved."
+    },
+    {
+      "title": "W3C XML Base",
+      "url": "https://www.w3.org/TR/xmlbase/",
+      "use": "Inherited xml:base context is resolved locally, including the optional xmpmeta wrapper, without fetching the resulting identifiers. Invalid bases and relative bases without an explicit absolute ancestor remain unknown; XMLBase2001 supplies the edition-specific escaping rule below."
+    },
+    {
+      "title": "RFC2045 MIME PartOne",
+      "url": "https://www.rfc-editor.org/rfc/rfc2045",
+      "use": "Section5.1 MIME tokens and quoted-string parameter grammar. Comments and folding remain unresolved."
+    },
+    {
+      "title": "W3C RDF/XML Syntax Specification,2004 §6.1.2 and§5.3",
+      "url": "https://www.w3.org/TR/REC-rdf-syntax/",
+      "use": "Compute inherited base URI before removing xml:base from the grammar attribute set. RDF about/resource references are resolved purely as identifiers."
+    },
+    {
+      "title": "W3C XML Base,2001",
+      "url": "https://www.w3.org/TR/2001/REC-xmlbase-20010627/",
+      "use": "Explicit base URI inheritance, scope and matching URI-valued attributes/text. Section3.1 UTF-8 escaping preserves existing percent references; no source-path base is invented."
+    },
+    {
+      "title": "RFC3986,2005 §§5.2–5.4",
+      "url": "https://www.rfc-editor.org/rfc/rfc3986.html",
+      "use": "Original pure URI-reference resolution implementation,42 published normal/abnormal examples plus escaped-dot controls."
+    },
+    {
+      "title": "W3C Date and Time Formats,1998",
+      "url": "https://www.w3.org/TR/NOTE-datetime",
+      "use": "Adopting XMP specifications permit multiple granularities; comparison across precision is not invented. Supplied component contradictions can fail."
+    },
+    {
+      "title": "JEITA CP-3451C / CIPA DC-008-2012",
+      "url": "https://home.jeita.or.jp/tsc/std-pdf/CP3451C.pdf",
+      "use": "Version-related tags, printedp44/PDFp50: FlashpixVersion0100 denotesFlashpix1.0; other codes reserved. Adobe2004/2005XMP maps this tag to closed-choiceText."
+    }
+  ],
+  "checks": [
+    {
+      "family": "PDDocument.containsMetadata",
+      "behavior": "Catalog/Metadata is an indirect stream, not merely a key."
+    },
+    {
+      "family": "PDMetadata",
+      "behavior": "PDF/A-1 Filter prohibition applies to catalog metadata, not unrelated secondary metadata."
+    },
+    {
+      "family": "XMPPackage",
+      "behavior": "Every Metadata stream is decoded and inspected, including secondary/unreferenced typed streams. XML Unicode byte encoding, UTF-8 restriction, xpacket bytes/encoding pseudo-attributes, paired wrapper/header/trailer, packet id/begin/end, namespace-aware RDF subset, arrays/structures/qualified properties/duplicates/mixed text. Adobe edition controls rdf:about constraints. InternalDTD plain-text entities are expanded locally with64 entities, 4096 UTF-8 bytes per entity and8 MiB total bound; skipped entities abort as unknown. Comments/CDATA/PI do not falsely trigger DTD detection. ISO2012 typed literals are rejected for part4; earlier editions remain unknown. Adobe2005 nodeID attributes ignored only in parts2/3, 2004 unresolved, ISO2012 forbidden. Inherited xml:base, including UTF-8 percent escaping without Unicode normalization, is resolved locally at all XML levels using an original RFC3986 identifier algorithm; RDF/XML Infoset handling removes the contextual attribute before XMP grammar checking. Relative bases lacking an explicit absolute ancestor remain unknown. No URL/file retrieval or source-path inference occurs."
+    },
+    {
+      "family": "MainXMPPackage",
+      "behavior": "Requires complete identification with official namespace and pdfaid prefix, part 1–4, valid uppercase conformance appropriate to the claimed part; part 4 requires four-digit rev and absent/E/F conformance. Does not compare to the selected profile."
+    },
+    {
+      "family": "PDFAIdentification",
+      "behavior": "Exact part/conformance/rev profile predicates and required prefixes, absent properties and namespace spoofing handled separately."
+    },
+    {
+      "family": "XMPProperty",
+      "behavior": "Literal Adobe January 2004 and September 2005 registries, array shape/item type, recursive qualifiers, extension-defined types, custom fields, actual scalar types, finite vocabularies, Time/Timecode/Marker/Media/ProjectLink/stretch structures, Colorant/Font/Flash/EXIF structures, GPS lexical bounds. RelativePeakAudioFilePath is explicitly allowed to be relative. MIME tokens and quoted-string parameters follow RFC2045; malformed forms fail and comments/folding remain unknown. URI spelling is verified before Foundation can auto-percent-encode path/query brackets or duplicate fragment delimiters; raw Unicode IRI values remain unknown. URI-valued text, abbreviations, qualifiers, rdf:resource and extension namespaceURI fields inherit explicit XMLBase. RDF about comparisons use resolved references. Adobe documented ExifVersion0210 is recognized; other EXIF version choices remain unknown, invalid version text fails. Flashpix0100 is the demonstrated closed choice. Rating must be an integer, but its application-defined range remains unknown."
+    },
+    {
+      "family": "Extension schemas",
+      "behavior": "All 19 catalogue predicates for Bag/Seq, official namespace/prefix, schema/property/type/field records, category, required text and URI, recursively defined field types, unknown fields, main-package fallback only where allowed."
+    },
+    {
+      "family": "CosInfo synchronization",
+      "behavior": "All eight Info/XMP counterparts, exact Unicode including whitespace, language alternative x-default, singleton creator sequence, dates with proleptic Gregorian calendar and explicit offset comparisons; never assumes local timezone. Different date precisions never manufacture missing seconds; contradictory supplied components or incompatible UTC minutes fail, overlapping unequal precision remains unknown."
+    }
+  ],
+  "predefined_registry_counts": {
+    "2004": 168,
+    "2005": 271,
+    "2005_aux_properties_added": 2,
+    "2005_total_with_aux": 273,
+    "normative_pdfa_identification_extension_properties": "Handled separately from Adobe tables."
+  },
+  "tests": {
+    "names": [
+      "testSerializationAcceptsCanonicalAbbreviatedStructuredAndQualifiedRDF",
+      "testWellFormedXMLDoesNotHideInvalidXMPSerialization",
+      "testExternalDTDAndLegacyTypedLiteralStayNotVerified",
+      "testPDFA4TypedLiteralsAreRejectedByItsNormativeXMPSerialization",
+      "testLegacyNodeIDAttributesUseTheNormativeAdobeEdition",
+      "testDTDWordsInsideCommentsCDATAAndProcessingInstructionsAreLiteral",
+      "testExplicitXMLBaseIsResolvedLocallyAtEveryRDFLevel",
+      "testXMLBaseWithoutExplicitAbsoluteAncestorStaysUnknown",
+      "testXMLBaseUnicodeAndExcludedCharactersUseUTF8EscapingWithoutNormalization",
+      "testRelativeURIPropertyValuesUseOnlyExplicitInheritedXMLBase",
+      "testRFC3986NormalAndAbnormalResolutionExamplesPreserveQueriesAndFragments",
+      "testMalformedLegacyTypedLiteralProductionsFailBeforeUnknownTypeSemantics",
+      "testPlainInternalEntitiesAreExpandedLocallyWithoutLosingTextOrAttributes",
+      "testInternalEntitySubsetDoesNotExecuteMarkupNestedOrExternalDeclarations",
+      "testMIMETokenAndQuotedParametersFollowRFC2045Grammar",
+      "testSecondaryPacketsAndDeclaredByteEncodingAreChecked",
+      "testCatalogMetadataFilterRestrictionDoesNotForbidSecondaryFiltering",
+      "testIdentificationUsesExactNamespaceAndRequiredPrefix",
+      "testPredefinedRegistriesDistinguish2004AndSeptember2005",
+      "testScalarArrayDateAndLanguageAlternativeTypesAreActuallyValidated",
+      "testExtensionContainerAndEveryDefinitionPredicateUseRealRDFFields",
+      "testExtensionNamespaceURIResolvesBeforeMatchingExpandedPropertyNames",
+      "testExtensionWrongBagPrefixCategoryUndefinedTypeAndUnknownFieldsFail",
+      "testCustomStructuredValueTypeValidatesDeclaredFieldTypeAndNamespace",
+      "testMainPackageExtensionCanDescribeSecondaryPropertyOnlyForAllowedEditions",
+      "testInfoSynchronizesExactUnicodeDefaultLanguageAndSingleCreator",
+      "testInfoDateEquivalenceUsesActualOffsetsAndNeverAssumesLocalTimezone",
+      "testDifferentDateGranularitiesNeverInventMissingComponentsButProveContradictions",
+      "testUnimplementedVocabularyStaysUnknownAndForeignRuleReturnsNil",
+      "testEditionBoundExifVersionsFlashpixAndApplicationRatingCheckKnownSemantics",
+      "testRelativeDocumentIdentifierIsUnknownWithoutWeakeningMalformedURIValidation",
+      "testActualCoreGraphicsArchivalMetadataDoesNotMisclassifyBareDocumentID",
+      "testNestedQualifiersAreNotSilentlyOmittedFromPropertyMembership",
+      "testProlepticGregorianDatesAndNoTimezoneAreNotAffectedByHistoricalCutover",
+      "testMatchingAboutConstraintUsesTheNormativeAdobeEdition",
+      "testPacketWrapperRequiresPairedHeaderTrailerAndDefinedPseudoAttributes",
+      "testIdentificationRequiresCompleteSchemaButDoesNotCompareSelectedProfile",
+      "testDynamicMediaStructuredTypesAndExplicitRelativePathAreValidated",
+      "testClosedChoiceValuesRequireActualScalarOrSequenceShape",
+      "testGPSCoordinateRejectsDiscardedComponentsAndImpossibleBounds",
+      "testAdditionalStructureFieldsAreNotFalselyConfirmed",
+      "testOfficialMetadataCorpusRegressionWhenAvailable"
+    ],
+    "count": 42,
+    "command": "DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer CLANG_MODULE_CACHE_PATH=/private/tmp/CartaPDF-metadata-next/ModuleCache SWIFTPM_MODULECACHE_OVERRIDE=/private/tmp/CartaPDF-metadata-next/ModuleCache xcrun swift test --disable-sandbox --scratch-path /private/tmp/CartaPDF-metadata-next --cache-path /private/tmp/CartaPDF-metadata-next/cache --manifest-cache local --filter PDFArchiveMetadataChecksTests",
+    "last_result": "42 metadata tests passed, zero failures and zero skips, in1.893seconds. Local25-document officialcorpus regression and42RFC3986 published resolution vectors plus negative controls executed. 2026-10-18 08:14 Europe/Rome.",
+    "log": "/private/tmp/CartaPDF-Metadata-34-tests.log"
+  },
+  "official_corpus_regression": {
+    "repository": "https://github.com/veraPDF/veraPDF-corpus",
+    "commit": "377728596647e40edf16003d68d620773ce96ec5",
+    "data_license": "CC BY 4.0",
+    "external_local_path_default": "/private/tmp/CartaPDF-ISO-corpus/files",
+    "optional_environment_variable": "CARTAPDF_METADATA_CORPUS",
+    "test_behavior_without_corpus": "XCTSkip; portable synthetic regressions remain active.",
+    "selected_documents": 25,
+    "selected_positive_regressions": [
+      "PDF_A-1b/6-7-9-t01-pass-a",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-b",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-c",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-e",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-s",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-t",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-u",
+      "PDF_A-2b/6-6-2-3-1-t02-pass-z"
+    ],
+    "negative_regressions": "6 PDF/A-2b incomplete identification; 1 each PDF/A-1a, 2a, 2u lowercase/empty conformance; 8 PDF/A-4 prefix/part/revision/conformance errors.",
+    "comparison_limit": "Historical corpus test numbers do not always identify the same atomic predicate in the pinned modern catalogues. Wrong value types are caught by isValueTypeCorrect, not falsely relabeled as undefined property. Valid identification of another selected profile is checked by its own part/conformance predicate.",
+    "complete_ISO_validation_proven": false
+  },
+  "explicit_not_verified_cases": [
+    "External DTD resources, parameter/nested/markup-valued or default-attribute declarations are never fetched or executed. Only bounded plain-text internal entities are supported.",
+    "Structurally valid rdf:datatype literals in Adobe2004/2005 remain unknown. Malformed RDF combinations fail independently. ISO2012 part4 forbids typed literals and fails explicitly.",
+    "rdf:nodeID semantics in Adobe2004 remain unknown. Adobe2005 parts2/3 ignores them; ISO2012 part4 forbids them.",
+    "Unknown xpacket pseudo-attributes or unsupported XML contextual attributes.",
+    "Opaque custom value types without field definitions, recursive actual values or unsupported type semantics.",
+    "EXIF version-dependent closed vocabularies beyond the documented ExifVersion0210 and FlashpixVersion0100 choices, and application-defined xmp:Rating ranges.",
+    "Camera Raw Point pair serialization semantics are not fully resolved.",
+    "Additional unknown fields in standard XMP structures.",
+    "Relative URI references without a specified base except the Adobe explicit relative property. Quartz bare DocumentID is neither mislabeled malformed nor asserted absolute. Raw Unicode IRIs and scheme-specific authority semantics are not fully attested.",
+    "MIME comments/RFC822 folding and language subtags absent from the local ISO registry.",
+    "Date equality with one missing timezone or overlapping unequal precision remains unknown; contradictory supplied components or incompatible UTC-minute windows fail.",
+    "Encrypted/unreadable metadata or parser budget exhaustion:8 MiB,100000XMLnodes, depth128.",
+    "Invalid XMLBase values or relative bases without an explicit absolute ancestor; URI/base values over64KiB. Unicode and excluded-character escaping in valid bases is modeled locally.",
+    "Legacy RDF typed literals remain unknown when structurally valid; invalid datatype/resource/parseType/child combinations now fail before unknown semantics."
+  ],
+  "complete_ISO_validation_proven": false,
+  "source_hashes": {
+    "Sources/CartaPDF/PDFArchiveMetadataChecks.swift": "adc5cd33407b500d9c5677d209f74eada2d0bfdca942157396568f3f9c26d0e6",
+    "Tests/CartaPDFTests/PDFArchiveMetadataChecksTests.swift": "b32e388bad226da66a7df4e65df96971b0a8af1931c75e4d1aac77fcee50952b"
+  },
+  "changes_3_4": {
+    "xml_base": "Original pure RFC3986 identifier resolution with inherited explicit base, UTF-8 escaping per XMLBase2001§3.1, no Unicode normalization, no filesystem/network calls and no source-path base inference. About/resource, URI-typed text/qualifiers/array fields and extension namespaceURI values carry context.",
+    "typed_literals": "Adobe2004/2005 structurally valid datatype literals remain unknown. Malformed datatype/resource/parseType/value/child combinations fail independently. ISO2012forbidden datatype remains failure for4/4e/4f.",
+    "date_precision": "Different precision remains unknown unless supplied components or UTC-minute windows contradict. Omitted seconds are never made equal to an explicit zero. Equivalent explicit offsets and fractional-zero spellings remain supported.",
+    "vocabularies": "Adobe sample ExifVersion0210 recognized, other edition-dependent choices unknown; malformed version format fails. Flashpix0100 closed choice from official JEITA/CIPA standard. Rating integer shape checked while its application-defined range stays unknown.",
+    "complete_XMP_or_ISO_validation_proven": false
+  },
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "previous_integrated_suite_34": {
+    "version": "3.4.0",
+    "tests": 367,
+    "failures": 0,
+    "seconds": 15.187,
+    "log": "Development/TestResults.log",
+    "log_sha256": "53bc398f61b011344f3fcea75f17f332597bb2278e2ddae3be06bc44c64b02b2"
+  },
+  "previous_integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "schema": 1,
+  "subsystem": "Native font and text-content PDF/A predicates",
+  "date": "2026-10-18",
+  "normative_completeness_proven": false,
+  "conformity_claim": "None. Local predicate results do not remove the global completeness gate or scope gaps.",
+  "api": "PDFArchiveFontChecks(reader:profile:).evaluate(rule:) -> PDFArchiveRuleEvaluation?; var modelChecks:[PDFArchiveRuleResult] nonthrowing. PDFArchiveFontProgram.structuralAudit(maximumOperations:8_000_000,maximumComponentDepth:64), source-compatible defaults; raw/SFNT CFF programAudit uses remaining operation budget. Extra model rows remain outside immutable catalogue counts.",
+  "source_files": [
+    {
+      "path": "Sources/CartaPDF/PDFArchiveFontChecks.swift",
+      "sha256": "0b9c0bffa088601a764438241476f5a168e2c3765c65b4b60790a0f5a2033c29"
+    },
+    {
+      "path": "Sources/CartaPDF/PDFArchiveFontPrograms.swift",
+      "sha256": "fb1e07722e42db0fdf561d641366c0f453a387e3222fbad2945a4c161eaad94a"
+    },
+    {
+      "path": "Tests/CartaPDFTests/PDFArchiveFontChecksTests.swift",
+      "sha256": "ccd879114632112c4755d7f23be3a14253a884757f8559b9803396ed7a8b943b"
+    }
+  ],
+  "profiles": "11 catalogue profiles; shared mechanisms are applied only to applicable per-profile expressions; PDF/A1 subset rules differ explicitly from A2/3/4.",
+  "implemented_evidence": [
+    "Actual Tf/ExtGState Font references are distinct from merely inventoried resources and text-showing uses. Unreferenced named fonts are exempt from applicable font clauses; incomplete usage proofs remain notVerified. Undefined/free references resolve null, and null DescendantFonts is reported as a required FontDictionaryModel violation rather than a valid empty font.",
+    "Existing contextual text/resource inventory remains unchanged: actual page/Form/Pattern/AP/Type3/SMask font uses, lexical unused-container evidence, ActualText through marked content and StructTreeRoot Pg/Stm/MCID; completeness guards retained.",
+    "CFF1 standard strings391, Expert charset166, ExpertSubset charset87 and ExpertEncoding256 are factual tables transcribed independently from Adobe5176 AppendicesA–C. Charset bounds, duplicate SID/CID and undefined SID checks apply; parsed CFF names/GID precede native synthetic names.",
+    "CFF width contexts inventory every FDArray DICT, every FDSelect0/3 selector/range/sentinel, each Private DICT bounds and every associated LocalSubrs INDEX before glyph lookup. defaultWidthX/nominalWidthX and actual biased local/global calls use the selected FD, including global-to-local calls. Valid bytes in FD0 do not conceal malformed Private/Subrs or selectors in FD1. FD FontMatrix composition remains explicit notVerified; no guessed unit multiplication.",
+    "SFNT model checks inspect actual table bounds/overlap, head magic/indexToLocFormat, TrueType maxp1.0 length, all loca offsets and every glyph header, simple endpoints/flags/coordinate byte counts, composite GID bounds/transforms/cycles/maxp totals; malformed structures produce explicit model failures independently of CGFont acceptance.",
+    "Actual cmap0/2/4/6/8/10/12/13/14 bodies are bounded and structurally checked. cmap2 handles mixed-byte subheaders and relative glyph offsets; cmap8 converts supplementary Unicode scalars to packed UTF16 surrogate units, separately from exact raw encoded-code lookup, according to Microsoft/Apple cmap8 and UnicodeD91. Full-repertoire cmap tables take precedence over BMP tables. cmap14 remains supplemental with selector/scalar/offset/order/GID/disjoint-partition checks. This does not claim full variation shaping or all encoding semantics.",
+    "TrueType glyph/fpgm/prep instruction token boundaries and PUSH payload lengths are checked. Valid token boundaries never imply hinting execution; FontBytecodeModel remains notVerified when bytecode semantics are unproved. Resource budgets and incomplete scans remain notVerified.",
+    "Horizontal advances use hmtx or actual Type1/CFF program widths against PDF Widths/W/DW. Per ISO32000-1§9.2.4 and§9.9, WMode1 does not create an equality obligation between W2/DW2 and vmtx/VORG. W2/DW2 grammar, finite numeric values and CID ranges are checked separately for vertical CID fonts. TrueType ignores VORG; no vertical origins are invented.",
+    "Existing pinned215-item original Adobe data and per-file hash validation retained. Integrity regression covers forged manifest+item hash, altered/missing AGL and altered CMap before parsing; runtime remains Apple frameworks/custom Swift and offline reference data only.",
+    "Bounded Type2 program audit executes deterministic numeric/stack/transient/conditional operations, exact local/global subroutine contexts, path and flex operand cardinalities, initial width consumption, moveto-before-path, stem declaration boundaries, mask byte consumption/padding bits, return/endchar and truncated tokens. Private delta arrays and scalar cardinalities are checked independently of CGFont acceptance. Proved malformed structures fail; unsupported legacy/random/undefined values, resource/nesting/stem budgets and cancellation remain notVerified. Outline geometry and rasterizer hint execution are not certified.",
+    "TrueType simple-glyph packed flags and repeated flags now decode original cumulative x/y deltas with exact signed-short and signed-byte rules, comparing all on/off-curve control points to the declared bounding rectangle. Only default original coordinates are checked; variable instances and hinted geometry are not inferred. Nonzero reserved simple bit7 and composite bits13-15 are structural issues.",
+    "Composite point arguments are decoded as unsigned uint8/uint16, independently of signed XY offsets. The first component must use XY positioning. Child index bounds include all four permitted phantom points; parent indices are rejected only beyond the necessary complete-parent count+4 bound. An intermediate parent numbering not independently proved remains notVerified. Nested component summaries use expanded original point/contour counts and maxp maxima, with cycle detection, memoization, cancellation, depth and operation budgets. Incomplete children never invent small/zero point counts for failure decisions.",
+    "Edition/applicability corrections: every negative numberOfContours selects composite (minus1 is recommended only); WE_HAVE_INSTRUCTIONS on any component is honored; modern simple bit6 overlap is accepted; historical composite bit4 overlap is explicitly notVerified rather than rejected, because Apple AAT documents old assignments and ignored scaler behavior. These choices are validated on actual native Arial and corpus font bytes, not on CGFont acceptance.",
+    "Budget/cancellation hardening: SFNT glyf point/contour passes, component graph and instruction token walks have charged work, cancellation at repeated boundaries and explicit unknown outcomes; cancelled fpgm/prep or component traversal never becomes a malformed-font failure. Unchecked glyphs remain incomplete. This does not provide a complete TrueType VM or proof for every unrelated SFNT table."
+  ],
+  "remaining_gaps": [
+    "No complete TrueType hinting virtual machine: stack/control flow, FDEF/IDEF, CVT/storage/zones, size-dependent geometry and every extension are not proven by PUSH lexical checks.",
+    "No complete Type1/PostScript or Type2 rasterizer/path-geometry proof. Type2 token/stack/deterministic arithmetic/subroutine/path-arity/mask structure is now checked, but outline geometry, hint-zone ordering/overlap semantics, full Private value semantics, seac component/nesting geometry, random/undefined operations and unreachable/unused subroutine programs remain unresolved. Reserved multi-master/store/load legacy operations remain unknown rather than edition-blind false failures.",
+    "FD FontMatrix composition with Top FontMatrix is still not proven from the retrieved primary specifications; no guessed multiplication is used. The fixed font-provided hmtx/native-byte widths remain distinct evidence from independent raw CFF declared-width parsing.",
+    "cmap8 supplementary Unicode conversion is implemented using UTF16 pairs; raw non-Unicode mixed encodings remain a distinct API. Full variation shaping, CFF2/variable outlines and variation metric stores remain unmodeled. Some font-specific built-in encodings and complete MacExpertEncoding remain unresolved.",
+    "SFNT checks cover explicit binary structures listed above, not all font tables, checksums, OpenType shaping/layout or mathematical outline/hint validity. No absent optional table or fullOpenType packaging assumption is introduced as a blanket PDF-subset failure.",
+    "Full ISO19005 and normative-reference completeness remains unproven. Global scopeGaps must remain. Local structural/model passes never remove the global completeness gate.",
+    "Composite attachment positions after local transforms, child hinting, grid-fitting and phantom-point metric adjustments remain unexecuted. Complete-parent count+4 is only a necessary index bound; uncertain phantom numbering during intermediate incorporation is notVerified, not guessed. Composite geometric bounding boxes and exact mathematical outline validity are not proven.",
+    "Historical composite bit4 is documented as ignored by Apple but reserved in current OpenType prose; edition applicability is not proven, so it prevents a structural-model pass rather than causing a false failure. Modern overlap flags do not prove actual intersection topology."
+  ],
+  "reference_data": {
+    "directory": "Resources/PDFFontData",
+    "manifest_items": 215,
+    "total_files_including_manifest_notice": 217,
+    "manifest_sha256": "0f2ac1ecd208995e164298d3eca70d2db9b6cc3322363317b419161c435a7f31",
+    "runtime": "Apple frameworks and custom Swift only; original Adobe BSD data; no external engine, process, binary or network"
+  },
+  "validation": {
+    "unit_tests": 56,
+    "failures": 0,
+    "tests": [
+      "testRealSfntCmapGlyphAndAdvanceReadFromEmbeddedProgram",
+      "testTrueTypeActualWidthMatchesAndChangedWidthIsDetected",
+      "testUnicodeMappingForEveryUsedCodeAndForbiddenScalars",
+      "testCmapRangesSurrogateSequencesAndMalformedRangesAreBounded",
+      "testCIDToGidMapAndWidthsUseActualCidNotUnicodeAssumptions",
+      "testPatternAppearanceAndSoftMaskFontsAreActuallyVisited",
+      "testType3CharacterProcedureVisitsNestedFontAndActualTextOverridesUnicode",
+      "testReliableInlineBytesAreNotParsedAsOperatorsAndAmbiguousDataBlocksPasses",
+      "testTr3ExemptsEmbeddingButDoesNotExemptUnicodeAndActualTextPrivateUseIsRejected",
+      "testType1EexecCharstringsNamesAndRealHsbwWidthsWithoutExecutingPostScript",
+      "testActualCffCharStringsAndCidCharsetAreInspected",
+      "testNonstandardNamesWithoutAnyUnicodeAlternativeFailAndOtherFamiliesAreNotClaimed",
+      "testPinnedAdobeAglCmapsAndCidToUnicodeAreAvailableOffline",
+      "testEmbeddedUseCmapInheritsMappingAndCodespaceWithoutGuessing",
+      "testLexicalInventoryIncludesUnusedContainersWithoutInventingFontUsage",
+      "testInvalidHexBlocksLexicalCompletenessButNullReferenceIsNotParseFailure",
+      "testType3D0AndD1AdvancesAreComparedToActualWidths",
+      "testPrivateUseUnicodeRequiresActualTextAtAllThreePrivateUseRanges",
+      "testGlyphZeroIsNotSubstitutedForAnAbsentCharacter",
+      "testPdfA1CharsetCoversUsedGlyphsAndPdfA2CoversAllDefinedGlyphs",
+      "testStructureElementActualTextIsResolvedThroughMcidForPrivateUseGlyphs",
+      "testPdfVerticalPlacementIsIndependentOfVmtxAndPdfA1UsedCidSetDiffersFromAllCidSet",
+      "testOfflineReferenceDataRejectsForgedManifestMissingAglAndTamperedCmapBeforeParsing",
+      "testUnreferencedNamedFontsAreExemptButTfWithoutTextStillSelectsFontClauses",
+      "testUnusedFormFontProgramsAreExemptUntilFormIsReferenced",
+      "testExtGStateFontReferenceWithoutTextAndUnresolvedTfRemainObservable",
+      "testCffExpertAndExpertSubsetCharsetsAndEncodingAreIndependentOfNativeFontNames",
+      "testCffExpertGlyphAndFullSubsetCharsetPredicateReadEmbeddedProgram",
+      "testSfntStructureIsCheckedIndependentlyOfNativeAcceptance",
+      "testSimpleCompositeAndInstructionBoundariesCannotBeCertifiedByCgFontLoading",
+      "testCffDeclaredWidthsUsePrivateDefaultsNominalAndRealSubroutineBiases",
+      "testPdfVerticalGrammarRejectsMalformedTripletsButDoesNotInventFontOriginAgreement",
+      "testSfntCmapBodiesMaxpAndAllLocaOffsetsAreVerified",
+      "testCmap2MixedByteSubHeadersDeltasAndEveryRangeAreVerified",
+      "testCmap8RawMixedCodeMappingChecksIs32GroupsAndConvertsUnicodeToUtf16Units",
+      "testCmap14DefaultAndNonDefaultSequencesAreSupplementalWithStrictBoundsAndPartition",
+      "testCmap10SupplementaryTrimmedArrayMapsActualGlyphsAndRejectsTruncatedBody",
+      "testCidCffBothFdSelectFormatsUseCorrectPrivateWidthsAndGlobalToLocalContext",
+      "testCidCffInventoryRejectsAnyInvalidFdPrivateAndSubrsBeforeWidthLookup",
+      "testCidFdFontMatrixRemainsExplicitlyUnresolvedAndDictTrailingOperandsAreRejected",
+      "testCmap8SupplementaryConversionUsesSurrogateBoundaryAndMaximumScalarWithoutRawScalarFallback",
+      "testType2PathAndFlexAritiesAreCheckedAfterTheActualMovePoint",
+      "testType2HintMasksConsumeBinaryBytesAndValidateUnusedBitsAndDeclarationBoundaries",
+      "testType2SubroutinesShareStackAndTerminateViaReturnOrEndcharWithoutInventingMissingBounds",
+      "testType2DeterministicArithmeticTransientAndConditionalStackAreAuditedButUndefinedAndLegacyCasesStayUnknown",
+      "testCffPrivateOperandCardinalityAndInvalidEmbeddedType2GlyphProduceIndependentModelFailures",
+      "testNativeCffAllCharstringsAreStructurallyAuditedWithoutClaimingHintGeometry",
+      "testTrueTypeNegativeContourCountsAreCompositeAndInstructionsMayBeFlaggedOnAnyComponent",
+      "testTrueTypeCompositePointMatchingAcceptsContourAndPhantomIndicesWithoutPretendingHintGeometry",
+      "testTrueTypeCompositePointMatchingRejectsFirstComponentAndOutOfRangeParentOrChild",
+      "testTrueTypeCompositeUnsignedBytePointIndicesAndNestedExpandedPointsAreVerified",
+      "testTrueTypePackedCoordinateDeltasAndActualBoundsAreCheckedIncludingOffCurvePoints",
+      "testTrueTypeMaxpCompositeMaximaUseExpandedContoursPointsAndActualNestingDepth",
+      "testTrueTypeReservedBitsFailButModernOverlapFlagAndEmptyOutlinesRemainAllowed",
+      "testTrueTypeIncompleteChildDoesNotInventOutOfRangePointViolationsAndBudgetsStayUnknown",
+      "testTrueTypeCancellationIsUnknownAndActualMalformedBoundsFailEmbeddedModel"
+    ],
+    "isolated_command": "swift test --filter PDFArchiveFontChecksTests, fullXcodeSDK, isolated /private/tmp/CartaPDF-font-next; unrelated evaluator references removed only from scratchcopy Rules",
+    "log": "Development/TestResults.log",
+    "targeted_official_corpus": {
+      "historical_filename_mapping": "provisional, not a complete ISO oracle",
+      "fail_detected": 38,
+      "pass_verified": 9,
+      "pass_notVerified": 2,
+      "false_failures": 0,
+      "remaining_target_discrepancy": "6-2-11-7-2-t01-fail-f has available Unicode mapping but CIDFont Supplement3 exceeds embedded CMap Supplement2: PDType0Font compatibility fails separately. Do not invent a Glyph Unicode failure to match the filename.",
+      "applicability": "Prior3.2 comparison only; 3.4 model checks require root final corpus rerun; no new all-corpus claim."
+    },
+    "integrity_regression": {
+      "test": "testOfflineReferenceDataRejectsForgedManifestMissingAglAndTamperedCmapBeforeParsing",
+      "result": "passed,1test,0failures,0.124s",
+      "log": "/private/tmp/CartaPDF-font-next/integrity-test.log",
+      "cases": [
+        "pristine temporary installation usable",
+        "forged manifest and updated item hash rejected by manifest pin",
+        "altered AGL rejected by per-file hash",
+        "missing AGL rejected",
+        "altered CMap rejected by hash before parser"
+      ]
+    },
+    "applicability_regression": "26 tests passed, zero failures; Tf/ExtGState reference inventory separated from unreferenced resources and actual glyph uses. 2026-10-17 19:05 Europe/Rome.",
+    "unit_test_run": "2026-10-18 08:35:15,47tests,0failures,1.529s; official project target through ./scripts/test.sh --filter PDFArchiveFontChecksTests, approved escalated execution.",
+    "new_regressions_34": [
+      "testCmap2MixedByteSubHeadersDeltasAndEveryRangeAreVerified",
+      "testCmap8RawMixedCodeMappingChecksIs32GroupsAndDoesNotGuessUnicodeSupplementaryUnits",
+      "testCmap14DefaultAndNonDefaultSequencesAreSupplementalWithStrictBoundsAndPartition",
+      "testCmap10SupplementaryTrimmedArrayMapsActualGlyphsAndRejectsTruncatedBody",
+      "testCidCffBothFdSelectFormatsUseCorrectPrivateWidthsAndGlobalToLocalContext",
+      "testCidCffInventoryRejectsAnyInvalidFdPrivateAndSubrsBeforeWidthLookup",
+      "testCidFdFontMatrixRemainsExplicitlyUnresolvedAndDictTrailingOperandsAreRejected"
+    ],
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc",
+    "official_script_attempt": {
+      "command": "./scripts/test.sh --filter PDFArchiveFontChecksTests",
+      "sandbox": "require_escalated,approved",
+      "result": "build failed in unrelated in-progress PDFArchiveICCModel.swift; font tests not executed by this attempt",
+      "log": "/private/tmp/CartaPDF-font-35/tests-1.log"
+    },
+    "positive_cff_binary_regression_35": {
+      "programs_sha256_deduplicated": 9,
+      "structural_issues": 0,
+      "incomplete_scans": 0,
+      "data": "local official ISO corpus files with positive historical filenames and Font category; raw actual embedded CFF bytes, not engine code",
+      "test": "temporary scratch DebugType2CorpusTests.testPositiveEmbeddedCffPrograms",
+      "log": "/private/tmp/CartaPDF-font-35/isolated-corpus.log",
+      "limitation": "Positive historical filenames are not an all-ISO oracle; complete hinting/geometry remains unknown."
+    },
+    "new_regressions_35": [
+      "testCmap8SupplementaryConversionUsesSurrogateBoundaryAndMaximumScalarWithoutRawScalarFallback",
+      "testType2PathAndFlexAritiesAreCheckedAfterTheActualMovePoint",
+      "testType2HintMasksConsumeBinaryBytesAndValidateUnusedBitsAndDeclarationBoundaries",
+      "testType2SubroutinesShareStackAndTerminateViaReturnOrEndcharWithoutInventingMissingBounds",
+      "testType2DeterministicArithmeticTransientAndConditionalStackAreAuditedButUndefinedAndLegacyCasesStayUnknown",
+      "testCffPrivateOperandCardinalityAndInvalidEmbeddedType2GlyphProduceIndependentModelFailures",
+      "testNativeCffAllCharstringsAreStructurallyAuditedWithoutClaimingHintGeometry"
+    ],
+    "official_script_result": {
+      "command": "./scripts/test.sh --filter PDFArchiveFontChecksTests",
+      "sandbox": "require_escalated,approved",
+      "tests": 47,
+      "failures": 0,
+      "seconds": 1.529,
+      "log": "/private/tmp/CartaPDF-font-35/official-font-tests.log",
+      "log_sha256": "31f1fb58a9354a0d9e625bdfbb5646e04906ef732dc6ec8489ddea4c92698563"
+    },
+    "new_regressions_36": [
+      "testTrueTypeNegativeContourCountsAreCompositeAndInstructionsMayBeFlaggedOnAnyComponent",
+      "testTrueTypeCompositePointMatchingAcceptsContourAndPhantomIndicesWithoutPretendingHintGeometry",
+      "testTrueTypeCompositePointMatchingRejectsFirstComponentAndOutOfRangeParentOrChild",
+      "testTrueTypeCompositeUnsignedBytePointIndicesAndNestedExpandedPointsAreVerified",
+      "testTrueTypePackedCoordinateDeltasAndActualBoundsAreCheckedIncludingOffCurvePoints",
+      "testTrueTypeMaxpCompositeMaximaUseExpandedContoursPointsAndActualNestingDepth",
+      "testTrueTypeReservedBitsFailButModernOverlapFlagAndEmptyOutlinesRemainAllowed",
+      "testTrueTypeIncompleteChildDoesNotInventOutOfRangePointViolationsAndBudgetsStayUnknown",
+      "testTrueTypeCancellationIsUnknownAndActualMalformedBoundsFailEmbeddedModel"
+    ],
+    "isolated_36": {
+      "font_tests": 56,
+      "font_failures": 0,
+      "font_seconds": 1.634,
+      "timestamp": "2026-10-18 08:54:19",
+      "log": "/private/tmp/CartaPDF-font-36-isolated-3.log",
+      "log_sha256": "796ecb9f06f970fee0ed54a937aeb075358ec52d5f03aef02bc72189400dbb1d",
+      "scratch": "/private/tmp/CartaPDF-font-next",
+      "scope": "Isolated frozen3.5 dependencies plus exact3.6 owned font sources; not a replacement for official integrated target."
+    },
+    "positive_truetype_binary_regression_36": {
+      "programs_sha256_deduplicated": 11,
+      "structural_issues": 0,
+      "incomplete_scans": 0,
+      "test": "temporary scratch DebugTrueTypeCorpusTests.testPositiveEmbeddedTrueTypePrograms",
+      "data": "Actual FontFile2 bytes in official local corpus Font category files with positive historical filenames; no engine code consulted.",
+      "log": "/private/tmp/CartaPDF-font-36-isolated-3.log",
+      "limitation": "Positive historical filenames are not a complete ISO oracle; final root release corpus remains independent."
+    },
+    "official_36": "Root will execute the single combined official ./scripts/test.sh run after shared-source freeze; dedicated56-test isolated result recorded above. Avoid concurrent official scratch builds.",
+    "status": "All56 dedicated font tests passed within final512-test native suite.",
+    "isolated_log": "/private/tmp/CartaPDF-font-36-isolated-3.log"
+  },
+  "primary_sources": [
+    {
+      "url": "https://developer.adobe.com/document-services/docs/assets/35e4369068f86065372c18787171a17e/PDF_ISO_32000-1.pdf",
+      "scope": "font glyph-selection, encoding, CMap and Unicode algorithms; AnnexD character-name sets"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/",
+      "scope": "SFNT/cmap/hmtx/vmtx/loca/glyf facts"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf",
+      "scope": "CFF1 data structures"
+    },
+    {
+      "url": "https://partners.adobe.com/public/developer/en/font/5177.Type2.pdf",
+      "scope": "Type2 limitations and width semantics"
+    },
+    {
+      "url": "https://github.com/veraPDF/veraPDF-library/issues/983",
+      "scope": "ValidationTWG clarification that PDF/A1 CharSet/CIDSet cover used glyphs; issue text only, no implementation code copied"
+    },
+    {
+      "url": "https://pdfa.org/wp-content/uploads/2018/06/1530_Seggern.pdf",
+      "scope": "PDF/A1 vs PDF/A2 subset lists; slide19"
+    },
+    {
+      "url": "https://github.com/adobe-type-tools/cmap-resources",
+      "scope": "Original BSD predefined CMap reference data"
+    },
+    {
+      "url": "https://github.com/adobe-type-tools/agl-aglfn",
+      "scope": "Original BSD glyph-name Unicode reference data"
+    },
+    {
+      "url": "https://github.com/adobe-type-tools/mapping-resources-pdf",
+      "scope": "Original CID-to-Unicode reference data"
+    },
+    {
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf",
+      "scope": "§9.2.4 glyphwidth means horizontal displacement; §9.9 p291 (PDFpage299) vhea/vmtx mustnot beused by PDF readers; W2/DW2 exclusively specify verticalmetrics"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/glyf",
+      "scope": "simple/composite glyph binary structures"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/loca",
+      "scope": "numGlyphs+1 offsets and format"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/maxp",
+      "scope": "TrueType version1.0 table and maxima"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/cmap",
+      "scope": "supported subtable layouts and glyph identifiers"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/vorg",
+      "scope": "VORG applies only to CFF/CFF2 OpenType and mustbeignored forTrueType"
+    },
+    {
+      "url": "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html",
+      "scope": "TrueType instruction token and PUSH payload semantics; complete execution not implemented"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/cmap",
+      "scope": "OpenType1.9.1 cmap2/8/10/14 layout, MSB-first is32, raw sequential groups and supplemental UVS partitions; independently implemented Swift, no third-party source engine consulted"
+    },
+    {
+      "url": "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html",
+      "scope": "Mixed-byte cmap2 and mixed16/32 cmap8; Apple documents lack of format8 platform support, so embedded-byte parser provides raw-code proof without platform substitution"
+    },
+    {
+      "url": "https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt",
+      "scope": "PropList18.0.0 (2026-08-07), Variation_Selector260 codepoints:180B-D,180F,FE00-FE0F,E0100-E01EF. Only these small factual ranges transcribed; no runtime UCD dependency"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf",
+      "scope": "§18–19 CID FDArray/FDSelect0/3; INDEX/Private/Subrs relative offsets and first/sentinel bounds. Only original Swift implementation"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf",
+      "scope": "Type2 initial width, subroutine bias/context and first width-defining operator; complete outline/hint execution remains unproved"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/cmap",
+      "scope": "Format8 expressly represents UTF16 mixed16/32 encoded code units; Unicode full-repertoire cmap selection must supersede BMP mapping when both are present"
+    },
+    {
+      "url": "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html",
+      "scope": "Format8 surrogate mixed-code organization corroborates packed UTF16 mapping; no named system-font substitution"
+    },
+    {
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-3/",
+      "scope": "§3.8 D71-D75 and§3.9.2 D91/Table3-5: scalar to UTF16 surrogate conversion and exclusion of isolated surrogate scalars"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf",
+      "scope": "§3.1 and§4.1–4.7 plusAppendicesB/C/D: Type2 operator arity, width, tokens, mask bits, arithmetic/storage/conditional/subroutines; old blend/store/load removal and deprecated dotsection/seac handling; no third-party engine code copied"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf",
+      "scope": "Table23 Private DICT operand types and counts, local-subroutine offset association"
+    },
+    {
+      "url": "https://adobe-type-tools.github.io/font-tech-notes/pdfs/T1_SPEC.pdf",
+      "scope": "§5.3–5.9 Private BlueValues/OtherBlues/Family pair cardinalities and maximum12 StemSnap values; geometric hint constraints remain explicit gaps"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/glyf",
+      "scope": "OpenType1.9.1: negative contour counts (minus1 recommendation), original on/off-curve coordinate bounds, unsigned composite point indices, first-component XY, four phantom points and WE_HAVE_INSTRUCTIONS on any component. Independently implemented Swift; no third-party engine code used."
+    },
+    {
+      "url": "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6glyf.html",
+      "scope": "Original glyph bounding box before grid-fitting; negative contour counts select compound glyphs; packed signed deltas and composite point association."
+    },
+    {
+      "url": "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6AATIntro.html",
+      "scope": "Overlapping contours: modern simple bit6/composite bit10; legacy composite bit4 was designated overlap in old documentation and is ignored by all scalers. Handles edition differences without retroactive false failure."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/maxp",
+      "scope": "Expanded simple/composite point/contour maxima, top-level component count and nesting depth, separate from unexecuted hint stack/CVT/storage maxima."
+    }
+  ],
+  "resource_applicability": "FontHeaders/CMaps/program predicates use referencedFonts (Tf/ExtGState.Font); resourceFonts is lexical inventory only. Actual FontUse remains distinct for glyphs/Tr/embedding.",
+  "iteration": "3.6 TrueType original coordinate bounds and composite point-index relationships",
+  "transcribed_cff_tables": {
+    "source": "Adobe Technical Note5176, 4Dec2003, AppendicesA-C",
+    "kind": "factual standard-string/SID/encoding table data, independently parsed through Apple PDFKit; no third-party engine implementation copied",
+    "standard_strings": 391,
+    "expert_charset": 166,
+    "expert_subset_charset": 87,
+    "expert_encoding_codes": 256,
+    "primary_pdf_sha256": "60e0696c4fac326de597722af37bcdbbd688e0337a548709a287405ff3b3996a"
+  },
+  "prior_integrated_suite_33": {
+    "version": "3.3.0",
+    "tests": 303,
+    "failures": 0,
+    "seconds": 14.819,
+    "log": "Development/TestResults.log"
+  },
+  "integrated_suite_34": {
+    "version": "3.4.0",
+    "tests": 367,
+    "failures": 0,
+    "seconds": 15.187,
+    "log": "Development/TestResults.log",
+    "log_sha256": "53bc398f61b011344f3fcea75f17f332597bb2278e2ddae3be06bc44c64b02b2"
+  },
+  "integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "integrated_suite_36": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  }
+}

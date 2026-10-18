@@ -1,0 +1,103 @@
+{
+  "historical_filename_mapping_is_provisional": true,
+  "documented_child_discrepancy": {
+    "conclusion": "Historical pass-labelled parent embeds a PDF/A-4 child with a genuinely invalid XMP packet begin marker; native recursive failure is supported by primary XMP serialization requirements.",
+    "productionSourceModified": false,
+    "parentPath": "/private/tmp/CartaPDF-ISO-corpus/files/PDF_A-4/6.9 Embedded files/veraPDF test suite 6-9-t03-pass-a.pdf",
+    "parentSHA256": "a041a3bb099b5077b93ce51e2348e5df4ca664cd0d74b19ffcf08bee62213ec9",
+    "childPath": "/private/tmp/CartaPDF-embedded-child-4-pass-a.pdf",
+    "childSHA256": "fa62f563cb577d79c31302d1cd05fad5b44d158deda5bf695f42568393d502eb",
+    "nativeReaderExtraction": {
+      "fileSpecification": "2 0 R",
+      "embeddedStream": "8 0 R",
+      "name": "File.pdf",
+      "bytes": 3316,
+      "pages": 1
+    },
+    "originalBeginHex": "c3afc2bbc2bf",
+    "originalBeginScalars": [
+      "U+00EF",
+      "U+00BB",
+      "U+00BF"
+    ],
+    "requiredMarker": "U+FEFF or empty",
+    "requiredUTF8Hex": "efbbbf",
+    "failedRules": [
+      {
+        "clause": "6.7.2.1",
+        "detail": "Controllo di tutti i pacchetti Metadata, inclusi quelli secondari: isSerializationValid",
+        "id": "ISO_19005_4:6.7.2.1:4",
+        "locations": [
+          "Metadata 2 0 R"
+        ],
+        "objectType": "XMPPackage",
+        "requirement": "All content of all XMP packets located in any metadata stream present in the PDF shall be well-formed as defined by XMP (ISO 16684-1)",
+        "specification": "ISO_19005_4",
+        "status": "failed",
+        "testNumber": "4"
+      }
+    ],
+    "counterfactual": {
+      "path": "/private/tmp/CartaPDF-embedded-child-4-counterfactual.pdf",
+      "SHA256": "aa18021b76452ecdc80fc7a8d437d5c6b83f07fdf8d6b6807442912aac9f5671",
+      "onlyChange": "Replace mojibake begin marker with U+FEFF and add three spaces immediately before header closing ?>, preserving the single required spaces before begin/id and every PDF Length/xref offset. Trailing header text is explicitly ignored by XMP Part1 §7.3.2.",
+      "verdict": "indeterminate",
+      "failedRules": []
+    },
+    "primarySource": {
+      "url": "https://raw.githubusercontent.com/adobe/XMP-Toolkit-SDK/refs/heads/main/docs/XMPSpecificationPart1.pdf",
+      "clause": "7.3.2, Figure6"
+    },
+    "fullISOConformanceOfCounterfactualClaimed": false,
+    "corpus_commit": "377728596647e40edf16003d68d620773ce96ec5",
+    "complete_ISO_validation_proven": false,
+    "final_release_confirmation": "Parent EmbeddedFile predicate still fails because of the documented invalid child XMP; no override or alteration of the corpus."
+  },
+  "q_nesting_correction": {
+    "case": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t08-pass-b.pdf",
+    "observation": "Page depth1; unreferenced named Form depth30. A1 clause6.1.12 does not apply to that unused resource. A2/3 clause6.1.13 does apply.",
+    "primary_source": "https://pdfa.org/wp-content/uploads/2017/07/TechNote0010.pdf",
+    "clarification": "A010, pages14–15",
+    "status": "Verified by final Release corpus run: candidate_pass_without_failure, target passed."
+  },
+  "final_binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+  "asciihex_EOF_review": {
+    "primary_sources": [
+      "Adobe PDF1.4§3.2.7/3.3.1",
+      "ISO32000-1§7.3.8.2/7.4.2"
+    ],
+    "cases": [
+      {
+        "file": "PDF_A-1b/6.1 File structure/6.1.2 File header/veraPDF test suite 6-1-2-t01-pass-a.pdf",
+        "sha256": "66077f449d472a048e3bbf7192aa6d2b0b0ebd6b6d8a6f878f776f69424b6deb",
+        "stream_object": 7,
+        "encoded_length": 1120,
+        "hex_bytes_valid": true,
+        "explicit_EOD_count": 0,
+        "decoded_ICC_bytes": 560,
+        "declared_ICC_bytes": 560,
+        "disposition": "notVerified, not a proved failure and not a proved conforming EOF; unresolved profile cannot be equated with absent ICC"
+      },
+      {
+        "file": "PDF_A-1b/6.2 Graphics/6.2.3.3 Uncalibrated color space/veraPDF test suite 6-2-3-3-t02-pass-a.pdf",
+        "sha256": "83195a8955d17eaf04a009d876b99630b8292651d6a227804ee3181d62cc6834",
+        "stream_object": 6,
+        "encoded_length": 67392,
+        "hex_bytes_valid": true,
+        "explicit_EOD_count": 0,
+        "decoded_ICC_bytes": 33696,
+        "declared_ICC_bytes": 33696,
+        "disposition": "notVerified, not a proved failure and not a proved conforming EOF; unresolved profile cannot be equated with absent ICC"
+      }
+    ],
+    "original_corpus_unchanged": true
+  },
+  "long_decimal_regression": {
+    "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-k.pdf",
+    "finding": "Long valid decimal was falsely rejected because Swift Double conversion returned nil; original lexical grammar now independent of machine precision. Nonzero underflow checked separately.",
+    "test": "testLongValidDecimalIsNotConfusedWithMalformedSyntaxOrMachineUnderflow"
+  },
+  "inline_sample_extent_review": "Development/PDFA-CorpusModelReview.json",
+  "release36_corpus_binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+  "release36_confirmation_scope": "Full original corpus rerun; historical counterfactual proofs retain their recorded earlier release, not silently re-attributed."
+}

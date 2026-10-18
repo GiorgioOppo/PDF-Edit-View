@@ -1,0 +1,109 @@
+{
+  "version": "3.6.0",
+  "complete_ISO_validation_proven": false,
+  "implementation": "Original bounded Swift/Foundation/CryptoKit; no PostScript interpreter or external engine imported",
+  "runtime_network": false,
+  "primary_sources": [
+    {
+      "url": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf",
+      "scope": "ISO32000-1§7.10/Table38–42 and§7.3.9; public publisher edition consulted locally",
+      "local_extract_sha256": "75ebca088dea9ab413b7bd6494a8ccda7f755ac9f9d211e5c84819ca7644de75"
+    },
+    {
+      "url": "https://pdf-issues.pdfa.org/32000-2-2020/clause07.html",
+      "scope": "PDF2 errata§7.10.3 and§7.10.5: exponent domain constraints and calculator syntax"
+    }
+  ],
+  "implemented": [
+    "Role-aware inventory of Separation/DeviceN tint transforms, Shading/Pattern functions, ExtGState transfer/blackgeneration/undercolor, softmask TR, halftone spot/transfer functions and nested resources/appearances. Private FunctionType keys are not function evidence.",
+    "Context input/output dimensionality, exact decimal Domain/Range ordering without Double/Decimal precision loss. Null dictionary entries are omitted, including indirect nulls.",
+    "Type0: Size positive integers, supported BitsPerSample, Order, Encode/Decode dimensions, stream required and complete packed sample-table capacity; extra decoded bytes are not falsely forbidden.",
+    "Type2: one input, coefficients/defaults, exponent integrality/sign and mathematically valid declared domain.",
+    "Type3: one-input child functions, dimensions, ordered Bounds, Encode, child references and cycles; reverse Encode and k1degenerate Domain allowed.",
+    "Type4: bounded original brace/token grammar; permitted operators only; straight-line or constant-condition stack type/count and exact integer constant failures. Arbitrary input-dependent execution is not presumed verified.",
+    "Explicit input/stream/report/recursion limits and cancellation preserve notVerified; no sampled execution is used as universal validity proof."
+  ],
+  "remaining": [
+    "Complete execution/verification of calculator arithmetic over every point of the input domain, with all PostScript numeric representations.",
+    "Complete graphic model and every consuming context/codec/extension; resource inheritance, image/color models and full ISO19005 normative crosswalk remain separate obligations."
+  ],
+  "tests": [
+    "testExponentialDefaultsNullOmissionAndIndirectValues",
+    "testExponentialDomainConstraintsDistinguishIntegerAndFractionalExponents",
+    "testDimensionsOfExponentialCoefficientsRangeAndInputsAreIndependent",
+    "testExactDecimalOrderingAndExponentIntegralityDoNotUseDouble",
+    "testSampledPackedBitsRequireEnoughBytesButAllowExtraBytes",
+    "testSampledIntegerWidthsOrderAndArrayDimensions",
+    "testSampledStreamRequirementUnknownFilterAndApplicationBudget",
+    "testStitchingAllowsReverseEncodeAndSingleDegenerateDomain",
+    "testStitchingRejectsUnorderedBoundsAndDifferentOutputDimensions",
+    "testFunctionCyclesCannotBecomeAnAbsentSubfunction",
+    "testCalculatorGrammarAndKnownConditionalPathsStayDistinctFromFullExecution",
+    "testCalculatorRejectsForbiddenTokensAndMalformedConditionalSyntax",
+    "testCalculatorProvesStackTypeAndConstantArithmeticErrors",
+    "testObservedThreeOutputCalculatorActuallyLeavesFourValues",
+    "testCalculatorDynamicBranchesAndIndicesNeverManufactureFailureWitnesses",
+    "testPrivateFunctionTypeKeysAreNotGuessedToBeFunctions",
+    "testSharedFunctionIsCheckedAgainstEachTintContext",
+    "testUnusedFormAndAppearanceResourceFunctionsAreInventoried",
+    "testTransferArraysAndNullEntriesUseTheirSemanticContext",
+    "testNullInheritedPageEntriesDoNotHideParentResourcesOrBounds",
+    "testAliasedFunctionStreamsAndParametersUseTheTerminalObjects",
+    "testAllElevenProfileReportsIncludeTheIndependentFunctionModel",
+    "testReportBudgetPreservesAnExplicitIncompleteResult"
+  ],
+  "isolated_test_result": {
+    "tests": 20,
+    "failures": 0,
+    "seconds": 0.261,
+    "log": "/private/tmp/CartaPDF-functions35-tests.log"
+  },
+  "source_sha256": {
+    "Sources/CartaPDF/PDFArchiveFunctionChecks.swift": "5d565b8ab1191cbededbee64299c8e83d9297c0546b89c5537ad98c5f884275c",
+    "Sources/CartaPDF/PDFArchiveValidatorRules.swift": "3e4ae0e13f31ab94d82e922721c920f332ff49fec1e3a2029c05aa357b7ea986",
+    "Tests/CartaPDFTests/PDFArchiveFunctionChecksTests.swift": "67427b331ff46969a89c6fed4f485f35c0f6e23755d86ba20762fa02548fd711"
+  },
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "final_function_suite": {
+    "tests": 23,
+    "failures": 0,
+    "log": "Development/TestResults.log"
+  },
+  "primary_review": {
+    "reviewer": "independent agent; read-only source/spec review",
+    "finding": "First stitching Bound must be strictly above Domain0; final Bound may equal Domain1. Fixed and regression added.",
+    "formula_render_sha256": "08741167e3b9f4af2dad1c35320c53ecece18be76c68e74284223cc6ef37686e"
+  },
+  "corpus_review": "Development/PDFA-CalculatorCorpusReview35.json",
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  },
+  "previous_integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "previous_final_release_corpus_35": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.913,
+    "binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "Historical filenames provisional; not an accuracy/completeness oracle."
+  }
+}

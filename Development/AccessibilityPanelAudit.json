@@ -1,0 +1,215 @@
+{
+  "scope": "Audit statico di tutti i controlli nei cinque file assegnati; correzioni solo di accessibilità e alternative equivalenti da tastiera.",
+  "date": "2026-10-17",
+  "files": [
+    "Sources/CartaPDF/PDFScanExportViews.swift",
+    "Sources/CartaPDF/PDFWorkflowViews.swift",
+    "Sources/CartaPDF/PDFStructureViews.swift",
+    "Sources/CartaPDF/PDFFormsView.swift",
+    "Sources/CartaPDF/DocumentNavigationView.swift"
+  ],
+  "verification": {
+    "static_review": "Completata: lettura integrale delle viste e revisione di Button, TextField, SecureField, TextEditor, Slider, Stepper, Toggle, Picker, List, Table, ProgressView, NSViewRepresentable e accessori NSAlert.",
+    "build": "Compilazione finale debug di fonti e test con Xcode superata in 24.77 secondi, senza errori o warning nelle fonti. Prima build dei soli prodotti già superata; due avvisi del sandbox in quella prima esecuzione riguardavano esclusivamente cache utente SwiftPM non scrivibili.",
+    "build_log": "/private/tmp/CartaPDF-PanelAccessibility-build.log",
+    "focused_regressions": "Superate quattro regressioni esistenti: testFormsPersistOriginalFlagsAndUndoValues, testReadOnlyFormsCannotBeEdited, testBookmarkUndoRedoAndPersistence, testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard. Quattro test, zero errori, 0.110 secondi. Verificano il comportamento sottostante, non certificano VoiceOver.",
+    "automated_static_spot_checks": "Pass: 11 pulsanti con sola icona, 9 slider, 6 ProgressView e 5 TextEditor hanno nomi AX espliciti; controllo aggiuntivo all’audit manuale, non sostituisce l’albero AX runtime.",
+    "test_log": "/private/tmp/CartaPDF-PanelAccessibility-tests.log",
+    "runtime_accessibility_tree": "Verifica CUA reale delegata al coordinatore; non ancora attestata da questo audit.",
+    "voiceover_audio": "Non attivato; ascolto e rotor VoiceOver non attestati.",
+    "hardware": "Nessuna acquisizione scanner, cattura schermo o riproduzione vocale eseguita."
+  },
+  "shared_checks": {
+    "names_and_roles": "I controlli SwiftUI/AppKit mantengono ruoli nativi; ogni icona interattiva ha un nome esplicito. Picker e Toggle con titolo chiaro conservano la semantica nativa.",
+    "values_and_units": "Slider e progress espongono valori espliciti con gradi, punti, punti per pollice o percentuali. I campi numerici identificano quantità e unità nel nome; il valore editabile nativo resta disponibile.",
+    "state": "Disabled e selezioni conservano lo stato nativo; le anteprime selezionate e le annotazioni selezionate hanno il tratto isSelected. Severità e integrità delle firme sono espresse a parole oltre che a colore.",
+    "focus_order": "Ordine del codice coerente con quello visivo: intestazione, impostazioni, azioni, anteprima/risultati, stato. I gruppi che contengono controlli usano children:contain, senza appiattire i figli. Le righe puramente descrittive usano combine. Nessuno spostamento forzato del focus a ogni aggiornamento.",
+    "status_and_errors": "CartaPanelAccessibilityStatus conserva testo selezionabile e nome/valore AX, e richiede annunci nativi NSAccessibility per cambi di stato. I progress tick non producono annunci. Errori dei campi e vincoli sono riportati negli hint dei controlli pertinenti; gli alert nativi restano modali e identificati.",
+    "keyboard": "Annulla delle elaborazioni usa Esc; CmdF mette a fuoco la ricerca in Biblioteca e Moduli; CmdE avvia l’esportazione. Riordino documenti/pagine/passaggi dispone di pulsanti oltre al trascinamento. I dialoghi di testo usano CmdInvio per confermare senza consumare il ritorno a capo.",
+    "privacy": "Solo framework Apple e funzioni locali; nessuna nuova azione automatica su scanner, schermo, audio o Portachiavi."
+  },
+  "panels": [
+    {
+      "id": "panel.scan.ocr",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Titolo con tratto header", "Toggle con nomi nativi e stato on/off", "Lingue localizzate con hint inclusione/esclusione", "Correzione manuale: nome, gradi, intervallo", "Risoluzione OCR: punti per pollice e step", "Anteprima con nome", "Progress percentuale", "Stato finale e cancellazione annunciabili", "Rapporto Table con colonne denominate", "Esc annulla senza cambiare focus durante il progresso"],
+      "static_status": "passed",
+      "limits": ["La miniatura è un’anteprima visiva, non una descrizione automatica del contenuto grafico; il testo riconosciuto e il rapporto restano consultabili."]
+    },
+    {
+      "id": "panel.scan.export",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Picker formato e profilo denominati", "Prefisso e numero cifre identificati", "Risoluzione in punti per pollice", "Qualità JPEG in percentuale", "Pagina CSV e conteggio totale", "Area CSV e separatori con istruzioni coordinate", "TextEditor CSV nominato e modificabile", "Errore estrazione associato all’area", "Progress con nome e percentuale", "Stato finale annunciabile", "CmdE esporta ed Esc annulla", "NSAlert conflitti PNG: elenco file nominato"],
+      "static_status": "passed",
+      "limits": ["Verificare con CUA il valore AX esposto dai controlli numerici e i percorsi condizionali CSV/JPEG."]
+    },
+    {
+      "id": "panel.scan.export.images",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Intestazione immagini verso PDF", "Slider margine con nome e valore in punti", "Scegli immagini con testo visibile", "Selezione multipla affidata al pannello file nativo", "Errori nel campo stato esportazione"],
+      "static_status": "passed",
+      "limits": ["Il contenuto visivo delle immagini non riceve descrizioni automatiche."]
+    },
+    {
+      "id": "panel.scan.export.html",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Intestazione HTML locale", "Apri HTML e Crea PDF con nomi testuali", "Crea PDF disabilitato durante caricamento non pronto", "Stato HTML identificato", "WKWebView nominata con hint locale", "Gerarchia WebKit conservata: i figli non sono nascosti"],
+      "static_status": "passed",
+      "limits": ["L’accessibilità dei contenuti HTML dipende dalla semantica del file locale e da WebKit; non viene promessa la correzione di HTML sorgente inaccessibile."]
+    },
+    {
+      "id": "panel.library",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Ricerca identificata e CmdF", "Filtri categoria/etichetta nominati", "Lista documenti nominata", "Righe con titolo, categoria e tag", "Percorso selezionato completo disponibile come valore", "Campi tag e categoria contestuali al documento", "Rimozione collegamento esplicita conserva originale", "Espressione regolare e modello nome nominati", "Anteprima nuovo nome identificata", "Risultati con titolo, pagina ed estratto", "Lista risultati con conteggio", "Stato/errori biblioteca annunciabili quando non occupata"],
+      "static_status": "passed",
+      "limits": ["Verificare con CUA CmdF e selezione Lista; l’indice locale può richiedere reindicizzazione dopo modifiche esterne."]
+    },
+    {
+      "id": "panel.library.watch",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Sorgente/destinazione con percorso accessibile", "Picker procedura nominato", "Stato attivo/fermo testuale e annunciabile", "Ferma con Esc", "Registro nominato e conteggio messaggi", "Ultimo evento nominato e annunciabile", "Ordine focus prima impostazioni poi comandi e registro"],
+      "static_status": "passed",
+      "limits": ["Più output ravvicinati possono produrre più richieste di annuncio; VoiceOver decide priorità e accodamento."]
+    },
+    {
+      "id": "panel.library.speech",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Voce installata con nome e lingua", "Velocità in percentuale della velocità predefinita", "Editor testo da leggere nominato", "Leggi/Pausa/Riprendi/Ferma testuali", "Ferma con Esc", "Stato identificato; annunci durante la riproduzione evitati"],
+      "static_status": "passed",
+      "limits": ["Coesistenza della sintesi dell’app e VoiceOver da verificare manualmente; nessun audio avviato in questo audit."]
+    },
+    {
+      "id": "panel.scan.csv.forms",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Separatore e Apri CSV identificati", "Editor dati CSV nominato", "Hint intestazioni/record ed errore corrente", "Anteprima nominata", "Progress percentuale", "Verifica e Crea copie testuali", "Esc annulla", "Stato finale annunciabile"],
+      "static_status": "passed",
+      "limits": ["Tab resta parte dell’editor multilinea secondo il comportamento macOS; verificare l’uscita dall’editor con navigazione standard VoiceOver."]
+    },
+    {
+      "id": "panel.scan.scanner",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Scanner selezionabile con Picker nominato", "Assenza dispositivo espressa a testo", "IKScannerDeviceView con nome e hint", "Gerarchia del controllo nativo conservata", "Stato ed errori scanner identificati"],
+      "static_status": "passed",
+      "limits": ["Controlli interni di IKScannerDeviceView dipendono da macOS/driver; richiedono uno scanner compatibile e una verifica hardware con VoiceOver."]
+    },
+    {
+      "id": "panel.scan.capture",
+      "file": "PDFScanExportViews.swift",
+      "checklist": ["Autorizzazione con hint che distingue aggiornamento da cattura", "Modalità finestra Toggle nominato", "Picker finestra/schermo nominato", "Cattura con testo e stato disabled nativo", "Progress attività con nome", "Messaggio permessi/errori e completamento annunciabile"],
+      "static_status": "passed",
+      "limits": ["Permessi di registrazione schermo e contenuti di finestre reali non azionati in questo audit."]
+    },
+    {
+      "id": "panel.workflow.merge",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Coda documenti con gruppi separati", "Aggiungi PDF testuale", "Pulsanti Sposta prima/dopo/rimuovi con nome sorgente", "Drag handle decorativo nascosto", "Intervallo contestuale con errore e numero pagine", "Miniature con pagina e sorgente", "Metodo e opzioni unione con nomi nativi", "Preview, progress, stato ed errore identificati", "Esc annulla"],
+      "static_status": "passed",
+      "limits": ["Verificare operativamente il riordino con sola tastiera e mantenimento del focus dopo ricostruzione della riga."]
+    },
+    {
+      "id": "panel.workflow.split",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Metodo divisione Picker nominato", "Intervalli con grammatica ed errore associato", "Pagine per parte con unità", "Testo/codice separatore contestuali", "Tolleranza pixel scuri in percentuale", "Massimo file in megabyte", "Modello nomi con variabili", "Output selezionabili con pagine e tratto selezionato", "Progress/errori/status comuni"],
+      "static_status": "passed",
+      "limits": ["Le miniature sono supporto visivo; intervalli e anteprime testuali forniscono l’alternativa."]
+    },
+    {
+      "id": "panel.workflow.layout",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Operazione layout Picker nominato", "Organizzatore: pagina originale e posizione", "Sposta prima/dopo, duplica, elimina nominati per posizione", "Opacità sovrapposizione in percentuale", "Pagine da sostituire con errore associato", "Righe e colonne con unità", "Larghezza, altezza, spazio/sovrapposizione in punti", "Orientamenti A4 con nomi testuali", "Titolo sommario identificato"],
+      "static_status": "passed",
+      "limits": ["Il riordino ha pulsanti equivalenti; il trascinamento stesso non viene attestato come operabile da VoiceOver."]
+    },
+    {
+      "id": "panel.workflow.watermark",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Intervallo con errore nell’hint", "Testo e carattere identificati", "Dimensione e margine in punti", "Opacità in percentuale", "Posizione e ColorPicker nominati", "Anteprima e applicazione separate e testuali", "Stato ed errore comuni accessibili"],
+      "static_status": "passed",
+      "limits": ["Il pannello colore nativo necessita di verifica operativa dei suoi controlli interni."]
+    },
+    {
+      "id": "panel.workflow.numbering",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Intestazione/piè pagina identificati", "Bates Toggle nominato", "Prefisso, primo numero e cifre con nomi espliciti", "Anteprima Bates nominata", "Carattere e margine in punti", "Numerazioni esistenti espresse a testo oltre al colore", "Selezione pagine con errore associato", "Azioni preview/applica identificabili"],
+      "static_status": "passed",
+      "limits": []
+    },
+    {
+      "id": "panel.workflow.crop",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Pagina preview e unità denominate", "Quattro campi margini con lato e unità", "Errore ritaglio collegato agli hint dei margini", "Dimensioni risultanti testuali", "Canvas visivo raggruppato con valori margini", "Hint canvas indica alternativa numerica keyboard", "Applica e Azzera con testo", "Avvertenza contenuto nascosto disponibile a testo"],
+      "static_status": "passed",
+      "limits": ["I quattro punti di trascinamento non sono esposti come quattro controlli AX: la stessa operazione completa è disponibile nei quattro campi numerici."]
+    },
+    {
+      "id": "panel.workflow.batch",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Coda con alternative keyboard al drag", "Carica/Salva procedura distinti", "Passaggi in gruppi con intestazione", "Sposta prima/dopo/rimuovi denominati per tipo", "Pulsanti estremi disabilitati correttamente", "Testo del passaggio nominato per funzione", "Parametri con quantità e unità", "SecureField password senza valore AX in chiaro", "Aggiungi passaggio contestuale", "Esegui, progress e annulla testuali"],
+      "static_status": "passed",
+      "limits": ["Passaggi e sorgenti ripetuti sono distinguibili tramite posizione ordinale oltre al tipo/nome."]
+    },
+    {
+      "id": "panel.workflow.outputs",
+      "file": "PDFWorkflowViews.swift",
+      "checklist": ["Anteprima selezionabile per nome e numero pagine", "Tratto selezionato oltre al fondo colorato", "Cartella destinazione completa nel valore AX", "Policy conflitti Picker nominato", "Disclosure conflitti con conteggio e nomi", "Apri/Salva/Mostra Finder testuali", "Preview PDFKit nominata senza nasconderne figli"],
+      "static_status": "passed",
+      "limits": ["La struttura AX delle pagine dipende da PDFKit e dalla semantica/tag del documento."]
+    },
+    {
+      "id": "panel.structure.objects",
+      "file": "PDFStructureViews.swift",
+      "checklist": ["TabView e intestazione nominati", "Numerazione logica: pagina iniziale, primo numero, prefisso, stile", "Liste allegati/immagini con conteggi", "Allegati raggruppano nome e dimensione", "Azioni su allegato/immagine espongono selezione corrente", "Livelli nominati con visibile/nascosto", "Azioni livelli includono nome livello", "Stato cifratura testuale", "Progress/cancel/status comuni; Esc annulla"],
+      "static_status": "passed",
+      "limits": []
+    },
+    {
+      "id": "panel.structure.original",
+      "file": "PDFStructureViews.swift",
+      "checklist": ["Lista stringhe nominata con conteggio", "Righe con pagina, font e testo combinati", "Testo sostitutivo con nome e limitazioni nell’hint", "Salva copia richiede selezione", "Lista immagini originale nominata", "Sostituzione immagine espone selezione", "Limiti del motore disponibili a testo"],
+      "static_status": "passed",
+      "limits": []
+    },
+    {
+      "id": "panel.structure.preflight",
+      "file": "PDFStructureViews.swift",
+      "checklist": ["Lista rapporto con conteggio", "Ogni risultato legge severità, titolo e dettaglio", "PDF/A e profilo PDF/X con pulsanti testuali e limiti leggibili", "Lingua BCP47 identificata con esempio", "Ruolo tag Picker nominato", "Editor descrizioni alternative nominato", "Numero righe e pagine nell’hint", "Salvataggio descrive vincoli delle descrizioni"],
+      "static_status": "passed",
+      "limits": ["Accessibilità dell’app e tag del PDF prodotto sono aspetti distinti; non si attesta conformità PDF/UA."]
+    },
+    {
+      "id": "panel.structure.certificates",
+      "file": "PDFStructureViews.swift",
+      "checklist": ["Carica identità dal Portachiavi esplicito", "Picker identità con nome certificato", "Motivo firma denominato", "Firma/salva e verifica con nomi distinti", "Lista firme con conteggio", "Integrità valida/non valida espressa a parole", "Dettagli, byte successivi e digest consultabili", "Dialoghi autorizzazione rimangono nativi di macOS"],
+      "static_status": "passed",
+      "limits": ["Nessun accesso a chiavi private o autorizzazione Portachiavi avviato per questo audit."]
+    },
+    {
+      "id": "panel.forms",
+      "file": "PDFFormsView.swift",
+      "checklist": ["Titolo e intestazioni pagina con tratto header", "Ricerca nominata e CmdF", "Fine conserva azione default", "Errore nominato con annuncio alla comparsa", "Ogni riga gruppo contiene controlli separati", "Mostra/Applica nominati per campo e pagina", "TextField/TextEditor nominati per campo", "Hint obbligatorio/massimo caratteri/errore corrente", "Checkbox e scelta con nome campo e applicazione immediata", "Password non esposta nel pannello", "Dialogo crea campo: nome/tipo/opzioni nominati, nextKeyView e focus iniziale espliciti, CmdInvio/Esc"],
+      "static_status": "passed",
+      "limits": ["La voce obbligatorio descrive il flag PDF: non introduce una nuova validazione al salvataggio. Il testo multilinea richiede Applica, come indicato nell’hint."]
+    },
+    {
+      "id": "sidebar.bookmarks",
+      "file": "DocumentNavigationView.swift",
+      "checklist": ["Intestazione indice con tratto header", "Pulsante icona aggiungi con nome esplicito", "Segnalibro con titolo, pagina e profondità", "Attivazione Button naviga tramite tastiera", "Dialogo titolo segnalibro nominato con focus iniziale e CmdInvio/Esc"],
+      "static_status": "passed",
+      "limits": ["Destinazioni tramite azione PDF prive di pagina espongono la descrizione generale, senza inventare un numero."]
+    },
+    {
+      "id": "sidebar.comments",
+      "file": "DocumentNavigationView.swift",
+      "checklist": ["Intestazione con numero annotazioni", "Righe Button con tipo, pagina e contenuto", "Annotazione selezionata con tratto isSelected", "Azioni VoiceOver modifica/elimina quando permesse", "Menu contestuale conservato", "Editor annotazione nativo nominato con CmdInvio/Esc e focus iniziale"],
+      "static_status": "passed",
+      "limits": ["Disegni e forme privi di testo sono nominati per tipo e pagina; non viene generata un’alternativa grafica automatica."]
+    }
+  ],
+  "remaining_runtime_checks": [
+    "CUA: controllare nomi/ruoli/valori nell’albero accessibilità dei pannelli e nei loro rami condizionali.",
+    "Tastiera: Tab/ShiftTab, tasti freccia per Slider/Stepper, CmdF, CmdE, Esc; assicurare focus visibile e ritorno dai dialoghi nativi. L’inclusione dei pulsanti nel percorso Tab segue l’impostazione Navigazione da tastiera di macOS.",
+    "VoiceOver: rotor intestazioni, interazione con List/Table, annunci di errori/completamento, custom actions annotazioni.",
+    "Verificare focus dopo riordino/rimozione di elementi dinamici e uscita dagli editor multilinea.",
+    "Con hardware/permessi disponibili: controlli interni scanner, selezione capture e coesistenza sintesi vocale/VoiceOver."
+  ]
+}

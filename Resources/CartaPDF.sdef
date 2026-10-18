@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="CartaPDF">
+  <suite name="CartaPDF Suite" code="CPDF" description="Elaborazione PDF completamente locale">
+    <command name="merge PDFs" code="CPDFMrge" description="Unisce PDF in un nuovo file; non sostituisce i sorgenti.">
+      <cocoa class="CartaMergeScriptCommand"/>
+      <parameter name="files" code="inpt" type="text" list="yes" description="Percorsi POSIX dei PDF"/>
+      <parameter name="destination" code="dest" type="text" description="Percorso POSIX del nuovo PDF"/>
+      <result type="text" description="Percorso del PDF generato"/>
+    </command>
+  </suite>
+</dictionary>

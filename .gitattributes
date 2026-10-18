@@ -1,0 +1,18 @@
+* text=auto eol=lf
+*.swift text
+*.md text
+*.json text
+*.xml text
+*.plist text
+*.sh text
+*.py text
+*.png binary
+*.icns binary
+*.pdf binary
+*.zip binary
+
+# Licensed upstream data: preserve exact bytes and pinned SHA-256 hashes.
+Resources/PDFAProfiles/** -text -whitespace linguist-vendored
+Resources/PDFFontData/** -text -whitespace linguist-vendored
+Sources/CartaPDF/Resources/PDFAProfiles/** -text -whitespace linguist-vendored
+Sources/CartaPDF/Resources/PDFFontData/** -text -whitespace linguist-vendored

@@ -1,0 +1,28 @@
+# Builds and generated distributions
+.build/
+.build-*/
+dist/
+DerivedData/
+*.xcresult/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Local diagnostics and Python caches
+*.log
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Local documents, certificates and credentials
+*.pdf
+*.p12
+*.pfx
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+.agents/

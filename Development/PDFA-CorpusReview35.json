@@ -1,0 +1,1173 @@
+{
+  "version": "3.5.0",
+  "complete_ISO_validation_proven": false,
+  "scope": "Review of29 newly reported model failures on historical pass filenames versus3.4, not a normative completeness score.",
+  "preflight_binary_sha256": "14f1096988d29b403676bdac9b942a8b4b4d6ef43fbb7e185e38d6831d880ce1",
+  "corpus_bytes_unchanged": true,
+  "logical_structure": {
+    "files": 26,
+    "evidence": "Development/PDFAObjectChecksEvidence.json#logicalStructure35CorpusReview",
+    "categories": {
+      "unreachable_IDTree_ParentTree_extra_nodes": 14,
+      "missing_StructParents_with_empty_ParentTree": 11,
+      "empty_content_with_stale_MCID_and_ParentTree": 1
+    }
+  },
+  "calculator": {
+    "files": 3,
+    "evidence": "Development/PDFA-CalculatorCorpusReview35.json",
+    "proof": "Same17byte pure calculator leaves4stack values for Range declaring3; byte-preserving counterfactual leaves3 but full execution remains notVerified."
+  },
+  "preflight_model_details": [
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-f.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-g.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-h.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-i.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-a.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-b.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-c.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-d.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-e.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-f.pdf",
+      "profile": "1a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "PDF Reference 1.4",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-a.pdf",
+      "profile": "2a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-b.pdf",
+      "profile": "2a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-c.pdf",
+      "profile": "2a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-d.pdf",
+      "profile": "2a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-e.pdf",
+      "profile": "2a",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-a.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-b.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-c.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-d.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t01-pass-a.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t02-pass-a.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t03-pass-a.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-f.pdf",
+      "profile": "2b",
+      "models": [
+        {
+          "clause": "7.10",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "id": "CartaPDF:Function:0",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ],
+          "objectType": "FunctionModel",
+          "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+          "specification": "ISO 32000-1/2",
+          "status": "failed",
+          "testNumber": "native-function"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-h.pdf",
+      "profile": "2u",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-i.pdf",
+      "profile": "2u",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-j.pdf",
+      "profile": "2u",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-1:2008",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-d.pdf",
+      "profile": "4",
+      "models": [
+        {
+          "clause": "7.10",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "id": "CartaPDF:Function:0",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ],
+          "objectType": "FunctionModel",
+          "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+          "specification": "ISO 32000-1/2",
+          "status": "failed",
+          "testNumber": "native-function"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-h.pdf",
+      "profile": "4",
+      "models": [
+        {
+          "clause": "7.10",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "id": "CartaPDF:Function:0",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ],
+          "objectType": "FunctionModel",
+          "requirement": "Dimensioni, parametri, campioni e sintassi delle funzioni PDF raggiunte nei contesti indicati; nessuna attestazione di esecuzione integrale del modello grafico.",
+          "specification": "ISO 32000-1/2",
+          "status": "failed",
+          "testNumber": "native-function"
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.3 Annotations/6.3.3 Annotation appearances/veraPDF test suite 6-3-3-t01-pass-d.pdf",
+      "profile": "4",
+      "models": [
+        {
+          "clause": "7.9; 14.7",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "locations": [
+            "15 0 R/K: MCID non presente in BDC",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent",
+            "ParentTree[0][2] senza corrispondente K/MCR del parent",
+            "ParentTree[0][3] senza corrispondente K/MCR del parent",
+            "ParentTree[0][4] senza corrispondente K/MCR del parent",
+            "ParentTree[0][5] senza corrispondente K/MCR del parent",
+            "ParentTree[0][6] senza corrispondente K/MCR del parent",
+            "ParentTree[0][7] senza corrispondente K/MCR del parent",
+            "ParentTree[0][8] senza corrispondente K/MCR del parent"
+          ],
+          "objectType": "LogicalStructureModel",
+          "requirement": "Gerarchia, identificatori, riferimenti ai contenuti, ParentTree e attributi strutturali devono avere tipi e relazioni coerenti.",
+          "specification": "ISO 32000-2:2020",
+          "status": "failed",
+          "testNumber": "native-logical-structure-mechanics"
+        }
+      ]
+    }
+  ],
+  "mapping_caution": "The labelled target clause may pass while another normative obligation fails. Filename→catalogue mapping is provisional and never an overall validity oracle.",
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.913,
+    "binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "Historical filenames provisional; not an accuracy/completeness oracle."
+  },
+  "final_new_model_historical_pass_cases": [
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-f.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-g.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-h.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-i.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-a.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-b.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-c.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-d.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-e.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "21 0 R/K: StructParents intero richiesto",
+            "21 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.8 Logical structure/6.8.4 Natural language specification/veraPDF test suite 6-8-4-t01-pass-f.pdf",
+      "profile": "1a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-a.pdf",
+      "profile": "2a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-b.pdf",
+      "profile": "2a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-c.pdf",
+      "profile": "2a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-d.pdf",
+      "profile": "2a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2a/6.7 Logical structure/6.7.4 Natural language specification/veraPDF test suite 6-7-4-t01-pass-e.pdf",
+      "profile": "2a",
+      "new_model_failures": [
+        "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "3 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "22 0 R/K: StructParents intero richiesto",
+            "22 0 R/K: MCR/MCID non ricambia ParentTree"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-a.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-b.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-c.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.1 General/veraPDF test suite 6-2-11-3-1-t01-pass-d.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t01-pass-a.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t02-pass-a.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.11 Fonts/6.2.11.3 Composite fonts/6.2.11.3.3 CMaps/veraPDF test suite 6-2-11-3-3-t03-pass-a.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-f.pdf",
+      "profile": "2b",
+      "new_model_failures": [
+        "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico."
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:Function:0",
+          "objectType": "FunctionModel",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-h.pdf",
+      "profile": "2u",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-i.pdf",
+      "profile": "2u",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-j.pdf",
+      "profile": "2u",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "IDTree contiene ID senza elemento corrispondente",
+            "IDTree non comprende tutti gli ID degli elementi",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-d.pdf",
+      "profile": "4",
+      "new_model_failures": [
+        "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico."
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:Function:0",
+          "objectType": "FunctionModel",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.4 Separation and DeviceN colour spaces/veraPDF test suite 6-2-4-4-t01-pass-h.pdf",
+      "profile": "4",
+      "new_model_failures": [
+        "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico."
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:Function:0",
+          "objectType": "FunctionModel",
+          "detail": "numero di risultati calculator incompatibile con Range; Esecuzione aritmetica della funzione calculator sull’intero dominio non dimostrata dal controllo statico.",
+          "locations": [
+            "pagina 1/Resources/ColorSpace/CS0/TintTransform"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.3 Annotations/6.3.3 Annotation appearances/veraPDF test suite 6-3-3-t01-pass-d.pdf",
+      "profile": "4",
+      "new_model_failures": [
+        "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. "
+      ],
+      "model_failure_details": [
+        {
+          "id": "CartaPDF:ISO32000:logical-structure-mechanics",
+          "objectType": "LogicalStructureModel",
+          "detail": "2 elementi: verifica meccanica di gerarchia, IDTree, MCID/OBJR e ParentTree, classi/attributi e NS modellati. Significato umano, ordine di lettura e conformità PDF/UA non attestati. ",
+          "locations": [
+            "15 0 R/K: MCID non presente in BDC",
+            "ParentTree[0][1] senza corrispondente K/MCR del parent",
+            "ParentTree[0][2] senza corrispondente K/MCR del parent",
+            "ParentTree[0][3] senza corrispondente K/MCR del parent",
+            "ParentTree[0][4] senza corrispondente K/MCR del parent",
+            "ParentTree[0][5] senza corrispondente K/MCR del parent",
+            "ParentTree[0][6] senza corrispondente K/MCR del parent",
+            "ParentTree[0][7] senza corrispondente K/MCR del parent",
+            "ParentTree[0][8] senza corrispondente K/MCR del parent"
+          ]
+        }
+      ]
+    }
+  ],
+  "final_binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8"
+}

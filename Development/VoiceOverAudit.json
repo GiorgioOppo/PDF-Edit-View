@@ -1,0 +1,44 @@
+{
+  "app_version": "3.1.0",
+  "date": "2026-10-17",
+  "system": {
+    "macOS": "27.0.1",
+    "build": "26A434",
+    "architecture": "arm64"
+  },
+  "status": "manual_audit_incomplete",
+  "voiceover_state": {
+    "initial": "off",
+    "temporarily_activated": true,
+    "restored": "off",
+    "verified_in_system_settings": true
+  },
+  "completed": [
+    "Revisione statica di 25 sezioni/pannelli nei cinque file elencati in AccessibilityPanelAudit.json.",
+    "Nomi, ruoli nativi, unità, valori, stati, errori e annunci; alternativa numerica per annotazioni e riordino senza trascinamento.",
+    "Quattro test CartaAccessibilityTests su limiti Tab, azioni native PDFView, etichette campi e flag protetti.",
+    "Sette test CartaKeyboardEditingTests su creazione, geometria/contenuto, eliminazione, undo, persistenza e permessi cifrati.",
+    "Albero AX reale della nuova build: zoom con valore, strumento attivo, stato documento e focus ricerca all’apertura degli strumenti.",
+    "Albero AX reale del pannello PDF/A: scelta degli undici profili, verifica 4f con 111 regole ed esportazione JSON riletta dal disco."
+  ],
+  "not_attested": [
+    "Audit completo con ascolto degli annunci e navigazione VoiceOver/rotor per ogni pannello: non completato.",
+    "Equivalenza universale dei contenuti grafici di ogni PDF, disegno a mano libera e firma grafica.",
+    "Prove con hardware scanner, autorizzazione cattura schermo, uscita audio o dispositivi braille."
+  ],
+  "evidence": [
+    "Development/AccessibilityPanelAudit.json",
+    "Development/TestResults.log",
+    "Tests/CartaPDFTests/CartaAccessibilityTests.swift",
+    "Tests/CartaPDFTests/CartaKeyboardEditingTests.swift"
+  ],
+  "pdfa_ui_export": {
+    "observed_profile": "4f",
+    "rules": 111,
+    "verdict": "nonconforming",
+    "coverageComplete": false,
+    "scopeGaps": 5,
+    "path": "/private/tmp/CartaPDF-smoke/Senza titolo-PDF-A-4f.json"
+  },
+  "publication_note": "Personal conversation text omitted. Static/native checks do not attest a complete manual VoiceOver audit."
+}

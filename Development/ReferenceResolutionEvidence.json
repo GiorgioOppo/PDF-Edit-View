@@ -1,0 +1,69 @@
+{
+  "version": "3.6.0",
+  "complete_ISO_validation_proven": false,
+  "primary_source": "ISO32000-1§7.3.9/7.3.10/7.5.7; null omission and indirect object equivalence",
+  "implemented": [
+    "Bounded alias-chain resolution preserves null semantics for undefined/free/wrong-generation references; canonical terminal identity available separately from original physical object body.",
+    "Root and page-tree reference aliases, page Type/Kids and inheritance aliases supported. Null/undefined Resources/MediaBox/Rotate fall back to inherited values.",
+    "Stream Length/Filter and external ObjStm N/First aliases resolved in the current revision view.",
+    "Alias cycles and depth/cancellation budgets remain unsupported/notVerified, not invented malformed proof.",
+    "Canonical terminal stream decoding/cache identity; Contents stream/array aliases and null omission, with non-stream array members distinct from alias cycles/budgets.",
+    "Canonical Metadata references retain stream predicates and main-package identity; ICC output and ICCBased profiles share canonical identities."
+  ],
+  "tests": [
+    "testReferenceAliasesResolveValuesAndCanonicalIdentityWithoutChangingPhysicalBodies",
+    "testAliasChainsRetainUndefinedFreeAndWrongGenerationNullSemantics",
+    "testAliasCyclesAreIncompleteWhileOrdinaryDictionaryCyclesRemainValues",
+    "testAliasDepthBudgetIsNotAProvenMalformedFile",
+    "testAliasedCatalogPagesKidsTypesAndParentsHaveCanonicalPageIdentities",
+    "testAliasedStreamLengthAndFilterAreResolvedBeforeDecoding",
+    "testCompressedObjectHeaderMayUseExternalIndirectIntegerAliases",
+    "testAliasedContentsStreamsAndArraysUseTerminalIdentities",
+    "testNullContentsIsOmissionButNonStreamArrayMembersAreInvalid",
+    "testAliasedMetadataKeepsDeclarationAndStreamRequirement",
+    "testAliasStreamCycleRetainsUnsupportedEvidence",
+    "testCancellationInterruptsReferenceResolution"
+  ],
+  "integrated_suite": {
+    "version": "3.6.0",
+    "tests": 512,
+    "failures": 0,
+    "seconds": 17.651,
+    "log": "Development/TestResults.log",
+    "log_sha256": "e764aba8b6b8db4a7a19dea58139f4253e37a58b98a29458d882c21b04d556dc"
+  },
+  "source_sha256": {
+    "Sources/CartaPDF/PDFStructureEngine.swift": "2a6d6f7118b368e1cbdd14e714bcc0c76e775235306a5da10df13920f8de69ec",
+    "Sources/CartaPDF/PDFArchiveValidatorRules.swift": "3e4ae0e13f31ab94d82e922721c920f332ff49fec1e3a2029c05aa357b7ea986",
+    "Sources/CartaPDF/PDFArchiveMetadataChecks.swift": "adc5cd33407b500d9c5677d209f74eada2d0bfdca942157396568f3f9c26d0e6",
+    "Sources/CartaPDF/PDFArchiveGraphicsChecks.swift": "087b54d851ab5ee5d56a2979ba2edad5dbd938c089c67f43fe12b5011e522d81",
+    "Tests/CartaPDFTests/PDFArchiveReferenceResolutionTests.swift": "6d4238b7eb45c84ec41a745c9f444f05ff1c8c035314b2de68f6920fd0f35b45"
+  },
+  "remaining": [
+    "Complete parser/codec/revision/object model still not proven; canonicalizing every consuming context remains a wider audit."
+  ],
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.559,
+    "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "All per-file Release results equal frozen preflight after sorting unordered diagnostic location arrays;24files differ only by location order. Historical filenames are provisional, not an accuracy/completeness oracle."
+  },
+  "previous_integrated_suite_35": {
+    "version": "3.5.0",
+    "tests": 447,
+    "failures": 0,
+    "seconds": 16.968,
+    "log": "Development/TestResults.log",
+    "log_sha256": "359caa058589c480ce95a72374cbaeedcc9272d8c1ca76e316be0324bd22b0f1"
+  },
+  "previous_final_release_corpus_35": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 18.913,
+    "binary_sha256": "3f3377e68b5fa07b8e5ce56ea39f4a0910fe877fd011222c0d11eb339ea5c6e8",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "Historical filenames provisional; not an accuracy/completeness oracle."
+  }
+}

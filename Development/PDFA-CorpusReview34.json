@@ -1,0 +1,613 @@
+{
+  "version": "3.4.0",
+  "scope": "Review of new model failures on historical pass labels, against3.3; filenames are not correctness or ISO completeness oracles",
+  "complete_ISO_validation_proven": false,
+  "preflight_binary_sha256": "6b75eb63dc52a9dab79cfe217d9aa1c079c493b4534b4db24d3089566f314b8b",
+  "findings": {
+    "D50": {
+      "files": 10,
+      "disposition": "Exact byte equality removed: old alternative compatible quantization is unknown; v4.4 uses explicit rounded-four-decimal criterion.",
+      "primary_source": "ICC.1:2022§7.2.16; ICC.1:2001-04 Table9/A.1; ICC.1:2010§7.2.16"
+    },
+    "v2_reserved": {
+      "files": 2,
+      "disposition": "v4 zero requirement no longer imposed onv2 reserved future-expansion header. v2 remainsunknown.",
+      "primary_source": "ICC.1:2001-04 Table9 versus ICC.1:2010 Table17/7.2.19"
+    },
+    "declared_ICC_size": {
+      "files": 5,
+      "disposition": "3144 declared bytes versus3145 decoded. Raw unfiltered stream Length3145 includes LF after3144ICCbytes, then a separate CRLF precedes endstream. Separator EOL is excluded; the extra LF is inside the counted payload. Header/profile size mismatch remains failed, with ISO32000-1§7.3.8/Table5 and ICC.1:2001-04§6.1.1 evidence; no trim or corpus mutation.",
+      "profile_sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec"
+    },
+    "U3D": {
+      "historical_pass_files": 4,
+      "historical_fail_files": 3,
+      "disposition": "Same PriorityUpdate0 invalid payload independently reviewed in engineering34Supplement; corpus unchanged.",
+      "evidence": "Development/PDFAObjectChecksEvidence.json#engineering34Supplement"
+    }
+  },
+  "ICC_byte_inspection": [
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-d.pdf",
+      "profiles": [
+        {
+          "actual_size": 3144,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "21 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1a/6.3 Fonts/6.3.8 Unicode character maps/veraPDF test suite 6-3-8-t01-pass-e.pdf",
+      "profiles": [
+        {
+          "actual_size": 3144,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "22 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-g.pdf",
+      "profiles": [
+        {
+          "actual_size": 3145,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "6 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-h.pdf",
+      "profiles": [
+        {
+          "actual_size": 3145,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "6 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-i.pdf",
+      "profiles": [
+        {
+          "actual_size": 3145,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "6 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-j.pdf",
+      "profiles": [
+        {
+          "actual_size": 3145,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "6 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-l.pdf",
+      "profiles": [
+        {
+          "actual_size": 3145,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "6 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "a89e465e13fccaaca1db09f818f3457644fdbc98124da69ff6e2e02954197bec",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.2 Graphics/6.2.3.3 Uncalibrated color space/veraPDF test suite 6-2-3-3-t01-pass-a.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "7 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.3 Fonts/6.3.5 Font subsets/6-3-5-t02-pass-a.pdf",
+      "profiles": [
+        {
+          "actual_size": 3144,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "21 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.3 Fonts/6.3.5 Font subsets/6-3-5-t02-pass-b.pdf",
+      "profiles": [
+        {
+          "actual_size": 3144,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 3144,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "21 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2b/6.2 Graphics/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-pass-a.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-d.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "13 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-2u/6.2 Graphics/6.2.11 Fonts/6.2.11.7 Unicode character maps/6.2.11.7.2 Level A and Level U conformance/veraPDF test suite 6-2-11-7-2-t01-pass-e.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "15 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.2 ICCBased colour spaces/veraPDF test suite 6-2-4-2-t03-pass-d.pdf",
+      "profiles": [
+        {
+          "actual_size": 557188,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 557188,
+          "id": "14 0 R",
+          "reserved84_128": "757d7ef87d2af4f76322dd6fcb75423b00000000000000000000000000000000000000000000000000000000",
+          "sha256": "22f92ac2f1f46520998764d012543193154ff708944f07601e5ed42d9f54c5a9",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 557188,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 557188,
+          "id": "15 0 R",
+          "reserved84_128": "757d5ff87d2af4f76322dd6fcb75423b00000000000000000000000000000000000000000000000000000000",
+          "sha256": "aa0a2971b2f629be36c31f330dd52c072fe888d634021410f3d9a07c46f8ca97",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.2 ICCBased colour spaces/veraPDF test suite 6-2-4-2-t03-pass-e.pdf",
+      "profiles": [
+        {
+          "actual_size": 654352,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 654352,
+          "id": "7 0 R",
+          "reserved84_128": "74ff62f330bf0dbe4495b5720542d51100000000000000000000000000000000000000000000000000000000",
+          "sha256": "52139560da32003ea7431e97f870b1bd6035a30b3ee35e2a5375885c97c2c221",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 654140,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 654140,
+          "id": "12 0 R",
+          "reserved84_128": "e3d8676356f2709a7b120036b7ada99600000000000000000000000000000000000000000000000000000000",
+          "sha256": "d5ee0de3405fa69705d2f35f14660dc5fd1706be01516a55c7acb4e44f5531de",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t03-pass-a.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "8 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "PDF_A-4/6.2 Graphics/6.2.4 Colour spaces/6.2.4.3 Uncalibrated -Device colour spaces/veraPDF test suite 6-2-4-3-t04-pass-h.pdf",
+      "profiles": [
+        {
+          "actual_size": 936,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32c"
+          ],
+          "declared_size": 936,
+          "id": "7 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "e178916f7256d890e9d4ec3f016f69fd7003c3fc980ed13325cf27e3c0524e45",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        },
+        {
+          "actual_size": 654140,
+          "d50": [
+            "0000f6d6",
+            "00010000",
+            "0000d32d"
+          ],
+          "declared_size": 654140,
+          "id": "16 0 R",
+          "reserved84_128": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "9af0eb039208b0ae700d3fccd64a657b174db5c617c09ee79ced7cfcb7d4c392",
+          "version": [
+            2,
+            16,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "final_binary_sha256": "b6508ab697e5374a602143efa78327e6c7f8568100255860e0e2beb09f1d4d1d",
+  "final_new_model_failures_on_historical_pass_labels": [
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-g.pdf",
+      "new_model_failures": [
+        "Tipi letti: XYZ , curv, desc, meas, sig , text, view. dimensione dichiarata ICC diversa dai byte incorporati"
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-h.pdf",
+      "new_model_failures": [
+        "Tipi letti: XYZ , curv, desc, meas, sig , text, view. dimensione dichiarata ICC diversa dai byte incorporati"
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-i.pdf",
+      "new_model_failures": [
+        "Tipi letti: XYZ , curv, desc, meas, sig , text, view. dimensione dichiarata ICC diversa dai byte incorporati"
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-j.pdf",
+      "new_model_failures": [
+        "Tipi letti: XYZ , curv, desc, meas, sig , text, view. dimensione dichiarata ICC diversa dai byte incorporati"
+      ]
+    },
+    {
+      "file": "PDF_A-1b/6.1 File structure/6.1.12 Implementation limits/veraPDF test suite 6-1-12-t02-pass-l.pdf",
+      "new_model_failures": [
+        "Tipi letti: XYZ , curv, desc, meas, sig , text, view. dimensione dichiarata ICC diversa dai byte incorporati"
+      ]
+    },
+    {
+      "file": "PDF_A-4e/6.2 Graphics/6.2.4 Colour spaces/6.2.4.1 General/veraPDF test suite 6-2-4-1-t01-pass-a.pdf",
+      "new_model_failures": [
+        "pagina 1/Annots[0]/3DD: U3D: 13 blocchi top-level; header, confini, padding, metadati e Priority Update secondo ECMA363 ed3. Geometria e blocchi annidati sono verifiche separate."
+      ]
+    },
+    {
+      "file": "PDF_A-4e/6.2 Graphics/6.2.4 Colour spaces/6.2.4.1 General/veraPDF test suite 6-2-4-1-t01-pass-b.pdf",
+      "new_model_failures": [
+        "pagina 1/Annots[0]/3DD: U3D: 13 blocchi top-level; header, confini, padding, metadati e Priority Update secondo ECMA363 ed3. Geometria e blocchi annidati sono verifiche separate."
+      ]
+    },
+    {
+      "file": "PDF_A-4e/6.3 Annotations/6.3.1 Annotation types/veraPDF test suite 6-3-1-t01-pass-a.pdf",
+      "new_model_failures": [
+        "pagina 1/Annots[0]/3DD: U3D: 13 blocchi top-level; header, confini, padding, metadati e Priority Update secondo ECMA363 ed3. Geometria e blocchi annidati sono verifiche separate."
+      ]
+    },
+    {
+      "file": "PDF_A-4e/6.3 Annotations/6.3.1 Annotation types/veraPDF test suite 6-3-1-t01-pass-c.pdf",
+      "new_model_failures": [
+        "pagina 1/Annots[0]/3DD: U3D: 13 blocchi top-level; header, confini, padding, metadati e Priority Update secondo ECMA363 ed3. Geometria e blocchi annidati sono verifiche separate."
+      ]
+    }
+  ],
+  "final_release_corpus": {
+    "files": 2164,
+    "errors": 0,
+    "elapsed_seconds": 19.209,
+    "binary_sha256": "b6508ab697e5374a602143efa78327e6c7f8568100255860e0e2beb09f1d4d1d",
+    "evidence": "Development/PDFA-CorpusEvidence.json",
+    "comparison": "Historical filename mappings provisional; no normative accuracy/completeness score."
+  }
+}

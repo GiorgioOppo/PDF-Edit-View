@@ -1,0 +1,2179 @@
+{
+  "app": "CartaPDF",
+  "version": "3.6.0",
+  "date": "2026-10-18",
+  "constraints": {
+    "free": true,
+    "license": "MIT",
+    "completely_local": true,
+    "Apple_frameworks_only": true,
+    "third_party_packages": 0,
+    "imports": [
+      "AVFoundation",
+      "AppIntents",
+      "AppKit",
+      "Combine",
+      "Compression",
+      "CoreGraphics",
+      "CoreImage",
+      "CoreText",
+      "CryptoKit",
+      "Darwin",
+      "Foundation",
+      "ImageCaptureCore",
+      "ImageIO",
+      "PDFKit",
+      "Quartz",
+      "ScreenCaptureKit",
+      "Security",
+      "SwiftUI",
+      "UniformTypeIdentifiers",
+      "Vision",
+      "WebKit"
+    ],
+    "validation_catalogue_data_license": "CC BY 4.0; veraPDF Consortium; original XML; no Java engine",
+    "font_mapping_data_license": "Adobe BSD-3-Clause; CMaps, AGL and PDF-to-Unicode data; no Adobe toolkit code"
+  },
+  "summary": {
+    "implemented": 136,
+    "manual_verification_pending": 1,
+    "implemented_with_explicit_limits": 12,
+    "partial": 1
+  },
+  "pdfa_validation": {
+    "profiles": 11,
+    "catalogued_rule_entries": 1489,
+    "complete_ISO_validation": false,
+    "conforming_verdict_enabled": false,
+    "scope": "Development/PDFA-ValidatorScope.md",
+    "evidence": "Development/PDFA-ValidatorCoverage.json"
+  },
+  "verification": {
+    "automated_suite": {
+      "tests": 512,
+      "failures": 0,
+      "seconds": 17.651,
+      "state": "passed",
+      "log": "Development/TestResults.log"
+    },
+    "manual_passed": [
+      "Apertura PDF unito di sei pagine in CartaPDF",
+      "Sei risultati di ricerca con estratti e navigazione a pagina 3 con zoom stabile",
+      "Divisione avanzata: anteprima, nomi e criteri per conflitti",
+      "PDF estratto aperto in Anteprima: tre pagine con testo nell’ordine 2, 3, 1",
+      "CLI info, merge, extract, split e text su fixture temporanee",
+      "Metadati AppIntents generati con estrattore Apple; bundle firmato ad hoc",
+      "Comando merge PDFs compilato in Script Editor usando il dizionario reale dell’app",
+      "Versione 3.1: selettore degli 11 profili PDF/A, verifica 4f con 111 voci e rapporto JSON salvato dall’interfaccia"
+    ],
+    "voiceover": {
+      "status": "manual_verification_pending",
+      "manual_audit": "Audit manuale completo non completato; non attestato come superato.",
+      "observed": "VoiceOver attivato temporaneamente; nessun audit completo attestato; stato iniziale off ripristinato off.",
+      "evidence": "Development/AccessibilityPanelAudit.json; CartaAccessibilityTests; CartaKeyboardEditingTests"
+    },
+    "not_verified": [
+      "Acquisizione fisica scanner",
+      "Consenso e cattura reale ScreenCaptureKit",
+      "Riproduzione voce reale",
+      "Audit completo VoiceOver non completato",
+      "Dispatch AppleScript da Script Editor"
+    ]
+  },
+  "material_limits": [
+    "F043: validazione ISO PDF/A ancora parziale, con rapporti per 11 profili e scopeGaps espliciti; PDF/X e PDF/UA non certificati.",
+    "Modifica originale del testo limitata a Type1 standard WinAnsi e operatori stringa semplici, senza reflow/CID/subset/TJ.",
+    "Firma CMS offline senza revoca aggiornata, TSA, qualifica legale o certificazione completa PAdES.",
+    "Tag a livello di pagina; preparazione ICC senza conversione di ogni colore o separazione.",
+    "Preparazione strutturale, firma, preflight e ridisegno CoreGraphics ancora sincroni sul main actor.",
+    "Hardware, gesti UI e lettori PDF generici richiedono verifiche oltre ai test automatici."
+  ],
+  "requirements": [
+    {
+      "id": "M001",
+      "title": "Anteprima ordine finale unione",
+      "status": "implemented",
+      "implementation": "WorkflowController.buildMerge / WorkflowPDFPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M002",
+      "title": "Riordino file unione con trascinamento",
+      "status": "implemented",
+      "implementation": "WorkflowSourceDrop / WorkflowController.moveSource",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Trascinamento della coda nel pannello nativo; verifica manuale del gesto.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M003",
+      "title": "Statistiche documenti da unire",
+      "status": "implemented",
+      "implementation": "WorkflowSource.byteCount/formats / sourceQueue",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines",
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M004",
+      "title": "Rimozione file dalla coda di unione",
+      "status": "implemented",
+      "implementation": "WorkflowController.removeSource / pulsante della coda",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Controllo UI compilato; verifica manuale del pulsante.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M005",
+      "title": "Avviso documenti duplicati",
+      "status": "implemented",
+      "implementation": "WorkflowController.duplicateNames / avviso nella coda",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Rilevamento per percorso canonico; per il documento non salvato usa nome e dimensione.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M006",
+      "title": "Segnalazione formati pagina diversi",
+      "status": "implemented",
+      "implementation": "WorkflowSource.formats / WorkflowController.pageFormats",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M007",
+      "title": "Conservazione segnalibri in unione",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.appendOutlineChildren / merge",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": "Conserva segnalibri GoTo con destinazioni incluse; omette azioni non navigabili e riferimenti a pagine escluse.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M008",
+      "title": "Progresso dettagliato unione",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.merge progress / WorkflowController.report",
+      "tests": [
+        "PDFWorkflowEngineTests.testOrderedMergePreservesSelectionsPageIndependenceAndMappedOutlines"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M009",
+      "title": "Riordino pagine da miniature",
+      "status": "implemented",
+      "implementation": "WorkflowPageDrop / pageOrganizer / movePage",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": "Organizzazione in anteprima: la conferma apre o salva una copia.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M010",
+      "title": "Anteprima duplicazione e spostamento",
+      "status": "implemented",
+      "implementation": "WorkflowController.duplicatePage/movePageBy/previewPageOrder",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M011",
+      "title": "Anteprima intervalli estrazione",
+      "status": "implemented",
+      "implementation": "splitControls / WorkflowThumbnailStrip",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks",
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M012",
+      "title": "Conteggio pagine selezionate",
+      "status": "implemented",
+      "implementation": "WorkflowRangeResult / totalSelectedPages / selectionControls",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens",
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M013",
+      "title": "Errori intervalli evidenziati",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.parseRange / rangeError rosso",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M014",
+      "title": "Separatori intervalli uniformi",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.parseRange normalizzazione separator / alias",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M015",
+      "title": "Avviso intervalli sovrapposti",
+      "status": "implemented",
+      "implementation": "WorkflowRangeResult.repeatedPages / WorkflowController.splitOverlap",
+      "tests": [
+        "PDFWorkflowEngineTests.testRangeSyntaxNormalizesSeparatorsReportsOverlapAndRejectsInvalidTokens",
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M016",
+      "title": "Nomi personalizzati documenti divisi",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.outputName / namePattern",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M017",
+      "title": "Anteprima file della divisione",
+      "status": "implemented",
+      "implementation": "preparedOutputList / WorkflowController.finalName",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks",
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M018",
+      "title": "Riepilogo conflitti",
+      "status": "implemented",
+      "implementation": "WorkflowController.conflicts / DisclosureGroup / conflictPolicy",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M019",
+      "title": "Divisione annullabile con progresso",
+      "status": "implemented",
+      "implementation": "WorkflowController.cancel / WorkflowStagedWriter.write rollback",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M020",
+      "title": "Mostra output nel Finder",
+      "status": "implemented",
+      "implementation": "WorkflowController.revealOutputs",
+      "tests": [
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "Azione Finder disponibile dopo salvataggio; verifica manuale del pulsante.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M021",
+      "title": "Ritaglio interattivo",
+      "status": "implemented",
+      "implementation": "WorkflowCropCanvas quattro handle / applyCrop",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Anteprima non ruotata per allineare i margini PDF; nasconde il contenuto esterno senza eliminarlo.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M022",
+      "title": "Unità di misura ritaglio",
+      "status": "implemented",
+      "implementation": "WorkflowUnit / cropField conversione pt mm cm",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M023",
+      "title": "Dimensioni dopo ritaglio",
+      "status": "implemented",
+      "implementation": "cropControls dimensioni risultanti live",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M024",
+      "title": "Validazione margini ritaglio",
+      "status": "implemented",
+      "implementation": "WorkflowController.cropValidation / ensureLiveSource",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M025",
+      "title": "Filigrana configurabile",
+      "status": "implemented",
+      "implementation": "WorkflowTextSettings / watermarkControls / WorkflowWatermarkAnnotation",
+      "tests": [
+        "PDFWorkflowEngineTests.testWatermarkSettingsAndPageOrganizerPreviewKeepOriginalUnchanged"
+      ],
+      "limits": "Opacità incorporata nell’appearance stream PDF; font, dimensione, colore e nove posizioni configurabili.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M026",
+      "title": "Anteprima numerazione",
+      "status": "implemented",
+      "implementation": "WorkflowController.buildNumberingPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M027",
+      "title": "Avviso numerazioni sovrapposte",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.existingNumberingCount / applyNumbering conferma",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Riconosce numerazioni CartaPDF e annotazioni nel formato numero/totale; non interpreta il testo originale del content stream.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M028",
+      "title": "Anteprima primo e ultimo Bates",
+      "status": "implemented",
+      "implementation": "WorkflowController.batesPreview",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M029",
+      "title": "Controllo spazio Bates",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.numberingAnnotations controllo larghezza font",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M030",
+      "title": "Memoria impostazioni ritaglio e numerazione",
+      "status": "implemented",
+      "implementation": "UserDefaults Workflow.crop.* e Workflow.numbers.*",
+      "tests": [
+        "PDFWorkflowEngineTests.testPreviewInvalidationOverlapMetricUnitsAndChangedSourceGuard"
+      ],
+      "limits": "Preferenze conservate localmente dopo applicazione; nessuna password nei preset.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "M031",
+      "title": "Campi modulo raggruppati per pagina",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M032",
+      "title": "Ricerca campi modulo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M033",
+      "title": "Evidenzia campo selezionato",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M034",
+      "title": "Contatore caratteri campi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M035",
+      "title": "Stato valori modificati e confermati",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M036",
+      "title": "Spiegazione campi non modificabili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M037",
+      "title": "Segnalazione valori condivisi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M038",
+      "title": "Campi obbligatori evidenziati",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M039",
+      "title": "Riepilogo protezioni copie",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFPageTools.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testProtectedCopyDoesNotChangeSource"
+      ],
+      "notes": "Riepilogo password apertura, nessuna restrizione aggiuntiva, decifratura di verifica prima del salvataggio.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M040",
+      "title": "Verifica password copie",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFPageTools.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testProtectedCopyDoesNotChangeSource"
+      ],
+      "notes": "Riepilogo password apertura, nessuna restrizione aggiuntiva, decifratura di verifica prima del salvataggio.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M041",
+      "title": "Posizione e dimensione finestre persistenti",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M042",
+      "title": "Ripristino ultima pagina",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M043",
+      "title": "Ripristino zoom",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M044",
+      "title": "Larghezza sidebar persistente",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M045",
+      "title": "Miniatura corrente visibile",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M046",
+      "title": "Zoom centrato puntatore",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M047",
+      "title": "Scorciatoie personalizzabili",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M048",
+      "title": "Toolbar adattiva",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M049",
+      "title": "Indicazione strumento attivo compatta",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M050",
+      "title": "VoiceOver completo",
+      "status": "manual_verification_pending",
+      "verification": "static_review_and_native_tests_manual_audit_waived_by_user",
+      "sources": [
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/ToolBrowserView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/CartaAccessibility.swift",
+        "Sources/CartaPDF/CartaKeyboardEditing.swift",
+        "Sources/CartaPDF/PDFFormsView.swift",
+        "Sources/CartaPDF/PDFScanExportViews.swift",
+        "Sources/CartaPDF/PDFWorkflowViews.swift",
+        "Sources/CartaPDF/PDFStructureViews.swift"
+      ],
+      "tests": [
+        "CartaAccessibilityTests.testTabTraversalLeavesDocumentAtBothEndsInsteadOfTrappingFocus",
+        "CartaAccessibilityTests.testNativeDocumentAccessibilityActionsNavigateActualPages",
+        "CartaAccessibilityTests.testNativeDialogFieldsExposeTheirLabelsIncludingSecurePasswordFields",
+        "CartaAccessibilityTests.testLockedAnnotationsCannotBeChangedByAlternateEditingPaths"
+      ],
+      "notes": "Etichette, valori/unità, annunci, focus ricerca, traversal Tab senza ciclo e pannello annotazioni da tastiera implementati. Revisione statica di25sezioni e test nativi disponibili. Audit manuale completo VoiceOver non completato e non attestato; non equivale ai controlli automatici.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M051",
+      "title": "Cmd F seleziona ricerca precedente",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M052",
+      "title": "Estratti nei risultati ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M053",
+      "title": "Colori accessibili risultati",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M054",
+      "title": "Cursore stabile durante ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M055",
+      "title": "Ricerca durante digitazione",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M056",
+      "title": "Conteggio ricerca con meno ridisegni",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M057",
+      "title": "Risultati precedenti durante aggiornamento",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M058",
+      "title": "Zoom invariato nella ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M059",
+      "title": "Navigazione risultati con focus documento",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M060",
+      "title": "Suggerimento OCR pagine senza testo",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M061",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:AdvancedScanEngine.process / PDFScanExportViews.swift:ScanWorkspaceController, ScanWorkspaceView",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "La preparazione iniziale non mostra una percentuale inventata della compilazione del modello."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Stato preparazione motore OCR"
+    },
+    {
+      "id": "M062",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:AdvancedScanEngine.process / PDFScanExportViews.swift:ScanWorkspaceController, ScanWorkspaceView",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry",
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Il riconoscimento rimane probabilistico."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Contatori live OCR"
+    },
+    {
+      "id": "M063",
+      "status": "implemented",
+      "implementation": "PDFScanExportTools.swift:ScanCancellation.cancel/register; ScanWorkspaceController.cancel",
+      "tests": [
+        "testCancellationIsCheckedBeforeVisionOrTIFFWork"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "VNRequest.cancel viene propagato alla richiesta attiva; il framework può terminare internamente operazioni già avviate."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Annullamento richiesta Vision attiva"
+    },
+    {
+      "id": "M064",
+      "status": "implemented",
+      "implementation": "ScanOptions.languages; ScanWorkspaceView lingue; AdvancedScanEngine.recognizedLines",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Sono proposte soltanto le lingue supportate dal Vision installato. Nessun download implementato."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Scelta lingue OCR"
+    },
+    {
+      "id": "M065",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.process: quattro orientamenti CoreImage e scelta tramite testo/confidenza",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Scelta euristica fra 0,90,180,270 gradi; controllare pagine prive di testo o con grafica dominante."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Correzione orientamento OCR"
+    },
+    {
+      "id": "M066",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.process: retry a 300 dpi sotto confidenza media0.75",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Un solo retry; il testo resta da verificare."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Retry OCR bassa affidabilità"
+    },
+    {
+      "id": "M067",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.searchableNativePage",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Per pagine senza correzioni geometriche/colore viene disegnato il PDF nativo; non si promette identità dei content stream."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Riduzione ricompressioni OCR"
+    },
+    {
+      "id": "M068",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.readingOrder: gutter e bande con titoli a tutta larghezza",
+      "tests": [
+        "testColumnReadingOrderUsesVerticalGutter"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Algoritmo euristico; layout complessi possono richiedere verifica."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Ordine lettura multicolonna"
+    },
+    {
+      "id": "M069",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.textCoverage: soglia area0.025",
+      "tests": [
+        "testHeaderTextDoesNotSuppressScanOCRCoverage"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "La copertura è euristica e include i riquadri dei caratteri."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "OCR scansioni con intestazione testuale"
+    },
+    {
+      "id": "M070",
+      "status": "implemented",
+      "implementation": "ScanPageReport; ScanWorkspaceView.Table; conservazione originale delle pagine non convertibili",
+      "tests": [
+        "testNativeOCRLayerRecognizesRasterAndPreservesSearchableGeometry",
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Le pagine fallite sono conservate e segnalate nel rapporto."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Rapporto OCR per pagina"
+    },
+    {
+      "id": "M071",
+      "status": "implemented",
+      "implementation": "ScanExportController.jpegPreview / ScanExportWorkspaceView anteprima",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Anteprima della prima pagina; serve controllare anche le altre pagine del risultato."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Anteprima JPEG"
+    },
+    {
+      "id": "M072",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: confronto byte e variazione percentuale",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Confronto con lo snapshot corrente del documento, che può differire dal file su disco."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Variazione percentuale dimensione"
+    },
+    {
+      "id": "M073",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.processedImage; ScanExportEngine.tiff/jpegPDF; export PNG",
+      "tests": [
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB",
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Profili raster sRGB e DisplayP3; non sostituisce un preflight CMYK o tinte piatte."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Profili colore conversione"
+    },
+    {
+      "id": "M074",
+      "status": "implemented",
+      "implementation": "ScanExportController.exportPNG/jpegPreview; TIFF DPI ImageIO",
+      "tests": [
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "PNG: report per pagina; JPEG: anteprima; TIFF: metadati fisici. Il limite pixel può ridurre i DPI richiesti."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "DPI effettivi output"
+    },
+    {
+      "id": "M075",
+      "status": "implemented",
+      "implementation": "ScanExportController.prefix/digits e nomi PNG sanitizzati",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "I nomi restano soggetti ai limiti del filesystem."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Nomi PNG personalizzabili"
+    },
+    {
+      "id": "M076",
+      "status": "implemented",
+      "implementation": "ScanExportController.exportPNG: elenco scorrevole e conferma conflitti; ricontrollo prima commit",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Un conflitto apparso durante il rendering interrompe la scrittura senza sostituzione non confermata."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Elenco conflitti PNG"
+    },
+    {
+      "id": "M077",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.normalizedParagraphs; TXT/EPUB",
+      "tests": [
+        "testParagraphReconstructionKeepsUnicodeBlankLinesAndDehyphenates"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Ricostruzione e de-sillabazione euristiche; non conserva il layout."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Ricostruzione a capo export"
+    },
+    {
+      "id": "M078",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: NSAttributedString RTF/officeOpenXML con paragrafi",
+      "tests": [
+        "testParagraphReconstructionKeepsUnicodeBlankLinesAndDehyphenates"
+      ],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Testo e paragrafi; non ricostruisce impaginazione Office, immagini o tabelle."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Paragrafi RTF DOCX"
+    },
+    {
+      "id": "M079",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.imagePDF(urls:margin:); slider margini A4",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Margini in punti; ogni immagine viene adattata proporzionalmente ad A4."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Margini immagini configurabili"
+    },
+    {
+      "id": "M080",
+      "status": "implemented",
+      "implementation": "ScanExportController.export: Conserva/Scarta prima della scrittura PDF maggiore",
+      "tests": [],
+      "verification": "implemented; code reviewed",
+      "limits": [
+        "Riguarda le copie raster JPEG; scartare non scrive un file."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Conservazione opzionale copia più grande"
+    },
+    {
+      "id": "M081",
+      "title": "Autore annotazioni configurabile",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M082",
+      "title": "Selezione annotazione sincronizzata",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M083",
+      "title": "Selezione annotazioni sovrapposte",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M084",
+      "title": "Anteprima annotazione testo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M085",
+      "title": "Conferma Cmd Invio",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M086",
+      "title": "Spessore tratto",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M087",
+      "title": "Regolarizzazione disegno",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M088",
+      "title": "Palette accessibile da tastiera",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M089",
+      "title": "Posizionamento pagine ruotate",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M090",
+      "title": "Avviso testo oltre riquadro",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M091",
+      "title": "Limite globale elaborazioni",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M092",
+      "title": "Miniature prioritarie visibili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M093",
+      "title": "Limite memoria cache",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M094",
+      "title": "Ridisegni annotazioni ridotti",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M095",
+      "status": "implemented",
+      "implementation": "ScanOptions.prioritizedPage; process: ordine lavoro prioritario e output riordinato; anteprima pagina corrente",
+      "tests": [
+        "testPrioritizedOCRPageKeepsFinalDocumentOrder"
+      ],
+      "verification": "automated test passed",
+      "limits": [],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Priorità pagina visibile"
+    },
+    {
+      "id": "M096",
+      "title": "Scritture file annullabili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M097",
+      "title": "Spazio libero prima esportazione",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M098",
+      "title": "Verifica output leggibile",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M099",
+      "title": "Compatibilità Anteprima",
+      "status": "implemented",
+      "verification": "manual_Apple_Preview_passed_2026-10-17",
+      "sources": [
+        "Sources/CartaPDF/CartaAutomation.swift"
+      ],
+      "tests": [],
+      "notes": "Estratto.pdf aperto in Anteprima:3pagine e testo nell’ordine2,3,1. I test persistenti coprono anche annotazioni, immagini, livelli, moduli e firme; non è una prova su ogni lettore PDF esistente.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "M100",
+      "title": "Test PDF danneggiati e grandi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Tests/CartaPDFTests/CartaWorkspaceServicesTests.swift",
+        "Tests/CartaPDFTests/PDFConversionToolsTests.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction",
+        "PDFConversionToolsTests.testRenderHonorsRotatedCropGeometryAndBoundsMemoryForHugePages"
+      ],
+      "notes": "Input vuoti, nonPDF, trailer danneggiato,1000pagine, estrazione indici distanti, renderinglimitato24milionipixel.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F001",
+      "title": "Unione alternata fronte retro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.merge alternate / reverseBacks",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Due PDF, fronti e retri; conserva in coda eventuali pagine in eccesso.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F002",
+      "title": "Unione automatica per gruppi nome",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.filenameGroup/groupedSources / buildMerge groups",
+      "tests": [
+        "PDFWorkflowEngineTests.testFrontBackMergeAndFilenameGroupsPreserveQueueOrder"
+      ],
+      "limits": "Raggruppa rimuovendo il suffisso numerico preceduto da spazio, trattino o underscore.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F003",
+      "title": "Sovrapposizione PDF trasparente",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.overlay",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Copia statica con testo/vettori disegnabili; campi/annotazioni appiattiti.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F004",
+      "title": "Divisione per segnalibri",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit bookmarks",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": "Usa segnalibri principali con destinazioni di pagina valide.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F005",
+      "title": "Divisione ogni N pagine",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit everyN",
+      "tests": [
+        "PDFWorkflowEngineTests.testSplitIntervalsFixedSizeNamesAndBookmarks"
+      ],
+      "limits": "",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F006",
+      "title": "Divisione dimensione massima",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit maxBytes",
+      "tests": [
+        "PDFWorkflowEngineTests.testMaximumSizeMeasuresActualOutputsAndRejectsOversizedSinglePage"
+      ],
+      "limits": "Misura PDF effettivi; una singola pagina oltre il limite produce errore senza ridurre automaticamente la qualità.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F007",
+      "title": "Divisione per testo",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit text",
+      "tests": [
+        "PDFWorkflowEngineTests.testTextAndBlankSeparatorsAreDetectedWithoutChangingSource"
+      ],
+      "limits": "Cerca nel testo selezionabile; per scansioni va prima eseguito OCR.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F008",
+      "title": "Divisione QR codici a barre",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.planSplit barcode / VNDetectBarcodesRequest",
+      "tests": [
+        "PDFWorkflowEngineTests.testVisionBarcodeSeparatorUsesLocalQRCodePayload"
+      ],
+      "limits": "Usa payload testuali riconosciuti da Vision; controllo visivo delle parti in anteprima.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F009",
+      "title": "Divisione pagine bianche",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.blankFraction / planSplit blank",
+      "tests": [
+        "PDFWorkflowEngineTests.testTextAndBlankSeparatorsAreDetectedWithoutChangingSource"
+      ],
+      "limits": "Rilevamento euristico a soglia configurabile; pagine separatrici mantenibili o escludibili.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F010",
+      "title": "Libretti fronte retro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.nUp booklet",
+      "tests": [
+        "PDFWorkflowEngineTests.testNUpAndBookletRetainVectorTextAndCorrectGeometry"
+      ],
+      "limits": "Impaginazione fronte/retro con padding a multipli di quattro; il ribaltamento va scelto nel dialogo di stampa.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F011",
+      "title": "N pagine per foglio",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.nUp",
+      "tests": [
+        "PDFWorkflowEngineTests.testNUpAndBookletRetainVectorTextAndCorrectGeometry"
+      ],
+      "limits": "Copia statica: conserva testo/vettori disegnabili, appiattisce campi/annotazioni.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F012",
+      "title": "Stampa poster",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.poster",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Tasselli con griglia e sovrapposizione configurabili; la copia è statica.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F013",
+      "title": "Separazione scansioni libro",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.facing",
+      "tests": [
+        "PDFWorkflowEngineTests.testFacingPosterOverlayAndPageReplacementProduceExpectedPages"
+      ],
+      "limits": "Separazione centrale in due metà, ordine sinistra/destra configurabile; non esegue dewarping del dorso.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F014",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.estimatedSkew/projectionSkew/processedImage; ScanWorkspaceView",
+      "tests": [
+        "testAutomaticDeskewFindsTiltedTextBaseline",
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB"
+      ],
+      "verification": "native automated tests passed",
+      "limits": [
+        "La rotazione mantiene le dimensioni e può tagliare bordi; correzione manuale disponibile."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Raddrizzamento scansioni"
+    },
+    {
+      "id": "F015",
+      "status": "implemented",
+      "implementation": "AdvancedScanEngine.processedImage: CIColorControls e CINoiseReduction",
+      "tests": [
+        "testCleanupAndManualDeskewRetainExtentAndUseExplicitSRGB"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Copia raster; aumenta contrasto e riduce rumore, senza ricostruire dettagli perduti."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Pulizia scansioni"
+    },
+    {
+      "id": "F016",
+      "status": "implemented",
+      "implementation": "ScanScannerController e ScanNativeScanner: ImageCaptureCore + IKScannerDeviceView",
+      "tests": [],
+      "verification": "production build passed; hardware verification required",
+      "limits": [
+        "Solo scanner locali compatibili con macOS; richiede dispositivo/driver. Acquisizione fisica non eseguita in questa sessione."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Acquisizione scanner",
+      "manual_validation_required": true
+    },
+    {
+      "id": "F017",
+      "status": "implemented",
+      "implementation": "ScanCaptureController: ScreenCaptureKit/SCScreenshotManager; ScanCaptureView",
+      "tests": [],
+      "verification": "production build passed; permission/runtime verification required",
+      "limits": [
+        "Serve autorizzazione macOS alla registrazione schermo. Nessuna cattura è stata effettuata automaticamente nei test."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Cattura schermate finestre",
+      "manual_validation_required": true
+    },
+    {
+      "id": "F018",
+      "title": "Pagine duplicate visive",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F019",
+      "title": "Intestazioni piè pagina dinamici",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.template / numberingAnnotations",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Variabili {page}, {pages}, {name}, {date}, {bates}; annotazioni annullabili.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F020",
+      "title": "Libreria timbri",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F021",
+      "title": "Sommario cliccabile",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.tableOfContents",
+      "tests": [
+        "PDFWorkflowEngineTests.testDynamicHeadersBatesFitAndClickableContentsPersist"
+      ],
+      "limits": "Voci dai segnalibri principali o da tutte le pagine; link interni persistenti nel PDF salvato.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F022",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "setPageLabels",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPageLabelsUseRealCatalogNumberTreeAndPreserveOriginalRevision",
+      "implemented": "Numerazione logica mediante PageLabels/number tree, stili decimale/romano/alfabetico/prefisso e sezioni conservate.",
+      "limits": "Non aggiunge numeri stampati. Rifiuta PDF cifrati o certificati DocMDP.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Numerazione logica sezioni"
+    },
+    {
+      "id": "F023",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "embeddedImages / extractImage",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testOriginalJPEGExtractionPreservesTheEncodedBytesExactly",
+      "implemented": "JPEG/JPX estratti con i byte incorporati; bitmap RGB/grigie compatibili esportate PNG alla risoluzione originale.",
+      "limits": "PNG: solo 8 bit DeviceRGB/DeviceGray senza Decode/Mask/SMask. Filtri non supportati rifiutati; non ricostruisce immagini inline.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Estrazione immagini originali"
+    },
+    {
+      "id": "F024",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.tiff: ImageIO TIFF LZW multipagina",
+      "tests": [
+        "testMultipageTIFFHasEveryPageAndPhysicalResolution"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Esportazione raster con limiti pixel per pagina."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "TIFF multipagina"
+    },
+    {
+      "id": "F025",
+      "status": "implemented",
+      "implementation": "ScanHTMLRenderer: WebKit non persistente, content rules, CSP, script disabilitati, export PDF asincrono A4; generation guard e identità WKNavigation contro caricamenti obsoleti",
+      "tests": [
+        "testOfflineHTMLPrintsStaticTextWithScriptsDisabled",
+        "testHTMLRapidSelectionExportsLatestFileAndInvalidSelectionNeverReusesOldHTML"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "HTML UTF8 locale; risorse remote escluse; CSS/immagini incorporate ammessi. La suddivisione A4 può interrompere righe o tabelle e richiede controllo."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "HTML locale in PDF"
+    },
+    {
+      "id": "F026",
+      "status": "implemented",
+      "implementation": "ScanExportEngine.epub; ScanStoredZIP: EPUB3 con mimetype primo non compresso, OPF/nav/XHTML",
+      "tests": [
+        "testEPUBHasStoredFirstMimetypeValidXMLAndCRC"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "EPUB testuale senza riproduzione del layout, immagini o font del PDF."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "EPUB testo"
+    },
+    {
+      "id": "F027",
+      "status": "implemented",
+      "implementation": "ScanCSV.table: area normalizzata e separatori manuali; preview CSV modificabile",
+      "tests": [
+        "testManualAndAutomaticTablesPreserveTwoColumnRows",
+        "testCSVQuotedFieldsNewlinesAndDelimiterRoundTrip"
+      ],
+      "verification": "automated tests passed",
+      "limits": [
+        "Necessita testo selezionabile/OCR; coordinate riferite allo spazio PDF."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "CSV tabelle manuali"
+    },
+    {
+      "id": "F028",
+      "status": "implemented",
+      "implementation": "ScanCSV.table: raggruppamento righe e gap geometrici delle colonne",
+      "tests": [
+        "testManualAndAutomaticTablesPreserveTwoColumnRows"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Riconoscimento euristico di tabelle testuali; anteprima correggibile prima export."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "CSV tabelle automatiche"
+    },
+    {
+      "id": "F029",
+      "status": "implemented",
+      "implementation": "ScanCSV.filledDocuments; ScanCSVFormController: worker cancellabile, una copia per riga, no overwrite e verifica PDF; scelta etichetta→export value, booleani validati, password escluse e massimo caratteri rispettato",
+      "tests": [
+        "testCSVFormFillingCreatesIndependentCopiesAndRejectsMissingFields",
+        "testCSVQuotedFieldsNewlinesAndDelimiterRoundTrip",
+        "testCSVPreservesExplicitEmptyRecordsForClearingForms",
+        "testCSVChoiceLabelsMapToExportValuesAndCheckboxRejectsUnknownValues",
+        "testCSVTextFieldsRejectPasswordsAndMaximumLengthOverflow"
+      ],
+      "verification": "automated engine tests passed",
+      "limits": [
+        "Campi testo, checkbox e scelta; nomi intestazione esatti. Checkbox: sì/no, true/false, 1/0; vuoto deseleziona, altri valori danno errore. Campi password/sola lettura esclusi. Copie non protette; originali conservati. File già completati restano dopo annullamento."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Compilazione moduli CSV"
+    },
+    {
+      "id": "F030",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "embeddedFiles / addingAttachments / extractAttachment / removingAttachment",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testAttachmentsPreserveExactBytesAndCollectionSurvivesReopening",
+      "implemented": "Filespec e stream EmbeddedFile reali, name tree, elenco/estrazione byte-identica, aggiunta/rimozione in copie.",
+      "limits": "Gestisce EmbeddedFiles nel name tree del catalogo con Filespec indiretti. Allegati solo in annotazioni o altre strutture non sono elencati. Rimozione incrementale non cancella i byte delle revisioni precedenti.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Allegati PDF"
+    },
+    {
+      "id": "F031",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFNativeProfileConverter.portfolioIndex",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPortfolioHasAnActualIndexPageAndEmbeddedOriginalFiles",
+      "implemented": "Portfolio con pagina indice leggibile, Collection/Schema e file originali incorporati.",
+      "limits": "Il supporto della navigazione Collection varia tra lettori; la pagina indice e il pannello Allegati restano disponibili. Nessuna esecuzione automatica degli allegati.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Portfolio PDF"
+    },
+    {
+      "id": "F032",
+      "status": "implemented",
+      "implementation": "LocalPDFLibrary: JSON locale persistente, bookmark, etichette, categorie e filtri",
+      "tests": [
+        "testLibraryJSONPersistsTagsCategoriesAndRemovalLeavesOriginal"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Conserva collegamenti e indice di testo; PDF protetti/non copiabili esclusi, reindicizzazione disponibile."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Biblioteca locale"
+    },
+    {
+      "id": "F033",
+      "status": "implemented",
+      "implementation": "LibraryEngine.hits; LibraryWorkspaceView ricerca asincrona multideocumento e apertura pagina",
+      "tests": [
+        "testCrossDocumentSearchFindsAccentInsensitivePageExcerpts"
+      ],
+      "verification": "automated test passed",
+      "limits": [
+        "Ricerca sull’indice locale; usare Reindicizza dopo modifiche esterne."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Ricerca più PDF"
+    },
+    {
+      "id": "F034",
+      "title": "Recupero arresti imprevisti",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testRecoveryAndVersionsPreserveEncryptionAndDoNotTouchOriginal",
+        "CartaWorkspaceServicesTests.testUntitledDocumentsRetainIndependentVersionHistories"
+      ],
+      "notes": "Recupero debounced1.2sec per documenti modificati, versioni ultime20 per file, cifratura preservata, ripristino in copia, nessuna password salvata.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F035",
+      "title": "Cronologia versioni",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testRecoveryAndVersionsPreserveEncryptionAndDoNotTouchOriginal",
+        "CartaWorkspaceServicesTests.testUntitledDocumentsRetainIndependentVersionHistories"
+      ],
+      "notes": "Recupero debounced1.2sec per documenti modificati, versioni ultime20 per file, cifratura preservata, ripristino in copia, nessuna password salvata.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F036",
+      "title": "Procedure batch",
+      "status": "implemented",
+      "implementation": "WorkflowEngine.runBatch / WorkflowBatchStep / batchControls",
+      "tests": [
+        "PDFWorkflowEngineTests.testBatchPipelineExecutesOrderedStepsWithoutChangingSourcesOrSavingPasswordPreset",
+        "PDFWorkflowEngineTests.testStagedWriterRenamesConflictsAndRollsBackCancellation"
+      ],
+      "limits": "Procedure PDF ordinate con 14 operazioni, preset JSON senza password, progresso, annullamento e salvataggio transazionale.",
+      "coverage_file": "WorkflowCoverage.json"
+    },
+    {
+      "id": "F037",
+      "status": "implemented",
+      "implementation": "LibraryFolderWatcher: DispatchSource filesystem, debounce, TXT/OCR/TIFF, output atomico senza overwrite; CartaJobLimiter condiviso; session generation; fingerprint solo output riusciti e riferito alla destinazione; rifiuto stessa cartella anche via symlink",
+      "tests": [
+        "testWatchedFolderProcessesExistingPDFLocallyAndPreservesSource",
+        "testWatcherStopRestartDoesNotAcknowledgeCancelledFilesOrAcceptOldCallbacks",
+        "testWatcherRejectsOutputSymlinkToInputFolder",
+        "testWatcherNewOutputFolderReprocessesSuccessfulSource"
+      ],
+      "verification": "native automated test passed",
+      "limits": [
+        "Monitoraggio non ricorsivo mentre la finestra resta aperta; PDF protetti segnalati; nessun daemon di sistema installato. Un errore non annullato viene riprovato dopo modifica sorgente o riavvio del monitoraggio; gli annullati restano sempre rielaborabili."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Cartelle monitorate"
+    },
+    {
+      "id": "F038",
+      "title": "Comandi Rapidi AppleScript",
+      "status": "implemented",
+      "verification": "AppIntent_and_CLI_passed_AppleScript_dictionary_packaged",
+      "sources": [
+        "Sources/CartaPDF/CartaAutomation.swift",
+        "Resources/CartaPDF.sdef",
+        "scripts/build-app.sh"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testNativeAppIntentReturnsAnIndependentReadableMergedFile",
+        "CartaWorkspaceServicesTests.testAutomationMergeAndRefusalToOverwriteSources"
+      ],
+      "notes": "Intent UnisciPDF reale con metadati estratti Apple. Dizionario mergePDFs e NSScriptCommand presenti; dispatch AppleEvent da ScriptEditor non ancora verificato manualmente. CLI info/merge/extract/split/text verificata su fixture temporanee.",
+      "coverage_file": "WorkspaceCoverage.json",
+      "manual_validation_required": "Dispatch AppleEvent da Script Editor; AppIntent/CLI testati e dizionario incluso."
+    },
+    {
+      "id": "F039",
+      "status": "implemented",
+      "implementation": "LibraryEngine.proposedName; LocalPDFLibrary.rename con anteprima regex/catture e gestione conflitti",
+      "tests": [
+        "testRegexRenameUsesCaptureAndSanitizesPathSeparators",
+        "testRenameRefusesConflictsAndUpdatesLinkedFile"
+      ],
+      "verification": "automated tests passed",
+      "limits": [
+        "Rinomina del documento selezionato nella biblioteca; nessuna sovrascrittura di destinazioni esistenti."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Ridenominazione da contenuti"
+    },
+    {
+      "id": "F040",
+      "title": "Confronto visivo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen",
+        "CartaWorkspaceServicesTests.testCancellingVisualWorkersAlwaysClearsBusyState",
+        "CartaWorkspaceServicesTests.testVisualComparisonWorkerRetainsPDFDocumentsDuringRasterization"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente.",
+      "coverage_file": "WorkspaceCoverage.json"
+    },
+    {
+      "id": "F041",
+      "status": "implemented",
+      "implementation": "LibrarySpeechController: AVSpeechSynthesizer e sole speechVoices installate; pausa/velocità/stop",
+      "tests": [],
+      "verification": "production build passed; user-triggered audio verification required",
+      "limits": [
+        "Richiede una voce installata; nessun download o audio di test riprodotto automaticamente."
+      ],
+      "coverage_file": "ScanExportCoverage.json",
+      "title": "Lettura ad alta voce",
+      "manual_validation_required": true
+    },
+    {
+      "id": "F042",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "preflight / imagePlacements",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testPreflightReportsRealUnembeddedFontAndImagePlacementDPI",
+      "implemented": "Rapporto effettivo: MediaBox/CropBox, font/FontFile, immagini/DPI delle matrici cm/Do, Form XObjects, ICC, tag, azioni catalogo.",
+      "limits": "Analisi statica limitata; immagini inline e filtri non supportati segnalano incompletezza. Non verifica licenze font, ogni singolo glifo, separazioni colore o tutte le azioni annidate.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Preflight font immagini formati"
+    },
+    {
+      "id": "F043",
+      "status": "partial",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFArchiveValidator.validate / declaredProfile / CartaArchiveValidationView / validate-pdfa",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testNativePDFAGenerationContainsArchivalXMPAndOutputIntent",
+      "implemented": "Undici profili 1a/1b/2a/2b/2u/3a/3b/3u/4/4e/4f, inventario di 1489 regole ufficiali con hash fissati, controlli nativi espliciti, stati per clausola, rapporto JSON/testo, SHA-256 e CLI. Il livello CoreGraphics viene rilevato dai byte, senza presumere 2u.",
+      "limits": "Validazione ISO 19005 completa ancora non implementata. Modello font/grafica/ICC/XMP/struttura e riferimenti normativi incompleti: le condizioni non valutate restano notVerified e l’app non emette conforming finché esistono scopeGaps. Catalogo CC BY 4.0 distinto dal codice MIT. Conversione appiattisce moduli/annotazioni e non trasferisce allegati/livelli/firme.",
+      "sources": [
+        "Sources/CartaPDF/PDFArchiveValidator.swift",
+        "Sources/CartaPDF/PDFArchiveValidatorRules.swift",
+        "Sources/CartaPDF/PDFArchiveValidatorContent.swift",
+        "Sources/CartaPDF/PDFArchiveValidationViews.swift",
+        "Sources/CartaPDF/CartaAutomation.swift"
+      ],
+      "tests": [
+        "PDFArchiveValidatorTests.testAllElevenPinnedCataloguesHaveEveryOfficialRuleAndUniqueIdentifiers",
+        "PDFArchiveValidatorTests.testEveryProfileRemainsIndeterminateWhenNormativeModelIsIncomplete",
+        "CartaArchiveValidationTests.testCLIReportsActualFileHashAndIndeterminateExitCodeWithoutChangingSource",
+        "CartaArchiveValidationTests.testCLIRejectsUnknownProfileAndReportsProvenViolationsWithExitTwo",
+        "CartaArchiveValidationTests.testChangingProfileCancelsValidationAndDoesNotPublishAnObsoleteReport"
+      ],
+      "coverage_file": "StructureCoverage.json",
+      "title": "Validazione conversione PDF A",
+      "remaining": "Validazione completa ISO 19005 non implementata: undici profili e 1489 voci tracciate, controlli nativi e rapporti disponibili; programmi font avanzati, alcuni codec/semantiche ISO32000, struttura A, payload 3D e riferimenti normativi ancora incompleti. Nessun esito conforme quando esistono lacune. Vedi Development/PDFA-ValidatorScope.md."
+    },
+    {
+      "id": "F044",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFNativeProfileConverter.redraw(outputProfile:)",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testICCPrintPreparationEmbedsAnActualCMYKOutputProfile",
+      "implemented": "Preparazione con OutputIntent GTS_PDFX e profilo ICC CMYK reale scelto localmente; verifica del profilo incorporato.",
+      "limits": "NON certifica ISO 15930/PDF-X, non converte ogni colore/separazione e non esegue preflight tipografico completo. Genera una copia ridisegnata.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Preparazione PDF X"
+    },
+    {
+      "id": "F045",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "tagPages",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testAccessibilityAuthoringCreatesParentTreeMCIDAndActualAlternativeText",
+      "implemented": "Authoring reale StructTreeRoot, StructElem, ParentTree, StructParents, MCID, Alt e Lang; un elemento per pagina in ordine documentale.",
+      "limits": "Nessuna ricostruzione semantica tra blocchi e nessuna certificazione PDF/UA. Strutture preesistenti rifiutate per non danneggiarle. I lettori possono preferire Alt al testo estratto per una pagina marcata Figure.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Tag accessibilità"
+    },
+    {
+      "id": "F046",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "optionalLayers / setLayerVisibility",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testLayerVisibilityChangesActualDefaultOCGConfigurationAndRendering",
+      "implemented": "Lettura OCG e modifica reale ON/OFF della configurazione predefinita; verifica anche tramite rendering.",
+      "limits": "Non riordina gli oggetti grafici, non gestisce ogni configurazione/evento opzionale e non elimina il contenuto nascosto.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Gestione livelli PDF"
+    },
+    {
+      "id": "F047",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "originalTextRuns / replaceOriginalText",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testActualTextOperatorIsReplacedAndUnsupportedFontIsRefused",
+      "implemented": "Sostituisce l’operando originale di Tj, apostrofo e virgolette; nessuna annotazione o sovrapposizione.",
+      "limits": "Solo Type1 standard non incorporati con WinAnsiEncoding esplicita, senza ToUnicode. Niente font CID/subset, TJ/kerning, immagini inline, reflow o correzione automatica dei limiti del riquadro. Stream condivisi modificati in tutti gli utilizzi. Le revisioni mantengono il testo precedente: non è oscuramento.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Modifica testo originale"
+    },
+    {
+      "id": "F048",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "replaceImage",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testImageExtractionHasOriginalResolutionAndReplacementMutatesXObjectWithoutOverlay",
+      "implemented": "Sostituzione reale dello stream XObject mantenendo riferimenti/posizioni; bitmap RGB a 8 bit, verifica dei pixel renderizzati e assenza di annotazioni aggiunte.",
+      "limits": "La trasparenza viene composta su bianco; oggetti condivisi cambiano in tutti gli utilizzi. Limite 40 megapixel; input strutturalmente cifrati rifiutati.",
+      "coverage_file": "StructureCoverage.json",
+      "title": "Sostituzione immagini originali"
+    },
+    {
+      "id": "F049",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFLocalCertificateEngine.sign / detachedCMS",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testRealCMSByteRangeSignatureVerifiesAndDetectsByteTamperingWithoutKeychainWrites",
+      "implemented": "Firma PDF CMS SHA-256 reale con ByteRange e certificato locale, inclusa verifica immediata. RSA via CMSEncoder; ECDSA via CMS DER standard con SecKeyCreateSignature e verifica indipendente CMSDecoder.",
+      "limits": "Richiede identità con chiave privata selezionata esplicitamente dall’utente. Nessun timestamp remoto, OCSP/CRL, firma qualificata o dichiarazione PAdES. PDF cifrati/DocMDP rifiutati. Test P256 interamente in memoria, nessuna scrittura nel Portachiavi.",
+      "additionalTests": [
+        "testRepeatedInMemoryECDSASignaturesRemainValidAcrossDistinctKeys"
+      ],
+      "coverage_file": "StructureCoverage.json",
+      "title": "Firma certificato locale"
+    },
+    {
+      "id": "F050",
+      "status": "implemented_with_explicit_limits",
+      "source": "Sources/CartaPDF/PDFStructureEngine.swift",
+      "symbols": "PDFLocalCertificateEngine.verify",
+      "testFile": "Tests/CartaPDFTests/PDFStructureEngineTests.swift",
+      "test": "testRealCMSByteRangeSignatureVerifiesAndDetectsByteTamperingWithoutKeychainWrites",
+      "implemented": "Verifica CMSDecoder, ByteRange canonico esclusivo di Contents, integrità crittografica, SHA-256 dei byte firmati, fiducia locale e byte di revisioni successive.",
+      "limits": "SubFilter supportati adbe.pkcs7.detached/ETSI.CAdES.detached, CMS DER a lunghezza definita. Trust con rete esplicitamente disabilitata. Non attesta revoca aggiornata, timestamp qualificati o intera conformità PAdES; revisioni successive segnalate separatamente.",
+      "additionalTests": [
+        "testRepeatedInMemoryECDSASignaturesRemainValidAcrossDistinctKeys"
+      ],
+      "coverage_file": "StructureCoverage.json",
+      "title": "Verifica firme offline"
+    }
+  ]
+}

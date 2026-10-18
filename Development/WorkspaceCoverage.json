@@ -1,0 +1,844 @@
+{
+  "requirements": [
+    {
+      "id": "M031",
+      "title": "Campi modulo raggruppati per pagina",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M032",
+      "title": "Ricerca campi modulo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M033",
+      "title": "Evidenzia campo selezionato",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M034",
+      "title": "Contatore caratteri campi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M035",
+      "title": "Stato valori modificati e confermati",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M036",
+      "title": "Spiegazione campi non modificabili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M037",
+      "title": "Segnalazione valori condivisi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M038",
+      "title": "Campi obbligatori evidenziati",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFFormsView.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testFormsPersistOriginalFlagsAndUndoValues",
+        "PDFPageToolsTests.testReadOnlyFormsCannotBeEdited"
+      ],
+      "notes": "Pannello Moduli con ricerca, raggruppamento, limiti, obbligatorietà e mostra campo; XFA/radio/password non supportati."
+    },
+    {
+      "id": "M039",
+      "title": "Riepilogo protezioni copie",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFPageTools.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testProtectedCopyDoesNotChangeSource"
+      ],
+      "notes": "Riepilogo password apertura, nessuna restrizione aggiuntiva, decifratura di verifica prima del salvataggio."
+    },
+    {
+      "id": "M040",
+      "title": "Verifica password copie",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFPageTools.swift"
+      ],
+      "tests": [
+        "PDFPageToolsTests.testProtectedCopyDoesNotChangeSource"
+      ],
+      "notes": "Riepilogo password apertura, nessuna restrizione aggiuntiva, decifratura di verifica prima del salvataggio."
+    },
+    {
+      "id": "M041",
+      "title": "Posizione e dimensione finestre persistenti",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M042",
+      "title": "Ripristino ultima pagina",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M043",
+      "title": "Ripristino zoom",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M044",
+      "title": "Larghezza sidebar persistente",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M045",
+      "title": "Miniatura corrente visibile",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M046",
+      "title": "Zoom centrato puntatore",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M047",
+      "title": "Scorciatoie personalizzabili",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M048",
+      "title": "Toolbar adattiva",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M049",
+      "title": "Indicazione strumento attivo compatta",
+      "status": "implemented",
+      "verification": "automated_state_and_manual_UI",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testReadingStateAndPreferencesPersistInIsolatedStores"
+      ],
+      "notes": "Stato per file, frame, sidebar, miniature visibili, pinch/Option rotella al puntatore, scorciatoie con conflitti e toolbar adattiva."
+    },
+    {
+      "id": "M050",
+      "title": "VoiceOver completo",
+      "status": "manual_verification_pending",
+      "verification": "static_review_and_native_tests_manual_audit_waived_by_user",
+      "sources": [
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/ToolBrowserView.swift",
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/CartaAccessibility.swift",
+        "Sources/CartaPDF/CartaKeyboardEditing.swift",
+        "Sources/CartaPDF/PDFFormsView.swift",
+        "Sources/CartaPDF/PDFScanExportViews.swift",
+        "Sources/CartaPDF/PDFWorkflowViews.swift",
+        "Sources/CartaPDF/PDFStructureViews.swift"
+      ],
+      "tests": [
+        "CartaAccessibilityTests.testTabTraversalLeavesDocumentAtBothEndsInsteadOfTrappingFocus",
+        "CartaAccessibilityTests.testNativeDocumentAccessibilityActionsNavigateActualPages",
+        "CartaAccessibilityTests.testNativeDialogFieldsExposeTheirLabelsIncludingSecurePasswordFields",
+        "CartaAccessibilityTests.testLockedAnnotationsCannotBeChangedByAlternateEditingPaths"
+      ],
+      "notes": "Etichette, valori/unità, annunci, focus ricerca, traversal Tab senza ciclo e pannello annotazioni da tastiera implementati. Revisione statica di25sezioni e test nativi disponibili. Audit manuale completo VoiceOver non completato e non attestato; non equivale ai controlli automatici."
+    },
+    {
+      "id": "M051",
+      "title": "Cmd F seleziona ricerca precedente",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M052",
+      "title": "Estratti nei risultati ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M053",
+      "title": "Colori accessibili risultati",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M054",
+      "title": "Cursore stabile durante ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M055",
+      "title": "Ricerca durante digitazione",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M056",
+      "title": "Conteggio ricerca con meno ridisegni",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M057",
+      "title": "Risultati precedenti durante aggiornamento",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M058",
+      "title": "Zoom invariato nella ricerca",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M059",
+      "title": "Navigazione risultati con focus documento",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M060",
+      "title": "Suggerimento OCR pagine senza testo",
+      "status": "implemented",
+      "verification": "manual_UI_passed",
+      "sources": [
+        "Sources/CartaPDF/PDFEditorModel.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift"
+      ],
+      "tests": [],
+      "notes": "Verificati sei risultati, estratti, pagina3 e zoom stabile; CmdF seleziona query. Debounce320ms, update80ms, focus e suggerimento OCR."
+    },
+    {
+      "id": "M081",
+      "title": "Autore annotazioni configurabile",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M082",
+      "title": "Selezione annotazione sincronizzata",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M083",
+      "title": "Selezione annotazioni sovrapposte",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M084",
+      "title": "Anteprima annotazione testo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M085",
+      "title": "Conferma Cmd Invio",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M086",
+      "title": "Spessore tratto",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M087",
+      "title": "Regolarizzazione disegno",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M088",
+      "title": "Palette accessibile da tastiera",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M089",
+      "title": "Posizionamento pagine ruotate",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M090",
+      "title": "Avviso testo oltre riquadro",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/PDFCanvas.swift",
+        "Sources/CartaPDF/ContentView.swift",
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/PDFEditorModel.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testAnnotationMoveAndStyleUndoIndependently",
+        "CartaWorkspaceServicesTests.testInkSmoothingPreservesEndsAndSharpCorners",
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction"
+      ],
+      "notes": "Autore/tratto, selezione sincronizzata e Tab tra annotazioni sovrapposte, preview, CmdInvio/Esc, paletteCmdShift1–5, coordinate PDFKit ruotate, avviso overflow."
+    },
+    {
+      "id": "M091",
+      "title": "Limite globale elaborazioni",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M092",
+      "title": "Miniature prioritarie visibili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M093",
+      "title": "Limite memoria cache",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M094",
+      "title": "Ridisegni annotazioni ridotti",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M096",
+      "title": "Scritture file annullabili",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M097",
+      "title": "Spazio libero prima esportazione",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M098",
+      "title": "Verifica output leggibile",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaRenderingServices.swift",
+        "Sources/CartaPDF/CartaFileIO.swift",
+        "Sources/CartaPDF/PDFConversionTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testGlobalLimiterBoundsConcurrencyAndCancelsWaiters",
+        "CartaWorkspaceServicesTests.testAtomicWriterRefusesConflictsAndCancellationKeepsPreviousBytes"
+      ],
+      "notes": "Worker pesanti con limiter condiviso, miniature lazy e cache limitata con pressione memoria; scritture chunk1MB atomiche annullabili, precheck spazio e verifiche di riapertura dei PDF generati. Modifiche UI/PDFKit restano seriali sul main actor."
+    },
+    {
+      "id": "M099",
+      "title": "Compatibilità Anteprima",
+      "status": "implemented",
+      "verification": "manual_Apple_Preview_passed_2026-10-17",
+      "sources": [
+        "Sources/CartaPDF/CartaAutomation.swift"
+      ],
+      "tests": [],
+      "notes": "Estratto.pdf aperto in Anteprima:3pagine e testo nell’ordine2,3,1. I test persistenti coprono anche annotazioni, immagini, livelli, moduli e firme; non è una prova su ogni lettore PDF esistente."
+    },
+    {
+      "id": "M100",
+      "title": "Test PDF danneggiati e grandi",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Tests/CartaPDFTests/CartaWorkspaceServicesTests.swift",
+        "Tests/CartaPDFTests/PDFConversionToolsTests.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testMalformedInputsAndLargePageCountHaveBoundedRenderingAndSafeExtraction",
+        "PDFConversionToolsTests.testRenderHonorsRotatedCropGeometryAndBoundsMemoryForHugePages"
+      ],
+      "notes": "Input vuoti, nonPDF, trailer danneggiato,1000pagine, estrazione indici distanti, renderinglimitato24milionipixel."
+    },
+    {
+      "id": "F018",
+      "title": "Pagine duplicate visive",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente."
+    },
+    {
+      "id": "F020",
+      "title": "Libreria timbri",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente."
+    },
+    {
+      "id": "F034",
+      "title": "Recupero arresti imprevisti",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testRecoveryAndVersionsPreserveEncryptionAndDoNotTouchOriginal"
+      ],
+      "notes": "Recupero debounced1.2sec per documenti modificati, versioni ultime20 per file, cifratura preservata, ripristino in copia, nessuna password salvata."
+    },
+    {
+      "id": "F035",
+      "title": "Cronologia versioni",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaWorkspaceServices.swift",
+        "Sources/CartaPDF/PDFWorkspaceDocument.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testRecoveryAndVersionsPreserveEncryptionAndDoNotTouchOriginal"
+      ],
+      "notes": "Recupero debounced1.2sec per documenti modificati, versioni ultime20 per file, cifratura preservata, ripristino in copia, nessuna password salvata."
+    },
+    {
+      "id": "F038",
+      "title": "Comandi Rapidi AppleScript",
+      "status": "implemented",
+      "verification": "AppIntent_and_CLI_passed_AppleScript_dictionary_packaged",
+      "sources": [
+        "Sources/CartaPDF/CartaAutomation.swift",
+        "Resources/CartaPDF.sdef",
+        "scripts/build-app.sh"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testNativeAppIntentReturnsAnIndependentReadableMergedFile",
+        "CartaWorkspaceServicesTests.testAutomationMergeAndRefusalToOverwriteSources"
+      ],
+      "notes": "Intent UnisciPDF reale con metadati estratti Apple. Dizionario mergePDFs e NSScriptCommand presenti; dispatch AppleEvent da ScriptEditor non ancora verificato manualmente. CLI info/merge/extract/split/text verificata su fixture temporanee."
+    },
+    {
+      "id": "F040",
+      "title": "Confronto visivo",
+      "status": "implemented",
+      "verification": "code_review_and_targeted_tests",
+      "sources": [
+        "Sources/CartaPDF/CartaVisualTools.swift"
+      ],
+      "tests": [
+        "CartaWorkspaceServicesTests.testVisualComparisonAndDuplicateDetectionUseActualPixels",
+        "CartaWorkspaceServicesTests.testImageStampAppearancePersistsAfterPDFReopen"
+      ],
+      "notes": "Confronto pixel con soglia e pagine mancanti; duplicati sono candidati da verificare, nessuna eliminazione automatica. Timbri testo/immagine con appearance persistente."
+    }
+  ]
+}

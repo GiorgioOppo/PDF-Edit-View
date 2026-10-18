@@ -1,0 +1,416 @@
+{
+  "app_version": "3.6.0",
+  "build": "9",
+  "verified_app_path": "/private/tmp/CartaPDF-36-final.itcjki7m/CartaPDF.app",
+  "working_directory": "/private/tmp",
+  "binary_sha256": "bb1ff4f1093390b09df065733ab5b0c3dacd4d726c0d67a594899c56326ba187",
+  "codesign_strict": "passed",
+  "native_release_CLI_profiles": [
+    {
+      "profile": "1a",
+      "rules": 135,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 41,
+      "failed": 7,
+      "not_verified": 2,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "1b",
+      "rules": 129,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 42,
+      "failed": 4,
+      "not_verified": 2,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "2a",
+      "rules": 153,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 41,
+      "failed": 3,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "2b",
+      "rules": 144,
+      "exit_code": 3,
+      "verdict": "indeterminate",
+      "passed": 42,
+      "failed": 0,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "2u",
+      "rules": 146,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 41,
+      "failed": 1,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "3a",
+      "rules": 155,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 40,
+      "failed": 4,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "3b",
+      "rules": 146,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 41,
+      "failed": 1,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "3u",
+      "rules": 148,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 40,
+      "failed": 2,
+      "not_verified": 1,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "4",
+      "rules": 111,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 31,
+      "failed": 6,
+      "not_verified": 0,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "4e",
+      "rules": 111,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 31,
+      "failed": 6,
+      "not_verified": 0,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    },
+    {
+      "profile": "4f",
+      "rules": 111,
+      "exit_code": 2,
+      "verdict": "nonconforming",
+      "passed": 31,
+      "failed": 7,
+      "not_verified": 0,
+      "model_checks": 2,
+      "model_check_families": {
+        "PhysicalSyntax": 1,
+        "ICCStructuralModel": 1
+      }
+    }
+  ],
+  "input_sha256": "ef0361ea038a067da4e7858e990337cc64a962969fea9345cc2936c0f583307c",
+  "input_unchanged": true,
+  "catalogued_rule_entries": 1489,
+  "catalogue_resources_verified": 11,
+  "font_reference_resources_verified": 215,
+  "resources_resolved_outside_workspace": true,
+  "complete_ISO_validation": false,
+  "native_colour_schema_CLI_profiles": [
+    {
+      "profile": "1a",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "1b",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2a",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2b",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2u",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3a",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3b",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3u",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4e",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4f",
+      "schema_fixture": "valid",
+      "color_schema_status": [
+        "passed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "e00a508822ffac76b682d322e31af4bb3293b2f79a600da2ad39362c9ae33641",
+      "input_unchanged": true
+    },
+    {
+      "profile": "1a",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "1b",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2a",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2b",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "2u",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3a",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3b",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "3u",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4e",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    },
+    {
+      "profile": "4f",
+      "schema_fixture": "invalid",
+      "color_schema_status": [
+        "failed"
+      ],
+      "global_verdict": "nonconforming",
+      "exit_code": 2,
+      "input_sha256": "a97e292a8c37ddeaa6d5fd689da8892c52d5f13b7dfe86901f510addd041cc63",
+      "input_unchanged": true
+    }
+  ],
+  "colour_schema_scope": "22 packaged-CLI cases; local structural conditions only, not ISO completeness."
+}
