@@ -2,7 +2,7 @@
 
 [PublicRepositoryAudit.json](PublicRepositoryAudit.json) records repository preparation checks, separately from historical bundle evidence.
 
-[RepositoryMaintenanceVerification.json](RepositoryMaintenanceVerification.json) adds the verified `92408f4` merge baseline, enabled Dependabot alerts, the two configured CI environments and the current private-plan branch-protection limit. It preserves the earlier reports rather than rewriting their results.
+[RepositoryMaintenanceVerification.json](RepositoryMaintenanceVerification.json) adds the verified `92408f4` merge baseline, enabled Dependabot alerts, the two configured CI environments and the private-plan branch-protection limit observed at that time. It preserves the earlier reports rather than rewriting their results.
 
 [CICompatibilityVerification.json](CICompatibilityVerification.json) records the subsequent Xcode 26.6 compiler failure, the equivalent CIDToGIDMap refactor and focused CIDSet checks. It is separate from the original workflow-configuration and application-verification evidence.
 
@@ -15,6 +15,7 @@ This directory contains the catalog of 150 requirements, dated test/audit report
 - `PDFA-ValidatorCoverage.json`, `PDFARequirementsAudit.json`, and module evidence describe checks and sources. `conditions_preventing_full_validation_claim` contains general acceptance criteria, not an up-to-date inventory of defects.
 - `PDFA-CorpusEvidence.json` and `PDFA-CorpusReview*.json` reports describe runs against public data pinned to specific commits. Historical test names are not an accuracy oracle; the corpus covers nine profiles and has no 3a/3u directories.
 - `BuildManifest.json`, `ReleaseVerification.json`, and `PackagingVerification.json` are historical evidence for the local 3.6.0 package. They do not automatically attest this commit, later documentation, or a published installer. Their hashes describe the artifacts from the stated date and are not rewritten to imply a new build.
+- The separate [public 3.6.0 verification manifest](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/ReleaseVerification.json) describes the downloadable ZIP, source commit, toolchain, signing status and app inventory. See [installation](../docs/INSTALLATION.md) and [release maintenance](../docs/PUBLIC_RELEASE.md); later documentation changes do not rebuild that archive.
 - Temporary paths in reports record the provenance of the original runs. Temporary files, the corpus, raw logs, and bundles are not included in Git; these paths do not link to resources available in a clone.
 - Historical log hashes are preserved. The original logs may contain machine diagnostics and remain local. Copies used in a report must be reviewed and anonymized.
 - `VoiceOverAudit.json` and `AccessibilityPanelAudit.json` describe work that was actually observed. They do not attest completion of a manual VoiceOver audit.

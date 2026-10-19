@@ -4,6 +4,7 @@ Entries describe implementations and available evidence. Passing a test does not
 
 ## Unreleased
 
+- Added direct links to the published CartaPDF 3.6.0 Apple Silicon app, English installation instructions, checksums and public release evidence. Updated source-build and distribution guides to distinguish the downloadable ad hoc, non-notarized app from historical local builds. This documentation update does not modify the published archive.
 - Split CIDToGIDMap enumeration and long-decimal string construction into explicit typed steps to avoid Xcode 26.6 compiler timeouts. Added isolated CIDSet stream regressions for empty/zero mappings, CID0 exclusion, covered/missing CIDs and malformed lengths; existing long-decimal tests cover numeric behavior. PDF/A scope is unchanged. See the [compatibility record](Development/CICompatibilityVerification.json).
 - Configured an additional Apple Silicon macOS 26/Xcode 26.6 CI job alongside macOS 15/Xcode 26.3, with identical checks and independent failure reporting. The [maintenance record](Development/RepositoryMaintenanceVerification.json) preserves the verified `92408f4` baseline and its passing workflow, enabled Dependabot alerts, and the unavailable private-repository branch protection. Repository visibility and historical reports are unchanged.
 - Added a read-only publication-history checker with synthetic regressions in CI, reviewed hosted workflow history separately from source files, and prepared an optional `main` protection payload. Recorded the interactive localization audit's concrete automation-service blocker without claiming completion.
@@ -24,6 +25,8 @@ Entries describe implementations and available evidence. Passing a test does not
 - Documentation changes do not imply a new app release or certification.
 
 ## 3.6.0 — 2026-10-18
+
+First public binary: [download and release notes](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0). Requires Apple Silicon and macOS 14 or later; ad hoc signed, not notarized. See the [installation guide](docs/INSTALLATION.md) and the separate [public packaging verification](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/ReleaseVerification.json) for the distributed artifact. The historical results below describe their original executions.
 
 - Added schema checks for calibrated, Indexed, Separation and DeviceN color spaces, with exact numeric comparisons and explicit limits.
 - Resolve canonical aliases for Contents and Metadata streams, decoding and ICC profile identity.

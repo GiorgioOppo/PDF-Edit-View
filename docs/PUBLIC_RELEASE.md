@@ -1,6 +1,18 @@
-# Preparing for public release
+# Public releases and distribution
 
-The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository was created as private. This guide describes source-publication checks and settings; **the document itself neither authorizes nor changes visibility, and it does not automatically publish binaries**. GitHub displays the current repository visibility. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app remains CartaPDF 3.6.0.
+The [GiorgioOppo/PDF-Edit-View](https://github.com/GiorgioOppo/PDF-Edit-View) repository is public. The first downloadable release, [CartaPDF 3.6.0](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0), was published on October 18, 2026. The project is named PDF-Edit&View, with the GitHub slug PDF-Edit-View; the app is named CartaPDF. This guide records the published distribution and the checks to repeat for future releases. Historical preparation reports retain the settings and limitations observed at their original dates.
+
+## Published 3.6.0 download
+
+- [CartaPDF-3.6.0-macOS-arm64.zip](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/CartaPDF-3.6.0-macOS-arm64.zip): Apple Silicon only, macOS 14 or later, version 3.6.0/build 9. No Intel or universal binary is included.
+- [Installation guide](INSTALLATION.md): checksum verification, copying the app to Applications and app-specific first-launch approval. The ZIP includes standalone instructions, notes and licenses; [release-time instructions](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/INSTALLATION.md) are also available as an asset.
+- [Release notes](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0), [SHA-256 checksums](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/SHA256SUMS.txt) and [verification manifest](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/ReleaseVerification.json).
+
+The app has an **ad hoc signature and is not Apple-notarized**. It has no Developer ID identity. The public verification manifest describes the exact ZIP and app inventory, build toolchain, checks outside the workspace and signing status. It is separate from older local-build reports under `Development/`.
+
+The source tag `v3.6.0` identifies commit `84c4ec255069757f7773e2e8e28ed90e9e839812`. Both required CI jobs passed for that commit in [run 39154449179](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39154449179). The distributed app was built separately with the toolchain recorded in its verification manifest. Subsequent documentation updates do not rebuild or modify the published archive.
+
+`main` is protected with both required checks, an up-to-date branch, resolved conversations and a pull request, including for administrators. Force pushes and deletion are blocked. Check the live GitHub settings and workflow results when preparing each subsequent change.
 
 ## Repository contents
 
@@ -50,7 +62,7 @@ GitHub also makes historical Actions logs visible when a repository becomes publ
 
 ## GitHub security settings
 
-Dependabot alerts were enabled and verified with HTTP 204 from the repository's vulnerability-alerts endpoint; that operation also enables the dependency graph. The [maintenance record](../Development/RepositoryMaintenanceVerification.json) dates this configuration and the observed alert inventory. The repository remained private. GitHub's alerts for Actions support semantic-version references, not SHA references; the pinned checkout action is maintained through the separate Dependabot version-update configuration. Enabled alerts and an empty alert inventory do not establish complete security coverage. See [GitHub's documented alert limitations](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations).
+Dependabot alerts were enabled and verified with HTTP 204 from the repository's vulnerability-alerts endpoint; that operation also enables the dependency graph. The [maintenance record](../Development/RepositoryMaintenanceVerification.json) dates this configuration and the observed alert inventory while the repository was still private. GitHub's alerts for Actions support semantic-version references, not SHA references; the pinned checkout action is maintained through the separate Dependabot version-update configuration. Enabled alerts and an empty alert inventory do not establish complete security coverage. See [GitHub's documented alert limitations](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-alerts#limitations).
 
 The [main protection payload](../.github/main-protection.json) requires both configured checks, `Apple Silicon · Xcode 26.3` and `Apple Silicon · Xcode 26.6`, on an up-to-date branch, resolved conversations and a pull request, and blocks force pushes and branch deletion. It applies the requirements to administrators too. Verify successful executions and the exact rendered names before applying it. Zero mandatory approving reviews supports a solo maintainer while retaining the pull-request and CI requirements.
 
@@ -72,7 +84,7 @@ The following statements must remain visible in the public README and guides:
 - All seven interface languages are bundled, with eight resource variants and English fallback. Native component snapshots and partial interactive observations have different scopes; neither establishes a complete VoiceOver or independent linguistic audit.
 - All eleven PDF/A profiles are distinguished, but complete ISO validation remains unfinished and this version never emits `conforming`.
 - Hardware workflows, complete accessibility testing and AppleScript dispatch retain their documented manual-check status.
-- Source builds use an ad hoc signature. No notarized installer, legal signature qualification or binary release is implied by source publication.
+- Source builds and the public 3.6.0 download use an ad hoc signature. The published download is not notarized; app signing does not qualify document signatures or certify PDF output.
 
 These technical limitations do not need to be hidden or relabeled to publish the source. Keep them accurate and link the relevant evidence instead of claiming unperformed validation.
 
@@ -81,7 +93,7 @@ These technical limitations do not need to be hidden or relabeled to publish the
 - Build from an identified commit and verify the app actually extracted from the final archive.
 - Record the version, architecture, toolchain, SHA-256 hashes, and relevant test results.
 - Check resources outside the workspace and the signature on the extracted bundle.
-- For signed public distribution, prepare Developer ID signing and notarization with an authorized account and credentials; the current ad hoc signature does not replace them.
+- For an identified developer signature and notarization, use Developer ID signing with an authorized account and credentials. An ad hoc release must disclose the absence of Developer ID and notarization and provide app-specific first-launch instructions without disabling system protections.
 - Include licenses, instructions, limitations, and a changelog. Publish artifacts only after verifying their provenance and contents.
 
 No release should describe CartaPDF as a “complete ISO PDF/A validator,” “PDF/UA certified,” “complete PAdES,” or equivalent until the corresponding coverage is demonstrated. The corpus, catalogues, and tests provide evidence within their stated scope.

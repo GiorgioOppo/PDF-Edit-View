@@ -10,7 +10,19 @@ Project guides and GitHub support templates are in English. The app supports **I
 
 **PDF/A validation is incomplete.** The native validator distinguishes all 11 profiles, including PDF/A-4, 4e and 4f, but does not report full conformance while coverage gaps remain. See [PDF/A status](docs/PDFA.md).
 
-## Getting started
+## Download and install
+
+**[Download CartaPDF 3.6.0 for macOS](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/CartaPDF-3.6.0-macOS-arm64.zip)** — Apple Silicon (arm64), macOS 14 or later. This download does not include an Intel or universal binary. Xcode and Python are not required to run it.
+
+1. Download the ZIP from the [official 3.6.0 release](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0) and verify it against the published [SHA-256 checksums](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/SHA256SUMS.txt).
+2. Extract the `CartaPDF-3.6.0` folder, then drag `CartaPDF.app` into **Applications**.
+3. Open CartaPDF from Applications and use **File > Open** (**⌘O**) to open a PDF.
+
+The app is **ad hoc signed and not notarized by Apple**. macOS may block the first launch. Follow the [installation guide](docs/INSTALLATION.md) for the app-specific **Open Anyway** steps, checksum verification and updates. GitHub's automatic **Source code** archives contain sources, not the ready-to-run app.
+
+Read the [release notes and known limits](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0). The release also includes licenses and a [verification manifest](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/ReleaseVerification.json). The app remains free and processes documents locally.
+
+## Build from source
 
 The application targets **macOS 14 or later**. Building requires full Xcode with a recent macOS SDK on a compatible host; see the [build requirements](docs/BUILDING.md). CI is configured for Apple Silicon on macOS 15/Xcode 26.3 and macOS 26/Xcode 26.6. The [maintenance record](Development/RepositoryMaintenanceVerification.json) identifies the passing baseline; check the workflow result for the exact commit when assessing either environment.
 
@@ -22,7 +34,7 @@ From a checkout of this repository:
 open dist/CartaPDF.app
 ```
 
-The build creates `dist/CartaPDF.app`, which is excluded from Git, and applies a local ad hoc signature. This source repository does not automatically publish an installer or a Developer ID-notarized binary. The scripts select Xcode for their own process without changing the global `xcode-select` setting.
+The build creates `dist/CartaPDF.app`, which is excluded from Git, and applies a local ad hoc signature. It does not publish a GitHub release or notarize the app. The scripts select Xcode for their own process without changing the global `xcode-select` setting.
 
 Open **Strumenti** (Tools), or press **⇧⌘T**, to find an operation. Advanced tools provide previews, parameters and scope information. Structural changes, scanning, signing and conversion workflows save separate copies. Save ordinary annotations and page edits with **⌘S**; undo with **⌘Z**. See the [user guide](docs/USAGE.md).
 
@@ -49,11 +61,11 @@ The [requirements inventory](Development/FeatureRequirements.json) lists 100 imp
 
 ## Documentation
 
-- [Guide index](docs/README.md), [using the app](docs/USAGE.md) and [command-line interface](docs/CLI.md).
+- [Guide index](docs/README.md), [installation](docs/INSTALLATION.md), [using the app](docs/USAGE.md) and [command-line interface](docs/CLI.md).
 - [Building and testing](docs/BUILDING.md), [architecture](docs/ARCHITECTURE.md) and [contributing](CONTRIBUTING.md).
 - [Privacy and permissions](docs/PRIVACY.md), [accessibility](docs/ACCESSIBILITY.md), [languages](docs/LOCALIZATION.md) and [security](SECURITY.md).
 - [PDF/A status](docs/PDFA.md), [changelog](CHANGELOG.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
-- [Support](SUPPORT.md), [public-release preparation](docs/PUBLIC_RELEASE.md) and [interpreting development evidence](Development/README.md).
+- [Support](SUPPORT.md), [release distribution and maintenance](docs/PUBLIC_RELEASE.md) and [interpreting development evidence](Development/README.md).
 
 ## Scope and limitations
 
@@ -134,7 +146,7 @@ The original veraPDF XML catalogues are **CC BY 4.0** data. Adobe CMap/AGL and P
 
 Read [SUPPORT.md](SUPPORT.md) for questions and bug reports, [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes, and [SECURITY.md](SECURITY.md) for vulnerability reporting. Use the English issue and pull-request templates. Prefer synthetic or redacted reproductions; never include private PDFs, passwords, keys or confidential raw logs.
 
-Source publication, branch protections and binary distribution are separate owner decisions described in [PUBLIC_RELEASE.md](docs/PUBLIC_RELEASE.md). Current repository visibility does not change the app's documented scope or imply a notarized binary release.
+The repository is public and [CartaPDF 3.6.0 is available to download](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0). [Release maintenance](docs/PUBLIC_RELEASE.md) documents source checks, branch protections and binary verification. Publication does not change the app's documented scope or the download's ad hoc, non-notarized signing status.
 
 ## License
 

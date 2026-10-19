@@ -1,6 +1,6 @@
 # User guide
 
-The current version requires macOS 14 or later. To build the app from source, follow [BUILDING](BUILDING.md). The local bundle uses an ad hoc signature and is not notarized with Developer ID; it is not a signed public distribution.
+The downloadable CartaPDF 3.6.0 app requires macOS 14 or later on an Apple Silicon Mac (arm64). Follow [INSTALLATION](INSTALLATION.md) for the official download, ZIP checksum, installation and first-launch steps. The public binary uses an ad hoc signature and is not notarized by Apple. To build the app from source, follow [BUILDING](BUILDING.md).
 
 The app follows macOS language preferences and supports seven languages, including both Chinese scripts, with English fallback. See [language selection](LOCALIZATION.md). This guide uses the English control names; the app displays their translations in the selected language. Search for tools using their displayed names.
 

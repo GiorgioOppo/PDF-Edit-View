@@ -1,10 +1,12 @@
 # Building and verification
 
+To use the published app, [download CartaPDF 3.6.0](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/CartaPDF-3.6.0-macOS-arm64.zip) and follow the [installation guide](INSTALLATION.md). The download requires Apple Silicon and macOS 14 or later; running it does not require Xcode or Python. This guide covers building and verifying the source.
+
 ## Requirements
 
 - **Running the app:** macOS 14 or later.
 - **Building and testing:** a macOS version supported by the selected Xcode release. Apple lists Sequoia 15.6–Tahoe 26.x for Xcode 26.3; consult the [official requirements](https://developer.apple.com/xcode/system-requirements) for your toolchain.
-- A full Xcode installation with a recent macOS SDK. CI is configured for Xcode 26.3 on macOS 15 and Xcode 26.6 on macOS 26; the recorded passing baseline uses Xcode 26.3. The Swift Package Manager manifest uses Swift tools 5.9 format, which does not imply that every API is available in older SDKs. Cryptographic fixtures use `SecIdentityCreate`, exposed by recent SDKs, without writing to Keychain.
+- A full Xcode installation with a recent macOS SDK. CI uses Xcode 26.3 on macOS 15 and Xcode 26.6 on macOS 26; both passed for the published source baseline identified below. The Swift Package Manager manifest uses Swift tools 5.9 format, which does not imply that every API is available in older SDKs. Cryptographic fixtures use `SecIdentityCreate`, exposed by recent SDKs, without writing to Keychain.
 - Apple tools available through `xcrun`.
 - Python 3 for development scripts and reports only; it is not an app dependency.
 
@@ -57,7 +59,7 @@ Raw `*.log` files are excluded from Git to avoid unintentionally publishing loca
 
 The [macOS checks](../.github/workflows/ci.yml) workflow is configured with two Apple Silicon jobs: `macos-15` with Xcode 26.3 and `macos-26` with Xcode 26.6. Each job selects its Xcode installation explicitly and runs the same repository, localization, publication-history regression and syntax checks, native suite, Release build, and checks of the signature, architecture, and actual bundled CLI across all eleven profiles. Matrix failures do not cancel the other job. The smoke test uses a synthetic PDF without XMP: it requires complete catalogues and a nonconforming result, preventing a false conformity claim. The packaged localization checks also exercise twenty language-selection scenarios described below. The official checkout action is pinned to a commit SHA; permissions are read-only and credentials are not persisted in the checkout. Dependabot proposes Actions updates.
 
-The [maintenance verification record](../Development/RepositoryMaintenanceVerification.json) identifies the passing baseline at commit `92408f4bd0a7cce213772656444321ec52537d1e` and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030). That execution used macOS 15 and Xcode 26.3. The additional macOS 26/Xcode 26.6 job is configured in this change; its result must be checked on the pushed commit before treating that environment as verified. The record also covers enabled Dependabot alerts and the private repository's unavailable branch-protection setting, while preserving historical evidence.
+The [maintenance verification record](../Development/RepositoryMaintenanceVerification.json) identifies the earlier passing baseline at commit `92408f4bd0a7cce213772656444321ec52537d1e` and [workflow run 39151458030](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39151458030), which used macOS 15 and Xcode 26.3. The published `v3.6.0` source baseline, `84c4ec255069757f7773e2e8e28ed90e9e839812`, subsequently passed both jobs in [workflow run 39154449179](https://github.com/GiorgioOppo/PDF-Edit-View/actions/runs/39154449179). The earlier record retains its original Dependabot and private-plan protection findings; it is not a report of the later run or current visibility.
 
 The first Xcode 26.6 executions exposed compiler type-checking timeouts in CIDToGIDMap enumeration and long-decimal string construction. The [compatibility follow-up](../Development/CICompatibilityVerification.json) records the failures, the equivalent explicit parsing steps and focused regression results separately from the earlier configuration record. The corrections do not expand ISO PDF/A coverage or relabel the baseline as a run on another SDK.
 
@@ -110,6 +112,8 @@ The scripts use CartaPDF's Swift validator without incorporating the veraPDF eng
 
 `Development/ReleaseVerification.json`, `PackagingVerification.json`, `BuildManifest.json`, and module reports record evidence for the stated release. Do not edit them by hand to claim new verification. After source or package changes, regenerate only evidence for checks that were actually rerun, preserve the provenance of historical results, and verify final artifact hashes.
 
-The version 3.6 release manifest records the verified build from before the repository was prepared for public release, including the README hash from that build. It does not attest to the identity of the entire Git tree after documentation updates and is not relabeled as a new build.
+The version 3.6 manifest under `Development/` records the local build from before the repository was prepared for public release, including the README hash from that build. It does not attest to the identity of the entire Git tree after documentation updates and is not relabeled as a new build.
 
-For future public distribution, follow [public release preparation](PUBLIC_RELEASE.md). Preparing the repository does not change the app version or certify its output formats.
+The separate [public 3.6.0 verification manifest](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/ReleaseVerification.json) identifies the distributed ZIP, its source commit, build toolchain, app file inventory and checks performed after archive extraction. The release is Apple Silicon only, ad hoc signed and not notarized. Its [SHA-256 checksums](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/SHA256SUMS.txt) cover the published assets. Later documentation commits do not replace that archive or its source tag.
+
+For subsequent distributions, follow [release maintenance](PUBLIC_RELEASE.md). Documentation updates do not change the app version or certify its output formats.
