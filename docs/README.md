@@ -4,8 +4,11 @@ CartaPDF is a free, native macOS PDF editor built with Swift and Apple framework
 
 All document processing happens locally. PDF/A inspection covers eleven profiles, but version 3.6.0 does not provide complete ISO validation or emit a conforming verdict. Code is MIT licensed; bundled reference data retain their own licenses.
 
+The first downloadable release is [CartaPDF 3.6.0 for Apple Silicon](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0), requiring macOS 14 or later. Start with the [installation guide](INSTALLATION.md) for the app download, checksum verification and first-launch instructions. The distributed app uses an ad hoc signature and is not notarized by Apple.
+
 | Document | Contents |
 | --- | --- |
+| [Installation](INSTALLATION.md) | Version 3.6.0 download, requirements, checksum, Gatekeeper approval, updates and removal. |
 | [User guide](USAGE.md) | Opening, annotating, merging, splitting, exporting, and saving documents. |
 | [Building and verification](BUILDING.md) | Requirements, local builds, tests, and evidence provenance. |
 | [CLI and automation](CLI.md) | Commands, exit codes, passwords, and Shortcuts. |
@@ -14,11 +17,11 @@ All document processing happens locally. PDF/A inspection covers eleven profiles
 | [PDF/A validation](PDFA.md) | Eleven profiles, result interpretation, and required limitations. |
 | [Accessibility](ACCESSIBILITY.md) | Available controls, automated checks, and outstanding manual audits. |
 | [Localization interface review](UI_LOCALIZATION_AUDIT.md) | Isolated app copies, native component snapshots, interactive review and evidence limits. |
-| [Preparing a public release](PUBLIC_RELEASE.md) | Repository checks and steps for a future public distribution. |
-| [Publication preparation evidence](../Development/PublicationReadiness.json) | Scoped history and hosted-content checks, current private status and prepared GitHub settings. |
+| [Public releases and distribution](PUBLIC_RELEASE.md) | Published 3.6.0 assets, repository checks and steps for subsequent distributions. |
+| [Publication preparation evidence](../Development/PublicationReadiness.json) | Historical scoped history and hosted-content checks, then-private status and prepared GitHub settings. |
 | [Repository maintenance evidence](../Development/RepositoryMaintenanceVerification.json) | Verified merge baseline, Dependabot alert configuration, two CI environments and the private-plan protection limit. |
 
-For contributors, see [CONTRIBUTING](../CONTRIBUTING.md), the [code of conduct](../CODE_OF_CONDUCT.md), [support](../SUPPORT.md), and [security](../SECURITY.md). [Release notes](../CHANGELOG.md) and [data licenses](../THIRD_PARTY_NOTICES.md) are documented separately.
+For contributors, see [CONTRIBUTING](../CONTRIBUTING.md), the [code of conduct](../CODE_OF_CONDUCT.md), [support](../SUPPORT.md), and [security](../SECURITY.md). See the [3.6.0 release notes](https://github.com/GiorgioOppo/PDF-Edit-View/releases/download/v3.6.0/RELEASE_NOTES.md), [changelog](../CHANGELOG.md) and [data licenses](../THIRD_PARTY_NOTICES.md) for their separate scopes.
 
 Detailed technical evidence is in [Development](../Development/). These records describe checks performed on the versions they identify; adding documentation or changing the repository does not mean those tests have been rerun.
 

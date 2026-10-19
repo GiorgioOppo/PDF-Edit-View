@@ -1,6 +1,12 @@
 # CLI and local automation
 
-The bundle executable accepts `--cli` and performs operations on the Mac without opening the main interface. These examples assume a build created using [BUILDING](BUILDING.md).
+The bundle executable accepts `--cli` and performs operations on the Mac without opening the main interface. After [installing CartaPDF 3.6.0](INSTALLATION.md) in Applications, run:
+
+```sh
+/Applications/CartaPDF.app/Contents/MacOS/CartaPDF --cli help
+```
+
+The remaining examples use the path of a source build created with [BUILDING](BUILDING.md). For the installed app, replace `dist/CartaPDF.app/Contents/MacOS/CartaPDF` with `/Applications/CartaPDF.app/Contents/MacOS/CartaPDF`.
 
 ```sh
 dist/CartaPDF.app/Contents/MacOS/CartaPDF --cli help

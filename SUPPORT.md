@@ -1,6 +1,6 @@
 # Support
 
-Start with the [README](README.md), [user guide](docs/USAGE.md), [build instructions](docs/BUILDING.md) and [CLI reference](docs/CLI.md). The project does not promise commercial support or response times. Documentation and GitHub forms are in English. The app automatically selects a supported macOS language, with English fallback; see [languages](docs/LOCALIZATION.md).
+Start with the [README](README.md), [installation guide](docs/INSTALLATION.md), [user guide](docs/USAGE.md), [build instructions](docs/BUILDING.md) and [CLI reference](docs/CLI.md). The [3.6.0 release](https://github.com/GiorgioOppo/PDF-Edit-View/releases/tag/v3.6.0) provides the Apple Silicon app, release notes and checksums. For first-launch warnings, follow the installation guide's app-specific approval steps; the download is ad hoc signed and not notarized. The project does not promise commercial support or response times. Documentation and GitHub forms are in English. The app automatically selects a supported macOS language, with English fallback; see [languages](docs/LOCALIZATION.md).
 
 ## Questions, problems and requests
 
